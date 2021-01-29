@@ -1,0 +1,56 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:@typescript-eslint/eslint-recommended"
+    ],
+    "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly"
+    },
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": 2018,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "@typescript-eslint",
+        "header",
+        "promise",
+        "react",
+        "react-hooks",
+        "simple-import-sort"
+    ],
+    "settings": {
+        "react": {
+          "pragma": "React",  // Pragma to use, default to "React"
+          "version": "16.9.0" // React version, default to the latest React stable release
+        }
+    },
+    "rules": {
+        "@typescript-eslint/no-unused-vars": "error",
+        "arrow-spacing":["warn",{ "before": true, "after": true }],
+        "comma-dangle": ["error", "never"],
+        "header/header": [2, "./header.js"],
+        "indent": ["error", "tab"],
+        "no-multiple-empty-lines": ["error", {"max": 1}],
+        "no-tabs": ["error", { "allowIndentationTabs": true }],
+        "no-trailing-spaces": ["warn"],
+        "no-unused-vars": "off",
+        "object-curly-spacing": ["error", "always"],
+        "quotes": ["error", "single",  { "avoidEscape": true }],
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn",
+        "semi": [2, "always"],
+        "simple-import-sort/imports": "error",
+        "sort-keys": ["error", "asc", {"caseSensitive": true, "natural": false, "minKeys": 2}],
+        "switch-colon-spacing": ["error", {"after": true, "before": false}]
+    }
+}

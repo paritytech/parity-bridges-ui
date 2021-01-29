@@ -3,6 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@polkadot/api": "^3.6.4",
+    "@polkadot/keyring": "^5.4.4",
+    "@polkadot/react-identicon": "^0.67.1",
+    "@polkadot/rpc-provider": "^3.6.4",
+    "@polkadot/util": "^5.4.4",
+    "@polkadot/util-crypto": "^5.4.4",
+    "@substrate/context": "^0.5.2",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -10,11 +17,16 @@
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.53",
     "@types/react-dom": "^16.9.8",
+    "@types/styled-components": "^5.1.7",
+    "blockies-ts": "^1.0.0",
+    "bn.js": "^5.1.3",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-scripts": "4.0.1",
-    "typescript": "^4.0.3",
-    "web-vitals": "^0.2.4"
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^2.0.3",
+    "styled-components": "^5.2.1",
+    "typescript": "^4.0.3"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -39,5 +51,20 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.14.1",
+    "@typescript-eslint/parser": "^4.14.1",
+    "eslint": "^7.18.0",
+    "eslint-config-semistandard": "^15.0.1",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-header": "^3.1.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-react": "^7.22.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "eslint-plugin-standard": "^5.0.0"
   }
 }
