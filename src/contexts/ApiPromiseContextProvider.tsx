@@ -5,60 +5,39 @@
 //copied over from @substrate/context This needs to be updated.
 
 import { ApiPromise } from '@polkadot/api';
-import { ApiOptions } from '@polkadot/api/types';
 import { ProviderInterface } from '@polkadot/rpc-provider/types';
 import { TypeRegistry } from '@polkadot/types';
-import React, { useContext,useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { getProvider } from '../util/substrateProviders';
+import { SOURCE } from '../constants';
+import types from '../customTypes';
+import { ApiPromiseContextType } from '../types/sourceTargetTypes';
 import { useDidUpdateEffect } from '../util/useDidUpdateEffect';
-import { useSourceTarget } from './SourceTargetContextProvider';
 
-export interface ApiRxContextTargetProviderProps {
+export interface ApiRxContextProviderProps {
   children?: React.ReactElement;
-	//provider: ProviderInterface;
-	types?: ApiOptions['types'];
-
-}
-
-export type ApiPromiseTargetContextType = {
-targetApi: ApiPromise; // From @polkadot/api\
-	isTargetApiReady: boolean;
-} ;
-
-export const ApiPromiseTargetContext: React.Context<ApiPromiseTargetContextType> = React.createContext(
-  {} as ApiPromiseTargetContextType
-);
-
-export function useApiTargetPromiseContext() {
-	return useContext(ApiPromiseTargetContext);
+  provider: ProviderInterface;
+  ApiPromiseContext: React.Context<ApiPromiseContextType>
+  contextType: string
 }
 
 const registry = new TypeRegistry();
 
-export function ApiPromiseTargetContextProvider(
-	props: ApiRxContextTargetProviderProps
+export function ApiPromiseContextProvider(
+	props: ApiRxContextProviderProps
 ): React.ReactElement {
-	const { children = null, types } = props;
-
-	const {
-		targetChain
-	} = useSourceTarget();
-	const [provider, setProvider] = useState<ProviderInterface>();
+	const { children = null, provider, ApiPromiseContext, contextType } = props;
 	const [apiPromise, setApiPromise] = useState<ApiPromise>(
-		new ApiPromise({ provider: getProvider(targetChain) , types })
+		new ApiPromise({ provider, types })
 	);
 	const [isReady, setIsReady] = useState(false);
-
-	useEffect(() => {
-		setProvider(getProvider(targetChain));
-	}, []);
 
 	useDidUpdateEffect(() => {
 		// We want to fetch all the information again each time we reconnect. We
 		// might be connecting to a different node, or the node might have changed
 		// settings.
 		setApiPromise(new ApiPromise({ provider, types }));
+
 		setIsReady(false);
 	}, [provider]);
 
@@ -67,22 +46,27 @@ export function ApiPromiseTargetContextProvider(
 		// might be connecting to a different node, or the node might have changed
 		// settings.
 		apiPromise.isReady.then(() => {
-			if (types){
+			if (types) {
 				registry.register(types);
 			}
-			console.log('Target chain Api ready.');
+			console.log(`${contextType} Api ready.`);
 			setIsReady(true);
 		});
-	}, [apiPromise.isReady, types]);
+	}, [apiPromise.isReady]);
 
-	console.log('apiPromise',apiPromise.query.balances);
+	if (contextType === SOURCE) {
+		return (<ApiPromiseContext.Provider
+			value={{ isSourceApiReady: isReady, sourceApi: apiPromise }}
+		>
+			{children}
+		</ApiPromiseContext.Provider>);
+	}
 
 	return (
-		<ApiPromiseTargetContext.Provider
+		<ApiPromiseContext.Provider
 			value={{ isTargetApiReady: isReady, targetApi: apiPromise }}
 		>
 			{children}
-		</ApiPromiseTargetContext.Provider>
+		</ApiPromiseContext.Provider>
 	);
-
 }

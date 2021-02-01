@@ -4,6 +4,8 @@
 import React from 'react';
 
 import ActionsTypes from './actions/actionTypes';
+import { useApiSourcePromiseContext } from './contexts/ApiPromiseSourceContext';
+import { useApiTargetPromiseContext } from './contexts/ApiPromiseTargetContext';
 import { useSourceTarget, useUpdateSourceTarget } from './contexts/SourceTargetContextProvider';
 import {  MILLAU } from './util/substrateProviders';
 
@@ -11,7 +13,15 @@ export default function Test() {
 	const {
 		sourceChain, targetChain
 	} = useSourceTarget();
+	const sourceApi = useApiSourcePromiseContext();
+	const targetApi = useApiTargetPromiseContext();
+
 	const { dispatchSourceTarget } = useUpdateSourceTarget();
+
+	console.log('sourceApi', sourceApi);
+	console.log('targetApi', targetApi);
+	console.log('process.env', process.env);
+
 	return (
 		<>
 			<button onClick={() => dispatchSourceTarget({ payload: { sourceChain: MILLAU },type: ActionsTypes.CHANGE_SOURCE })}> change source </button>

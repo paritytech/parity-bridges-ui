@@ -13,3 +13,6 @@ export const addresses = {
 	'ferdie': '5CiPPseXPECbkjWCa6MnjNokrgYjMqmKndv2rSnekmSK2DjL',
 	'joshy': '5Ev8deqBc5bXB2pq2C9RWCBXM1kuS6wjqbZJiSRTA8kLZfTu'
 };
+
+export const SOURCE = 'sourceChain';
+export const TARGET  = 'targetChain';
