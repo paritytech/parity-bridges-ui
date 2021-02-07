@@ -11,20 +11,14 @@ export interface SourceTarget {
 	targetChain: string
 }
 
+export type ChainTypes = 'sourceChain' | 'targetChain';
+
 interface Payload {
 	[propName: string]: string;
 }
 
 export type SourceTargetAction = { type: ActionsTypes, payload: Payload }
-
-export interface ApiSourcePromiseContextType {
-  sourceApi: ApiPromise; // From @polkadot/api\
-  isSourceApiReady: boolean;
+export interface ApiPromiseContextType {
+  api: ApiPromise; // From @polkadot/api\
+  isApiReady: boolean;
 }
-
-export interface ApiTargetPromiseContextType {
-  targetApi: ApiPromise; // From @polkadot/api\
-  isTargetApiReady: boolean;
-}
-
-export type ApiPromiseContextType = ApiSourcePromiseContextType | ApiTargetPromiseContextType;

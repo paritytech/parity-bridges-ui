@@ -6,11 +6,10 @@ import { ProviderInterface } from '@polkadot/rpc-provider/types';
 import { useEffect, useState } from 'react';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
+import { ChainTypes } from '../types/sourceTargetTypes';
 import { getProvider } from '../util/substrateProviders';
 
-type Chain = 'sourceChain' | 'targetChain'
-
-export function useProvider(chain: Chain): ProviderInterface {
+export function useProvider(chain: ChainTypes): ProviderInterface {
 
 	const nextChain = useSourceTarget();
 	const [provider, setProvider] = useState<ProviderInterface>(getProvider(nextChain[chain]));

@@ -7,15 +7,15 @@ interface Providers  {
   [key: string]: string
 }
 
-export const RIALTO : string = 'Rialto';
-export const MILLAU: string = 'Millau';
+export const RIALTO= 'Rialto';
+export const MILLAU= 'Millau';
 
-export const RIALTO_SUBSTRATE_PROVIDER = process.env.RIALTO_SUBSTRATE_PROVIDER || 'wss://wss.rialto.brucke.link';
-export const MILLAU_SUBSTRATE_PROVIDER = process.env.MILLAU_SUBSTRATE_PROVIDER || 'wss://wss.millau.brucke.link';
+export const RIALTO_SUBSTRATE_PROVIDER = process.env.REACT_APP_RIALTO_SUBSTRATE_PROVIDER || 'wss://wss.rialto.brucke.link';
+export const MILLAU_SUBSTRATE_PROVIDER = process.env.REACT_APP_MILLAU_SUBSTRATE_PROVIDER || 'wss://wss.millau.brucke.link';
 
 export const providers: Providers = {
-	MILLAU: MILLAU_SUBSTRATE_PROVIDER,
-	RIALTO: RIALTO_SUBSTRATE_PROVIDER
+	[MILLAU]: MILLAU_SUBSTRATE_PROVIDER,
+	[RIALTO]: RIALTO_SUBSTRATE_PROVIDER
 };
 
 export const getProvider = (chain: string) => new WsProvider(providers[chain]);

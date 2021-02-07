@@ -5,11 +5,12 @@ import './App.css';
 
 //import { WsProvider } from '@polkadot/api';
 import React from 'react';
+import { BrowserRouter,Route, Switch } from 'react-router-dom';
 
+import TopBar from './components/TopBar';
 import { ApiPromiseSourceContextProvider } from './contexts/ApiPromiseSourceContext';
 import { ApiPromiseTargetContextProvider } from './contexts/ApiPromiseTargetContext';
 import { SourceTargetContextProvider } from './contexts/SourceTargetContextProvider';
-import logo from './logo.svg';
 import Test from './Test';
 
 function App() {
@@ -17,24 +18,19 @@ function App() {
 		<SourceTargetContextProvider>
 			<ApiPromiseSourceContextProvider>
 				<ApiPromiseTargetContextProvider>
-					<div className="App">
-						<header className="App-header">
-							<img src={logo} className="App-logo" alt="logo" />
-							<p>
-					Edit <code>src/App.tsx</code> and save to reload.
-							</p>
+					<BrowserRouter>
+						<div className="App">
+							<TopBar />
 
-							<a
-								className="App-link"
-								href="https://reactjs.org"
-								target="_blank"
-								rel="noopener noreferrer"
-							>
-					Learn React
-							</a>
-						</header>
-						<Test />
-					</div>
+							<Switch>
+								<Route path={'/'}>
+									<Test />
+								</Route>
+
+							</Switch>
+
+						</div>
+					</BrowserRouter>
 				</ApiPromiseTargetContextProvider>
 			</ApiPromiseSourceContextProvider>
 		</SourceTargetContextProvider>

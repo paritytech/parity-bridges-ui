@@ -9,7 +9,6 @@ import { ProviderInterface } from '@polkadot/rpc-provider/types';
 import { TypeRegistry } from '@polkadot/types';
 import React, { useEffect, useState } from 'react';
 
-import { SOURCE } from '../constants';
 import types from '../customTypes';
 import { ApiPromiseContextType } from '../types/sourceTargetTypes';
 import { useDidUpdateEffect } from '../util/useDidUpdateEffect';
@@ -36,37 +35,29 @@ export function ApiPromiseContextProvider(
 		// We want to fetch all the information again each time we reconnect. We
 		// might be connecting to a different node, or the node might have changed
 		// settings.
-		setApiPromise(new ApiPromise({ provider, types }));
 
-		setIsReady(false);
+		ApiPromise.create({ provider, types }).then((_api) => {
+			setApiPromise(_api);
+		});
+
 	}, [provider]);
 
 	useEffect(() => {
 		// We want to fetch all the information again each time we reconnect. We
 		// might be connecting to a different node, or the node might have changed
 		// settings.
+
 		apiPromise.isReady.then(() => {
 			if (types) {
 				registry.register(types);
 			}
-			console.log(`${contextType} Api ready.`);
 			setIsReady(true);
 		});
-	}, [apiPromise.isReady]);
+	}, [apiPromise.isReady, contextType]);
 
-	if (contextType === SOURCE) {
-		return (<ApiPromiseContext.Provider
-			value={{ isSourceApiReady: isReady, sourceApi: apiPromise }}
-		>
-			{children}
-		</ApiPromiseContext.Provider>);
-	}
-
-	return (
-		<ApiPromiseContext.Provider
-			value={{ isTargetApiReady: isReady, targetApi: apiPromise }}
-		>
-			{children}
-		</ApiPromiseContext.Provider>
-	);
+	return (<ApiPromiseContext.Provider
+		value={{ api: apiPromise, isApiReady: isReady }}
+	>
+		{children}
+	</ApiPromiseContext.Provider>);
 }
