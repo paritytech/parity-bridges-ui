@@ -3,18 +3,7 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import { ApiPromise } from '@polkadot/api';
-//import { Hash } from '@polkadot/types/interfaces';
-//import { Codec } from '@polkadot/types/types';
-//import BN from 'bn.js';
 import { useEffect, useState } from 'react';
-
-/* interface HeaderId{
-	number: BN,
-	hash: Hash
-} */
-
-//type CodecHeaderId = Codec & HeaderId;
-// type CodecBestBloc = Codec & [HeaderId, any]
 
 interface Props {
   chain: string,
@@ -22,8 +11,19 @@ interface Props {
   isApiReady: boolean
 }
 
-const useBlocksInfo = ({  isApiReady, api ,chain }: Props) => {
-	const [outboundLanes, setOutboudLanes] = useState('');
+interface Output {
+	inboundLanes: {
+		bridgeReceivedMessages: number
+	},
+	outboundLanes: {
+		pendingMessages: number, totalMessages: number
+	},
+
+  }
+
+const useMessageLane = ({  isApiReady, api ,chain }: Props): Output => {
+	const [outboundLanes, setOutboudLanes] = useState({ pendingMessages:0, totalMessages:0 });
+	const [inboundLanes, setInboudLanes] = useState({ bridgeReceivedMessages: 0 });
 
 	useEffect(() => {
 		if(!api || !isApiReady){
@@ -32,23 +32,29 @@ const useBlocksInfo = ({  isApiReady, api ,chain }: Props) => {
 
 		const bridgedMessagesLainChain = `bridge${chain}MessageLane`;
 		// to-do: review after depending on action to perform
-		api.query[bridgedMessagesLainChain].outboundLanes('0x00000000', (res: any) => {
-			console.log('res outboundLanes',res);
 
-			console.log('res outboundLanes',res.get('latest_generated_nonce').toJSON());
-			setOutboudLanes(res.toString());
+		api.query[bridgedMessagesLainChain].outboundLanes('0x00000000', (res: any) => {
+			const latest_generated_nonce = res.get('latest_generated_nonce').toNumber();
+			const latest_received_nonce = res.get('latest_received_nonce').toNumber();
+			const pendingMessages = latest_generated_nonce - latest_received_nonce;
+			setOutboudLanes({ pendingMessages: pendingMessages < 0 ? 0 : pendingMessages, totalMessages: latest_generated_nonce  });
 		});
 
 		api.query[bridgedMessagesLainChain].inboundLanes('0x00000000', (res: any) => {
-			console.log('res inboundLanes',res);
-			/*
-			console.log('res outboundLanes',res.get('latest_generated_nonce').toJSON());
-			setOutboudLanes(res.toString()); */
+			setInboudLanes({ bridgeReceivedMessages: res.get('last_confirmed_nonce').toNumber() });
 		});
 
-	},[api,isApiReady, chain]);
+	}, [api, isApiReady, chain]);
 
-	return { outboundLanes };
+	useEffect(() => {
+		if(!isApiReady){
+			setOutboudLanes({ pendingMessages:0, totalMessages:0 });
+			setInboudLanes({ bridgeReceivedMessages: 0 });
+
+		}
+	}, [isApiReady]);
+
+	return { inboundLanes, outboundLanes };
 };
 
-export default useBlocksInfo;
+export default useMessageLane;

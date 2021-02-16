@@ -29,7 +29,15 @@ const useBlocksInfo = ({  isApiReady, api ,chain }: Props) => {
 			setBestBlockFinalized(res.toString());
 		});
 
-	},[api,isApiReady, chain]);
+	}, [api, isApiReady, chain]);
+
+	useEffect(() => {
+		if(!isApiReady){
+			setBestBlock('');
+			setBestBlockFinalized('');
+
+		}
+	}, [isApiReady]);
 
 	return { bestBlock,bestBlockFinalized };
 };

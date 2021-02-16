@@ -3,6 +3,7 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 enum ActionsTypes {
 	CHANGE_SOURCE = 'CHANGE_SOURCE',
-	CHANGE_TARGET = 'CHANGE_TARGET'
+	CHANGE_TARGET = 'CHANGE_TARGET',
+	SWITCH_CHAINS = 'SWITCH_CHAINS'
 }
 export default ActionsTypes;

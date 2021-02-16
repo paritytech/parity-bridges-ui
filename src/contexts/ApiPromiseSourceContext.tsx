@@ -23,10 +23,9 @@ export function ApiPromiseSourceContextProvider(
 	props: ApiRxContextSourceProviderProps
 ): React.ReactElement {
 	const { children  } = props;
-	const provider = useProvider(SOURCE);
-
+	const { provider, types } = useProvider(SOURCE);
 	return (
-		<ApiPromiseContextProvider contextType={SOURCE} ApiPromiseContext={ApiPromiseSourceContext} provider={provider}>
+		<ApiPromiseContextProvider contextType={SOURCE} ApiPromiseContext={ApiPromiseSourceContext} provider={provider} types={types}>
 			{children}
 		</ApiPromiseContextProvider>
 	);

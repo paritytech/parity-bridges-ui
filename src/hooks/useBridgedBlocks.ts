@@ -23,38 +23,33 @@ interface Props {
 }
 
 const useBridgedBlocks = ({  isApiReady, api ,chain }: Props) => {
-	const [bestBridgedFinalizedBlock, setBestBridgedFinalizedBlock] = useState('');
-	const [bestBridgedHeight, setBestBridgedHeight] = useState('');
 	const [importedHeaders, setImportedHeaders] = useState('');
+
+	const bridgedChain = `bridge${chain}`;
 
 	useEffect(() => {
 		if(!api || !isApiReady){
 			return;
 		}
 
-		const bridgedChain = `bridge${chain}`;
-
 		api.query[bridgedChain].bestFinalized((res: CodecHeaderId) => {
-			setBestBridgedFinalizedBlock(res.toString());
-		});
-
-		api.query[bridgedChain].bestHeight((res: CodecHeaderId) => {
-			setBestBridgedHeight(res.toString());
-		});
-
-		if (chain === 'Rialto') {
-			console.log('res chain', chain);
-			if (bestBridgedFinalizedBlock !== '') {
-				api.query[bridgedChain].importedHeaders(bestBridgedFinalizedBlock, (res: any) => {
+			const bestBridgedFinalizedBlock=res.toString();
+			api.query[bridgedChain].importedHeaders(bestBridgedFinalizedBlock, (res: any) => {
+				if (res.toJSON()) {
 					setImportedHeaders(res.toJSON().header.number);
-				});
-			}
+				}
+			});
+		});
 
+	}, [api, isApiReady, chain]);
+
+	useEffect(() => {
+		if(!isApiReady){
+			setImportedHeaders('');
 		}
+	}, [isApiReady,chain]);
 
-	},[api,isApiReady, chain,bestBridgedHeight]);
-
-	return { bestBridgedFinalizedBlock,bestBridgedHeight,importedHeaders };
+	return { importedHeaders };
 };
 
 export default useBridgedBlocks;

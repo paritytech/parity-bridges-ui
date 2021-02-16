@@ -23,10 +23,10 @@ export function ApiPromiseTargetContextProvider(
 	props: ApiRxContextTargetProviderProps
 ): React.ReactElement {
 	const { children  } = props;
-	const provider = useProvider(TARGET);
+	const { provider, types } = useProvider(TARGET);
 
 	return (
-		<ApiPromiseContextProvider contextType={TARGET} ApiPromiseContext={ApiPromiseTargetContext} provider={provider}>
+		<ApiPromiseContextProvider contextType={TARGET} ApiPromiseContext={ApiPromiseTargetContext} provider={provider} types={types}>
 			{children}
 		</ApiPromiseContextProvider>
 	);

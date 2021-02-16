@@ -21,6 +21,10 @@ export default function sourceTargetReducer(state: SourceTarget, action: SourceT
 		validateChange(action.payload.targetChain, state.sourceChain);
 		return { ...state, targetChain: action.payload.targetChain };
 	}
+	case Actions.SWITCH_CHAINS: {
+		validateChange(action.payload.targetChain, state.sourceChain);
+		return { ...state, sourceChain: state.targetChain,targetChain: state.sourceChain };
+	}
 	default: {
 		throw new Error(`Unhandled type: ${action.type}`);
 	}

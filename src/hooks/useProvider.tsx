@@ -2,22 +2,30 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
+import { ApiOptions } from '@polkadot/api/types';
 import { ProviderInterface } from '@polkadot/rpc-provider/types';
 import { useEffect, useState } from 'react';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { ChainTypes } from '../types/sourceTargetTypes';
-import { getProvider } from '../util/substrateProviders';
+import { customTypes, getProvider } from '../util/substrateProviders';
 
-export function useProvider(chain: ChainTypes): ProviderInterface {
+interface Output {
+	provider: ProviderInterface,
+	types: ApiOptions['types'];
+}
+
+export function useProvider(chain: ChainTypes): Output {
 
 	const nextChain = useSourceTarget();
 	const [provider, setProvider] = useState<ProviderInterface>(getProvider(nextChain[chain]));
+	const [types, setTypes] = useState(customTypes[nextChain[chain]]);
 
 	useEffect(() => {
 		setProvider(getProvider(nextChain[chain]));
-	}, [chain,nextChain]);
+		setTypes(types);
+	}, [chain, nextChain]);
 
-	return provider;
+	return { provider,types };
 
 }

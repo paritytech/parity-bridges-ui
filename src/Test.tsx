@@ -3,60 +3,51 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import React from 'react';
-import { Card } from 'semantic-ui-react';
+import { Container, Grid } from 'semantic-ui-react';
 
 import ActionsTypes from './actions/actionTypes';
+import DashboardCard from './components/DashboardCard';
 import { SOURCE,TARGET } from './constants';
 import { useApiSourcePromiseContext } from './contexts/ApiPromiseSourceContext';
 import { useApiTargetPromiseContext } from './contexts/ApiPromiseTargetContext';
 import { useSourceTarget, useUpdateSourceTarget } from './contexts/SourceTargetContextProvider';
-import useDashboard from './hooks/useDashboard';
 import { MILLAU } from './util/substrateProviders';
-
-//type CodecHeaderId = Codec & HeaderId;
 
 export default function Test() {
 	const {
 		sourceChain, targetChain
 	} = useSourceTarget();
 
-	const { bestBlockFinalized: bestSourceBlockFinalized, bestBlock: bestSourceBlock, importedHeaders: bestTargetBridgedFinalizedBlock,  outboundLanes  } = useDashboard(TARGET,useApiSourcePromiseContext);
-	const { bestBlockFinalized: bestTargetBlockFinalized, bestBlock: bestTargetBlock, importedHeaders: bestSourceBridgedFinalizedBlock  } = useDashboard(SOURCE,useApiTargetPromiseContext);
-
 	const { dispatchSourceTarget } = useUpdateSourceTarget();
 
 	return (
 		<>
-			<button onClick={() => dispatchSourceTarget({ payload: { sourceChain: MILLAU },type: ActionsTypes.CHANGE_SOURCE })}> change source </button>
+			<button onClick={() => dispatchSourceTarget({ payload: { sourceChain: MILLAU },type: ActionsTypes.SWITCH_CHAINS })}> change source </button>
 			<div>sourceChain: {sourceChain}</div>
 			<br />
 			<div>targetChain: {targetChain}</div>
 			<br />
+			<Container>
+				<Grid>
+					<Grid.Row>
+						<Grid.Column width={2}/>
+						<Grid.Column className='accountCard' width={5}>
+							<DashboardCard
+								chainType={SOURCE}
+								ApiContext={useApiTargetPromiseContext}
+							/>
+						</Grid.Column>
+						<Grid.Column width={2} />
+						<Grid.Column className='accountCard' width={5}>
+							<DashboardCard
+								chainType={TARGET}
+								ApiContext={useApiSourcePromiseContext}
+							/>
+						</Grid.Column>
+					</Grid.Row>
+				</Grid>
 
-			<Card style={{ 'wordWrap': 'break-word' }}>
-				<Card.Content header={`Source: ${sourceChain}`} />
-				<Card.Description>
-					<div>Best Block: {bestSourceBlock}</div>
-					<div>Best Finalized block: {bestSourceBlockFinalized}</div>
-					<hr style={{ 'maxWidth': '80%' }} />
-					<div>Best Target Finalized block: {bestTargetBridgedFinalizedBlock}</div>
-					<div>Outboundlanes: {outboundLanes}</div>
-				</Card.Description>
-				<Card.Content extra>
-				</Card.Content>
-			</Card>
-
-			<Card style={{ 'wordWrap': 'break-word' }}>
-				<Card.Content header={`Target: ${targetChain}`} />
-				<Card.Description>
-					<div>Best Block: {bestTargetBlock}</div>
-					<div>Best Finalized block: {bestTargetBlockFinalized}</div>
-					<hr style={{ 'maxWidth': '80%' }} />
-					<div>Best Source Finalized block: {bestSourceBridgedFinalizedBlock}</div>
-				</Card.Description>
-				<Card.Content extra>
-				</Card.Content>
-			</Card>
+			</Container>
 
 		</>
 	);

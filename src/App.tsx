@@ -21,14 +21,13 @@ function App() {
 					<BrowserRouter>
 						<div className="App">
 							<TopBar />
-
 							<Switch>
 								<Route path={'/'}>
-									<Test />
+									<>
+										<Test />
+									</>
 								</Route>
-
 							</Switch>
-
 						</div>
 					</BrowserRouter>
 				</ApiPromiseTargetContextProvider>
