@@ -29,10 +29,11 @@ export function ApiPromiseContextProvider(props: ApiRxContextProviderProps): Rea
   const sourceTarget = useSourceTarget();
   const [apiPromise, setApiPromise] = useState<ApiPromise>(new ApiPromise({ provider, types }));
   const [isReady, setIsReady] = useState(false);
+
   useEffect(() => {
     if (isReady) {
       setIsReady(false);
-      apiPromise.disconnect();
+      apiPromise.disconnect().then(() => console.log(`${contextType} Resetting connection`));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sourceTarget]);
@@ -51,7 +52,9 @@ export function ApiPromiseContextProvider(props: ApiRxContextProviderProps): Rea
 
       setIsReady(true);
     });
-  }, [apiPromise.isReady, contextType, types]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [apiPromise.isReady]);
 
   return (
     <ApiPromiseContext.Provider value={{ api: apiPromise, isApiReady: isReady }}>{children}</ApiPromiseContext.Provider>

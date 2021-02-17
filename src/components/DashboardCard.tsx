@@ -18,7 +18,7 @@ interface Props {
 }
 
 const DashboardCard = ({ chainType, useApiContext, className }: Props) => {
-  const { local, destination } = useDashboardProfile(chainType);
+  const { destination, local } = useDashboardProfile(chainType);
   const {
     bestBlockFinalized,
     bestBlock,
@@ -30,7 +30,7 @@ const DashboardCard = ({ chainType, useApiContext, className }: Props) => {
   const headerText = chainType === SOURCE ? 'Source' : 'Target';
   return (
     <Container className={className}>
-      <Card className="container">
+      <Card>
         <Card.Content header={`${headerText}: ${local}`} />
         <Card.Description className="description">
           <div>Best Block: {bestBlock}</div>
@@ -53,6 +53,6 @@ export default styled(DashboardCard)`
     max-width: 80%;
   }
   .description {
-    margin: 10px;
+    margin-bottom: 10px;
   }
 `;
