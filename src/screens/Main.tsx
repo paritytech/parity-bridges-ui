@@ -23,30 +23,26 @@ export function Main({ className }: Props) {
   const isLoading = useLoadingApi();
 
   const { dispatchSourceTarget } = useUpdateSourceTarget();
-
-  const onChangeSourceTarget = () =>
-    dispatchSourceTarget({
-      payload: {},
-      type: ActionsTypes.SWITCH_CHAINS
-    });
-
   return (
     <>
       <Container className={className}>
         <Grid>
           <Grid.Row>
-            <Grid.Column width={1} />
-            <Grid.Column width={5}>
+            <Grid.Column width={2} />
+            <Grid.Column width={4}>
               <DashboardCard chainType={SOURCE} useApiContext={useApiSourcePromiseContext} />
             </Grid.Column>
-            <Grid.Column width={1}>
+            <Grid.Column width={2}>
               <div className="switchButton">
-                <Button disabled={!isLoading} onClick={onChangeSourceTarget}>
+                <Button
+                  disabled={!isLoading}
+                  onClick={() => dispatchSourceTarget({ payload: {}, type: ActionsTypes.SWITCH_CHAINS })}
+                >
                   <Icon fitted name="exchange" />
                 </Button>
               </div>
             </Grid.Column>
-            <Grid.Column width={5}>
+            <Grid.Column width={4}>
               <DashboardCard chainType={TARGET} useApiContext={useApiTargetPromiseContext} />
             </Grid.Column>
           </Grid.Row>
