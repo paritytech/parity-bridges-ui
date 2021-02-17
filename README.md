@@ -14,6 +14,7 @@ Runs the app in the development mode.\
 Open [http://localhost:3001](http://localhost:3001) to view it in the browser.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 ### Configure custom substrate providers
 
@@ -35,6 +36,19 @@ See the section about [running tests](https://facebook.github.io/create-react-ap
 
 In the `.env` file at root project directory, you 
 >>>>>>> a7b4cbe (First approach for making connection details dynamic)
+=======
+
+### Configure custom substrate providers
+
+In the `.env` file at root project directory, you have to define the following env variables:
+
+REACT_APP_SUBSTRATE_PROVIDER_1=<WS-Provider chain 1>
+REACT_APP_SUBSTRATE_PROVIDER_2=<WS-Provider chain 2>
+REACT_APP_PROVIDER_NAME_1=<Chain 1 name>
+REACT_APP_PROVIDER_NAME_2=<Chain 2 name>
+
+In case these values are not provided the default chains will be rialto and millau chains.
+>>>>>>> 3761877 (Adding README.md information)
 
 ## Learn More
 
