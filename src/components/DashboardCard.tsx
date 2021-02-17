@@ -30,7 +30,7 @@ const DashboardCard = ({ chainType, useApiContext, className }: Props) => {
   const headerText = chainType === SOURCE ? 'Source' : 'Target';
   return (
     <Container className={className}>
-      <Card>
+      <Card className="container">
         <Card.Content header={`${headerText}: ${local}`} />
         <Card.Description className="description">
           <div>Best Block: {bestBlock}</div>
@@ -53,6 +53,6 @@ export default styled(DashboardCard)`
     max-width: 80%;
   }
   .description {
-    margin-bottom: 10px;
+    margin: 10px;
   }
 `;

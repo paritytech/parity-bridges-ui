@@ -28,11 +28,11 @@ export function Main({ className }: Props) {
       <Container className={className}>
         <Grid>
           <Grid.Row>
-            <Grid.Column width={2} />
-            <Grid.Column width={4}>
+            <Grid.Column width={1} />
+            <Grid.Column width={5}>
               <DashboardCard chainType={SOURCE} useApiContext={useApiSourcePromiseContext} />
             </Grid.Column>
-            <Grid.Column width={2}>
+            <Grid.Column width={1}>
               <div className="switchButton">
                 <Button
                   disabled={!isLoading}
@@ -42,7 +42,7 @@ export function Main({ className }: Props) {
                 </Button>
               </div>
             </Grid.Column>
-            <Grid.Column width={4}>
+            <Grid.Column width={5}>
               <DashboardCard chainType={TARGET} useApiContext={useApiTargetPromiseContext} />
             </Grid.Column>
           </Grid.Row>
