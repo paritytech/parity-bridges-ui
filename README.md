@@ -13,6 +13,7 @@ This will install all the dependencies for the project.
 Runs the app in the development mode.\
 Open [http://localhost:3001](http://localhost:3001) to view it in the browser.
 
+<<<<<<< HEAD
 
 ### Configure custom substrate providers
 
@@ -24,6 +25,16 @@ REACT_APP_PROVIDER_NAME_1=<Chain 1 name>
 REACT_APP_PROVIDER_NAME_2=<Chain 2 name>
 
 In case these values are not provided the default chains will be rialto and millau chains.
+=======
+### `yarn test`
+
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+### Configure custom substrate providers
+
+In the `.env` file at root project directory, you 
+>>>>>>> a7b4cbe (First approach for making connection details dynamic)
 
 ## Learn More
 
