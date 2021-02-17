@@ -7,17 +7,17 @@ import { ApiPromise } from '@polkadot/api';
 import ActionsTypes from '../actions/actionTypes';
 
 export interface SourceTarget {
-	sourceChain: string,
-	targetChain: string
+  sourceChain: string;
+  targetChain: string;
 }
 
 export type ChainTypes = 'sourceChain' | 'targetChain';
 
 interface Payload {
-	[propName: string]: string;
+  [propName: string]: string;
 }
 
-export type SourceTargetAction = { type: ActionsTypes, payload: Payload }
+export type SourceTargetAction = { type: ActionsTypes; payload: Payload };
 export interface ApiPromiseContextType {
   api: ApiPromise; // From @polkadot/api\
   isApiReady: boolean;

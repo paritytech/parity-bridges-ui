@@ -6,11 +6,9 @@ import React from 'react';
 import { Menu } from 'semantic-ui-react';
 
 const TopBar = () => (
-	<Menu pointing secondary>
-		<Menu.Item>
-          Home
-		</Menu.Item>
-	</Menu>
+  <Menu pointing secondary>
+    <Menu.Item>Home</Menu.Item>
+  </Menu>
 );
 
 export default TopBar;

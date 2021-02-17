@@ -11,27 +11,31 @@ import { ApiPromiseContextProvider } from './ApiPromiseContextProvider';
 import { useSourceTarget } from './SourceTargetContextProvider';
 
 interface ApiRxContextTargetProviderProps {
-  children: React.ReactElement
+  children: React.ReactElement;
 }
 
-export const ApiPromiseTargetContext: React.Context<ApiPromiseContextType> = React.createContext({} as ApiPromiseContextType);
+export const ApiPromiseTargetContext: React.Context<ApiPromiseContextType> = React.createContext(
+  {} as ApiPromiseContextType
+);
 
 export function useApiTargetPromiseContext() {
-	return useContext(ApiPromiseTargetContext);
+  return useContext(ApiPromiseTargetContext);
 }
 
-export function ApiPromiseTargetContextProvider(
-	props: ApiRxContextTargetProviderProps
-): React.ReactElement {
-	const { children } = props;
-	const { targetChain } = useSourceTarget();
-	const provider = getProvider(targetChain);
-	const types= customTypes[targetChain];
+export function ApiPromiseTargetContextProvider(props: ApiRxContextTargetProviderProps): React.ReactElement {
+  const { children } = props;
+  const { targetChain } = useSourceTarget();
+  const provider = getProvider(targetChain);
+  const types = customTypes[targetChain];
 
-	return (
-		<ApiPromiseContextProvider contextType={TARGET} ApiPromiseContext={ApiPromiseTargetContext} provider={provider} types={types}>
-			{children}
-		</ApiPromiseContextProvider>
-	);
-
+  return (
+    <ApiPromiseContextProvider
+      contextType={TARGET}
+      ApiPromiseContext={ApiPromiseTargetContext}
+      provider={provider}
+      types={types}
+    >
+      {children}
+    </ApiPromiseContextProvider>
+  );
 }

@@ -7,20 +7,19 @@ import useBridgedBlocks from './useBridgedBlocks';
 import useMessagesLane from './useMessagesLane';
 
 interface Props {
-	local: string,
-	destination: string,
-	useApiContext: Function
+  local: string;
+  destination: string;
+  useApiContext: Function;
 }
 
-const useDashboard = ({ local, destination, useApiContext }: Props) => {
+const useDashboard = ({ destination, local, useApiContext }: Props) => {
+  const { isApiReady, api } = useApiContext();
 
-	const { isApiReady, api } = useApiContext();
+  const blockInfo = useBlocksInfo({ api, chain: local, destination, isApiReady });
+  const bridgedBlocks = useBridgedBlocks({ api, chain: destination, isApiReady });
+  const messagesLane = useMessagesLane({ api, chain: destination, isApiReady });
 
-	const blockInfo = useBlocksInfo({ api, chain:local, destination,isApiReady });
-	const bridgedBlocks= useBridgedBlocks({ api, chain:destination, isApiReady });
-	const messagesLane = useMessagesLane({ api, chain:destination, isApiReady });
-
-	return { ...blockInfo,  ...bridgedBlocks,...messagesLane };
+  return { ...blockInfo, ...bridgedBlocks, ...messagesLane };
 };
 
 export default useDashboard;
