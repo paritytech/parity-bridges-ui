@@ -6,18 +6,23 @@ import { ApiPromise } from '@polkadot/api';
 import { useEffect, useState } from 'react';
 
 interface Props {
-  chain: string,
+	chain: string,
+	destination: string,
   api: ApiPromise,
   isApiReady: boolean
 }
 
-const useBlocksInfo = ({  isApiReady, api ,chain }: Props) => {
+const useBlocksInfo = ({  isApiReady, api ,chain,destination }: Props) => {
 
 	const [bestBlock, setBestBlock] = useState('');
 	const [bestBlockFinalized, setBestBlockFinalized] = useState('');
+	const bridgedChain = `bridge${destination}`;
 
 	useEffect(() => {
-		if(!api || !isApiReady){
+
+		if (!api || !isApiReady || !chain || !api.query[bridgedChain]) {
+			setBestBlock('');
+			setBestBlockFinalized('');
 			return;
 		}
 
@@ -29,15 +34,11 @@ const useBlocksInfo = ({  isApiReady, api ,chain }: Props) => {
 			setBestBlockFinalized(res.toString());
 		});
 
-	}, [api, isApiReady, chain]);
-
-	useEffect(() => {
-		if(!isApiReady){
+		return function cleanup() {
 			setBestBlock('');
 			setBestBlockFinalized('');
-
-		}
-	}, [isApiReady]);
+		};
+	}, [api, isApiReady, chain,bridgedChain]);
 
 	return { bestBlock,bestBlockFinalized };
 };

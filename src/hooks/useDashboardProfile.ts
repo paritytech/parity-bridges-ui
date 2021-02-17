@@ -28,7 +28,7 @@ export default function useDashboardProfile(chainType: ChainTypes): Output {
 			destination=sourceChain;
 		}
 		setProfile({ destination,local });
-	}, [chainType,sourceChain,targetChain]);
+	}, [chainType, sourceChain, targetChain]);
 
 	return profile;
 

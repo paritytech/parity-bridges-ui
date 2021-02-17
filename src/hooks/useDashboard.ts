@@ -6,11 +6,19 @@ import useBlocksInfo from './useBlocksInfo';
 import useBridgedBlocks from './useBridgedBlocks';
 import useMessagesLane from './useMessagesLane';
 
-const useDashboard = ( local:string, destination:string,useApi: Function) => {
-	const { isApiReady, api } = useApi();
-	const blockInfo = useBlocksInfo({ api, chain:local, isApiReady });
-	const bridgedBlocks= useBridgedBlocks({ api, chain:destination,isApiReady });
-	const messagesLane = useMessagesLane({ api, chain:destination,isApiReady });
+interface Props {
+	local: string,
+	destination: string,
+	useApiContext: Function
+}
+
+const useDashboard = ({ local, destination, useApiContext }: Props) => {
+
+	const { isApiReady, api } = useApiContext();
+
+	const blockInfo = useBlocksInfo({ api, chain:local, destination,isApiReady });
+	const bridgedBlocks= useBridgedBlocks({ api, chain:destination, isApiReady });
+	const messagesLane = useMessagesLane({ api, chain:destination, isApiReady });
 
 	return { ...blockInfo,  ...bridgedBlocks,...messagesLane };
 };

@@ -4,44 +4,43 @@
 
 import React from 'react';
 import { Container, Grid } from 'semantic-ui-react';
+import { Button,Icon } from 'semantic-ui-react';
 
 import ActionsTypes from './actions/actionTypes';
 import DashboardCard from './components/DashboardCard';
 import { SOURCE,TARGET } from './constants';
 import { useApiSourcePromiseContext } from './contexts/ApiPromiseSourceContext';
 import { useApiTargetPromiseContext } from './contexts/ApiPromiseTargetContext';
-import { useSourceTarget, useUpdateSourceTarget } from './contexts/SourceTargetContextProvider';
-import { MILLAU } from './util/substrateProviders';
+import { useUpdateSourceTarget } from './contexts/SourceTargetContextProvider';
+import useLoadingApi from './hooks/useLoadingApi';
 
 export default function Test() {
-	const {
-		sourceChain, targetChain
-	} = useSourceTarget();
+
+	const isLoading = useLoadingApi();
 
 	const { dispatchSourceTarget } = useUpdateSourceTarget();
 
 	return (
 		<>
-			<button onClick={() => dispatchSourceTarget({ payload: { sourceChain: MILLAU },type: ActionsTypes.SWITCH_CHAINS })}> change source </button>
-			<div>sourceChain: {sourceChain}</div>
-			<br />
-			<div>targetChain: {targetChain}</div>
+
 			<br />
 			<Container>
 				<Grid>
 					<Grid.Row>
 						<Grid.Column width={2}/>
-						<Grid.Column className='accountCard' width={5}>
+						<Grid.Column width={4}>
 							<DashboardCard
 								chainType={SOURCE}
-								ApiContext={useApiTargetPromiseContext}
+								useApiContext={useApiSourcePromiseContext}
 							/>
 						</Grid.Column>
-						<Grid.Column width={2} />
-						<Grid.Column className='accountCard' width={5}>
+						<Grid.Column width={2} >
+							<Button disabled={!isLoading} onClick={() => dispatchSourceTarget({ payload: {}, type: ActionsTypes.SWITCH_CHAINS })}><Icon fitted name='exchange' /></Button>
+						</Grid.Column>
+						<Grid.Column width={4}>
 							<DashboardCard
 								chainType={TARGET}
-								ApiContext={useApiSourcePromiseContext}
+								useApiContext={useApiTargetPromiseContext}
 							/>
 						</Grid.Column>
 					</Grid.Row>

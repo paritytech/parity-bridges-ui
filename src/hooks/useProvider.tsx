@@ -4,7 +4,7 @@
 
 import { ApiOptions } from '@polkadot/api/types';
 import { ProviderInterface } from '@polkadot/rpc-provider/types';
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { ChainTypes } from '../types/sourceTargetTypes';
@@ -18,13 +18,14 @@ interface Output {
 export function useProvider(chain: ChainTypes): Output {
 
 	const nextChain = useSourceTarget();
+
 	const [provider, setProvider] = useState<ProviderInterface>(getProvider(nextChain[chain]));
 	const [types, setTypes] = useState(customTypes[nextChain[chain]]);
 
-	useEffect(() => {
+	useCallback(() => {
 		setProvider(getProvider(nextChain[chain]));
 		setTypes(types);
-	}, [chain, nextChain]);
+	}, [chain,types]);
 
 	return { provider,types };
 

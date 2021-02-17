@@ -28,12 +28,12 @@ const useBridgedBlocks = ({  isApiReady, api ,chain }: Props) => {
 	const bridgedChain = `bridge${chain}`;
 
 	useEffect(() => {
-		if(!api || !isApiReady){
+		if (!api || !isApiReady || !chain || !api.query[bridgedChain]) {
 			return;
 		}
 
 		api.query[bridgedChain].bestFinalized((res: CodecHeaderId) => {
-			const bestBridgedFinalizedBlock=res.toString();
+			const bestBridgedFinalizedBlock = res.toString();
 			api.query[bridgedChain].importedHeaders(bestBridgedFinalizedBlock, (res: any) => {
 				if (res.toJSON()) {
 					setImportedHeaders(res.toJSON().header.number);
@@ -41,13 +41,11 @@ const useBridgedBlocks = ({  isApiReady, api ,chain }: Props) => {
 			});
 		});
 
-	}, [api, isApiReady, chain]);
-
-	useEffect(() => {
-		if(!isApiReady){
+		return function cleanup() {
 			setImportedHeaders('');
-		}
-	}, [isApiReady,chain]);
+		};
+
+	}, [isApiReady, chain, api,bridgedChain]);
 
 	return { importedHeaders };
 };

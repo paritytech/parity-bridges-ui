@@ -36,31 +36,22 @@ export function ApiPromiseContextProvider(
 	useEffect(() => {
 		if (isReady) {
 			setIsReady(false);
-			apiPromise.disconnect();
 		}
-
 	},[sourceTarget]);
 
 	useDidUpdateEffect(() => {
-		// We want to fetch all the information again each time we reconnect. We
-		// might be connecting to a different node, or the node might have changed
-		// settings.
-		ApiPromise.create({ provider, types }).then((_api) => {
-			setApiPromise(_api);
-		});
+		setApiPromise(new ApiPromise({ provider, types }));
 	}, [provider]);
 
 	useEffect(() => {
-		// We want to fetch all the information again each time we reconnect. We
-		// might be connecting to a different node, or the node might have changed
-		// settings.
 		apiPromise.isReady.then(() => {
 			if (types) {
 				registry.register(types);
 			}
 			setIsReady(true);
 		});
-	}, [apiPromise.isReady, contextType,types]);
+
+	}, [apiPromise.isReady, contextType, types]);
 
 	return (<ApiPromiseContext.Provider
 		value={{ api: apiPromise, isApiReady: isReady }}

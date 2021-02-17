@@ -5,9 +5,10 @@
 import React, { useContext } from 'react';
 
 import { TARGET } from '../constants';
-import { useProvider } from '../hooks/useProvider';
 import { ApiPromiseContextType } from '../types/sourceTargetTypes';
+import { customTypes, getProvider } from '../util/substrateProviders';
 import { ApiPromiseContextProvider } from './ApiPromiseContextProvider';
+import { useSourceTarget } from './SourceTargetContextProvider';
 
 interface ApiRxContextTargetProviderProps {
   children: React.ReactElement
@@ -22,8 +23,10 @@ export function useApiTargetPromiseContext() {
 export function ApiPromiseTargetContextProvider(
 	props: ApiRxContextTargetProviderProps
 ): React.ReactElement {
-	const { children  } = props;
-	const { provider, types } = useProvider(TARGET);
+	const { children } = props;
+	const { targetChain } = useSourceTarget();
+	const provider = getProvider(targetChain);
+	const types= customTypes[targetChain];
 
 	return (
 		<ApiPromiseContextProvider contextType={TARGET} ApiPromiseContext={ApiPromiseTargetContext} provider={provider} types={types}>

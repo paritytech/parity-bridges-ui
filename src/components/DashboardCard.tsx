@@ -12,15 +12,16 @@ import { ChainTypes } from '../types/sourceTargetTypes';
 
 interface Props {
     chainType: ChainTypes,
-    ApiContext: Function
+    useApiContext: Function
 }
 
 const DashboardCard = ({
 	chainType,
-	ApiContext
+	useApiContext
 }: Props) => {
 	const { destination, local } = useDashboardProfile(chainType);
-	const { bestBlockFinalized, bestBlock, importedHeaders: bestBridgedFinalizedBlock,outboundLanes: {  totalMessages, pendingMessages }, inboundLanes: { bridgeReceivedMessages }  } = useDashboard(destination, local, ApiContext);
+	const { bestBlockFinalized, bestBlock, importedHeaders: bestBridgedFinalizedBlock,outboundLanes: {  totalMessages, pendingMessages }, inboundLanes: { bridgeReceivedMessages }  } = useDashboard({ destination,local , useApiContext });
+
 	const headerText = chainType === SOURCE ? 'Source' : 'Target';
 	return (
 		<Card style={{ 'wordWrap': 'break-word' }}>

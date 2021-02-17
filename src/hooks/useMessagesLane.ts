@@ -26,11 +26,12 @@ const useMessageLane = ({  isApiReady, api ,chain }: Props): Output => {
 	const [inboundLanes, setInboudLanes] = useState({ bridgeReceivedMessages: 0 });
 
 	useEffect(() => {
-		if(!api || !isApiReady){
+		const bridgedMessagesLainChain = `bridge${chain}MessageLane`;
+
+		if(!api || !isApiReady || !api.query[bridgedMessagesLainChain] || !chain){
 			return;
 		}
 
-		const bridgedMessagesLainChain = `bridge${chain}MessageLane`;
 		// to-do: review after depending on action to perform
 
 		api.query[bridgedMessagesLainChain].outboundLanes('0x00000000', (res: any) => {
