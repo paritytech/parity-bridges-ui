@@ -28,8 +28,6 @@ const Remark = ({
 		keyring.setSS58Format(42);
 		console.log('account', account);
 
-		// @ts-ignore
-
 		const lane_id = new Uint8Array(8);
 		const payload = {
 			call: [4, 1, 84, 85, 110, 105, 120, 32, 116, 105, 109, 101, 58, 32, 49, 54, 49, 52, 50, 54, 48, 51, 50, 50],
