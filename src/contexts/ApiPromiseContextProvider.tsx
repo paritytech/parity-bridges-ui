@@ -24,6 +24,7 @@ export interface ApiRxContextProviderProps {
 
 const registry = new TypeRegistry();
 
+<<<<<<< HEAD
 export function ApiPromiseContextProvider(props: ApiRxContextProviderProps): React.ReactElement {
   const { children = null, provider, ApiPromiseContext, contextType, types } = props;
   const sourceTarget = useSourceTarget();
@@ -60,3 +61,70 @@ export function ApiPromiseContextProvider(props: ApiRxContextProviderProps): Rea
     <ApiPromiseContext.Provider value={{ api: apiPromise, isApiReady: isReady }}>{children}</ApiPromiseContext.Provider>
   );
 }
+=======
+export function ApiPromiseContextProvider(
+	props: ApiRxContextProviderProps
+): React.ReactElement {
+	const { children = null, provider, ApiPromiseContext, contextType, types } = props;
+	/* const rpc = {
+		bridgeMillauMessageLane: {
+			sendMessage: {
+				description: 'Send Message over the lane',
+				params: [
+					{
+						name: 'lane_id',
+						type: 'LaneId'
+					},
+					{
+						name: 'payload',
+						type: 'OutboundPayload'
+					},
+					{
+						name: 'delivery_and_dispatch_fee',
+						type: 'OutboundMessageFee'
+					}
+				],
+				type: 'Balance'
+			}
+		}
+	}; */
+
+	const sourceTarget = useSourceTarget();
+	const [apiPromise, setApiPromise] = useState<ApiPromise>(
+		new ApiPromise({ provider, types })
+	);
+	const [isReady, setIsReady] = useState(false);
+
+	useEffect(() => {
+		if (isReady) {
+			setIsReady(false);
+			apiPromise.disconnect().then( () => console.log(`${contextType} Resetting connection` ));
+		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	},[sourceTarget]);
+
+	useDidUpdateEffect(() => {
+		ApiPromise.create({ provider,types }).then((_api) => {
+			setApiPromise(_api);
+		});
+	}, [provider]);
+
+	useEffect(() => {
+		apiPromise.isReady.then(() => {
+			if (types) {
+				registry.register(types);
+			}
+
+			setIsReady(true);
+		});
+
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [apiPromise.isReady]);
+
+	return (<ApiPromiseContext.Provider
+		value={{ api: apiPromise, isApiReady: isReady }}
+	>
+		{children}
+	</ApiPromiseContext.Provider>);
+}
+>>>>>>> 9c0323c (Remark testing)
