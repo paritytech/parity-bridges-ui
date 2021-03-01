@@ -53,7 +53,7 @@ const Remark = ({
 		console.log('payload', payload);
 		// @ts-ignore
 		const messagePayloadType = sourceApi.registry.createType('MessageData', { fee:3576409240,payload:payloadType });
-		console.log('messagePayloadType', messagePayloadType.toJSON());
+		console.log('messagePayloadType', u8aToHex(messagePayloadType.toU8a()) );
 
 		const bridgeMessage = sourceApi.tx
 			.bridgeMillauMessageLane
