@@ -36,7 +36,7 @@ const Remark = ({
 				SourceAccount: account.addressRaw
 			},
 			spec_version: 1,
-			weight: 1279000
+			weight: 5279000
 		};
 
 		// @ts-ignore
@@ -57,12 +57,30 @@ const Remark = ({
 
 		const bridgeMessage = sourceApi.tx
 			.bridgeMillauMessageLane
-			.sendMessage(lane_id, payload, 3576409240);
+			.sendMessage(lane_id, payload, 6576409240);
 
-		console.log('bridgeMessage',u8aToHex(bridgeMessage.toU8a()));
+		console.log('bridgeMessage', u8aToHex(bridgeMessage.toU8a()));
 
-		const result = await bridgeMessage.signAndSend(account);
+		const noncePromise = await sourceApi.rpc.system.accountNextIndex(account.address);
+
+		const nonce = noncePromise.toNumber();
+
+		const result = await bridgeMessage.signAndSend(account, { nonce });
 		console.log('result',result);
+		console.log('encoded result', u8aToHex(result.toU8a()));
+
+		// no blockHash is specified, so we retrieve the latest
+		const signedBlock = await sourceApi.rpc.chain.getBlock();
+		const allRecords = await sourceApi.query.system.events.at(signedBlock.block.header.hash);
+
+		// map between the extrinsics and events
+		signedBlock.block.extrinsics.forEach(({ method: { method, section } }) => {
+			// filter the specific events based on the phase and then the
+			// index of our extrinsic in the block
+			const events = allRecords.map(({ event }) => `${event.section}.${event.method}`);
+
+			console.log(`${section}.${method}:: ${events.join(', ') || 'no events'}`);
+		});
 
 	}
 
