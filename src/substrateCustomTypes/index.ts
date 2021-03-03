@@ -3,8 +3,8 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 import { ApiOptions } from '@polkadot/api/types';
 
-import customTypesMillau from './customTypesMillau';
-import customTypesRialto from './customTypesRialto';
+import customTypesMillau from './customTypesMillau.json';
+import customTypesRialto from './customTypesRialto.json';
 
 interface Types {
   [key: string]: ApiOptions['types'];
