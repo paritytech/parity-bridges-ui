@@ -8,46 +8,45 @@ import { Codec } from '@polkadot/types/types';
 import BN from 'bn.js';
 import { useEffect, useState } from 'react';
 
-interface HeaderId{
-	number: BN,
-	hash: Hash
+interface HeaderId {
+  number: BN;
+  hash: Hash;
 }
 
 type CodecHeaderId = Codec & HeaderId;
 // type CodecBestBloc = Codec & [HeaderId, any]
 
 interface Props {
-  chain: string,
-  api: ApiPromise,
-  isApiReady: boolean
+  chain: string;
+  api: ApiPromise;
+  isApiReady: boolean;
 }
 
-const useBridgedBlocks = ({  isApiReady, api ,chain }: Props) => {
-	const [importedHeaders, setImportedHeaders] = useState('');
+const useBridgedBlocks = ({ isApiReady, api, chain }: Props) => {
+  const [importedHeaders, setImportedHeaders] = useState('');
 
-	const bridgedChain = `bridge${chain}`;
+  const bridgedChain = `bridge${chain}`;
 
-	useEffect(() => {
-		if (!api || !isApiReady || !chain || !api.query[bridgedChain]) {
-			return;
-		}
+  useEffect(() => {
+    if (!api || !isApiReady || !chain) {
+      return;
+    }
 
-		api.query[bridgedChain].bestFinalized((res: CodecHeaderId) => {
-			const bestBridgedFinalizedBlock = res.toString();
-			api.query[bridgedChain].importedHeaders(bestBridgedFinalizedBlock, (res: any) => {
-				if (res.toJSON()) {
-					setImportedHeaders(res.toJSON().header.number);
-				}
-			});
-		});
+    api.query[bridgedChain].bestFinalized((res: CodecHeaderId) => {
+      const bestBridgedFinalizedBlock = res.toString();
+      api.query[bridgedChain].importedHeaders(bestBridgedFinalizedBlock, (res: any) => {
+        if (res.toJSON()) {
+          setImportedHeaders(res.toJSON().header.number);
+        }
+      });
+    });
 
-		return function cleanup() {
-			setImportedHeaders('');
-		};
+    return function cleanup() {
+      setImportedHeaders('');
+    };
+  }, [isApiReady, chain, api, bridgedChain]);
 
-	}, [isApiReady, chain, api,bridgedChain]);
-
-	return { importedHeaders };
+  return { importedHeaders };
 };
 
 export default useBridgedBlocks;

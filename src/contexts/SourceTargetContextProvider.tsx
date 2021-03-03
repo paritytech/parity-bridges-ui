@@ -4,23 +4,21 @@
 import React, { useContext, useReducer } from 'react';
 
 import sourceTargetReducer from '../reducers/sourceTargetReducer';
-import type { SourceTarget,SourceTargetAction } from '../types/sourceTargetTypes';
-import { MILLAU, RIALTO } from '../util/substrateProviders';
+import type { SourceTarget, SourceTargetAction } from '../types/sourceTargetTypes';
+import { CHAIN_1, CHAIN_2 } from '../util/substrateProviders';
 
 export interface UpdateSourceTargetContext {
-	dispatchSourceTarget: React.Dispatch<SourceTargetAction>
+  dispatchSourceTarget: React.Dispatch<SourceTargetAction>;
 }
 
 export interface SourceTargetContextProps {
   children?: React.ReactElement;
 }
 
-export const SourceTargetContext: React.Context<SourceTarget> = React.createContext(
-	{} as SourceTarget
-);
+export const SourceTargetContext: React.Context<SourceTarget> = React.createContext({} as SourceTarget);
 
 export function useSourceTarget() {
-	return useContext(SourceTargetContext);
+  return useContext(SourceTargetContext);
 }
 
 export const UpdateSourceTargetContext: React.Context<UpdateSourceTargetContext> = React.createContext(
@@ -28,24 +26,20 @@ export const UpdateSourceTargetContext: React.Context<UpdateSourceTargetContext>
 );
 
 export function useUpdateSourceTarget() {
-	return useContext(UpdateSourceTargetContext);
+  return useContext(UpdateSourceTargetContext);
 }
 
-export function SourceTargetContextProvider(
-	{ children  }: SourceTargetContextProps
-): React.ReactElement {
+export function SourceTargetContextProvider({ children }: SourceTargetContextProps): React.ReactElement {
+  const [currentSourceTarget, dispatchSourceTarget] = useReducer(sourceTargetReducer, {
+    sourceChain: CHAIN_1,
+    targetChain: CHAIN_2
+  });
 
-	const [ currentSourceTarget, dispatchSourceTarget] = useReducer(sourceTargetReducer, { sourceChain: RIALTO,targetChain: MILLAU  });
-
-	return (
-		<SourceTargetContext.Provider
-			value={currentSourceTarget}
-		>
-			<UpdateSourceTargetContext.Provider value={ { dispatchSourceTarget } }>
-				{children}
-			</UpdateSourceTargetContext.Provider>
-
-		</SourceTargetContext.Provider>
-	);
-
+  return (
+    <SourceTargetContext.Provider value={currentSourceTarget}>
+      <UpdateSourceTargetContext.Provider value={{ dispatchSourceTarget }}>
+        {children}
+      </UpdateSourceTargetContext.Provider>
+    </SourceTargetContext.Provider>
+  );
 }

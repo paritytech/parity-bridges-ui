@@ -6,41 +6,39 @@ import { ApiPromise } from '@polkadot/api';
 import { useEffect, useState } from 'react';
 
 interface Props {
-	chain: string,
-	destination: string,
-  api: ApiPromise,
-  isApiReady: boolean
+  chain: string;
+  destination: string;
+  api: ApiPromise;
+  isApiReady: boolean;
 }
 
-const useBlocksInfo = ({  isApiReady, api ,chain,destination }: Props) => {
+const useBlocksInfo = ({ isApiReady, api, chain, destination }: Props) => {
+  const [bestBlock, setBestBlock] = useState('');
+  const [bestBlockFinalized, setBestBlockFinalized] = useState('');
+  const bridgedChain = `bridge${destination}`;
 
-	const [bestBlock, setBestBlock] = useState('');
-	const [bestBlockFinalized, setBestBlockFinalized] = useState('');
-	const bridgedChain = `bridge${destination}`;
+  useEffect(() => {
+    if (!api || !isApiReady || !chain) {
+      setBestBlock('');
+      setBestBlockFinalized('');
+      return;
+    }
 
-	useEffect(() => {
+    api.derive.chain.bestNumber((res) => {
+      setBestBlock(res.toString());
+    });
 
-		if (!api || !isApiReady || !chain || !api.query[bridgedChain]) {
-			setBestBlock('');
-			setBestBlockFinalized('');
-			return;
-		}
+    api.derive.chain.bestNumberFinalized((res) => {
+      setBestBlockFinalized(res.toString());
+    });
 
-		api.derive.chain.bestNumber((res) => {
-			setBestBlock(res.toString());
-		});
+    return function cleanup() {
+      setBestBlock('');
+      setBestBlockFinalized('');
+    };
+  }, [api, isApiReady, chain, bridgedChain]);
 
-		api.derive.chain.bestNumberFinalized((res) => {
-			setBestBlockFinalized(res.toString());
-		});
-
-		return function cleanup() {
-			setBestBlock('');
-			setBestBlockFinalized('');
-		};
-	}, [api, isApiReady, chain,bridgedChain]);
-
-	return { bestBlock,bestBlockFinalized };
+  return { bestBlock, bestBlockFinalized };
 };
 
 export default useBlocksInfo;

@@ -4,31 +4,29 @@
 import { WsProvider } from '@polkadot/api';
 import { ApiOptions } from '@polkadot/api/types';
 
-import customTypesMillau from '../customTypesMillau';
-import customTypesRialto from '../customTypesRialto';
+import types from '../customTypes';
 interface Providers {
-	[key: string]: string
+  [key: string]: string;
 }
 
 interface CustomTypes {
-	[key: string]: ApiOptions['types'];
+  [key: string]: ApiOptions['types'];
 }
 
-export const RIALTO = 'Rialto';
-export const MILLAU = 'Millau';
+export const CHAIN_1 = process.env.REACT_APP_PROVIDER_NAME_1 || 'Rialto';
+export const CHAIN_2 = process.env.REACT_APP_PROVIDER_NAME_2 || 'Millau';
 
-export const RIALTO_SUBSTRATE_PROVIDER = process.env.REACT_APP_RIALTO_SUBSTRATE_PROVIDER || 'wss://wss.rialto.brucke.link';
-export const MILLAU_SUBSTRATE_PROVIDER = process.env.REACT_APP_MILLAU_SUBSTRATE_PROVIDER || 'wss://wss.millau.brucke.link';
+export const CHAIN_1_SUBSTRATE_PROVIDER = process.env.REACT_APP_SUBSTRATE_PROVIDER_1 || 'wss://wss.rialto.brucke.link';
+export const CHAIN_2_SUBSTRATE_PROVIDER = process.env.REACT_APP_SUBSTRATE_PROVIDER_2 || 'wss://wss.millau.brucke.link';
 
 export const providers: Providers = {
-	[MILLAU]: MILLAU_SUBSTRATE_PROVIDER,
-	[RIALTO]: RIALTO_SUBSTRATE_PROVIDER
+  [CHAIN_1]: CHAIN_1_SUBSTRATE_PROVIDER,
+  [CHAIN_2]: CHAIN_2_SUBSTRATE_PROVIDER
 };
 
 export const customTypes: CustomTypes = {
-	[MILLAU]: customTypesMillau,
-	[RIALTO]: customTypesRialto
+  [CHAIN_1]: types[CHAIN_1],
+  [CHAIN_2]: types[CHAIN_2]
 };
 
 export const getProvider = (chain: string) => new WsProvider(providers[chain]);
-

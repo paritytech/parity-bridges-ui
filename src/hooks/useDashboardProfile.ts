@@ -9,27 +9,24 @@ import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { ChainTypes } from '../types/sourceTargetTypes';
 
 interface Output {
-	local: string,
-	destination: string;
+  local: string;
+  destination: string;
 }
 
 export default function useDashboardProfile(chainType: ChainTypes): Output {
-	const {
-		sourceChain, targetChain
-	} = useSourceTarget();
+  const { sourceChain, targetChain } = useSourceTarget();
 
-	const [profile, setProfile] = useState({ destination:'',local: '' });
+  const [profile, setProfile] = useState({ destination: '', local: '' });
 
-	useEffect(() => {
-		let local = sourceChain;
-		let destination = targetChain;
-		if (chainType === TARGET) {
-			local = targetChain;
-			destination=sourceChain;
-		}
-		setProfile({ destination,local });
-	}, [chainType, sourceChain, targetChain]);
+  useEffect(() => {
+    let local = sourceChain;
+    let destination = targetChain;
+    if (chainType === TARGET) {
+      local = targetChain;
+      destination = sourceChain;
+    }
+    setProfile({ destination, local });
+  }, [chainType, sourceChain, targetChain]);
 
-	return profile;
-
+  return profile;
 }

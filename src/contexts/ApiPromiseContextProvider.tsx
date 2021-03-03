@@ -17,45 +17,46 @@ import { useSourceTarget } from './SourceTargetContextProvider';
 export interface ApiRxContextProviderProps {
   children?: React.ReactElement;
   provider: ProviderInterface;
-  ApiPromiseContext: React.Context<ApiPromiseContextType>
-  contextType: string,
+  ApiPromiseContext: React.Context<ApiPromiseContextType>;
+  contextType: string;
   types?: ApiOptions['types'];
 }
 
 const registry = new TypeRegistry();
 
-export function ApiPromiseContextProvider(
-	props: ApiRxContextProviderProps
-): React.ReactElement {
-	const { children = null, provider, ApiPromiseContext, contextType, types } = props;
-	const sourceTarget = useSourceTarget();
-	const [apiPromise, setApiPromise] = useState<ApiPromise>(
-		new ApiPromise({ provider, types })
-	);
-	const [isReady, setIsReady] = useState(false);
-	useEffect(() => {
-		if (isReady) {
-			setIsReady(false);
-		}
-	},[sourceTarget]);
+export function ApiPromiseContextProvider(props: ApiRxContextProviderProps): React.ReactElement {
+  const { children = null, provider, ApiPromiseContext, contextType, types } = props;
+  const sourceTarget = useSourceTarget();
+  const [apiPromise, setApiPromise] = useState<ApiPromise>(new ApiPromise({ provider, types }));
+  const [isReady, setIsReady] = useState(false);
 
-	useDidUpdateEffect(() => {
-		setApiPromise(new ApiPromise({ provider, types }));
-	}, [provider]);
+  useEffect(() => {
+    if (isReady) {
+      setIsReady(false);
+      apiPromise.disconnect().then(() => console.log(`${contextType} Resetting connection`));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sourceTarget]);
 
-	useEffect(() => {
-		apiPromise.isReady.then(() => {
-			if (types) {
-				registry.register(types);
-			}
-			setIsReady(true);
-		});
+  useDidUpdateEffect(() => {
+    ApiPromise.create({ provider, types }).then((_api) => {
+      setApiPromise(_api);
+    });
+  }, [provider]);
 
-	}, [apiPromise.isReady, contextType, types]);
+  useEffect(() => {
+    apiPromise.isReady.then(() => {
+      if (types) {
+        registry.register(types);
+      }
 
-	return (<ApiPromiseContext.Provider
-		value={{ api: apiPromise, isApiReady: isReady }}
-	>
-		{children}
-	</ApiPromiseContext.Provider>);
+      setIsReady(true);
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [apiPromise.isReady]);
+
+  return (
+    <ApiPromiseContext.Provider value={{ api: apiPromise, isApiReady: isReady }}>{children}</ApiPromiseContext.Provider>
+  );
 }
