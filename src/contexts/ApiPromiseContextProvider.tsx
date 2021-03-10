@@ -26,29 +26,6 @@ const registry = new TypeRegistry();
 
 export function ApiPromiseContextProvider(props: ApiRxContextProviderProps): React.ReactElement {
   const { children = null, provider, ApiPromiseContext, contextType, types } = props;
-  /* const rpc = {
-		bridgeMillauMessageLane: {
-			sendMessage: {
-				description: 'Send Message over the lane',
-				params: [
-					{
-						name: 'lane_id',
-						type: 'LaneId'
-					},
-					{
-						name: 'payload',
-						type: 'OutboundPayload'
-					},
-					{
-						name: 'delivery_and_dispatch_fee',
-						type: 'OutboundMessageFee'
-					}
-				],
-				type: 'Balance'
-			}
-		}
-	}; */
-
   const sourceTarget = useSourceTarget();
   const [apiPromise, setApiPromise] = useState<ApiPromise>(new ApiPromise({ provider, types }));
   const [isReady, setIsReady] = useState(false);

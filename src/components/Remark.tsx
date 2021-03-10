@@ -2,15 +2,15 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 import Keyring from '@polkadot/keyring';
+import { Codec } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
-import React from 'react';
-import { Button, Container } from 'semantic-ui-react';
+import React, { useState } from 'react';
+import { Button, Container, Input } from 'semantic-ui-react';
 import styled from 'styled-components';
 
 import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
-//import { useApiTargetPromiseContext } from '../contexts/ApiPromiseTargetContext';
+import { useApiTargetPromiseContext } from '../contexts/ApiPromiseTargetContext';
 import useLoadingApi from '../hooks/useLoadingApi';
-
 interface Props {
   className?: string;
   targetChain: string;
@@ -18,65 +18,59 @@ interface Props {
 
 const Remark = ({ className, targetChain }: Props) => {
   const { api: sourceApi } = useApiSourcePromiseContext();
-  //const { api: targetApi } = useApiTargetPromiseContext();
-  const areApiLoading = useLoadingApi();
+  const { api: targetApi } = useApiTargetPromiseContext();
 
-  async function sendRemark() {
+  const areApiLoading = useLoadingApi();
+  const [remarkInput, setRemarkInput] = useState('0x');
+
+  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRemarkInput(event.target.value);
+  };
+
+  async function sendMessageRemark() {
     const keyring = new Keyring({ type: 'sr25519' });
     const account = keyring.addFromUri('//Alice');
-    // keyring.setSS58Format(42);
-    console.log('account', account);
+
+    const remarkCall = await targetApi.tx.system.remark(remarkInput);
+    const remarkInfo = await sourceApi.tx.system.remark(remarkInput).paymentInfo(account);
+    const weight = remarkInfo.weight.toNumber();
+
+    const call = remarkCall.toU8a();
 
     const lane_id = new Uint8Array(8);
     const payload = {
-      call: [4, 1, 84, 85, 110, 105, 120, 32, 116, 105, 109, 101, 58, 32, 49, 54, 49, 52, 50, 54, 48, 51, 50, 50],
+      call,
       origin: {
         SourceAccount: account.addressRaw
       },
       spec_version: 1,
-      weight: 5279000
+      weight
     };
 
-    // @ts-ignore
-    const callOriginType = sourceApi.registry.createType('CallOrigin', { SourceAccount: account.addressRaw });
-
-    console.log('callOriginType', callOriginType.toString());
-    console.log('callOriginType encoded', u8aToHex(callOriginType.toU8a()));
-
+    // Ignoring custom types missed for TS for now.
+    // Need to apply: https://polkadot.js.org/docs/api/start/typescript.user
     // @ts-ignore
     const payloadType = sourceApi.registry.createType('OutboundPayload', payload);
-
-    console.log('payloadType', u8aToHex(payloadType.toU8a()));
-
-    console.log('payload', payload);
     // @ts-ignore
-    const messagePayloadType = sourceApi.registry.createType('MessageData', { fee: 3576409240, payload: payloadType });
-    console.log('messagePayloadType', u8aToHex(messagePayloadType.toU8a()));
+    const messageFeeType = sourceApi.registry.createType('MessageFeeData', {
+      lane_id: '0x00000000',
+      payload: u8aToHex(payloadType.toU8a())
+    });
 
-    const bridgeMessage = sourceApi.tx[`bridge${targetChain}MessageLane`].sendMessage(lane_id, payload, 6576409240);
+    const estimatedFeeCall = await sourceApi.rpc.state.call<Codec>(
+      `To${targetChain}OutboundLaneApi_estimate_message_delivery_and_dispatch_fee`,
+      u8aToHex(messageFeeType.toU8a())
+    );
 
-    console.log('bridgeMessage', u8aToHex(bridgeMessage.toU8a()));
+    // @ts-ignore
+    const estimatedFeeType = sourceApi.registry.createType('Option<Balance>', estimatedFeeCall);
+    const estimatedFee = estimatedFeeType.toString();
+
+    const bridgeMessage = sourceApi.tx[`bridge${targetChain}MessageLane`].sendMessage(lane_id, payload, estimatedFee);
 
     const nonceCall = await sourceApi.rpc.system.accountNextIndex(account.address);
-
     const nonce = nonceCall.toNumber();
-
-    const result = await bridgeMessage.signAndSend(account, { nonce });
-    console.log('result', result);
-    console.log('encoded result', u8aToHex(result.toU8a()));
-
-    // no blockHash is specified, so we retrieve the latest
-    const signedBlock = await sourceApi.rpc.chain.getBlock();
-    const allRecords = await sourceApi.query.system.events.at(signedBlock.block.header.hash);
-
-    // map between the extrinsics and events
-    signedBlock.block.extrinsics.forEach(({ method: { method, section } }) => {
-      // filter the specific events based on the phase and then the
-      // index of our extrinsic in the block
-      const events = allRecords.map(({ event }) => `${event.section}.${event.method}`);
-
-      console.log(`${section}.${method}:: ${events.join(', ') || 'no events'}`);
-    });
+    await bridgeMessage.signAndSend(account, { nonce });
   }
 
   if (!areApiLoading) {
@@ -85,7 +79,8 @@ const Remark = ({ className, targetChain }: Props) => {
 
   return (
     <Container className={className}>
-      <Button onClick={() => sendRemark()}>Remark</Button>
+      <Input onChange={onChange} value={remarkInput} />
+      <Button onClick={sendMessageRemark}>Message Remark</Button>
     </Container>
   );
 };
