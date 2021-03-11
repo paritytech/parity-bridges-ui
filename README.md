@@ -1,6 +1,6 @@
 # UI Bridge for Substrate chains.
 
-This is a UI proposal for querying , operating and testing the bridge.
+This is a UI proposal for querying, operating and testing the bridge.
 
 ## Installation.
 
@@ -28,10 +28,6 @@ REACT_APP_PROVIDER_NAME_2=<Chain 2 name>
 
 Launches the test runner in the interactive watch mode.\
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### Configure custom substrate providers
-
-In the `.env` file at root project directory, you
 
 ### Configure custom substrate providers
 

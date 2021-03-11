@@ -22,6 +22,7 @@ const Remark = ({ className, targetChain }: Props) => {
 
   const areApiLoading = useLoadingApi();
   const [remarkInput, setRemarkInput] = useState('0x');
+  const lane_id = process.env.REACT_APP_LANE_ID || '0x00000000';
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRemarkInput(event.target.value);
@@ -37,7 +38,6 @@ const Remark = ({ className, targetChain }: Props) => {
 
     const call = remarkCall.toU8a();
 
-    const lane_id = new Uint8Array(8);
     const payload = {
       call,
       origin: {
@@ -53,7 +53,7 @@ const Remark = ({ className, targetChain }: Props) => {
     const payloadType = sourceApi.registry.createType('OutboundPayload', payload);
     // @ts-ignore
     const messageFeeType = sourceApi.registry.createType('MessageFeeData', {
-      lane_id: '0x00000000',
+      lane_id,
       payload: u8aToHex(payloadType.toU8a())
     });
 
@@ -80,7 +80,7 @@ const Remark = ({ className, targetChain }: Props) => {
   return (
     <Container className={className}>
       <Input onChange={onChange} value={remarkInput} />
-      <Button onClick={sendMessageRemark}>Message Remark</Button>
+      <Button onClick={sendMessageRemark}>Send Remark</Button>
     </Container>
   );
 };
