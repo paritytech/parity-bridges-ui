@@ -3,14 +3,24 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 import { WsProvider } from '@polkadot/api';
 import { ApiOptions } from '@polkadot/api/types';
+import { u8aConcat } from '@polkadot/util';
+import { blake2AsU8a, keccakAsU8a } from '@polkadot/util-crypto';
 
 import types from '../substrateCustomTypes';
 interface Providers {
   [key: string]: string;
 }
 
+interface CustomHashers {
+  [key: string]: (data: Uint8Array) => Uint8Array;
+}
 interface CustomTypes {
   [key: string]: ApiOptions['types'];
+}
+
+// create a custom hasher (512 bits, combo of blake2 and keccak)
+function hasher(data: any) {
+  return u8aConcat(blake2AsU8a(data), keccakAsU8a(data));
 }
 
 export const CHAIN_1 = process.env.REACT_APP_PROVIDER_NAME_1 || 'Rialto';
@@ -27,6 +37,10 @@ export const providers: Providers = {
 export const customTypes: CustomTypes = {
   [CHAIN_1]: types[CHAIN_1],
   [CHAIN_2]: types[CHAIN_2]
+};
+
+export const customHashers: CustomHashers = {
+  [CHAIN_2]: hasher
 };
 
 export const getProvider = (chain: string) => new WsProvider(providers[chain]);

@@ -6,7 +6,7 @@ import React, { useContext } from 'react';
 
 import { SOURCE } from '../constants';
 import { ApiPromiseContextType } from '../types/sourceTargetTypes';
-import { customTypes, getProvider } from '../util/substrateProviders';
+import { customHashers, customTypes, getProvider } from '../util/substrateProviders';
 import { ApiPromiseContextProvider } from './ApiPromiseContextProvider';
 import { useSourceTarget } from './SourceTargetContextProvider';
 
@@ -27,6 +27,7 @@ export function ApiPromiseSourceContextProvider(props: ApiRxContextSourceProvide
   const { sourceChain } = useSourceTarget();
   const provider = getProvider(sourceChain);
   const types = customTypes[sourceChain];
+  const hasher = customHashers[sourceChain];
 
   return (
     <ApiPromiseContextProvider
@@ -34,6 +35,7 @@ export function ApiPromiseSourceContextProvider(props: ApiRxContextSourceProvide
       ApiPromiseContext={ApiPromiseSourceContext}
       provider={provider}
       types={types}
+      hasher={hasher}
     >
       {children}
     </ApiPromiseContextProvider>

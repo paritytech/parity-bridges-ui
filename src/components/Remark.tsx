@@ -25,8 +25,10 @@ const Remark = ({ className, targetChain }: Props) => {
   const areApiReady = useLoadingApi();
   const [remarkInput, setRemarkInput] = useState('0x');
   const lane_id = useLaneId();
+  const [executionStatus, setExecutionStatus] = useState('');
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setExecutionStatus('');
     setRemarkInput(event.target.value);
   };
 
@@ -76,6 +78,7 @@ const Remark = ({ className, targetChain }: Props) => {
 
       const bridgeMessage = sourceApi.tx[`bridge${targetChain}MessageLane`].sendMessage(lane_id, payload, estimatedFee);
       await bridgeMessage.signAndSend(account, { nonce: -1 });
+      setExecutionStatus('Message delivered');
     } catch (e) {
       // To update UI when this fails
       console.error(e);
@@ -94,6 +97,11 @@ const Remark = ({ className, targetChain }: Props) => {
       <Button disabled={isExecuting} onClick={sendMessageRemark}>
         Send Remark
       </Button>
+      {executionStatus !== '' && (
+        <div className="status">
+          <p>{executionStatus}</p>
+        </div>
+      )}
     </Container>
   );
 };
@@ -101,4 +109,6 @@ const Remark = ({ className, targetChain }: Props) => {
 export default styled(Remark)`
   display: flex !important;
   justify-content: center !important;
+  .status {
+  }
 `;

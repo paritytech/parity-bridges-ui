@@ -50,6 +50,7 @@
     }
   },
   "--3": "Common types",
+  "Hash": "H512",
   "Address": "AccountId",
   "LookupSource": "AccountId",
   "AccountSigner": "MultiSigner",
