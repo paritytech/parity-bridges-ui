@@ -31,6 +31,9 @@ const Remark = ({ className, targetChain }: Props) => {
   };
 
   async function sendMessageRemark() {
+    if (isExecuting) {
+      return false;
+    }
     setIsExecuting(true);
     const keyring = new Keyring({ type: 'sr25519' });
     const account = keyring.addFromUri('//Alice');
@@ -70,37 +73,13 @@ const Remark = ({ className, targetChain }: Props) => {
     const estimatedFee = estimatedFeeType.toString();
 
     const bridgeMessage = sourceApi.tx[`bridge${targetChain}MessageLane`].sendMessage(lane_id, payload, estimatedFee);
-
-    const nonceCall = await sourceApi.rpc.system.accountNextIndex(account.address);
-    const nextNonce = nonceCall.toNumber();
-
-    const { nonce: systemNonce } = await sourceApi.query.system.account(account.address);
-    console.log('systemNonce', systemNonce.toNumber());
-    console.log('nextNonce', nextNonce);
-
-    const res = await bridgeMessage.signAndSend(account);
-    /*
-      solution 1: provide nextNonce
-      const res = await bridgeMessage.signAndSend(account, {nonce: nextNonce});
-    */
-    /*
-      solution 2: use any status in the callback
-      const res = await bridgeMessage.signAndSend(account, ({status})=>{
-        // isInBlock is an example only, i'm not using this as the proof status to unlock the button
-        if(status.isInBlock){
-          setIsExecuting(false);
-        }
-      });
-    */
-    console.log('promise finished. hash:', res.toJSON());
+    await bridgeMessage.signAndSend(account, { nonce: -1 });
     setIsExecuting(false);
   }
 
   if (!areApiReady) {
     return null;
   }
-
-  console.log('isExecuting', isExecuting);
 
   return (
     <Container className={className}>
