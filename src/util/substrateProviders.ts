@@ -4,7 +4,7 @@
 import { WsProvider } from '@polkadot/api';
 import { ApiOptions } from '@polkadot/api/types';
 
-import types from '../customTypes';
+import types from '../substrateCustomTypes';
 interface Providers {
   [key: string]: string;
 }

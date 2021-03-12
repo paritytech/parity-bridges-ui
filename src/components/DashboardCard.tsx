@@ -18,7 +18,7 @@ interface Props {
 }
 
 const DashboardCard = ({ chainType, useApiContext, className }: Props) => {
-  const { local, destination } = useDashboardProfile(chainType);
+  const { destination, local } = useDashboardProfile(chainType);
   const {
     bestBlockFinalized,
     bestBlock,

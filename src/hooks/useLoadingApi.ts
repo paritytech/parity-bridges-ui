@@ -11,11 +11,11 @@ export default function useLoadingApi(): boolean {
   const { isApiReady: isSourceApiReady } = useApiSourcePromiseContext();
   const { isApiReady: isTargetApiReady } = useApiTargetPromiseContext();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [areReady, setAreReady] = useState(false);
 
   useEffect(() => {
-    setIsLoading(isSourceApiReady && isTargetApiReady);
+    setAreReady(isSourceApiReady && isTargetApiReady);
   }, [isSourceApiReady, isTargetApiReady]);
 
-  return isLoading;
+  return areReady;
 }
