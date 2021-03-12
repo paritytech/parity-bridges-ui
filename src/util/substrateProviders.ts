@@ -19,7 +19,7 @@ interface CustomTypes {
 }
 
 // create a custom hasher (512 bits, combo of blake2 and keccak)
-function hasher(data: any) {
+function hasherH512(data: any) {
   return u8aConcat(blake2AsU8a(data), keccakAsU8a(data));
 }
 
@@ -40,7 +40,7 @@ export const customTypes: CustomTypes = {
 };
 
 export const customHashers: CustomHashers = {
-  [CHAIN_2]: hasher
+  [CHAIN_2]: hasherH512
 };
 
 export const getProvider = (chain: string) => new WsProvider(providers[chain]);

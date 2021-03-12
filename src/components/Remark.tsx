@@ -40,7 +40,7 @@ const Remark = ({ className, targetChain }: Props) => {
 
     try {
       const keyring = new Keyring({ type: 'sr25519' });
-      const account = keyring.addFromUri('//Alicef');
+      const account = keyring.addFromUri('//Alice');
 
       const remarkCall = await targetApi.tx.system.remark(remarkInput);
       const remarkInfo = await sourceApi.tx.system.remark(remarkInput).paymentInfo(account);
@@ -78,9 +78,10 @@ const Remark = ({ className, targetChain }: Props) => {
 
       const bridgeMessage = sourceApi.tx[`bridge${targetChain}MessageLane`].sendMessage(lane_id, payload, estimatedFee);
       await bridgeMessage.signAndSend(account, { nonce: -1 });
-      setExecutionStatus('Message delivered');
+      setExecutionStatus('Remark delivered');
     } catch (e) {
-      // To update UI when this fails
+      setExecutionStatus('Remark failed');
+
       console.error(e);
     } finally {
       setIsExecuting(false);
@@ -109,6 +110,4 @@ const Remark = ({ className, targetChain }: Props) => {
 export default styled(Remark)`
   display: flex !important;
   justify-content: center !important;
-  .status {
-  }
 `;
