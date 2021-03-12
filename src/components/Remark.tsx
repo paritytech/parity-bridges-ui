@@ -35,46 +35,52 @@ const Remark = ({ className, targetChain }: Props) => {
       return false;
     }
     setIsExecuting(true);
-    const keyring = new Keyring({ type: 'sr25519' });
-    const account = keyring.addFromUri('//Alice');
 
-    const remarkCall = await targetApi.tx.system.remark(remarkInput);
-    const remarkInfo = await sourceApi.tx.system.remark(remarkInput).paymentInfo(account);
-    const weight = remarkInfo.weight.toNumber();
+    try {
+      const keyring = new Keyring({ type: 'sr25519' });
+      const account = keyring.addFromUri('//Alicef');
 
-    const call = remarkCall.toU8a();
+      const remarkCall = await targetApi.tx.system.remark(remarkInput);
+      const remarkInfo = await sourceApi.tx.system.remark(remarkInput).paymentInfo(account);
+      const weight = remarkInfo.weight.toNumber();
 
-    const payload = {
-      call,
-      origin: {
-        SourceAccount: account.addressRaw
-      },
-      spec_version: 1,
-      weight
-    };
+      const call = remarkCall.toU8a();
 
-    // Ignoring custom types missed for TS for now.
-    // Need to apply: https://polkadot.js.org/docs/api/start/typescript.user
-    // @ts-ignore
-    const payloadType = sourceApi.registry.createType('OutboundPayload', payload);
-    // @ts-ignore
-    const messageFeeType = sourceApi.registry.createType('MessageFeeData', {
-      lane_id,
-      payload: u8aToHex(payloadType.toU8a())
-    });
+      const payload = {
+        call,
+        origin: {
+          SourceAccount: account.addressRaw
+        },
+        spec_version: 1,
+        weight
+      };
 
-    const estimatedFeeCall = await sourceApi.rpc.state.call<Codec>(
-      `To${targetChain}OutboundLaneApi_estimate_message_delivery_and_dispatch_fee`,
-      u8aToHex(messageFeeType.toU8a())
-    );
+      // Ignoring custom types missed for TS for now.
+      // Need to apply: https://polkadot.js.org/docs/api/start/typescript.user
+      // @ts-ignore
+      const payloadType = sourceApi.registry.createType('OutboundPayload', payload);
+      // @ts-ignore
+      const messageFeeType = sourceApi.registry.createType('MessageFeeData', {
+        lane_id,
+        payload: u8aToHex(payloadType.toU8a())
+      });
 
-    // @ts-ignore
-    const estimatedFeeType = sourceApi.registry.createType('Option<Balance>', estimatedFeeCall);
-    const estimatedFee = estimatedFeeType.toString();
+      const estimatedFeeCall = await sourceApi.rpc.state.call<Codec>(
+        `To${targetChain}OutboundLaneApi_estimate_message_delivery_and_dispatch_fee`,
+        u8aToHex(messageFeeType.toU8a())
+      );
 
-    const bridgeMessage = sourceApi.tx[`bridge${targetChain}MessageLane`].sendMessage(lane_id, payload, estimatedFee);
-    await bridgeMessage.signAndSend(account, { nonce: -1 });
-    setIsExecuting(false);
+      // @ts-ignore
+      const estimatedFeeType = sourceApi.registry.createType('Option<Balance>', estimatedFeeCall);
+      const estimatedFee = estimatedFeeType.toString();
+
+      const bridgeMessage = sourceApi.tx[`bridge${targetChain}MessageLane`].sendMessage(lane_id, payload, estimatedFee);
+      await bridgeMessage.signAndSend(account, { nonce: -1 });
+      setIsExecuting(false);
+    } catch (e) {
+      console.error(e);
+      setIsExecuting(false);
+    }
   }
 
   if (!areApiReady) {
