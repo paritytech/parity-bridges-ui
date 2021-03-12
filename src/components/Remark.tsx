@@ -10,6 +10,7 @@ import styled from 'styled-components';
 
 import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
 import { useApiTargetPromiseContext } from '../contexts/ApiPromiseTargetContext';
+import useLaneId from '../hooks/useLaneId';
 import useLoadingApi from '../hooks/useLoadingApi';
 interface Props {
   className?: string;
@@ -23,8 +24,7 @@ const Remark = ({ className, targetChain }: Props) => {
 
   const areApiReady = useLoadingApi();
   const [remarkInput, setRemarkInput] = useState('0x');
-
-  const lane_id = process.env.REACT_APP_LANE_ID || '0x00000000';
+  const lane_id = useLaneId();
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRemarkInput(event.target.value);
