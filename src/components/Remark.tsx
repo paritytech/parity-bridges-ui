@@ -76,9 +76,10 @@ const Remark = ({ className, targetChain }: Props) => {
 
       const bridgeMessage = sourceApi.tx[`bridge${targetChain}MessageLane`].sendMessage(lane_id, payload, estimatedFee);
       await bridgeMessage.signAndSend(account, { nonce: -1 });
-      setIsExecuting(false);
     } catch (e) {
+      // To update UI when this fails
       console.error(e);
+    } finally {
       setIsExecuting(false);
     }
   }
