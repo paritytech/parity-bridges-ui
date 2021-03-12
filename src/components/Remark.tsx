@@ -19,9 +19,11 @@ interface Props {
 const Remark = ({ className, targetChain }: Props) => {
   const { api: sourceApi } = useApiSourcePromiseContext();
   const { api: targetApi } = useApiTargetPromiseContext();
+  const [isExecuting, setIsExecuting] = useState(false);
 
-  const areApiLoading = useLoadingApi();
+  const areApiReady = useLoadingApi();
   const [remarkInput, setRemarkInput] = useState('0x');
+
   const lane_id = process.env.REACT_APP_LANE_ID || '0x00000000';
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,6 +31,7 @@ const Remark = ({ className, targetChain }: Props) => {
   };
 
   async function sendMessageRemark() {
+    setIsExecuting(true);
     const keyring = new Keyring({ type: 'sr25519' });
     const account = keyring.addFromUri('//Alice');
 
@@ -69,18 +72,42 @@ const Remark = ({ className, targetChain }: Props) => {
     const bridgeMessage = sourceApi.tx[`bridge${targetChain}MessageLane`].sendMessage(lane_id, payload, estimatedFee);
 
     const nonceCall = await sourceApi.rpc.system.accountNextIndex(account.address);
-    const nonce = nonceCall.toNumber();
-    await bridgeMessage.signAndSend(account, { nonce });
+    const nextNonce = nonceCall.toNumber();
+
+    const { nonce: systemNonce } = await sourceApi.query.system.account(account.address);
+    console.log('systemNonce', systemNonce.toNumber());
+    console.log('nextNonce', nextNonce);
+
+    const res = await bridgeMessage.signAndSend(account);
+    /*
+      solution 1: provide nextNonce
+      const res = await bridgeMessage.signAndSend(account, {nonce: nextNonce});
+    */
+    /*
+      solution 2: use any status in the callback
+      const res = await bridgeMessage.signAndSend(account, ({status})=>{
+        // isInBlock is an example only, i'm not using this as the proof status to unlock the button
+        if(status.isInBlock){
+          setIsExecuting(false);
+        }
+      });
+    */
+    console.log('promise finished. hash:', res.toJSON());
+    setIsExecuting(false);
   }
 
-  if (!areApiLoading) {
+  if (!areApiReady) {
     return null;
   }
+
+  console.log('isExecuting', isExecuting);
 
   return (
     <Container className={className}>
       <Input onChange={onChange} value={remarkInput} />
-      <Button onClick={sendMessageRemark}>Send Remark</Button>
+      <Button disabled={isExecuting} onClick={sendMessageRemark}>
+        Send Remark
+      </Button>
     </Container>
   );
 };
