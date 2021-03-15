@@ -20,14 +20,16 @@ export interface ApiRxContextProviderProps {
   ApiPromiseContext: React.Context<ApiPromiseContextType>;
   contextType: string;
   types?: ApiOptions['types'];
+  hasher?: ApiOptions['hasher'];
 }
 
 const registry = new TypeRegistry();
 
 export function ApiPromiseContextProvider(props: ApiRxContextProviderProps): React.ReactElement {
-  const { children = null, provider, ApiPromiseContext, contextType, types } = props;
+  const { children = null, provider, ApiPromiseContext, contextType, types, hasher } = props;
   const sourceTarget = useSourceTarget();
-  const [apiPromise, setApiPromise] = useState<ApiPromise>(new ApiPromise({ provider, types }));
+  const options = { hasher, provider, types };
+  const [apiPromise, setApiPromise] = useState<ApiPromise>(new ApiPromise(options));
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
@@ -39,7 +41,7 @@ export function ApiPromiseContextProvider(props: ApiRxContextProviderProps): Rea
   }, [sourceTarget]);
 
   useDidUpdateEffect(() => {
-    ApiPromise.create({ provider, types }).then((_api) => {
+    ApiPromise.create(options).then((_api) => {
       setApiPromise(_api);
     });
   }, [provider]);

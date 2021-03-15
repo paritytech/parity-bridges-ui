@@ -25,8 +25,10 @@ const Remark = ({ className, targetChain }: Props) => {
   const areApiReady = useLoadingApi();
   const [remarkInput, setRemarkInput] = useState('0x');
   const lane_id = useLaneId();
+  const [executionStatus, setExecutionStatus] = useState('');
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setExecutionStatus('');
     setRemarkInput(event.target.value);
   };
 
@@ -38,7 +40,7 @@ const Remark = ({ className, targetChain }: Props) => {
 
     try {
       const keyring = new Keyring({ type: 'sr25519' });
-      const account = keyring.addFromUri('//Alicef');
+      const account = keyring.addFromUri('//Alice');
 
       const remarkCall = await targetApi.tx.system.remark(remarkInput);
       const remarkInfo = await sourceApi.tx.system.remark(remarkInput).paymentInfo(account);
@@ -76,8 +78,10 @@ const Remark = ({ className, targetChain }: Props) => {
 
       const bridgeMessage = sourceApi.tx[`bridge${targetChain}MessageLane`].sendMessage(lane_id, payload, estimatedFee);
       await bridgeMessage.signAndSend(account, { nonce: -1 });
+      setExecutionStatus('Remark delivered');
     } catch (e) {
-      // To update UI when this fails
+      setExecutionStatus('Remark failed');
+
       console.error(e);
     } finally {
       setIsExecuting(false);
@@ -94,6 +98,11 @@ const Remark = ({ className, targetChain }: Props) => {
       <Button disabled={isExecuting} onClick={sendMessageRemark}>
         Send Remark
       </Button>
+      {executionStatus !== '' && (
+        <div className="status">
+          <p>{executionStatus}</p>
+        </div>
+      )}
     </Container>
   );
 };
