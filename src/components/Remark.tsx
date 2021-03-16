@@ -23,14 +23,15 @@ import styled from 'styled-components';
 
 import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
 import { useApiTargetPromiseContext } from '../contexts/ApiPromiseTargetContext';
+import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useLaneId from '../hooks/useLaneId';
 import useLoadingApi from '../hooks/useLoadingApi';
 interface Props {
   className?: string;
-  targetChain: string;
 }
 
-const Remark = ({ className, targetChain }: Props) => {
+const Remark = ({ className }: Props) => {
+  const { targetChain } = useSourceTarget();
   const { api: sourceApi } = useApiSourcePromiseContext();
   const { api: targetApi } = useApiTargetPromiseContext();
   const [isExecuting, setIsExecuting] = useState(false);
@@ -54,7 +55,6 @@ const Remark = ({ className, targetChain }: Props) => {
     try {
       const keyring = new Keyring({ type: 'sr25519' });
       const account = keyring.addFromUri('//Alice');
-
       const remarkCall = await targetApi.tx.system.remark(remarkInput);
       const remarkInfo = await sourceApi.tx.system.remark(remarkInput).paymentInfo(account);
       const weight = remarkInfo.weight.toNumber();

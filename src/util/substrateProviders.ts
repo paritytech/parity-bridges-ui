@@ -20,16 +20,29 @@ import { u8aConcat } from '@polkadot/util';
 import { blake2AsU8a, keccakAsU8a } from '@polkadot/util-crypto';
 
 import types from '../substrateCustomTypes';
-interface Providers {
-  [key: string]: string;
-}
-
 interface CustomHashers {
   [key: string]: (data: Uint8Array) => Uint8Array;
 }
 interface CustomTypes {
   [key: string]: ApiOptions['types'];
 }
+
+interface GenericKeyStringConfigs {
+  [key: string]: string;
+}
+
+interface GenericKeyNumberConfigs {
+  [key: string]: number;
+}
+
+type ChainConfigs = {
+  bridgeIds: GenericKeyStringConfigs;
+  customHashers: CustomHashers;
+  customTypes: CustomTypes;
+  ss58Formats: GenericKeyNumberConfigs;
+  accountDerivations: GenericKeyStringConfigs;
+  providers: GenericKeyStringConfigs;
+};
 
 // create a custom hasher (512 bits, combo of blake2 and keccak)
 function hasherH512(data: any) {
@@ -42,7 +55,7 @@ export const CHAIN_2 = process.env.REACT_APP_PROVIDER_NAME_2 || 'Millau';
 export const CHAIN_1_SUBSTRATE_PROVIDER = process.env.REACT_APP_SUBSTRATE_PROVIDER_1 || 'wss://wss.rialto.brucke.link';
 export const CHAIN_2_SUBSTRATE_PROVIDER = process.env.REACT_APP_SUBSTRATE_PROVIDER_2 || 'wss://wss.millau.brucke.link';
 
-export const providers: Providers = {
+export const providers: GenericKeyStringConfigs = {
   [CHAIN_1]: CHAIN_1_SUBSTRATE_PROVIDER,
   [CHAIN_2]: CHAIN_2_SUBSTRATE_PROVIDER
 };
@@ -52,8 +65,32 @@ export const customTypes: CustomTypes = {
   [CHAIN_2]: types[CHAIN_2]
 };
 
+export const bridgeIds: GenericKeyStringConfigs = {
+  [CHAIN_1]: 'rlto',
+  [CHAIN_2]: 'mlau'
+};
+
 export const customHashers: CustomHashers = {
   [CHAIN_2]: hasherH512
+};
+
+export const ss58Formats: GenericKeyNumberConfigs = {
+  [CHAIN_1]: 48,
+  [CHAIN_2]: 60
+};
+
+export const accountDerivations: GenericKeyStringConfigs = {
+  [CHAIN_1]: 'pallet-bridge/account-derivation/account',
+  [CHAIN_2]: 'pallet-bridge/account-derivation/account'
+};
+
+export const chainsConfigs: ChainConfigs = {
+  accountDerivations,
+  bridgeIds,
+  customHashers,
+  customTypes,
+  providers,
+  ss58Formats
 };
 
 export const getProvider = (chain: string) => new WsProvider(providers[chain]);

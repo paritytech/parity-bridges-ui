@@ -20,6 +20,7 @@ import { Button, Icon } from 'semantic-ui-react';
 import styled from 'styled-components';
 
 import ActionsTypes from '../actions/actionTypes';
+import Accounts from '../components/Accounts';
 import DashboardCard from '../components/DashboardCard';
 import Remark from '../components/Remark';
 import { SOURCE, TARGET } from '../constants';
@@ -67,7 +68,12 @@ export function Main({ className }: Props) {
           </Grid.Row>
           <Grid.Row>
             <Grid.Column width={12}>
-              <Remark targetChain={targetChain} />
+              <Remark />
+            </Grid.Column>
+          </Grid.Row>
+          <Grid.Row>
+            <Grid.Column width={12}>
+              <Accounts />
             </Grid.Column>
           </Grid.Row>
         </Grid>

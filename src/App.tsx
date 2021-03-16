@@ -20,6 +20,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import TopBar from './components/TopBar';
 import { ApiPromiseSourceContextProvider } from './contexts/ApiPromiseSourceContext';
 import { ApiPromiseTargetContextProvider } from './contexts/ApiPromiseTargetContext';
+import { KeyringContextProvider } from './contexts/KeyringContextProvider';
 import { SourceTargetContextProvider } from './contexts/SourceTargetContextProvider';
 import Main from './screens/Main';
 
@@ -28,18 +29,20 @@ function App() {
     <SourceTargetContextProvider>
       <ApiPromiseSourceContextProvider>
         <ApiPromiseTargetContextProvider>
-          <BrowserRouter>
-            <div className="App">
-              <TopBar />
-              <Switch>
-                <Route path={'/'}>
-                  <>
-                    <Main />
-                  </>
-                </Route>
-              </Switch>
-            </div>
-          </BrowserRouter>
+          <KeyringContextProvider>
+            <BrowserRouter>
+              <div className="App">
+                <TopBar />
+                <Switch>
+                  <Route path={'/'}>
+                    <>
+                      <Main />
+                    </>
+                  </Route>
+                </Switch>
+              </div>
+            </BrowserRouter>
+          </KeyringContextProvider>
         </ApiPromiseTargetContextProvider>
       </ApiPromiseSourceContextProvider>
     </SourceTargetContextProvider>
