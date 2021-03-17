@@ -18,6 +18,7 @@ import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import TopBar from './components/TopBar';
+import { AccountContextProvider } from './contexts/AccountContextProvider';
 import { ApiPromiseSourceContextProvider } from './contexts/ApiPromiseSourceContext';
 import { ApiPromiseTargetContextProvider } from './contexts/ApiPromiseTargetContext';
 import { KeyringContextProvider } from './contexts/KeyringContextProvider';
@@ -30,18 +31,20 @@ function App() {
       <ApiPromiseSourceContextProvider>
         <ApiPromiseTargetContextProvider>
           <KeyringContextProvider>
-            <BrowserRouter>
-              <div className="App">
-                <TopBar />
-                <Switch>
-                  <Route path={'/'}>
-                    <>
-                      <Main />
-                    </>
-                  </Route>
-                </Switch>
-              </div>
-            </BrowserRouter>
+            <AccountContextProvider>
+              <BrowserRouter>
+                <div className="App">
+                  <TopBar />
+                  <Switch>
+                    <Route path={'/'}>
+                      <>
+                        <Main />
+                      </>
+                    </Route>
+                  </Switch>
+                </div>
+              </BrowserRouter>
+            </AccountContextProvider>
           </KeyringContextProvider>
         </ApiPromiseTargetContextProvider>
       </ApiPromiseSourceContextProvider>

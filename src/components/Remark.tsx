@@ -21,11 +21,13 @@ import React, { useState } from 'react';
 import { Button, Container, Input } from 'semantic-ui-react';
 import styled from 'styled-components';
 
+import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
 import { useApiTargetPromiseContext } from '../contexts/ApiPromiseTargetContext';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useLaneId from '../hooks/useLaneId';
 import useLoadingApi from '../hooks/useLoadingApi';
+
 interface Props {
   className?: string;
 }
@@ -40,6 +42,7 @@ const Remark = ({ className }: Props) => {
   const [remarkInput, setRemarkInput] = useState('0x');
   const lane_id = useLaneId();
   const [executionStatus, setExecutionStatus] = useState('');
+  const { account: currentAccount } = useAccountContext();
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setExecutionStatus('');
@@ -53,8 +56,15 @@ const Remark = ({ className }: Props) => {
     setIsExecuting(true);
 
     try {
-      const keyring = new Keyring({ type: 'sr25519' });
-      const account = keyring.addFromUri('//Alice');
+      console.log('remark currentAccount', currentAccount);
+
+      const account = currentAccount;
+      if (!account) {
+        return;
+      }
+
+      console.log('remark account', account);
+
       const remarkCall = await targetApi.tx.system.remark(remarkInput);
       const remarkInfo = await sourceApi.tx.system.remark(remarkInput).paymentInfo(account);
       const weight = remarkInfo.weight.toNumber();
