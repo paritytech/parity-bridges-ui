@@ -18,8 +18,7 @@ interface Props {
 }
 
 const formatOptions = (accounts: Array<KeyringPair>) =>
-  accounts.map(({ addressRaw, meta, address }) => ({
-    addressRaw,
+  accounts.map(({ meta, address }) => ({
     icon: 'user',
     key: address,
     text: (meta.name as string).toLocaleUpperCase(),
