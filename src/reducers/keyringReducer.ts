@@ -4,15 +4,16 @@
 
 import KeyringActions from '../actions/keyringActions';
 import type { KeyringAction, KeyringState } from '../types/keyringTypes';
+import { KeyringStatuses } from '../types/keyringTypes';
 
 export default function keyringReducer(state: KeyringState, action: KeyringAction): KeyringState {
   switch (action.type) {
     case KeyringActions.LOAD_KEYRING:
-      return { ...state, keyringStatus: 'LOADING' };
+      return { ...state, keyringStatus: KeyringStatuses.LOADING };
     case KeyringActions.SET_KEYRING:
-      return { ...state, keyring: action.payload, keyringStatus: 'READY' };
+      return { ...state, keyringStatus: KeyringStatuses.READY };
     case KeyringActions.KEYRING_ERROR:
-      return { ...state, keyring: null, keyringStatus: 'ERROR' };
+      return { ...state, keyringStatus: KeyringStatuses.ERROR };
     default:
       throw new Error(`Unknown type: ${action.type}`);
   }

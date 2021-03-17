@@ -8,14 +8,19 @@ export interface KeyringContextType {
   keyringPairs: Array<KeyringPair>;
   keyringPairsReady: boolean;
 }
-
 interface Payload {
-  [propName: string]: any; // change this type
+  //[propName: string]: Keyring | null; // change this type
+  [propName: string]: any;
 }
 
 export interface KeyringState {
-  keyring: any;
   keyringStatus: string | null;
 }
 
 export type KeyringAction = { type: KeyringActions; payload?: Payload };
+
+export enum KeyringStatuses {
+  LOADING = 'LOADING',
+  READY = 'READY',
+  ERROR = 'ERROR'
+}

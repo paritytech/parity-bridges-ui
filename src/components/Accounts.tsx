@@ -46,7 +46,7 @@ const Accounts = ({ className }: Props) => {
     <Container className={className}>
       <p>{sourceChain}</p>
       <Dropdown
-        value={value || ''}
+        value={value}
         onChange={onChange}
         placeholder="Select Account"
         fluid

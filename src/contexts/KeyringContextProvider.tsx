@@ -11,7 +11,7 @@ import React, { useContext, useEffect, useReducer, useState } from 'react';
 
 import KeyringActions from '../actions/keyringActions';
 import keyringReducer from '../reducers/keyringReducer';
-import { KeyringContextType } from '../types/keyringTypes';
+import { KeyringContextType, KeyringStatuses } from '../types/keyringTypes';
 import { chainsConfigs } from '../util/substrateProviders';
 import { useSourceTarget } from './SourceTargetContextProvider';
 
@@ -41,6 +41,7 @@ export function KeyringContextProvider(props: KeyringContextProviderProps): Reac
   const [keyringPairsReady, setkeyringPairsReady] = useState(false);
 
   const { keyringStatus } = state;
+  const isDevelopment = Boolean(process.env.REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS);
 
   let loadAccts = false;
   const loadAccounts = () => {
@@ -53,8 +54,8 @@ export function KeyringContextProvider(props: KeyringContextProviderProps): Reac
           address,
           meta: { ...meta, name: `${meta.name} (${meta.source})` }
         }));
-        keyring.loadAll({ isDevelopment: true, ss58Format: sourceChainSS58Format }, allAccounts);
-        dispatch({ payload: keyring, type: KeyringActions.SET_KEYRING });
+        keyring.loadAll({ isDevelopment, ss58Format: sourceChainSS58Format }, allAccounts);
+        dispatch({ type: KeyringActions.SET_KEYRING });
       } catch (e) {
         console.error(e);
         dispatch({ type: KeyringActions.KEYRING_ERROR });
@@ -65,7 +66,7 @@ export function KeyringContextProvider(props: KeyringContextProviderProps): Reac
     // If `keyringStatus` is not null `asyncLoadAccounts` is running.
     if (keyringStatus) return;
     // If `loadAccts` is true, the `asyncLoadAccounts` has been run once.
-    if (loadAccts) return dispatch({ payload: keyring, type: KeyringActions.SET_KEYRING });
+    if (loadAccts) return dispatch({ type: KeyringActions.SET_KEYRING });
 
     // This is the heavy duty work
     loadAccts = true;
@@ -82,7 +83,7 @@ export function KeyringContextProvider(props: KeyringContextProviderProps): Reac
 
   useEffect(() => {
     const { keyringStatus } = state;
-    if (keyringStatus === 'READY') {
+    if (keyringStatus === KeyringStatuses.READY) {
       const keyringOptions = keyring.getPairs();
       setKeyringPairs(keyringOptions);
       setkeyringPairsReady(true);

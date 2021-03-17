@@ -13,7 +13,7 @@ export interface AccountContextType {
 }
 
 interface Payload {
-  [propName: string]: Account; // change this type
+  [propName: string]: Account;
 }
 
 export interface AccountState {
