@@ -56,15 +56,10 @@ const Remark = ({ className }: Props) => {
     setIsExecuting(true);
 
     try {
-      console.log('remark currentAccount', currentAccount);
-
-      const account = currentAccount;
-      if (!account) {
+      if (!currentAccount) {
         return;
       }
-
-      console.log('remark account', account);
-
+      const account = currentAccount;
       const remarkCall = await targetApi.tx.system.remark(remarkInput);
       const remarkInfo = await sourceApi.tx.system.remark(remarkInput).paymentInfo(account);
       const weight = remarkInfo.weight.toNumber();

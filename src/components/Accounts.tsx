@@ -37,7 +37,6 @@ const Accounts = ({ className }: Props) => {
 
   const onChange = (evt: any, { value }: any) => {
     const account = accounts.find(({ address }) => address === value);
-    console.log('account', account);
     if (account) {
       dispatchAccount({ payload: { account }, type: AccountActions.SET_ACCOUNT });
     }
