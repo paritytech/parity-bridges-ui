@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // Copyright 2021 Parity Technologies (UK) Ltd.
 // This file is part of Parity Bridges UI.
 //
@@ -13,6 +14,11 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
+=======
+// Copyright 2019-2020 @paritytech/bridge-ui authors & contributors
+// This software may be modified and distributed under the terms
+// of the Apache-2.0 license. See the LICENSE file for details.
+>>>>>>> d588473 (Account selector integrated with remark test component)
 
 import AccountActions from '../actions/accountActions';
 import type { AccountsActionType, AccountState } from '../types/accountTypes';
