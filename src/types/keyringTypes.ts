@@ -9,7 +9,6 @@ export interface KeyringContextType {
   keyringPairsReady: boolean;
 }
 interface Payload {
-  //[propName: string]: Keyring | null; // change this type
   [propName: string]: any;
 }
 
