@@ -25,7 +25,11 @@ export interface AccountContextType {
 }
 
 interface Payload {
+<<<<<<< HEAD
   [propName: string]: Account;
+=======
+  [propName: string]: Account; // change this type
+>>>>>>> ab35a01 (Account selector integrated with remark test component)
 }
 
 export interface AccountState {
