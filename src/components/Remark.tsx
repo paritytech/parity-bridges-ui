@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import Keyring from '@polkadot/keyring';
 import { Codec } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import React, { useState } from 'react';
@@ -60,10 +59,10 @@ const Remark = ({ className }: Props) => {
         return;
       }
       const account = currentAccount;
+      console.log('account', account);
       const remarkCall = await targetApi.tx.system.remark(remarkInput);
       const remarkInfo = await sourceApi.tx.system.remark(remarkInput).paymentInfo(account);
       const weight = remarkInfo.weight.toNumber();
-
       const call = remarkCall.toU8a();
 
       const payload = {
@@ -95,8 +94,17 @@ const Remark = ({ className }: Props) => {
       const estimatedFee = estimatedFeeType.toString();
 
       const bridgeMessage = sourceApi.tx[`bridge${targetChain}MessageLane`].sendMessage(lane_id, payload, estimatedFee);
-      const injector = await web3FromSource(account.meta.source as string);
-      await bridgeMessage.signAndSend(account.address, { nonce: -1, signer: injector.signer });
+
+      const options: Partial<SignerOptions> = {
+        nonce: -1
+      };
+      let sourceAccount: string | KeyringPair = account;
+      if (account.meta.isInjected) {
+        const injector = await web3FromSource(account.meta.source as string);
+        options.signer = injector.signer;
+        sourceAccount = account.address;
+      }
+      await bridgeMessage.signAndSend(sourceAccount, { ...options });
       setExecutionStatus('Remark delivered');
     } catch (e) {
       setExecutionStatus('Remark failed');
