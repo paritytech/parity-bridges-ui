@@ -95,7 +95,8 @@ const Remark = ({ className }: Props) => {
       const estimatedFee = estimatedFeeType.toString();
 
       const bridgeMessage = sourceApi.tx[`bridge${targetChain}MessageLane`].sendMessage(lane_id, payload, estimatedFee);
-      await bridgeMessage.signAndSend(account, { nonce: -1 });
+      const injector = await web3FromSource(account.meta.source as string);
+      await bridgeMessage.signAndSend(account.address, { nonce: -1, signer: injector.signer });
       setExecutionStatus('Remark delivered');
     } catch (e) {
       setExecutionStatus('Remark failed');
