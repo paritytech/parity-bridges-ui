@@ -22,18 +22,16 @@ type Account = KeyringPair | null;
 
 export interface AccountContextType {
   account: Account;
+  receiverAddress?: string;
 }
 
 interface Payload {
-<<<<<<< HEAD
-  [propName: string]: Account;
-=======
-  [propName: string]: Account; // change this type
->>>>>>> ab35a01 (Account selector integrated with remark test component)
+  [propName: string]: any;
 }
 
 export interface AccountState {
   account: Account;
+  receiverAddress?: string;
 }
 
 export type AccountsActionType = { type: AccountActions; payload: Payload };

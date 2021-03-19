@@ -6,17 +6,18 @@ import { web3FromSource } from '@polkadot/extension-dapp';
 import type { KeyringPair } from '@polkadot/keyring/types';
 import { Codec } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
-import { checkAddress } from '@polkadot/util-crypto';
 import React, { useState } from 'react';
 import { Button, Container, Grid, Input } from 'semantic-ui-react';
 import styled from 'styled-components';
 
-import { useAccountContext } from '../contexts/AccountContextProvider';
+import AccountActions from '../actions/accountActions';
+import { useAccountContext, useUpdateAccountContext } from '../contexts/AccountContextProvider';
 import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
 import { useApiTargetPromiseContext } from '../contexts/ApiPromiseTargetContext';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useLaneId from '../hooks/useLaneId';
 import useLoadingApi from '../hooks/useLoadingApi';
+import getReceiverAddress from '../util/getReceiverAddress';
 
 interface Props {
   className?: string;
@@ -27,13 +28,14 @@ const Transfer = ({ className }: Props) => {
   const { api: sourceApi } = useApiSourcePromiseContext();
   const { api: targetApi } = useApiTargetPromiseContext();
   const [isExecuting, setIsExecuting] = useState(false);
-
   const areApiReady = useLoadingApi();
   const [transferInput, setTransferInput] = useState('0');
   const [receiver, setReceiver] = useState<string>('');
+  const [receiverMessage, setReceiverMessage] = useState<string | null>();
   const lane_id = useLaneId();
   const [executionStatus, setExecutionStatus] = useState('');
-  const { account: currentAccount } = useAccountContext();
+  const { account: currentAccount, receiverAddress } = useAccountContext();
+  const { dispatchAccount } = useUpdateAccountContext();
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setExecutionStatus('');
@@ -55,8 +57,8 @@ const Transfer = ({ className }: Props) => {
         return;
       }
       const account = currentAccount;
-      console.log(checkAddress(account.address, 60));
-      const transferCall = await targetApi.tx.balances.transfer(receiver, transferInput);
+
+      const transferCall = await targetApi.tx.balances.transfer(receiverAddress || receiver, transferInput);
       const transferInfo = await sourceApi.tx.balances.transfer(receiver, transferInput).paymentInfo(account);
       const weight = transferInfo.weight.toNumber();
 
@@ -115,6 +117,16 @@ const Transfer = ({ className }: Props) => {
     return null;
   }
 
+  const onEnter = (e: any) => {
+    if (e.key === 'Enter') {
+      const receiverAddress = getReceiverAddress({ chain: targetChain, receiverAddress: receiver });
+      if (receiverAddress !== receiver) {
+        setReceiverMessage(`The format for the account is incorrect, funds will be sent to ${receiverAddress}`);
+      }
+      dispatchAccount({ payload: { receiverAddress }, type: AccountActions.SET_RECEIVER_ADDRESS });
+    }
+  };
+
   return (
     <Container className={className}>
       <Grid.Row>
@@ -126,8 +138,9 @@ const Transfer = ({ className }: Props) => {
       <Grid.Row>
         <Grid.Column>
           <label>Receiver</label>
-          <Input fluid onChange={onDestinataryChange} value={receiver} />
-          <Button disabled={isExecuting} onClick={sendMessageTransfer}>
+          <Input fluid onChange={onDestinataryChange} onKeyDown={onEnter} value={receiver} />
+          {receiverMessage && <p>{receiverMessage}</p>}
+          <Button disabled={isExecuting || !receiverAddress || !currentAccount} onClick={sendMessageTransfer}>
             Send Transfer
           </Button>
         </Grid.Column>

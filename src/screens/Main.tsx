@@ -23,6 +23,7 @@ import ActionsTypes from '../actions/actionTypes';
 import Accounts from '../components/Accounts';
 import DashboardCard from '../components/DashboardCard';
 import Remark from '../components/Remark';
+import Transfer from '../components/Transfer';
 import { SOURCE, TARGET } from '../constants';
 import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
 import { useApiTargetPromiseContext } from '../contexts/ApiPromiseTargetContext';
@@ -74,6 +75,11 @@ export function Main({ className }: Props) {
           <Grid.Row>
             <Grid.Column width={12}>
               <Accounts />
+            </Grid.Column>
+          </Grid.Row>
+          <Grid.Row>
+            <Grid.Column width={12}>
+              <Transfer />
             </Grid.Column>
           </Grid.Row>
         </Grid>
