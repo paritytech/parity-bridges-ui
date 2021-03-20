@@ -14,6 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import { SignerOptions } from '@polkadot/api/types';
+import { web3FromSource } from '@polkadot/extension-dapp';
+import type { KeyringPair } from '@polkadot/keyring/types';
 import { Codec } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import React, { useState } from 'react';
