@@ -1,6 +1,18 @@
-// Copyright 2019-2020 @paritytech/bridge-ui authors & contributors
-// This software may be modified and distributed under the terms
-// of the Apache-2.0 license. See the LICENSE file for details.
+// Copyright 2021 Parity Technologies (UK) Ltd.
+// This file is part of Parity Bridges UI.
+//
+// Parity Bridges UI is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Parity Bridges UI is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 import { Codec } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import { useEffect, useState } from 'react';
@@ -8,24 +20,25 @@ import { useEffect, useState } from 'react';
 import TransactionActions from '../actions/transactionActions';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
-import { useApiTargetPromiseContext } from '../contexts/ApiPromiseTargetContext';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import useLaneId from '../hooks/useLaneId';
 import useLoadingApi from '../hooks/useLoadingApi';
+import useTransactionType from '../hooks/useTransactionType';
 
 interface Props {
   input: string;
+  type: string;
 }
 
 interface FeeAndPayload {
   payload: any;
 }
 
-export default function useTransactionPreparation({ input }: Props): FeeAndPayload {
+export default function useTransactionPreparation({ input, type }: Props): FeeAndPayload {
   const areApiReady = useLoadingApi();
   const { api: sourceApi } = useApiSourcePromiseContext();
-  const { api: targetApi } = useApiTargetPromiseContext();
+
   const lane_id = useLaneId();
   const { targetChain } = useSourceTarget();
   const { account, receiverAddress } = useAccountContext();
@@ -33,12 +46,14 @@ export default function useTransactionPreparation({ input }: Props): FeeAndPaylo
   const [call, setCall] = useState<Uint8Array | null>(null);
   const [weight, setWeight] = useState<number | null>(null);
   const [payload, setPayload] = useState({});
+  const { callFunction, infoFunction } = useTransactionType(type);
+
   const { dispatchTransaction } = useUpdateTransactionContext();
 
   useEffect(() => {
     async function makeTransferCall() {
-      if (receiverAddress) {
-        const transferCall = await targetApi.tx.balances.transfer(receiverAddress, input);
+      if (receiverAddress && callFunction) {
+        const transferCall = await callFunction(receiverAddress, input);
         setCall(transferCall.toU8a());
       }
     }
@@ -50,8 +65,8 @@ export default function useTransactionPreparation({ input }: Props): FeeAndPaylo
 
   useEffect(() => {
     async function getWeight() {
-      if (account && receiverAddress) {
-        const transferInfo = await sourceApi.tx.balances.transfer(receiverAddress, input).paymentInfo(account);
+      if (account && receiverAddress && infoFunction) {
+        const transferInfo = await infoFunction(receiverAddress, input).paymentInfo(account);
         setWeight(transferInfo.weight.toNumber());
       }
     }

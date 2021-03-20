@@ -1,6 +1,18 @@
-// Copyright 2019-2020 @paritytech/bridge-ui authors & contributors
-// This software may be modified and distributed under the terms
-// of the Apache-2.0 license. See the LICENSE file for details.
+// Copyright 2021 Parity Technologies (UK) Ltd.
+// This file is part of Parity Bridges UI.
+//
+// Parity Bridges UI is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Parity Bridges UI is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React, { useState } from 'react';
 import { Button, Container, Grid, Input } from 'semantic-ui-react';
@@ -13,6 +25,7 @@ import { useTransactionContext } from '../contexts/TransactionContext';
 import useLoadingApi from '../hooks/useLoadingApi';
 import useSendMessage from '../hooks/useSendMessage';
 import useTransactionPreparation from '../hooks/useTransactionPreparation';
+import { TransactionTypes } from '../types/transactionTypes';
 import getReceiverAddress from '../util/getReceiverAddress';
 
 interface Props {
@@ -31,7 +44,7 @@ const Transfer = ({ className }: Props) => {
   const [executionStatus, setExecutionStatus] = useState('');
   const { account: currentAccount, receiverAddress } = useAccountContext();
   const { dispatchAccount } = useUpdateAccountContext();
-  const { payload } = useTransactionPreparation({ input: transferInput });
+  const { payload } = useTransactionPreparation({ input: transferInput, type: TransactionTypes.TRANSFER });
   const { estimatedFee } = useTransactionContext();
   const message = {
     error: 'Error sending transfer',
