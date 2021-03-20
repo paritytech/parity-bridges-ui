@@ -1,8 +1,19 @@
-// Copyright 2019-2020 @paritytech/bridge-ui authors & contributors
-// This software may be modified and distributed under the terms
-// of the Apache-2.0 license. See the LICENSE file for details.
+// Copyright 2021 Parity Technologies (UK) Ltd.
+// This file is part of Parity Bridges UI.
+//
+// Parity Bridges UI is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Parity Bridges UI is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-/// Parse the amount field and support SI shorthands for `kilo` (k) and `million` (m).
 export default function parseAmount(val: string) {
   return val.replace(/,/gi, '.').replace(/k/gi, '000').replace(/m/gi, '000000');
 }
