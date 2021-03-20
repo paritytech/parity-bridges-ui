@@ -12,18 +12,21 @@ interface Props {
 }
 const getReceiverAddress = ({ receiverAddress, chain }: Props) => {
   const derivedParameters = getDerivedParameters(chain);
-  const [validatedDerivedAcccount, validationError] = checkAddress(receiverAddress, derivedParameters.SS58Format);
-  let address = receiverAddress;
-  if (!validatedDerivedAcccount) {
-    console.log('validationError', validationError);
-    const formattedAccount = getDeriveAccount({
-      address: receiverAddress,
-      ...derivedParameters
-    });
+  try {
+    const [validatedDerivedAcccount] = checkAddress(receiverAddress, derivedParameters.SS58Format);
+    let address = receiverAddress;
+    if (!validatedDerivedAcccount) {
+      const formattedAccount = getDeriveAccount({
+        address: receiverAddress,
+        ...derivedParameters
+      });
 
-    address = formattedAccount;
+      address = formattedAccount;
+    }
+    return address;
+  } catch (e) {
+    throw new Error('INCORRECT-FORMAT');
   }
-  return address;
 };
 
 export default getReceiverAddress;

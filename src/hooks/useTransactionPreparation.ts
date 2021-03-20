@@ -5,10 +5,12 @@ import { Codec } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import { useEffect, useState } from 'react';
 
+import TransactionActions from '../actions/transactionActions';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
 import { useApiTargetPromiseContext } from '../contexts/ApiPromiseTargetContext';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
+import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import useLaneId from '../hooks/useLaneId';
 import useLoadingApi from '../hooks/useLoadingApi';
 
@@ -17,7 +19,6 @@ interface Props {
 }
 
 interface FeeAndPayload {
-  estimatedFee: string | null;
   payload: any;
 }
 
@@ -31,8 +32,8 @@ export default function useTransactionPreparation({ input }: Props): FeeAndPaylo
 
   const [call, setCall] = useState<Uint8Array | null>(null);
   const [weight, setWeight] = useState<number | null>(null);
-  const [estimatedFee, setEstimatedFee] = useState<string | null>(null);
   const [payload, setPayload] = useState({});
+  const { dispatchTransaction } = useUpdateTransactionContext();
 
   useEffect(() => {
     async function makeTransferCall() {
@@ -41,7 +42,6 @@ export default function useTransactionPreparation({ input }: Props): FeeAndPaylo
         setCall(transferCall.toU8a());
       }
     }
-    console.log('areApiReady', areApiReady);
     if (areApiReady) {
       makeTransferCall();
     }
@@ -50,16 +50,12 @@ export default function useTransactionPreparation({ input }: Props): FeeAndPaylo
 
   useEffect(() => {
     async function getWeight() {
-      console.log('weight account', account);
-      console.log('weight receiverAddress', receiverAddress);
-
       if (account && receiverAddress) {
         const transferInfo = await sourceApi.tx.balances.transfer(receiverAddress, input).paymentInfo(account);
         setWeight(transferInfo.weight.toNumber());
       }
     }
     if (areApiReady) {
-      console.log('weight effect', areApiReady);
       getWeight();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -85,15 +81,14 @@ export default function useTransactionPreparation({ input }: Props): FeeAndPaylo
       // @ts-ignore
       const estimatedFeeType = sourceApi.registry.createType('Option<Balance>', estimatedFeeCall);
       const fee = estimatedFeeType.toString();
-      setEstimatedFee(fee);
+      dispatchTransaction({ payload: { estimatedFee: fee }, type: TransactionActions.SET_ESTIMATED_FEE });
     }
     if (areApiReady) {
       calculateFee();
     }
-  }, [lane_id, payload, sourceApi.registry, sourceApi.rpc.state, targetChain, areApiReady]);
+  }, [lane_id, payload, sourceApi.registry, sourceApi.rpc.state, targetChain, areApiReady, dispatchTransaction]);
 
   useEffect(() => {
-    console.log('useEffect account', account);
     if (account) {
       setPayload({
         call,
@@ -107,7 +102,6 @@ export default function useTransactionPreparation({ input }: Props): FeeAndPaylo
   }, [account, call, weight]);
 
   return {
-    estimatedFee,
     payload
   };
 }

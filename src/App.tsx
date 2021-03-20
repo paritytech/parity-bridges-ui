@@ -23,6 +23,7 @@ import { ApiPromiseSourceContextProvider } from './contexts/ApiPromiseSourceCont
 import { ApiPromiseTargetContextProvider } from './contexts/ApiPromiseTargetContext';
 import { KeyringContextProvider } from './contexts/KeyringContextProvider';
 import { SourceTargetContextProvider } from './contexts/SourceTargetContextProvider';
+import { TransactionContextProvider } from './contexts/TransactionContext';
 import Main from './screens/Main';
 
 function App() {
@@ -32,16 +33,18 @@ function App() {
         <ApiPromiseTargetContextProvider>
           <KeyringContextProvider>
             <AccountContextProvider>
-              <BrowserRouter>
-                <div className="App">
-                  <TopBar />
-                  <Switch>
-                    <Route path={'/'}>
-                      <Main />
-                    </Route>
-                  </Switch>
-                </div>
-              </BrowserRouter>
+              <TransactionContextProvider>
+                <BrowserRouter>
+                  <div className="App">
+                    <TopBar />
+                    <Switch>
+                      <Route path={'/'}>
+                        <Main />
+                      </Route>
+                    </Switch>
+                  </div>
+                </BrowserRouter>
+              </TransactionContextProvider>
             </AccountContextProvider>
           </KeyringContextProvider>
         </ApiPromiseTargetContextProvider>

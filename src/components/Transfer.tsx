@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import AccountActions from '../actions/accountActions';
 import { useAccountContext, useUpdateAccountContext } from '../contexts/AccountContextProvider';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
+import { useTransactionContext } from '../contexts/TransactionContext';
 import useLoadingApi from '../hooks/useLoadingApi';
 import useSendMessage from '../hooks/useSendMessage';
 import useTransactionPreparation from '../hooks/useTransactionPreparation';
@@ -30,7 +31,8 @@ const Transfer = ({ className }: Props) => {
   const [executionStatus, setExecutionStatus] = useState('');
   const { account: currentAccount, receiverAddress } = useAccountContext();
   const { dispatchAccount } = useUpdateAccountContext();
-  const { estimatedFee, payload } = useTransactionPreparation({ input: transferInput });
+  const { payload } = useTransactionPreparation({ input: transferInput });
+  const { estimatedFee } = useTransactionContext();
   const message = {
     error: 'Error sending transfer',
     successfull: 'Transfer was executed succesfully'
@@ -45,13 +47,13 @@ const Transfer = ({ className }: Props) => {
     setIsRunning
   });
 
-  console.log('estimatedFee, payload', estimatedFee, payload);
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setExecutionStatus('');
     setTransferInput(event.target.value);
   };
 
-  const onDestinataryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onReceiverChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setReceiverMessage('');
     setReceiver(event.target.value);
   };
 
@@ -61,11 +63,19 @@ const Transfer = ({ className }: Props) => {
 
   const onEnter = (e: any) => {
     if (e.key === 'Enter') {
-      const receiverAddress = getReceiverAddress({ chain: targetChain, receiverAddress: receiver });
-      if (receiverAddress !== receiver) {
-        setReceiverMessage(`The format for the account is incorrect, funds will be sent to ${receiverAddress}`);
+      setReceiverMessage('');
+      try {
+        const receiverAddress = getReceiverAddress({ chain: targetChain, receiverAddress: receiver });
+        if (receiverAddress !== receiver) {
+          setReceiverMessage(`The format for the account is incorrect, funds will be sent to ${receiverAddress}`);
+        }
+        dispatchAccount({ payload: { receiverAddress }, type: AccountActions.SET_RECEIVER_ADDRESS });
+      } catch (e) {
+        console.log('e', e);
+        if (e.message === 'INCORRECT-FORMAT') {
+          setReceiverMessage('Invalid address, please provide a valid address');
+        }
       }
-      dispatchAccount({ payload: { receiverAddress }, type: AccountActions.SET_RECEIVER_ADDRESS });
     }
   };
 
@@ -80,11 +90,12 @@ const Transfer = ({ className }: Props) => {
       <Grid.Row>
         <Grid.Column>
           <label>Receiver</label>
-          <Input fluid onChange={onDestinataryChange} onKeyDown={onEnter} value={receiver} />
+          <Input fluid onChange={onReceiverChange} onKeyDown={onEnter} value={receiver} />
           {receiverMessage && <p>{receiverMessage}</p>}
           <Button disabled={isRunning || !receiverAddress || !currentAccount} onClick={sendLaneMessage}>
             Send Transfer
           </Button>
+          {receiverAddress && estimatedFee && <p>Estimated source Fee: {estimatedFee}</p>}
         </Grid.Column>
       </Grid.Row>
 
