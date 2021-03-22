@@ -15,22 +15,23 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 import { checkAddress } from '@polkadot/util-crypto';
 
+import { chainsConfigs } from '../configs/substrateProviders';
 import getDeriveAccount from './getDeriveAccount';
-import getDerivedParameters from './getDerivedParameters';
 
 interface Props {
   receiverAddress: string;
   chain: string;
 }
 const getReceiverAddress = ({ receiverAddress, chain }: Props) => {
-  const derivedParameters = getDerivedParameters(chain);
+  const { SS58Format, bridgeId } = chainsConfigs[chain];
   try {
-    const [validatedDerivedAcccount] = checkAddress(receiverAddress, derivedParameters.SS58Format);
+    const [validatedDerivedAcccount] = checkAddress(receiverAddress, SS58Format);
     let address = receiverAddress;
     if (!validatedDerivedAcccount) {
       const formattedAccount = getDeriveAccount({
+        SS58Format,
         address: receiverAddress,
-        ...derivedParameters
+        bridgeId
       });
 
       address = formattedAccount;
