@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-//copied over from @substrate/context This needs to be updated.
-
 import React, { useContext, useReducer } from 'react';
 
 import accountReducer from '../reducers/accountReducer';

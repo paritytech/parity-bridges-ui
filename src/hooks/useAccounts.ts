@@ -13,18 +13,47 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
-
 import type { KeyringPair } from '@polkadot/keyring/types';
+import { useEffect, useState } from 'react';
 
+import AccountActions from '../actions/accountActions';
+import { useUpdateAccountContext } from '../contexts/AccountContextProvider';
+import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useKeyringContext } from '../contexts/KeyringContextProvider';
-const useAccounts = (): Array<KeyringPair> | [] => {
+import useDerivedAccount from '../hooks/useDerivedAccount';
+interface Accounts {
+  account: KeyringPair | null;
+  accounts: Array<KeyringPair> | [];
+  derivedAccount: string | null;
+  onChangeAccount: (value: string) => void;
+}
+
+const useAccounts = (): Accounts => {
   const { keyringPairs, keyringPairsReady } = useKeyringContext();
+  const [accounts, setAccounts] = useState<Array<KeyringPair> | []>([]);
+  const { dispatchAccount } = useUpdateAccountContext();
+  const derivedAccount = useDerivedAccount();
+  const { account } = useAccountContext();
 
-  if (!keyringPairsReady && !keyringPairs.length) {
-    return [];
-  }
+  useEffect(() => {
+    if (keyringPairsReady && keyringPairs.length) {
+      setAccounts(keyringPairs);
+    }
+  }, [keyringPairsReady, keyringPairs, setAccounts]);
 
-  return keyringPairs;
+  const onChangeAccount = (value: string) => {
+    const account = accounts.find(({ address }) => address === value);
+    if (account) {
+      dispatchAccount({ payload: { account }, type: AccountActions.SET_ACCOUNT });
+    }
+  };
+
+  return {
+    account,
+    accounts,
+    derivedAccount,
+    onChangeAccount
+  };
 };
 
 export default useAccounts;

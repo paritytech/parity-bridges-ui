@@ -19,11 +19,8 @@ import React from 'react';
 import { Container, Dropdown } from 'semantic-ui-react';
 import styled from 'styled-components';
 
-import AccountActions from '../actions/accountActions';
-import { useAccountContext, useUpdateAccountContext } from '../contexts/AccountContextProvider';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useAccounts from '../hooks/useAccounts';
-import useDerivedAccount from '../hooks/useDerivedAccount';
 
 interface Props {
   className?: string;
@@ -38,19 +35,13 @@ const formatOptions = (accounts: Array<KeyringPair>) =>
   }));
 
 const Accounts = ({ className }: Props) => {
-  const accounts = useAccounts();
-  const derivedAccount = useDerivedAccount();
-  const { dispatchAccount } = useUpdateAccountContext();
+  const { account, accounts, derivedAccount, onChangeAccount } = useAccounts();
   const { sourceChain, targetChain } = useSourceTarget();
-  const { account: currentAccount } = useAccountContext();
 
-  const value = currentAccount?.address || '';
+  const value = account?.address || '';
 
   const onChange = (evt: any, { value }: any) => {
-    const account = accounts.find(({ address }) => address === value);
-    if (account) {
-      dispatchAccount({ payload: { account }, type: AccountActions.SET_ACCOUNT });
-    }
+    onChangeAccount(value);
   };
 
   return (
@@ -64,11 +55,7 @@ const Accounts = ({ className }: Props) => {
         selection
         options={formatOptions(accounts)}
       />
-      {derivedAccount && (
-        <p>
-          Derived account on {targetChain}: {derivedAccount}
-        </p>
-      )}
+      <p>{derivedAccount && `Derived account on ${targetChain}: ${derivedAccount}`}</p>
     </Container>
   );
 };

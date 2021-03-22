@@ -19,12 +19,13 @@ import { blake2AsHex, decodeAddress, encodeAddress } from '@polkadot/util-crypto
 
 interface Data {
   SS58Format: number;
-  accountDerivation: string;
   bridgeId: string;
   address: string;
 }
 
-export default function getDeriveAccount({ SS58Format = 42, accountDerivation, bridgeId, address }: Data): string {
+const accountDerivation = process.env.REACT_APP_ACCOUNT_DERIVATION || 'pallet-bridge/account-derivation/account';
+
+export default function getDeriveAccount({ SS58Format = 42, bridgeId, address }: Data): string {
   const input = [
     ...compactAddLength(stringToU8a(accountDerivation)),
     ...stringToU8a(bridgeId),

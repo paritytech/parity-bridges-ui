@@ -37,9 +37,7 @@ function App() {
                   <TopBar />
                   <Switch>
                     <Route path={'/'}>
-                      <>
-                        <Main />
-                      </>
+                      <Main />
                     </Route>
                   </Switch>
                 </div>

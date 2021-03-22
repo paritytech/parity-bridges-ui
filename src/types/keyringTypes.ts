@@ -15,22 +15,13 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 import type { KeyringPair } from '@polkadot/keyring/types';
 
-import KeyringActions from '../actions/keyringActions';
 export interface KeyringContextType {
   keyringPairs: Array<KeyringPair>;
   keyringPairsReady: boolean;
 }
-interface Payload {
-  [propName: string]: any;
-}
-
-export interface KeyringState {
-  keyringStatus: string | null;
-}
-
-export type KeyringAction = { type: KeyringActions; payload?: Payload };
 
 export enum KeyringStatuses {
+  INIT = 'INIT',
   LOADING = 'LOADING',
   READY = 'READY',
   ERROR = 'ERROR'

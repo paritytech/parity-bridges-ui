@@ -44,7 +44,7 @@ const Remark = ({ className }: Props) => {
   const [remarkInput, setRemarkInput] = useState('0x');
   const lane_id = useLaneId();
   const [executionStatus, setExecutionStatus] = useState('');
-  const { account: currentAccount } = useAccountContext();
+  const { account } = useAccountContext();
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setExecutionStatus('');
@@ -58,11 +58,9 @@ const Remark = ({ className }: Props) => {
     setIsExecuting(true);
 
     try {
-      if (!currentAccount) {
+      if (!account) {
         return;
       }
-      const account = currentAccount;
-      console.log('account', account);
       const remarkCall = await targetApi.tx.system.remark(remarkInput);
       const remarkInfo = await sourceApi.tx.system.remark(remarkInput).paymentInfo(account);
       const weight = remarkInfo.weight.toNumber();
