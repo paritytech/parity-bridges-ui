@@ -18,11 +18,9 @@ import React, { useState } from 'react';
 import { Button, Container, Input } from 'semantic-ui-react';
 import styled from 'styled-components';
 
-import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import useLoadingApi from '../hooks/useLoadingApi';
 import useSendMessage from '../hooks/useSendMessage';
-import useTransactionPreparation from '../hooks/useTransactionPreparation';
 import { TransactionTypes } from '../types/transactionTypes';
 interface Props {
   className?: string;
@@ -33,20 +31,18 @@ const Remark = ({ className }: Props) => {
   const [remarkInput, setRemarkInput] = useState('0x');
   const [executionStatus, setExecutionStatus] = useState('');
   const areApiReady = useLoadingApi();
-  const { account: currentAccount } = useAccountContext();
-  const { payload } = useTransactionPreparation({ input: remarkInput, type: TransactionTypes.REMARK });
   const { estimatedFee } = useTransactionContext();
   const message = {
     error: 'Error sending remark',
     successfull: '- Remark was executed succesfully'
   };
-  const sendLaneMessage = useSendMessage({
+  const { isButtonDisabled, sendLaneMessage } = useSendMessage({
     input: remarkInput,
     isRunning,
     message,
-    payload,
     setExecutionStatus,
-    setIsRunning
+    setIsRunning,
+    type: TransactionTypes.REMARK
   });
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setExecutionStatus('');
@@ -60,15 +56,13 @@ const Remark = ({ className }: Props) => {
   return (
     <Container className={className}>
       <Input onChange={onChange} value={remarkInput} />
-      <Button disabled={isRunning || !currentAccount} onClick={sendLaneMessage}>
+      <Button disabled={isButtonDisabled()} onClick={sendLaneMessage}>
         Send Remark
       </Button>
-      {estimatedFee && <p>Estimated source Fee: {estimatedFee}</p>}
-      {executionStatus !== '' && (
-        <div className="status">
-          <p>{executionStatus}</p>
-        </div>
-      )}
+      <p> {estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
+      <div className="status">
+        <p>{executionStatus !== '' && executionStatus}</p>
+      </div>
     </Container>
   );
 };

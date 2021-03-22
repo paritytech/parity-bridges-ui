@@ -69,12 +69,12 @@ export function Main({ className }: Props) {
           </Grid.Row>
           <Grid.Row>
             <Grid.Column width={12}>
-              <Remark />
+              <Accounts />
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
             <Grid.Column width={12}>
-              <Accounts />
+              <Remark />
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>

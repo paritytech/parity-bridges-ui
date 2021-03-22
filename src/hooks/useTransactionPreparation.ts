@@ -41,43 +41,15 @@ export default function useTransactionPreparation({ input, type }: Props): FeeAn
 
   const lane_id = useLaneId();
   const { targetChain } = useSourceTarget();
-  const { account, receiverAddress } = useAccountContext();
+  const { account } = useAccountContext();
 
-  const [call, setCall] = useState<Uint8Array | null>(null);
-  const [weight, setWeight] = useState<number | null>(null);
-  const [payload, setPayload] = useState({});
+  const [payload, setPayload] = useState<null | {}>(null);
   const { callFunction, infoFunction } = useTransactionType({ input, type });
 
   const { dispatchTransaction } = useUpdateTransactionContext();
 
   useEffect(() => {
-    async function makeTransferCall() {
-      if (receiverAddress && callFunction) {
-        const transferCall = await callFunction();
-        setCall(transferCall.toU8a());
-      }
-    }
-    if (areApiReady) {
-      makeTransferCall();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [areApiReady, input, receiverAddress]);
-
-  useEffect(() => {
-    async function getWeight() {
-      if (account && receiverAddress && infoFunction) {
-        const transferInfo = await infoFunction();
-        setWeight(transferInfo.weight.toNumber());
-      }
-    }
-    if (areApiReady) {
-      getWeight();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, areApiReady, input, receiverAddress]);
-
-  useEffect(() => {
-    async function calculateFee() {
+    const calculateFee = async () => {
       // Ignoring custom types missed for TS for now.
       // Need to apply: https://polkadot.js.org/docs/api/start/typescript.user
       // @ts-ignore
@@ -97,25 +69,34 @@ export default function useTransactionPreparation({ input, type }: Props): FeeAn
       const estimatedFeeType = sourceApi.registry.createType('Option<Balance>', estimatedFeeCall);
       const fee = estimatedFeeType.toString();
       dispatchTransaction({ payload: { estimatedFee: fee }, type: TransactionActions.SET_ESTIMATED_FEE });
-    }
-    if (areApiReady) {
+    };
+
+    if (areApiReady && payload) {
       calculateFee();
     }
-  }, [lane_id, payload, sourceApi.registry, sourceApi.rpc.state, targetChain, areApiReady, dispatchTransaction]);
+  }, [areApiReady, dispatchTransaction, lane_id, payload, sourceApi.registry, sourceApi.rpc.state, targetChain]);
 
   useEffect(() => {
-    if (account) {
-      const payload = {
-        call,
-        origin: {
-          SourceAccount: account.addressRaw
-        },
-        spec_version: 1,
-        weight
-      };
-      setPayload(payload);
-    }
-  }, [account, call, weight]);
+    const getPayload = async () => {
+      if (account && infoFunction && callFunction) {
+        const transferInfo = await infoFunction();
+        const weight = transferInfo.weight.toNumber();
+        const transferCall = await callFunction();
+        const call = transferCall.toU8a();
+        const payload = {
+          call,
+          origin: {
+            SourceAccount: account.addressRaw
+          },
+          spec_version: 1,
+          weight
+        };
+        setPayload(payload);
+      }
+    };
+
+    getPayload();
+  }, [account, callFunction, infoFunction]);
 
   return {
     payload

@@ -23,6 +23,8 @@ import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext'
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import useLaneId from '../hooks/useLaneId';
+import useTransactionPreparation from '../hooks/useTransactionPreparation';
+import { TransactionTypes } from '../types/transactionTypes';
 
 interface Message {
   successfull: string;
@@ -34,15 +36,16 @@ interface Props {
   setExecutionStatus: (message: string) => void;
   message: Message;
   input: string;
-  payload: any; // to build proper typescript payload type.
+  type: string;
 }
 
-function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, payload }: Props) {
+function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, input, type }: Props) {
   const { api: sourceApi } = useApiSourcePromiseContext();
   const { estimatedFee } = useTransactionContext();
   const lane_id = useLaneId();
   const { targetChain } = useSourceTarget();
-  const { account } = useAccountContext();
+  const { account, receiverAddress } = useAccountContext();
+  const { payload } = useTransactionPreparation({ input, type: TransactionTypes.TRANSFER });
 
   const sendLaneMessage = async () => {
     try {
@@ -71,7 +74,20 @@ function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, 
     }
   };
 
-  return sendLaneMessage;
+  const isButtonDisabled = () => {
+    switch (type) {
+      case TransactionTypes.REMARK:
+        return isRunning || !account;
+        break;
+      case TransactionTypes.TRANSFER:
+        return isRunning || !receiverAddress || !account;
+        break;
+      default:
+        throw new Error(`Unknown type: ${type}`);
+    }
+  };
+
+  return { isButtonDisabled, sendLaneMessage };
 }
 
 export default useSendMessage;
