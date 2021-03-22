@@ -25,7 +25,7 @@ interface Accounts {
   account: KeyringPair | null;
   accounts: Array<KeyringPair> | [];
   derivedAccount: string | null;
-  onChangeAccount: (value: string) => void;
+  setCurrentAccount: (value: string) => void;
 }
 
 const useAccounts = (): Accounts => {
@@ -41,7 +41,7 @@ const useAccounts = (): Accounts => {
     }
   }, [keyringPairsReady, keyringPairs, setAccounts]);
 
-  const onChangeAccount = (value: string) => {
+  const setCurrentAccount = (value: string) => {
     const account = accounts.find(({ address }) => address === value);
     if (account) {
       dispatchAccount({ payload: { account }, type: AccountActions.SET_ACCOUNT });
@@ -52,7 +52,7 @@ const useAccounts = (): Accounts => {
     account,
     accounts,
     derivedAccount,
-    onChangeAccount
+    setCurrentAccount
   };
 };
 

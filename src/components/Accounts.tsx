@@ -35,13 +35,13 @@ const formatOptions = (accounts: Array<KeyringPair>) =>
   }));
 
 const Accounts = ({ className }: Props) => {
-  const { account, accounts, derivedAccount, onChangeAccount } = useAccounts();
+  const { account, accounts, derivedAccount, setCurrentAccount } = useAccounts();
   const { sourceChain, targetChain } = useSourceTarget();
 
   const value = account?.address || '';
 
   const onChange = (evt: any, { value }: any) => {
-    onChangeAccount(value);
+    setCurrentAccount(value);
   };
 
   return (
