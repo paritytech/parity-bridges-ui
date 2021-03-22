@@ -30,11 +30,9 @@ interface Props {
 
 const Remark = ({ className }: Props) => {
   const [isRunning, setIsRunning] = useState(false);
-
-  const areApiReady = useLoadingApi();
   const [remarkInput, setRemarkInput] = useState('0x');
-
   const [executionStatus, setExecutionStatus] = useState('');
+  const areApiReady = useLoadingApi();
   const { account: currentAccount } = useAccountContext();
   const { payload } = useTransactionPreparation({ input: remarkInput, type: TransactionTypes.REMARK });
   const { estimatedFee } = useTransactionContext();
@@ -43,7 +41,6 @@ const Remark = ({ className }: Props) => {
     successfull: '- Remark was executed succesfully'
   };
   const sendLaneMessage = useSendMessage({
-    estimatedFee,
     input: remarkInput,
     isRunning,
     message,
@@ -55,71 +52,6 @@ const Remark = ({ className }: Props) => {
     setExecutionStatus('');
     setRemarkInput(event.target.value);
   };
-
-  /*   async function sendMessageRemark() {
-    if (isRunning) {
-      return false;
-    }
-    setIsRunning(true);
-
-    try {
-      if (!account) {
-        return;
-      }
-      const remarkCall = await targetApi.tx.system.remark(remarkInput);
-      const remarkInfo = await sourceApi.tx.system.remark(remarkInput).paymentInfo(account);
-      const weight = remarkInfo.weight.toNumber();
-      const call = remarkCall.toU8a();
-
-      const payload = {
-        call,
-        origin: {
-          SourceAccount: account.addressRaw
-        },
-        spec_version: 1,
-        weight
-      };
-
-      // Ignoring custom types missed for TS for now.
-      // Need to apply: https://polkadot.js.org/docs/api/start/typescript.user
-      // @ts-ignore
-      const payloadType = sourceApi.registry.createType('OutboundPayload', payload);
-      // @ts-ignore
-      const messageFeeType = sourceApi.registry.createType('MessageFeeData', {
-        lane_id,
-        payload: u8aToHex(payloadType.toU8a())
-      });
-
-      const estimatedFeeCall = await sourceApi.rpc.state.call<Codec>(
-        `To${targetChain}OutboundLaneApi_estimate_message_delivery_and_dispatch_fee`,
-        u8aToHex(messageFeeType.toU8a())
-      );
-
-      // @ts-ignore
-      const estimatedFeeType = sourceApi.registry.createType('Option<Balance>', estimatedFeeCall);
-      const estimatedFee = estimatedFeeType.toString();
-
-      const bridgeMessage = sourceApi.tx[`bridge${targetChain}MessageLane`].sendMessage(lane_id, payload, estimatedFee);
-
-      const options: Partial<SignerOptions> = {
-        nonce: -1
-      };
-      let sourceAccount: string | KeyringPair = account;
-      if (account.meta.isInjected) {
-        const injector = await web3FromSource(account.meta.source as string);
-        options.signer = injector.signer;
-        sourceAccount = account.address;
-      }
-      await bridgeMessage.signAndSend(sourceAccount, { ...options });
-      setExecutionStatus('Remark delivered');
-    } catch (e) {
-      setExecutionStatus('Remark failed');
-
-      console.error(e);
-    } finally {
-      setIsRunning(false);
-    }
-  } */
 
   if (!areApiReady) {
     return null;

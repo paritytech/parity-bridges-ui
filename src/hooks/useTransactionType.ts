@@ -16,20 +16,26 @@
 
 import { useEffect, useState } from 'react';
 
+import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
 import { useApiTargetPromiseContext } from '../contexts/ApiPromiseTargetContext';
 import useLoadingApi from '../hooks/useLoadingApi';
 import { TransactionTypes } from '../types/transactionTypes';
-
 interface TransactionFunction {
   callFunction: Function | null;
   infoFunction: Function | null;
 }
 
-export default function useTransactionType(type: string): TransactionFunction {
+interface Props {
+  input: string;
+  type: string;
+}
+
+export default function useTransactionType({ input, type }: Props): TransactionFunction {
   const areApiReady = useLoadingApi();
   const { api: sourceApi } = useApiSourcePromiseContext();
   const { api: targetApi } = useApiTargetPromiseContext();
+  const { account, receiverAddress } = useAccountContext();
   const [transactionFunction, setTransactionFunction] = useState<TransactionFunction>({
     callFunction: null,
     infoFunction: null
@@ -37,29 +43,29 @@ export default function useTransactionType(type: string): TransactionFunction {
 
   useEffect(() => {
     if (areApiReady) {
-      console.log('areApiReady', areApiReady);
-
       let callFunction = null;
       let infoFunction = null;
-      switch (type) {
-        case TransactionTypes.REMARK:
-          if (targetApi.tx.system && sourceApi.tx.system) {
-            callFunction = targetApi.tx.system.remark;
-            infoFunction = sourceApi.tx.system.remark;
-          }
-          break;
-        case TransactionTypes.TRANSFER:
-          if (targetApi.tx.balance && sourceApi.tx.balance) {
-            callFunction = targetApi.tx.system.remark;
-            infoFunction = sourceApi.tx.system.remark;
-          }
-          break;
-        default:
-          throw new Error(`Unknown type: ${type}`);
+      if (targetApi.tx.balances && sourceApi.tx.balances && receiverAddress && account) {
+        switch (type) {
+          case TransactionTypes.REMARK:
+            if (targetApi.tx.system && sourceApi.tx.system) {
+              callFunction = () => targetApi.tx.system.remark(input);
+              infoFunction = () => sourceApi.tx.system.remark(input).paymentInfo(account);
+            }
+            break;
+          case TransactionTypes.TRANSFER:
+            if (receiverAddress) {
+              callFunction = () => targetApi.tx.balances.transfer(receiverAddress, input);
+              infoFunction = () => sourceApi.tx.balances.transfer(receiverAddress, input).paymentInfo(account);
+            }
+            break;
+          default:
+            throw new Error(`Unknown type: ${type}`);
+        }
+        setTransactionFunction({ callFunction, infoFunction });
       }
-      setTransactionFunction({ callFunction, infoFunction });
     }
-  }, [areApiReady, sourceApi, targetApi, type]);
+  }, [account, areApiReady, input, receiverAddress, sourceApi, targetApi, type]);
 
   return transactionFunction;
 }

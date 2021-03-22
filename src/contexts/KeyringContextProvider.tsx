@@ -76,7 +76,6 @@ export function KeyringContextProvider(props: KeyringContextProviderProps): Reac
   useEffect(() => {
     if (keyringStatus === KeyringStatuses.READY) {
       const keyringOptions = keyring.getPairs();
-      console.log('keyringOptions', keyringOptions);
       setKeyringPairs(keyringOptions);
       setkeyringPairsReady(true);
     }

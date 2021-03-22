@@ -21,6 +21,7 @@ import type { KeyringPair } from '@polkadot/keyring/types';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
+import { useTransactionContext } from '../contexts/TransactionContext';
 import useLaneId from '../hooks/useLaneId';
 
 interface Message {
@@ -33,13 +34,12 @@ interface Props {
   setExecutionStatus: (message: string) => void;
   message: Message;
   input: string;
-  estimatedFee: string | null;
   payload: any; // to build proper typescript payload type.
 }
 
-function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, estimatedFee, payload }: Props) {
+function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, payload }: Props) {
   const { api: sourceApi } = useApiSourcePromiseContext();
-
+  const { estimatedFee } = useTransactionContext();
   const lane_id = useLaneId();
   const { targetChain } = useSourceTarget();
   const { account } = useAccountContext();

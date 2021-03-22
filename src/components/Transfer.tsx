@@ -51,7 +51,6 @@ const Transfer = ({ className }: Props) => {
     successfull: 'Transfer was executed succesfully'
   };
   const sendLaneMessage = useSendMessage({
-    estimatedFee,
     input: transferInput,
     isRunning,
     message,

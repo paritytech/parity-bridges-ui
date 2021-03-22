@@ -14,14 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { chainsConfigs } from './substrateProviders';
+import { chainsConfigs } from '../configs/substrateProviders';
 const getDerivedParameters = (chain: string) => {
-  const { ss58Formats, accountDerivations, bridgeIds } = chainsConfigs;
-  const SS58Format = ss58Formats[chain];
-  const accountDerivation = accountDerivations[chain];
-  const bridgeId = bridgeIds[chain];
+  const { SS58Format, bridgeId } = chainsConfigs[chain];
 
-  return { SS58Format, accountDerivation, bridgeId };
+  return { SS58Format, bridgeId };
 };
 
 export default getDerivedParameters;

@@ -46,14 +46,14 @@ export default function useTransactionPreparation({ input, type }: Props): FeeAn
   const [call, setCall] = useState<Uint8Array | null>(null);
   const [weight, setWeight] = useState<number | null>(null);
   const [payload, setPayload] = useState({});
-  const { callFunction, infoFunction } = useTransactionType(type);
+  const { callFunction, infoFunction } = useTransactionType({ input, type });
 
   const { dispatchTransaction } = useUpdateTransactionContext();
 
   useEffect(() => {
     async function makeTransferCall() {
       if (receiverAddress && callFunction) {
-        const transferCall = await callFunction(receiverAddress, input);
+        const transferCall = await callFunction();
         setCall(transferCall.toU8a());
       }
     }
@@ -66,7 +66,7 @@ export default function useTransactionPreparation({ input, type }: Props): FeeAn
   useEffect(() => {
     async function getWeight() {
       if (account && receiverAddress && infoFunction) {
-        const transferInfo = await infoFunction(receiverAddress, input).paymentInfo(account);
+        const transferInfo = await infoFunction();
         setWeight(transferInfo.weight.toNumber());
       }
     }
@@ -105,14 +105,15 @@ export default function useTransactionPreparation({ input, type }: Props): FeeAn
 
   useEffect(() => {
     if (account) {
-      setPayload({
+      const payload = {
         call,
         origin: {
           SourceAccount: account.addressRaw
         },
         spec_version: 1,
         weight
-      });
+      };
+      setPayload(payload);
     }
   }, [account, call, weight]);
 
