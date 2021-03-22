@@ -14,7 +14,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { CHAIN_1, CHAIN_2 } from '../configs/substrateProviders';
+import { compactAddLength, stringToU8a } from '@polkadot/util';
+import { blake2AsHex, decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 
-const chains = [CHAIN_1, CHAIN_2] as const;
-export type Chains = typeof chains[number];
+interface Data {
+  SS58Format: number;
+  bridgeId: string;
+  address: string;
+}
+
+const accountDerivation = process.env.REACT_APP_ACCOUNT_DERIVATION || 'pallet-bridge/account-derivation/account';
+
+export default function getDeriveAccount({ SS58Format = 42, bridgeId, address }: Data): string {
+  const input = [
+    ...compactAddLength(stringToU8a(accountDerivation)),
+    ...stringToU8a(bridgeId),
+    ...decodeAddress(address)
+  ];
+  return encodeAddress(blake2AsHex(Uint8Array.from(input)), SS58Format);
+}

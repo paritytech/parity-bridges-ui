@@ -16,9 +16,9 @@
 
 import React, { useContext, useReducer } from 'react';
 
+import { CHAIN_1, CHAIN_2 } from '../configs/substrateProviders';
 import sourceTargetReducer from '../reducers/sourceTargetReducer';
 import type { SourceTarget, SourceTargetAction } from '../types/sourceTargetTypes';
-import { CHAIN_1, CHAIN_2 } from '../util/substrateProviders';
 
 export interface UpdateSourceTargetContext {
   dispatchSourceTarget: React.Dispatch<SourceTargetAction>;

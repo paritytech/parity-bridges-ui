@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { CHAIN_1, CHAIN_2 } from '../configs/substrateProviders';
-
-const chains = [CHAIN_1, CHAIN_2] as const;
-export type Chains = typeof chains[number];
+enum AccountActions {
+  SET_ACCOUNT = 'SET_ACCOUNT'
+}
+export default AccountActions;

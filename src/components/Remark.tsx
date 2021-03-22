@@ -14,23 +14,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import Keyring from '@polkadot/keyring';
+import { SignerOptions } from '@polkadot/api/types';
+import { web3FromSource } from '@polkadot/extension-dapp';
+import type { KeyringPair } from '@polkadot/keyring/types';
 import { Codec } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import React, { useState } from 'react';
 import { Button, Container, Input } from 'semantic-ui-react';
 import styled from 'styled-components';
 
+import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
 import { useApiTargetPromiseContext } from '../contexts/ApiPromiseTargetContext';
+import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useLaneId from '../hooks/useLaneId';
 import useLoadingApi from '../hooks/useLoadingApi';
+
 interface Props {
   className?: string;
-  targetChain: string;
 }
 
-const Remark = ({ className, targetChain }: Props) => {
+const Remark = ({ className }: Props) => {
+  const { targetChain } = useSourceTarget();
   const { api: sourceApi } = useApiSourcePromiseContext();
   const { api: targetApi } = useApiTargetPromiseContext();
   const [isExecuting, setIsExecuting] = useState(false);
@@ -39,6 +44,7 @@ const Remark = ({ className, targetChain }: Props) => {
   const [remarkInput, setRemarkInput] = useState('0x');
   const lane_id = useLaneId();
   const [executionStatus, setExecutionStatus] = useState('');
+  const { account } = useAccountContext();
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setExecutionStatus('');
@@ -52,13 +58,12 @@ const Remark = ({ className, targetChain }: Props) => {
     setIsExecuting(true);
 
     try {
-      const keyring = new Keyring({ type: 'sr25519' });
-      const account = keyring.addFromUri('//Alice');
-
+      if (!account) {
+        return;
+      }
       const remarkCall = await targetApi.tx.system.remark(remarkInput);
       const remarkInfo = await sourceApi.tx.system.remark(remarkInput).paymentInfo(account);
       const weight = remarkInfo.weight.toNumber();
-
       const call = remarkCall.toU8a();
 
       const payload = {
@@ -90,7 +95,17 @@ const Remark = ({ className, targetChain }: Props) => {
       const estimatedFee = estimatedFeeType.toString();
 
       const bridgeMessage = sourceApi.tx[`bridge${targetChain}MessageLane`].sendMessage(lane_id, payload, estimatedFee);
-      await bridgeMessage.signAndSend(account, { nonce: -1 });
+
+      const options: Partial<SignerOptions> = {
+        nonce: -1
+      };
+      let sourceAccount: string | KeyringPair = account;
+      if (account.meta.isInjected) {
+        const injector = await web3FromSource(account.meta.source as string);
+        options.signer = injector.signer;
+        sourceAccount = account.address;
+      }
+      await bridgeMessage.signAndSend(sourceAccount, { ...options });
       setExecutionStatus('Remark delivered');
     } catch (e) {
       setExecutionStatus('Remark failed');

@@ -13,8 +13,16 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
+import type { KeyringPair } from '@polkadot/keyring/types';
 
-import { CHAIN_1, CHAIN_2 } from '../configs/substrateProviders';
+export interface KeyringContextType {
+  keyringPairs: Array<KeyringPair>;
+  keyringPairsReady: boolean;
+}
 
-const chains = [CHAIN_1, CHAIN_2] as const;
-export type Chains = typeof chains[number];
+export enum KeyringStatuses {
+  INIT = 'INIT',
+  LOADING = 'LOADING',
+  READY = 'READY',
+  ERROR = 'ERROR'
+}

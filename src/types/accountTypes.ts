@@ -14,18 +14,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiOptions } from '@polkadot/api/types';
+import type { KeyringPair } from '@polkadot/keyring/types';
 
-import customTypesMillau from './customTypesMillau.json';
-import customTypesRialto from './customTypesRialto.json';
+import AccountActions from '../actions/accountActions';
 
-interface Types {
-  [key: string]: ApiOptions['types'];
+type Account = KeyringPair | null;
+
+export interface AccountContextType {
+  account: Account;
 }
 
-const types: Types = {
-  Millau: customTypesMillau,
-  Rialto: customTypesRialto
-};
+interface Payload {
+  [propName: string]: Account;
+}
 
-export default types;
+export interface AccountState {
+  account: Account;
+}
+
+export type AccountsActionType = { type: AccountActions; payload: Payload };

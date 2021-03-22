@@ -14,7 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { CHAIN_1, CHAIN_2 } from '../configs/substrateProviders';
+import AccountActions from '../actions/accountActions';
+import type { AccountsActionType, AccountState } from '../types/accountTypes';
 
-const chains = [CHAIN_1, CHAIN_2] as const;
-export type Chains = typeof chains[number];
+export default function accountReducer(state: AccountState, action: AccountsActionType): AccountState {
+  switch (action.type) {
+    case AccountActions.SET_ACCOUNT:
+      return { ...state, account: action.payload.account };
+    default:
+      throw new Error(`Unknown type: ${action.type}`);
+  }
+}
