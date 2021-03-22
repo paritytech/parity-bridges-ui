@@ -17,7 +17,6 @@
 import { chainsConfigs } from '../configs/substrateProviders';
 const getDerivedParameters = (chain: string) => {
   const { SS58Format, bridgeId } = chainsConfigs[chain];
-
   return { SS58Format, bridgeId };
 };
 
