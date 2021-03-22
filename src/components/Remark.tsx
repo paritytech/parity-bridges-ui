@@ -14,48 +14,53 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { SignerOptions } from '@polkadot/api/types';
-import { web3FromSource } from '@polkadot/extension-dapp';
-import type { KeyringPair } from '@polkadot/keyring/types';
-import { Codec } from '@polkadot/types/types';
-import { u8aToHex } from '@polkadot/util';
 import React, { useState } from 'react';
 import { Button, Container, Input } from 'semantic-ui-react';
 import styled from 'styled-components';
 
 import { useAccountContext } from '../contexts/AccountContextProvider';
-import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
-import { useApiTargetPromiseContext } from '../contexts/ApiPromiseTargetContext';
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import useLaneId from '../hooks/useLaneId';
+import { useTransactionContext } from '../contexts/TransactionContext';
 import useLoadingApi from '../hooks/useLoadingApi';
-
+import useSendMessage from '../hooks/useSendMessage';
+import useTransactionPreparation from '../hooks/useTransactionPreparation';
+import { TransactionTypes } from '../types/transactionTypes';
 interface Props {
   className?: string;
 }
 
 const Remark = ({ className }: Props) => {
-  const { targetChain } = useSourceTarget();
-  const { api: sourceApi } = useApiSourcePromiseContext();
-  const { api: targetApi } = useApiTargetPromiseContext();
-  const [isExecuting, setIsExecuting] = useState(false);
+  const [isRunning, setIsRunning] = useState(false);
 
   const areApiReady = useLoadingApi();
   const [remarkInput, setRemarkInput] = useState('0x');
-  const lane_id = useLaneId();
-  const [executionStatus, setExecutionStatus] = useState('');
-  const { account } = useAccountContext();
 
+  const [executionStatus, setExecutionStatus] = useState('');
+  const { account: currentAccount } = useAccountContext();
+  const { payload } = useTransactionPreparation({ input: remarkInput, type: TransactionTypes.REMARK });
+  const { estimatedFee } = useTransactionContext();
+  const message = {
+    error: 'Error sending remark',
+    successfull: '- Remark was executed succesfully'
+  };
+  const sendLaneMessage = useSendMessage({
+    estimatedFee,
+    input: remarkInput,
+    isRunning,
+    message,
+    payload,
+    setExecutionStatus,
+    setIsRunning
+  });
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setExecutionStatus('');
     setRemarkInput(event.target.value);
   };
 
-  async function sendMessageRemark() {
-    if (isExecuting) {
+  /*   async function sendMessageRemark() {
+    if (isRunning) {
       return false;
     }
-    setIsExecuting(true);
+    setIsRunning(true);
 
     try {
       if (!account) {
@@ -112,9 +117,9 @@ const Remark = ({ className }: Props) => {
 
       console.error(e);
     } finally {
-      setIsExecuting(false);
+      setIsRunning(false);
     }
-  }
+  } */
 
   if (!areApiReady) {
     return null;
@@ -123,9 +128,10 @@ const Remark = ({ className }: Props) => {
   return (
     <Container className={className}>
       <Input onChange={onChange} value={remarkInput} />
-      <Button disabled={isExecuting} onClick={sendMessageRemark}>
+      <Button disabled={isRunning || !currentAccount} onClick={sendLaneMessage}>
         Send Remark
       </Button>
+      {estimatedFee && <p>Estimated source Fee: {estimatedFee}</p>}
       {executionStatus !== '' && (
         <div className="status">
           <p>{executionStatus}</p>
