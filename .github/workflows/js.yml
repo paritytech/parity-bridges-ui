@@ -26,7 +26,7 @@ jobs:
         node-version: '14'
     - run: yarn
     - run: yarn lint
-    - run: yarn test
+    - run: yarn test --passWithNoTests
 
   build:
     name: Build & Deploy
