@@ -18,14 +18,16 @@ import TransactionActions from '../actions/transactionActions';
 
 export interface TransactionContextType {
   estimatedFee: string | null;
+  receiverAddress: string | null;
 }
 
 interface Payload {
-  [propName: string]: any;
+  [propName: string]: string;
 }
 
 export interface TransactionState {
   estimatedFee: string | null;
+  receiverAddress: string | null;
 }
 
 export type TransactionsActionType = { type: TransactionActions; payload: Payload };

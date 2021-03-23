@@ -15,6 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 enum TransactionActions {
-  SET_ESTIMATED_FEE = 'SET_ESTIMATED_FEE'
+  SET_ESTIMATED_FEE = 'SET_ESTIMATED_FEE',
+  SET_RECEIVER_ADDRESS = 'SET_RECEIVER_ADDRESS'
 }
 export default TransactionActions;

@@ -15,7 +15,6 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 enum AccountActions {
-  SET_ACCOUNT = 'SET_ACCOUNT',
-  SET_RECEIVER_ADDRESS = 'SET_RECEIVER_ADDRESS'
+  SET_ACCOUNT = 'SET_ACCOUNT'
 }
 export default AccountActions;

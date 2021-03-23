@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import AccountActions from '../actions/accountActions';
-import { useUpdateAccountContext } from '../contexts/AccountContextProvider';
+import TransactionActions from '../actions/transactionActions';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
+import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import getReceiverAddress from '../util/getReceiverAddress';
 
 interface Props {
@@ -25,7 +25,7 @@ interface Props {
 }
 
 export default function useConnectedReceiver(): Function {
-  const { dispatchAccount } = useUpdateAccountContext();
+  const { dispatchTransaction } = useUpdateTransactionContext();
   const { targetChain } = useSourceTarget();
 
   const setConnectedReceiver = ({ setReceiverMessage, receiver }: Props) => {
@@ -35,7 +35,7 @@ export default function useConnectedReceiver(): Function {
       if (receiverAddress !== receiver) {
         setReceiverMessage(`The format for the account is incorrect, funds will be sent to ${receiverAddress}`);
       }
-      dispatchAccount({ payload: { receiverAddress }, type: AccountActions.SET_RECEIVER_ADDRESS });
+      dispatchTransaction({ payload: { receiverAddress }, type: TransactionActions.SET_RECEIVER_ADDRESS });
     } catch (e) {
       console.log('e', e);
       if (e.message === 'INCORRECT-FORMAT') {

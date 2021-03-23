@@ -21,7 +21,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
   switch (action.type) {
     case TransactionActions.SET_ESTIMATED_FEE:
       return { ...state, estimatedFee: action.payload.estimatedFee };
-
+    case TransactionActions.SET_RECEIVER_ADDRESS:
+      return { ...state, receiverAddress: action.payload.receiverAddress };
     default:
       throw new Error(`Unknown type: ${action.type}`);
   }

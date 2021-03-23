@@ -18,7 +18,6 @@ import React, { useState } from 'react';
 import { Button, Container, Grid, Input } from 'semantic-ui-react';
 import styled from 'styled-components';
 
-import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import useConnectedReceiver from '../hooks/useConnectedReceiver';
 import useLoadingApi from '../hooks/useLoadingApi';
@@ -37,8 +36,8 @@ const Transfer = ({ className }: Props) => {
   const [executionStatus, setExecutionStatus] = useState('');
   const setConnectedReceiver = useConnectedReceiver();
   const areApiReady = useLoadingApi();
-  const { receiverAddress } = useAccountContext();
-  const { estimatedFee } = useTransactionContext();
+
+  const { estimatedFee, receiverAddress } = useTransactionContext();
   const message = {
     error: 'Error sending transfer',
     successfull: 'Transfer was executed succesfully'

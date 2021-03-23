@@ -46,7 +46,10 @@ export function useUpdateTransactionContext() {
 export function TransactionContextProvider(props: TransactionContextProviderProps): React.ReactElement {
   const { children = null } = props;
 
-  const [transaction, dispatchTransaction] = useReducer(transactionReducer, { estimatedFee: null });
+  const [transaction, dispatchTransaction] = useReducer(transactionReducer, {
+    estimatedFee: null,
+    receiverAddress: null
+  });
 
   return (
     <TransactionContext.Provider value={transaction}>

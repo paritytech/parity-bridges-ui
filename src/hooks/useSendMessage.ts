@@ -41,10 +41,10 @@ interface Props {
 
 function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, input, type }: Props) {
   const { api: sourceApi } = useApiSourcePromiseContext();
-  const { estimatedFee } = useTransactionContext();
-  const lane_id = useLaneId();
+  const { estimatedFee, receiverAddress } = useTransactionContext();
+  const laneId = useLaneId();
   const { targetChain } = useSourceTarget();
-  const { account, receiverAddress } = useAccountContext();
+  const { account } = useAccountContext();
   const { payload } = useTransactionPreparation({ input, type: TransactionTypes.TRANSFER });
 
   const sendLaneMessage = async () => {
@@ -54,7 +54,7 @@ function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, 
       }
       setIsRunning(true);
 
-      const bridgeMessage = sourceApi.tx[`bridge${targetChain}MessageLane`].sendMessage(lane_id, payload, estimatedFee);
+      const bridgeMessage = sourceApi.tx[`bridge${targetChain}MessageLane`].sendMessage(laneId, payload, estimatedFee);
       const options: Partial<SignerOptions> = {
         nonce: -1
       };
