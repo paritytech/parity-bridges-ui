@@ -19,7 +19,7 @@ import type { SourceTarget, SourceTargetAction } from '../types/sourceTargetType
 
 export default function sourceTargetReducer(state: SourceTarget, action: SourceTargetAction): SourceTarget {
   switch (action.type) {
-    case SourceTargetActionsTypes.SWITCH_CHAINS: {
+    case SourceTargetActionsTypes.SWAP_CHAINS: {
       return { ...state, sourceChain: state.targetChain, targetChain: state.sourceChain };
     }
     default: {

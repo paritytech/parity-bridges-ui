@@ -15,11 +15,11 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 enum SourceTargetActionsTypes {
-  SWITCH_CHAINS = 'SWITCH_CHAINS'
+  SWAP_CHAINS = 'SWAP_CHAINS'
 }
 
 const switchChains = () => ({
-  type: SourceTargetActionsTypes.SWITCH_CHAINS
+  type: SourceTargetActionsTypes.SWAP_CHAINS
 });
 
 const SourceTargetActionsCreators = {
