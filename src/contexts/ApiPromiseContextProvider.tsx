@@ -21,6 +21,7 @@ import { TypeRegistry } from '@polkadot/types';
 import React, { useEffect, useState } from 'react';
 
 import { ApiPromiseContextType } from '../types/sourceTargetTypes';
+import logger from '../util/logger';
 import { useDidUpdateEffect } from '../util/useDidUpdateEffect';
 import { useSourceTarget } from './SourceTargetContextProvider';
 
@@ -45,7 +46,7 @@ export function ApiPromiseContextProvider(props: ApiRxContextProviderProps): Rea
   useEffect(() => {
     if (isReady) {
       setIsReady(false);
-      apiPromise.disconnect().then(() => console.log(`${contextType} Resetting connection`));
+      apiPromise.disconnect().then(() => logger.info(`${contextType} Resetting connection`));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sourceTarget]);

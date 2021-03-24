@@ -13,20 +13,25 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
+import winston from 'winston';
 
-import type { Account } from '../types/accountTypes';
-
-enum AccountActionsTypes {
-  SET_ACCOUNT = 'SET_ACCOUNT'
-}
-
-const setAccount = (account: Account) => ({
-  payload: { account },
-  type: AccountActionsTypes.SET_ACCOUNT
+winston.addColors({
+  debug: 'grey',
+  error: 'red',
+  info: 'green',
+  warn: 'blue'
 });
 
-const AccountActionCreators = {
-  setAccount
-};
+const myformat = winston.format.cli({
+  all: true
+});
 
-export { AccountActionsTypes, AccountActionCreators };
+const logger = winston.createLogger({
+  transports: [
+    new winston.transports.Console({
+      format: myformat
+    })
+  ]
+});
+
+export default logger;

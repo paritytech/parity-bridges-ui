@@ -14,19 +14,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { Account } from '../types/accountTypes';
-
-enum AccountActionsTypes {
-  SET_ACCOUNT = 'SET_ACCOUNT'
+enum TransactionActionTypes {
+  SET_ESTIMATED_FEE = 'SET_ESTIMATED_FEE',
+  SET_RECEIVER_ADDRESS = 'SET_RECEIVER_ADDRESS'
 }
 
-const setAccount = (account: Account) => ({
-  payload: { account },
-  type: AccountActionsTypes.SET_ACCOUNT
+const estimateFee = (estimatedFee: string) => ({
+  payload: { estimatedFee },
+  type: TransactionActionTypes.SET_ESTIMATED_FEE
 });
 
-const AccountActionCreators = {
-  setAccount
+const setReceiverAddress = (receiverAddress: string) => ({
+  payload: { receiverAddress },
+  type: TransactionActionTypes.SET_RECEIVER_ADDRESS
+});
+
+const TransactionActionCreators = {
+  estimateFee,
+  setReceiverAddress
 };
 
-export { AccountActionsTypes, AccountActionCreators };
+export { TransactionActionCreators, TransactionActionTypes };

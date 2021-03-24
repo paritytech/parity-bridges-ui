@@ -14,12 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { addresses } from '../constants';
+import { TransactionActionTypes } from '../actions/transactionActions';
+import type { TransactionsActionType, TransactionState } from '../types/transactionTypes';
 
-// Parse the receiver of the funds on the substrate side.
-//
-// Supports a bunch of pre-defined addresses like alice|bob|joshy, etc.
-export default function parseReceiver(recv: string): string {
-  const v = recv.toLowerCase().replace(/[^a-z0-9]/, '') as keyof typeof addresses;
-  return addresses[v] || recv;
+export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
+  switch (action.type) {
+    case TransactionActionTypes.SET_ESTIMATED_FEE:
+      return { ...state, estimatedFee: action.payload.estimatedFee };
+    case TransactionActionTypes.SET_RECEIVER_ADDRESS:
+      return { ...state, receiverAddress: action.payload.receiverAddress };
+    default:
+      throw new Error(`Unknown type: ${action.type}`);
+  }
 }

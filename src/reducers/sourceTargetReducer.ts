@@ -14,27 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import Actions from '../actions/actionTypes';
+import { SourceTargetActionsTypes } from '../actions/sourceTargetActions';
 import type { SourceTarget, SourceTargetAction } from '../types/sourceTargetTypes';
-
-const validateChange = (input1: string, input2: string) => {
-  if (input1 === input2) {
-    throw new Error('Source & Target chains must be different');
-  }
-};
 
 export default function sourceTargetReducer(state: SourceTarget, action: SourceTargetAction): SourceTarget {
   switch (action.type) {
-    case Actions.CHANGE_SOURCE: {
-      validateChange(action.payload.sourceChain, state.targetChain);
-      return { ...state, sourceChain: action.payload.sourceChain };
-    }
-    case Actions.CHANGE_TARGET: {
-      validateChange(action.payload.targetChain, state.sourceChain);
-      return { ...state, targetChain: action.payload.targetChain };
-    }
-    case Actions.SWITCH_CHAINS: {
-      validateChange(action.payload.targetChain, state.sourceChain);
+    case SourceTargetActionsTypes.SWAP_CHAINS: {
       return { ...state, sourceChain: state.targetChain, targetChain: state.sourceChain };
     }
     default: {
