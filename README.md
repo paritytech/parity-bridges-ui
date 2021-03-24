@@ -2,10 +2,8 @@
 
 The goal of the UI is to provide the users a convenient way of interacting with the Bridge - querying its state and sending transactions.
 
-
-| 🚀 | Live version at [//paritytech.github.io/parity-bridges-ui](https://paritytech.github.io/parity-bridges-ui) |
-|----|:------------------------|
-
+| 🚀  | Live version at [//paritytech.github.io/parity-bridges-ui](https://paritytech.github.io/parity-bridges-ui) |
+| --- | :--------------------------------------------------------------------------------------------------------- |
 
 ## Configuring custom Substrate providers / chains
 
@@ -24,9 +22,12 @@ REACT_APP_MILLAU_BRIDGE_ID=mlau
 REACT_APP_RIALTO_BRIDGE_ID=rlto
 ```
 
-| ℹ️ | In case these values are not provided the default chains will be Rialto and Millau chains. |
-|----|:------------------------|
+| ℹ️  | In case these values are not provided the default chains will be Rialto and Millau chains. |
+| --- | :----------------------------------------------------------------------------------------- |
 
+## Running the bridge
+
+Please refeer to this section of the bridges project to run the bridge locally: [running-the-bridge](https://github.com/paritytech/parity-bridges-common#running-the-bridge)
 
 ## Development
 
