@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ApiPromise } from '@polkadot/api';
 import { ApiOptions } from '@polkadot/api/types';
 import { ProviderInterface } from '@polkadot/rpc-provider/types';
@@ -42,29 +43,45 @@ export function ApiPromiseContextProvider(props: ApiRxContextProviderProps): Rea
   const options = { hasher, provider, types };
   const [apiPromise, setApiPromise] = useState<ApiPromise>(new ApiPromise(options));
   const [isReady, setIsReady] = useState(false);
+  const [disconnected, setDisconnected] = useState(false);
 
   useEffect(() => {
     if (isReady) {
       setIsReady(false);
-      apiPromise.disconnect().then(() => logger.info(`${contextType} Resetting connection`));
+      setApiPromise(new ApiPromise(options));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sourceTarget]);
 
   useDidUpdateEffect(() => {
+    if (!isReady && !apiPromise.isConnected) {
+      apiPromise.disconnect().then(() => {
+        setDisconnected(true);
+        logger.info(`${contextType} Resetting connection`);
+      });
+    }
+  }, [isReady]);
+
+  useDidUpdateEffect(() => {
     ApiPromise.create(options).then((_api) => {
+      logger.info(`${contextType} connection recreated `);
       setApiPromise(_api);
+      setDisconnected(false);
     });
-  }, [provider]);
+  }, [isReady, disconnected]);
 
   useEffect(() => {
-    apiPromise.isReady.then(() => {
-      if (types) {
-        registry.register(types);
-      }
-
-      setIsReady(true);
-    });
+    if (!disconnected) {
+      apiPromise.isReady
+        .then(() => {
+          if (types) {
+            registry.register(types);
+          }
+          logger.info(`${contextType} type registration ready`);
+          setIsReady(true);
+        })
+        .catch((e) => logger.error(`${contextType} error in registration`, e));
+    }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiPromise.isReady]);
