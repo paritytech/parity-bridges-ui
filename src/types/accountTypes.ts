@@ -16,9 +16,9 @@
 
 import type { KeyringPair } from '@polkadot/keyring/types';
 
-import AccountActions from '../actions/accountActions';
+import { AccountActionsTypes } from '../actions/accountActions';
 
-type Account = KeyringPair | null;
+export type Account = KeyringPair | null;
 
 export interface AccountContextType {
   account: Account;
@@ -32,4 +32,4 @@ export interface AccountState {
   account: Account;
 }
 
-export type AccountsActionType = { type: AccountActions; payload: Payload };
+export type AccountsActionType = { type: AccountActionsTypes; payload: Payload };

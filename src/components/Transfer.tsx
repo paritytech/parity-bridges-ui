@@ -15,38 +15,55 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React, { useState } from 'react';
-import { Button, Container, Input } from 'semantic-ui-react';
+import { Button, Container, Grid, Input } from 'semantic-ui-react';
 import styled from 'styled-components';
 
 import { useTransactionContext } from '../contexts/TransactionContext';
+import useConnectedReceiver from '../hooks/useConnectedReceiver';
 import useLoadingApi from '../hooks/useLoadingApi';
 import useSendMessage from '../hooks/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
+
 interface Props {
   className?: string;
 }
 
-const Remark = ({ className }: Props) => {
+const Transfer = ({ className }: Props) => {
   const [isRunning, setIsRunning] = useState(false);
-  const [remarkInput, setRemarkInput] = useState('0x');
+  const [transferInput, setTransferInput] = useState('0');
+  const [receiverInput, setReceiverInput] = useState('');
+
+  const [receiverMessage, setReceiverMessage] = useState<string | null>();
   const [executionStatus, setExecutionStatus] = useState('');
+  const setConnectedReceiver = useConnectedReceiver();
   const areApiReady = useLoadingApi();
-  const { estimatedFee } = useTransactionContext();
+
+  const { estimatedFee, receiverAddress } = useTransactionContext();
   const message = {
-    error: 'Error sending remark',
-    successfull: '- Remark was executed succesfully'
+    error: 'Error sending transfer',
+    successfull: 'Transfer was executed succesfully'
   };
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
-    input: remarkInput,
+    input: transferInput,
     isRunning,
     message,
     setExecutionStatus,
     setIsRunning,
-    type: TransactionTypes.REMARK
+    type: TransactionTypes.TRANSFER
   });
+
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setExecutionStatus('');
-    setRemarkInput(event.target.value);
+    setTransferInput(event.target.value);
+  };
+
+  const onReceiverChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const receiver = event.target.value;
+    setReceiverInput(receiver);
+    setConnectedReceiver({
+      receiver,
+      setReceiverMessage
+    });
   };
 
   if (!areApiReady) {
@@ -55,11 +72,27 @@ const Remark = ({ className }: Props) => {
 
   return (
     <Container className={className}>
-      <Input onChange={onChange} value={remarkInput} />
-      <Button disabled={isButtonDisabled()} onClick={sendLaneMessage}>
-        Send Remark
-      </Button>
-      <p>{estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
+      <Grid.Row>
+        <Grid.Column>
+          <label>Receiver</label>
+          <Input fluid onChange={onReceiverChange} value={receiverInput} />
+          <p>{receiverMessage && `${receiverMessage}`}</p>
+        </Grid.Column>
+      </Grid.Row>
+      <Grid.Row>
+        <Grid.Column>
+          <label>Sender</label>
+          <Input onChange={onChange} value={transferInput} />
+        </Grid.Column>
+      </Grid.Row>
+      <Grid.Row>
+        <Grid.Column>
+          <Button disabled={isButtonDisabled()} onClick={sendLaneMessage}>
+            Send Transfer
+          </Button>
+          <p>{receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
+        </Grid.Column>
+      </Grid.Row>
       <div className="status">
         <p>{executionStatus !== '' && executionStatus}</p>
       </div>
@@ -67,7 +100,4 @@ const Remark = ({ className }: Props) => {
   );
 };
 
-export default styled(Remark)`
-  display: flex !important;
-  justify-content: center !important;
-`;
+export default styled(Transfer)``;

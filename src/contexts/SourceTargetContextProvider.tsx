@@ -21,7 +21,7 @@ import sourceTargetReducer from '../reducers/sourceTargetReducer';
 import type { SourceTarget, SourceTargetAction } from '../types/sourceTargetTypes';
 
 export interface UpdateSourceTargetContext {
-  dispatchSourceTarget: React.Dispatch<SourceTargetAction>;
+  dispatchChangeSourceTarget: React.Dispatch<SourceTargetAction>;
 }
 
 export interface SourceTargetContextProps {
@@ -43,14 +43,14 @@ export function useUpdateSourceTarget() {
 }
 
 export function SourceTargetContextProvider({ children }: SourceTargetContextProps): React.ReactElement {
-  const [currentSourceTarget, dispatchSourceTarget] = useReducer(sourceTargetReducer, {
+  const [currentSourceTarget, dispatchChangeSourceTarget] = useReducer(sourceTargetReducer, {
     sourceChain: CHAIN_1,
     targetChain: CHAIN_2
   });
 
   return (
     <SourceTargetContext.Provider value={currentSourceTarget}>
-      <UpdateSourceTargetContext.Provider value={{ dispatchSourceTarget }}>
+      <UpdateSourceTargetContext.Provider value={{ dispatchChangeSourceTarget }}>
         {children}
       </UpdateSourceTargetContext.Provider>
     </SourceTargetContext.Provider>

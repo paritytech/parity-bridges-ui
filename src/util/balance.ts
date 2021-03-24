@@ -15,7 +15,6 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { formatBalance } from '@polkadot/util';
-
 // Convert a string into a nicely formatted ETH balance string.
 export function toEthBalance(v: string) {
   return formatBalance(v.toString(), {

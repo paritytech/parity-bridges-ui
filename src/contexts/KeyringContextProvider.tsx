@@ -21,6 +21,7 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 import { chainsConfigs } from '../configs/substrateProviders';
 import { KeyringContextType, KeyringStatuses } from '../types/keyringTypes';
+import logger from '../util/logger';
 import { useSourceTarget } from './SourceTargetContextProvider';
 
 interface KeyringContextProviderProps {
@@ -57,7 +58,7 @@ export function KeyringContextProvider(props: KeyringContextProviderProps): Reac
         keyring.loadAll({ isDevelopment, ss58Format: sourceChainSS58Format }, allAccounts);
         setKeyringStatus(KeyringStatuses.READY);
       } catch (e) {
-        console.error(e);
+        logger.error(e);
         setKeyringStatus(KeyringStatuses.ERROR);
       }
     };
@@ -76,7 +77,6 @@ export function KeyringContextProvider(props: KeyringContextProviderProps): Reac
   useEffect(() => {
     if (keyringStatus === KeyringStatuses.READY) {
       const keyringOptions = keyring.getPairs();
-      console.log('keyringOptions', keyringOptions);
       setKeyringPairs(keyringOptions);
       setkeyringPairsReady(true);
     }
