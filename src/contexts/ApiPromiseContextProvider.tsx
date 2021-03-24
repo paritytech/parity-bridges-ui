@@ -47,6 +47,7 @@ export function ApiPromiseContextProvider(props: ApiRxContextProviderProps): Rea
 
   useEffect(() => {
     if (isReady) {
+      logger.info(`${contextType} was changed`);
       setIsReady(false);
       setApiPromise(new ApiPromise(options));
     }
@@ -63,12 +64,14 @@ export function ApiPromiseContextProvider(props: ApiRxContextProviderProps): Rea
   }, [isReady]);
 
   useDidUpdateEffect(() => {
-    ApiPromise.create(options).then((_api) => {
-      logger.info(`${contextType} connection recreated `);
-      setApiPromise(_api);
-      setDisconnected(false);
-    });
-  }, [isReady, disconnected]);
+    if (!apiPromise.isConnected) {
+      ApiPromise.create(options).then((_api) => {
+        logger.info(`${contextType} connection recreated `);
+        setApiPromise(_api);
+        setDisconnected(false);
+      });
+    }
+  }, [apiPromise.isConnected]);
 
   useEffect(() => {
     if (!disconnected) {
