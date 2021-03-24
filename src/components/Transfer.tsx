@@ -70,8 +70,6 @@ const Transfer = ({ className }: Props) => {
     return null;
   }
 
-  console.log('isButtonDisabled', isButtonDisabled());
-
   return (
     <Container className={className}>
       <Grid.Row>

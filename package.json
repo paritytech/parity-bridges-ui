@@ -21,6 +21,7 @@
     "@types/react-dom": "^16.9.8",
     "@types/react-router-dom": "^5.1.7",
     "@types/styled-components": "^5.1.7",
+    "babel-jest": "^26.6.3",
     "blockies-ts": "^1.0.0",
     "bn.js": "^5.1.3",
     "eslint-config-airbnb-typescript-prettier": "^4.1.0",
@@ -38,7 +39,7 @@
   "scripts": {
     "start": "PORT=3001 react-app-rewired start",
     "build": "react-app-rewired build",
-    "test": "react-app-rewired test",
+    "test": "react-app-rewired test --transformIgnorePatterns 'node_modules/(?!@codemirror)/'",
     "eject": "react-app-rewired eject",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix"
   },
