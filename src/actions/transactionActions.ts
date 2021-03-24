@@ -14,8 +14,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-enum TransactionActions {
+enum TransactionActionTypes {
   SET_ESTIMATED_FEE = 'SET_ESTIMATED_FEE',
   SET_RECEIVER_ADDRESS = 'SET_RECEIVER_ADDRESS'
 }
-export default TransactionActions;
+
+const estimateFee = (estimatedFee: string) => ({
+  payload: { estimatedFee },
+  type: TransactionActionTypes.SET_ESTIMATED_FEE
+});
+
+const setReceiverAddress = (receiverAddress: string) => ({
+  payload: { receiverAddress },
+  type: TransactionActionTypes.SET_RECEIVER_ADDRESS
+});
+
+const TransactionActionCreators = {
+  estimateFee,
+  setReceiverAddress
+};
+
+export { TransactionActionCreators, TransactionActionTypes };

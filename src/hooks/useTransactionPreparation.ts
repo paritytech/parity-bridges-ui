@@ -17,7 +17,8 @@ import { Codec } from '@polkadot/types/types';
 import { u8aToHex } from '@polkadot/util';
 import { useEffect, useState } from 'react';
 
-import TransactionActions from '../actions/transactionActions';
+import { TransactionActionCreators } from '../actions/transactionActions';
+import { ESTIMATED_FEE_RUNTIME_API_CALL } from '../constants';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
@@ -39,7 +40,7 @@ export default function useTransactionPreparation({ input, type }: Props): FeeAn
   const areApiReady = useLoadingApi();
   const { api: sourceApi } = useApiSourcePromiseContext();
 
-  const lane_id = useLaneId();
+  const laneId = useLaneId();
   const { targetChain } = useSourceTarget();
   const { account } = useAccountContext();
 
@@ -56,25 +57,25 @@ export default function useTransactionPreparation({ input, type }: Props): FeeAn
       const payloadType = sourceApi.registry.createType('OutboundPayload', payload);
       // @ts-ignore
       const messageFeeType = sourceApi.registry.createType('MessageFeeData', {
-        lane_id,
+        lane_id: laneId,
         payload: u8aToHex(payloadType.toU8a())
       });
 
       const estimatedFeeCall = await sourceApi.rpc.state.call<Codec>(
-        `To${targetChain}OutboundLaneApi_estimate_message_delivery_and_dispatch_fee`,
+        `To${targetChain}${ESTIMATED_FEE_RUNTIME_API_CALL}`,
         u8aToHex(messageFeeType.toU8a())
       );
 
       // @ts-ignore
       const estimatedFeeType = sourceApi.registry.createType('Option<Balance>', estimatedFeeCall);
-      const fee = estimatedFeeType.toString();
-      dispatchTransaction({ payload: { estimatedFee: fee }, type: TransactionActions.SET_ESTIMATED_FEE });
+      const estimatedFee = estimatedFeeType.toString();
+      dispatchTransaction(TransactionActionCreators.estimateFee(estimatedFee));
     };
 
     if (areApiReady && payload) {
       calculateFee();
     }
-  }, [areApiReady, dispatchTransaction, lane_id, payload, sourceApi.registry, sourceApi.rpc.state, targetChain]);
+  }, [areApiReady, dispatchTransaction, laneId, payload, sourceApi.registry, sourceApi.rpc.state, targetChain]);
 
   useEffect(() => {
     const getPayload = async () => {

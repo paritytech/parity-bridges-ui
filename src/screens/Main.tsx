@@ -19,7 +19,7 @@ import { Container, Grid } from 'semantic-ui-react';
 import { Button, Icon } from 'semantic-ui-react';
 import styled from 'styled-components';
 
-import ActionsTypes from '../actions/actionTypes';
+import { SourceTargetActionsCreators } from '../actions/sourceTargetActions';
 import Accounts from '../components/Accounts';
 import DashboardCard from '../components/DashboardCard';
 import Remark from '../components/Remark';
@@ -38,12 +38,8 @@ export function Main({ className }: Props) {
   const isLoading = useLoadingApi();
   const { sourceChain, targetChain } = useSourceTarget();
 
-  const { dispatchSourceTarget } = useUpdateSourceTarget();
-  const onChangeSourceTarget = () =>
-    dispatchSourceTarget({
-      payload: {},
-      type: ActionsTypes.SWITCH_CHAINS
-    });
+  const { dispatchChangeSourceTarget } = useUpdateSourceTarget();
+  const onChangeSourceTarget = () => dispatchChangeSourceTarget(SourceTargetActionsCreators.switchChains());
 
   return (
     <>

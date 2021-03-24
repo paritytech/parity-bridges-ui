@@ -14,6 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-export const sourceTargetActions = {
-  // SourceTarget reducer
+enum SourceTargetActionsTypes {
+  SWITCH_CHAINS = 'SWITCH_CHAINS'
+}
+
+const switchChains = () => ({
+  type: SourceTargetActionsTypes.SWITCH_CHAINS
+});
+
+const SourceTargetActionsCreators = {
+  switchChains
 };
+
+export { SourceTargetActionsTypes, SourceTargetActionsCreators };

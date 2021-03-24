@@ -48,13 +48,11 @@ export default function useTransactionType({ input, type }: Props): TransactionF
     if (areApiReady) {
       let callFunction = null;
       let infoFunction = null;
-      if (targetApi.tx.balances && sourceApi.tx.balances && receiverAddress && account) {
+      if (account) {
         switch (type) {
           case TransactionTypes.REMARK:
-            if (targetApi.tx.system && sourceApi.tx.system) {
-              callFunction = () => targetApi.tx.system.remark(input);
-              infoFunction = () => sourceApi.tx.system.remark(input).paymentInfo(account);
-            }
+            callFunction = () => targetApi.tx.system.remark(input);
+            infoFunction = () => sourceApi.tx.system.remark(input).paymentInfo(account);
             break;
           case TransactionTypes.TRANSFER:
             if (receiverAddress) {

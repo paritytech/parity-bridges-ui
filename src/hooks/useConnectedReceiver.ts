@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import TransactionActions from '../actions/transactionActions';
+import { TransactionActionCreators } from '../actions/transactionActions';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import getReceiverAddress from '../util/getReceiverAddress';
@@ -36,7 +36,7 @@ export default function useConnectedReceiver(): Function {
       if (receiverAddress !== receiver) {
         setReceiverMessage(`The format for the account is incorrect, funds will be sent to ${receiverAddress}`);
       }
-      dispatchTransaction({ payload: { receiverAddress }, type: TransactionActions.SET_RECEIVER_ADDRESS });
+      dispatchTransaction(TransactionActionCreators.setReceiverAddress(receiverAddress));
     } catch (e) {
       logger.error(e);
       if (e.message === 'INCORRECT-FORMAT') {

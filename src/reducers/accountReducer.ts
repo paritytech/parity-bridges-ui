@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import AccountActions from '../actions/accountActions';
+import { AccountActionsTypes } from '../actions/accountActions';
 import type { AccountsActionType, AccountState } from '../types/accountTypes';
 
 export default function accountReducer(state: AccountState, action: AccountsActionType): AccountState {
   switch (action.type) {
-    case AccountActions.SET_ACCOUNT:
+    case AccountActionsTypes.SET_ACCOUNT:
       return { ...state, account: action.payload.account };
 
     default:

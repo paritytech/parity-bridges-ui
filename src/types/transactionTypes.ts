@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import TransactionActions from '../actions/transactionActions';
+import { TransactionActionTypes } from '../actions/transactionActions';
 
 export interface TransactionContextType {
   estimatedFee: string | null;
@@ -30,7 +30,7 @@ export interface TransactionState {
   receiverAddress: string | null;
 }
 
-export type TransactionsActionType = { type: TransactionActions; payload: Payload };
+export type TransactionsActionType = { type: TransactionActionTypes; payload: Payload };
 
 export enum TransactionTypes {
   TRANSFER = 'TRANSFER',

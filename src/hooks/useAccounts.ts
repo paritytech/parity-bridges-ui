@@ -17,7 +17,7 @@
 import type { KeyringPair } from '@polkadot/keyring/types';
 import { useEffect, useState } from 'react';
 
-import AccountActions from '../actions/accountActions';
+import { AccountActionCreators } from '../actions/accountActions';
 import { useUpdateAccountContext } from '../contexts/AccountContextProvider';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useKeyringContext } from '../contexts/KeyringContextProvider';
@@ -45,7 +45,7 @@ const useAccounts = (): Accounts => {
   const setCurrentAccount = (value: string) => {
     const account = accounts.find(({ address }) => address === value);
     if (account) {
-      dispatchAccount({ payload: { account }, type: AccountActions.SET_ACCOUNT });
+      dispatchAccount(AccountActionCreators.setAccount(account));
     }
   };
 

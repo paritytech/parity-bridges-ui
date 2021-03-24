@@ -25,7 +25,7 @@ import { useTransactionContext } from '../contexts/TransactionContext';
 import useLaneId from '../hooks/useLaneId';
 import useTransactionPreparation from '../hooks/useTransactionPreparation';
 import { TransactionTypes } from '../types/transactionTypes';
-
+import logger from '../util/logger';
 interface Message {
   successfull: string;
   error: string;
@@ -45,7 +45,7 @@ function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, 
   const laneId = useLaneId();
   const { targetChain } = useSourceTarget();
   const { account } = useAccountContext();
-  const { payload } = useTransactionPreparation({ input, type: TransactionTypes.TRANSFER });
+  const { payload } = useTransactionPreparation({ input, type });
 
   const sendLaneMessage = async () => {
     try {
@@ -54,7 +54,7 @@ function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, 
       }
       setIsRunning(true);
 
-      const bridgeMessage = sourceApi.tx[`bridge${targetChain}MessageLane`].sendMessage(laneId, payload, estimatedFee);
+      const bridgeMessage = sourceApi.tx[`bridge${targetChain}Messages`].sendMessage(laneId, payload, estimatedFee);
       const options: Partial<SignerOptions> = {
         nonce: -1
       };
@@ -68,7 +68,7 @@ function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, 
       setExecutionStatus(message.successfull);
     } catch (e) {
       setExecutionStatus(message.error);
-      console.log(e);
+      logger.error(e);
     } finally {
       setIsRunning(false);
     }

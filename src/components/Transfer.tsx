@@ -23,6 +23,7 @@ import useConnectedReceiver from '../hooks/useConnectedReceiver';
 import useLoadingApi from '../hooks/useLoadingApi';
 import useSendMessage from '../hooks/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
+
 interface Props {
   className?: string;
 }
@@ -48,7 +49,7 @@ const Transfer = ({ className }: Props) => {
     message,
     setExecutionStatus,
     setIsRunning,
-    type: TransactionTypes.REMARK
+    type: TransactionTypes.TRANSFER
   });
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,6 +69,8 @@ const Transfer = ({ className }: Props) => {
   if (!areApiReady) {
     return null;
   }
+
+  console.log('isButtonDisabled', isButtonDisabled());
 
   return (
     <Container className={className}>

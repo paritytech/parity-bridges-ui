@@ -14,14 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import TransactionActions from '../actions/transactionActions';
+import { TransactionActionTypes } from '../actions/transactionActions';
 import type { TransactionsActionType, TransactionState } from '../types/transactionTypes';
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
   switch (action.type) {
-    case TransactionActions.SET_ESTIMATED_FEE:
+    case TransactionActionTypes.SET_ESTIMATED_FEE:
       return { ...state, estimatedFee: action.payload.estimatedFee };
-    case TransactionActions.SET_RECEIVER_ADDRESS:
+    case TransactionActionTypes.SET_RECEIVER_ADDRESS:
       return { ...state, receiverAddress: action.payload.receiverAddress };
     default:
       throw new Error(`Unknown type: ${action.type}`);

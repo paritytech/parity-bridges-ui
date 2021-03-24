@@ -14,7 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-enum AccountActions {
+import type { Account } from '../types/accountTypes';
+
+enum AccountActionsTypes {
   SET_ACCOUNT = 'SET_ACCOUNT'
 }
-export default AccountActions;
+
+const setAccount = (account: Account) => ({
+  payload: { account },
+  type: AccountActionsTypes.SET_ACCOUNT
+});
+
+const AccountActionCreators = {
+  setAccount
+};
+
+export { AccountActionsTypes, AccountActionCreators };
