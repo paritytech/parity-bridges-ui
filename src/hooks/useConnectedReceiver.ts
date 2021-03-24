@@ -18,6 +18,7 @@ import TransactionActions from '../actions/transactionActions';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import getReceiverAddress from '../util/getReceiverAddress';
+import logger from '../util/logger';
 
 interface Props {
   setReceiverMessage: (message: string) => void;
@@ -37,7 +38,7 @@ export default function useConnectedReceiver(): Function {
       }
       dispatchTransaction({ payload: { receiverAddress }, type: TransactionActions.SET_RECEIVER_ADDRESS });
     } catch (e) {
-      console.log('e', e);
+      logger.error(e);
       if (e.message === 'INCORRECT-FORMAT') {
         setReceiverMessage('Invalid address, please provide a valid address');
       }

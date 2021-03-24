@@ -59,7 +59,7 @@ const Remark = ({ className }: Props) => {
       <Button disabled={isButtonDisabled()} onClick={sendLaneMessage}>
         Send Remark
       </Button>
-      <p> {estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
+      <p>{estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
       <div className="status">
         <p>{executionStatus !== '' && executionStatus}</p>
       </div>

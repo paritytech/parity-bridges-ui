@@ -44,6 +44,7 @@ export function Main({ className }: Props) {
       payload: {},
       type: ActionsTypes.SWITCH_CHAINS
     });
+
   return (
     <>
       <Container className={className}>
