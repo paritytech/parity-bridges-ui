@@ -3,7 +3,7 @@
 The goal of the UI is to provide the users a convenient way of interacting with the Bridge - querying its state and sending transactions.
 
 
-| 🚀 | Live version at [//parity.github.io/parity-bridges-ui](https://parity.github.io/parity-bridges-ui) |
+| 🚀 | Live version at [//paritytech.github.io/parity-bridges-ui](https://paritytech.github.io/parity-bridges-ui) |
 |----|:------------------------|
 
 
