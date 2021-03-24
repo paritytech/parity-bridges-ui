@@ -27,7 +27,7 @@ REACT_APP_RIALTO_BRIDGE_ID=rlto
 
 ## Running the bridge
 
-Please refeer to this section of the bridges project to run the bridge locally: [running-the-bridge](https://github.com/paritytech/parity-bridges-common#running-the-bridge)
+Please refer to this section of the Bridges project to run the bridge locally: [running-the-bridge](https://github.com/paritytech/parity-bridges-common#running-the-bridge)
 
 ## Development
 
