@@ -12,10 +12,16 @@ The goal of the UI is to provide the users a convenient way of interacting with 
 In the `.env` file at root project directory, you have to define the following env variables:
 
 ```
-REACT_APP_SUBSTRATE_PROVIDER_1=<WS-Provider chain 1>
-REACT_APP_SUBSTRATE_PROVIDER_2=<WS-Provider chain 2>
-REACT_APP_PROVIDER_NAME_1=<Chain 1 name>
-REACT_APP_PROVIDER_NAME_2=<Chain 2 name>
+REACT_APP_CHAIN_1=Rialto
+REACT_APP_CHAIN_2=Millau
+REACT_APP_RIALTO_SUBSTRATE_PROVIDER=ws://127.0.0.1:9944
+REACT_APP_MILLAU_SUBSTRATE_PROVIDER=ws://127.0.0.1:9945
+REACT_APP_LANE_ID=0x00000000
+REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS=true
+REACT_APP_MILLAU_SS58_PREFIX=60
+REACT_APP_RIALTO_SS58_PREFIX=48
+REACT_APP_MILLAU_BRIDGE_ID=mlau
+REACT_APP_RIALTO_BRIDGE_ID=rlto
 ```
 
 | ℹ️ | In case these values are not provided the default chains will be Rialto and Millau chains. |
