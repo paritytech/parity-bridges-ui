@@ -38,27 +38,41 @@ const useMessageLane = ({ isApiReady, api, chain }: Props): Output => {
   const [inboundLanes, setInboudLanes] = useState({ bridgeReceivedMessages: 0 });
 
   useEffect(() => {
-    const bridgedMessagesLainChain = `bridge${chain}MessageLane`;
+    const bridgedMessagesLainChain = `bridge${chain}Messages`;
 
     if (!api || !isApiReady || !api.query[bridgedMessagesLainChain] || !chain) {
       return;
     }
 
     // to-do: review after depending on action to perform
-
-    api.query[bridgedMessagesLainChain].outboundLanes('0x00000000', (res: any) => {
-      const latest_generated_nonce = res.get('latest_generated_nonce').toNumber();
-      const latest_received_nonce = res.get('latest_received_nonce').toNumber();
-      const pendingMessages = latest_generated_nonce - latest_received_nonce;
-      setOutboudLanes({
-        pendingMessages: pendingMessages < 0 ? 0 : pendingMessages,
-        totalMessages: latest_generated_nonce
+    let unsubscribeOutboundLanes: () => void;
+    let unsubscribeInboundLanes: () => void;
+    api.query[bridgedMessagesLainChain]
+      .outboundLanes('0x00000000', (res: any) => {
+        const latest_generated_nonce = res.get('latest_generated_nonce').toNumber();
+        const latest_received_nonce = res.get('latest_received_nonce').toNumber();
+        const pendingMessages = latest_generated_nonce - latest_received_nonce;
+        setOutboudLanes({
+          pendingMessages: pendingMessages < 0 ? 0 : pendingMessages,
+          totalMessages: latest_generated_nonce
+        });
+      })
+      .then((unsub) => {
+        unsubscribeOutboundLanes = unsub;
       });
-    });
 
-    api.query[bridgedMessagesLainChain].inboundLanes('0x00000000', (res: any) => {
-      setInboudLanes({ bridgeReceivedMessages: res.get('last_confirmed_nonce').toNumber() });
-    });
+    api.query[bridgedMessagesLainChain]
+      .inboundLanes('0x00000000', (res: any) => {
+        setInboudLanes({ bridgeReceivedMessages: res.get('last_confirmed_nonce').toNumber() });
+      })
+      .then((unsub) => {
+        unsubscribeInboundLanes = unsub;
+      });
+
+    return function cleanup() {
+      unsubscribeOutboundLanes && unsubscribeOutboundLanes();
+      unsubscribeInboundLanes && unsubscribeInboundLanes();
+    };
   }, [api, isApiReady, chain]);
 
   useEffect(() => {

@@ -22,7 +22,6 @@ import React, { useEffect, useState } from 'react';
 
 import { ApiPromiseContextType } from '../types/sourceTargetTypes';
 import logger from '../util/logger';
-import { useDidUpdateEffect } from '../util/useDidUpdateEffect';
 import { useSourceTarget } from './SourceTargetContextProvider';
 
 export interface ApiRxContextProviderProps {
@@ -42,7 +41,6 @@ export function ApiPromiseContextProvider(props: ApiRxContextProviderProps): Rea
   const options = { hasher, provider, types };
   const [apiPromise, setApiPromise] = useState<ApiPromise>(new ApiPromise(options));
   const [isReady, setIsReady] = useState(false);
-  const [disconnected, setDisconnected] = useState(false);
 
   useEffect(() => {
     if (isReady) {
@@ -50,41 +48,20 @@ export function ApiPromiseContextProvider(props: ApiRxContextProviderProps): Rea
       setIsReady(false);
       setApiPromise(new ApiPromise(options));
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sourceTarget]);
 
-  useDidUpdateEffect(() => {
-    if (!isReady && !apiPromise.isConnected) {
-      console.log('calling disconnecting');
-      apiPromise.disconnect().then(() => {
-        setDisconnected(true);
-        logger.info(`${contextType} Api disconnected`);
-      });
-    }
-  }, [isReady, apiPromise]);
-
-  useDidUpdateEffect(() => {
-    if (!apiPromise.isConnected) {
-      ApiPromise.create(options).then((_api) => {
-        logger.info(`${contextType} connection recreated `);
-        setApiPromise(_api);
-        setDisconnected(false);
-      });
-    }
-  }, [apiPromise.isConnected]);
-
   useEffect(() => {
-    if (!disconnected) {
-      apiPromise.isReady
-        .then(() => {
-          if (types) {
-            registry.register(types);
-          }
-          logger.info(`${contextType} type registration ready`);
-          setIsReady(true);
-        })
-        .catch((e) => logger.error(`${contextType} error in registration`, e));
-    }
+    apiPromise.isReady
+      .then(() => {
+        if (types) {
+          registry.register(types);
+        }
+        logger.info(`${contextType} type registration ready`);
+        setIsReady(true);
+      })
+      .catch((e) => logger.error(`${contextType} error in registration: ${e}`));
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiPromise.isReady]);
