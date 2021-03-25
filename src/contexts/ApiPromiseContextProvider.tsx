@@ -55,12 +55,13 @@ export function ApiPromiseContextProvider(props: ApiRxContextProviderProps): Rea
 
   useDidUpdateEffect(() => {
     if (!isReady && !apiPromise.isConnected) {
+      console.log('calling disconnecting');
       apiPromise.disconnect().then(() => {
         setDisconnected(true);
-        logger.info(`${contextType} Resetting connection`);
+        logger.info(`${contextType} Api disconnected`);
       });
     }
-  }, [isReady]);
+  }, [isReady, apiPromise]);
 
   useDidUpdateEffect(() => {
     if (!apiPromise.isConnected) {
