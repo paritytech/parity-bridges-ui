@@ -37,24 +37,36 @@ interface Props {
 const useBridgedBlocks = ({ isApiReady, api, chain }: Props) => {
   const [importedHeaders, setImportedHeaders] = useState('');
 
+  //const bridgedChain = `bridge${chain}`;
   const bridgedChain = `bridge${chain}`;
-
   useEffect(() => {
     if (!api || !isApiReady || !chain) {
       return;
     }
 
-    api.query[bridgedChain].bestFinalized((res: CodecHeaderId) => {
-      const bestBridgedFinalizedBlock = res.toString();
-      api.query[bridgedChain].importedHeaders(bestBridgedFinalizedBlock, (res: any) => {
-        if (res.toJSON()) {
-          setImportedHeaders(res.toJSON().header.number);
-        }
+    let unsubBestFinalized: () => void;
+    let unsubImportedHeaders: () => void;
+
+    api.query[bridgedChain]
+      .bestFinalized((res: CodecHeaderId) => {
+        const bestBridgedFinalizedBlock = res.toString();
+        api.query[bridgedChain]
+          .importedHeaders(bestBridgedFinalizedBlock, (res: any) => {
+            if (res.toJSON()) {
+              setImportedHeaders(res.toJSON().header.number);
+            }
+          })
+          .then((unsub) => {
+            unsubImportedHeaders = unsub;
+          });
+      })
+      .then((unsub) => {
+        unsubBestFinalized = unsub;
       });
-    });
 
     return function cleanup() {
-      setImportedHeaders('');
+      unsubImportedHeaders && unsubImportedHeaders();
+      unsubBestFinalized && unsubBestFinalized();
     };
   }, [isApiReady, chain, api, bridgedChain]);
 

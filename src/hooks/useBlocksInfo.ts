@@ -36,17 +36,29 @@ const useBlocksInfo = ({ isApiReady, api, chain, destination }: Props) => {
       return;
     }
 
-    api.derive.chain.bestNumber((res) => {
-      setBestBlock(res.toString());
-    });
+    let unsubscribeBestNumber: () => void;
+    api.derive.chain
+      .bestNumber((res) => {
+        setBestBlock(res.toString());
+      })
+      .then((unsub) => {
+        unsubscribeBestNumber = unsub;
+      })
+      .catch(console.error);
 
-    api.derive.chain.bestNumberFinalized((res) => {
-      setBestBlockFinalized(res.toString());
-    });
+    let unsubscribeBestNumberFinalized: () => void;
+    api.derive.chain
+      .bestNumberFinalized((res) => {
+        setBestBlockFinalized(res.toString());
+      })
+      .then((unsub) => {
+        unsubscribeBestNumberFinalized = unsub;
+      })
+      .catch(console.error);
 
     return function cleanup() {
-      setBestBlock('');
-      setBestBlockFinalized('');
+      unsubscribeBestNumberFinalized && unsubscribeBestNumberFinalized();
+      unsubscribeBestNumber && unsubscribeBestNumber();
     };
   }, [api, isApiReady, chain, bridgedChain]);
 

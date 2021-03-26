@@ -22,7 +22,6 @@ import React, { useEffect, useState } from 'react';
 
 import { ApiPromiseContextType } from '../types/sourceTargetTypes';
 import logger from '../util/logger';
-import { useDidUpdateEffect } from '../util/useDidUpdateEffect';
 import { useSourceTarget } from './SourceTargetContextProvider';
 
 export interface ApiRxContextProviderProps {
@@ -45,26 +44,24 @@ export function ApiPromiseContextProvider(props: ApiRxContextProviderProps): Rea
 
   useEffect(() => {
     if (isReady) {
+      logger.info(`${contextType} was changed`);
       setIsReady(false);
-      apiPromise.disconnect().then(() => logger.info(`${contextType} Resetting connection`));
+      setApiPromise(new ApiPromise(options));
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sourceTarget]);
 
-  useDidUpdateEffect(() => {
-    ApiPromise.create(options).then((_api) => {
-      setApiPromise(_api);
-    });
-  }, [provider]);
-
   useEffect(() => {
-    apiPromise.isReady.then(() => {
-      if (types) {
-        registry.register(types);
-      }
-
-      setIsReady(true);
-    });
+    apiPromise.isReady
+      .then(() => {
+        if (types) {
+          registry.register(types);
+        }
+        logger.info(`${contextType} type registration ready`);
+        setIsReady(true);
+      })
+      .catch((e) => logger.error(`${contextType} error in registration: ${e}`));
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiPromise.isReady]);

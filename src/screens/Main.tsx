@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { Container, Grid } from 'semantic-ui-react';
-import { Button, Icon } from 'semantic-ui-react';
+import { Button, Dimmer, Icon, Loader } from 'semantic-ui-react';
 import styled from 'styled-components';
 
 import { SourceTargetActionsCreators } from '../actions/sourceTargetActions';
@@ -35,11 +35,19 @@ interface Props {
 }
 
 export function Main({ className }: Props) {
-  const isLoading = useLoadingApi();
+  const areApiLoading = useLoadingApi();
   const { sourceChain, targetChain } = useSourceTarget();
 
   const { dispatchChangeSourceTarget } = useUpdateSourceTarget();
   const onChangeSourceTarget = () => dispatchChangeSourceTarget(SourceTargetActionsCreators.switchChains());
+
+  if (!areApiLoading) {
+    return (
+      <Dimmer active>
+        <Loader />
+      </Dimmer>
+    );
+  }
 
   return (
     <>
@@ -55,7 +63,7 @@ export function Main({ className }: Props) {
             </Grid.Column>
             <Grid.Column width={1}>
               <div className="switchButton">
-                <Button disabled={!isLoading} onClick={onChangeSourceTarget}>
+                <Button disabled={!areApiLoading} onClick={onChangeSourceTarget}>
                   <Icon fitted name="exchange" />
                 </Button>
               </div>
