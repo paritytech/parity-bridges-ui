@@ -37,8 +37,7 @@ interface Props {
 const useBridgedBlocks = ({ isApiReady, api, chain }: Props) => {
   const [importedHeaders, setImportedHeaders] = useState('');
 
-  //const bridgedChain = `bridge${chain}`;
-  const bridgedChain = `bridge${chain}`;
+  const bridgedChain = `bridge${chain}Grandpa`;
   useEffect(() => {
     if (!api || !isApiReady || !chain) {
       return;
@@ -53,7 +52,7 @@ const useBridgedBlocks = ({ isApiReady, api, chain }: Props) => {
         api.query[bridgedChain]
           .importedHeaders(bestBridgedFinalizedBlock, (res: any) => {
             if (res.toJSON()) {
-              setImportedHeaders(res.toJSON().header.number);
+              setImportedHeaders(res.toJSON().number);
             }
           })
           .then((unsub) => {
