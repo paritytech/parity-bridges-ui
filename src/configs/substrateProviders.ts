@@ -59,10 +59,10 @@ const createConfigObject = (chainNumber: string) => {
 };
 
 export const getChainConfigs = (): ChainConfigs => {
-  const [CHAIN_1, CHAIN_2] = getChainNames();
+  const [chain1, chain2] = getChainNames();
   const configs = {
-    [CHAIN_1]: createConfigObject('1'),
-    [CHAIN_2]: createConfigObject('2')
+    [chain1]: createConfigObject('1'),
+    [chain2]: createConfigObject('2')
   };
 
   return configs;
