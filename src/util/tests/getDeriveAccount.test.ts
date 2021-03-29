@@ -17,6 +17,8 @@
 import getDeriveAccount from '../getDeriveAccount';
 
 describe('getDeriveAccount', () => {
+  process.env.REACT_APP_ACCOUNT_DERIVATION = 'pallet-bridge/account-derivation/account';
+
   const rialtoAccount = {
     SS58Format: 48,
     address: '5sauUXUfPjmwxSgmb3tZ5d6yx24eZX4wWJ2JtVUBaQqFbvEU',

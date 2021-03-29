@@ -14,11 +14,25 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-export const SOURCE = 'sourceChain';
-export const TARGET = 'targetChain';
+import { u8aConcat } from '@polkadot/util';
+import { blake2AsU8a, keccakAsU8a } from '@polkadot/util-crypto';
 
-export const ESTIMATED_FEE_RUNTIME_API_CALL = 'OutboundLaneApi_estimate_message_delivery_and_dispatch_fee';
+import customTypesMillau from './customTypesMillau.json';
+import customTypesRialto from './customTypesRialto.json';
 
-export const expectedChainVariables = ['SUBSTRATE_PROVIDER', 'SS58_PREFIX', 'BRIDGE_ID'];
+function hasherH512(data: any) {
+  return u8aConcat(blake2AsU8a(data), keccakAsU8a(data));
+}
 
-export const expectedCommonVariables = ['LANE_ID', 'KEYRING_DEV_LOAD_ACCOUNTS', 'ACCOUNT_DERIVATION'];
+const getCustomTypesAndHasher = (chain: string) => {
+  switch (chain) {
+    case 'Millau':
+      return { hasher: hasherH512, types: customTypesMillau };
+    case 'Rialto':
+      return { types: customTypesRialto };
+    default:
+      throw new Error(`Unknown chain: ${chain}`);
+  }
+};
+
+export { getCustomTypesAndHasher };
