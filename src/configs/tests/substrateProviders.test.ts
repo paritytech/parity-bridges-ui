@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { checkEnvVariable } from '../../util/checkEnvVariables';
+import { checkEnvVariable, checkExpectedVariables } from '../../util/envVariablesValidations';
 import { getCustomTypesAndHasher } from '../substrateCustomTypes/';
 import { getChainConfigs } from '../substrateProviders';
 
@@ -27,7 +27,7 @@ jest.mock('@polkadot/api', () => {
 });
 
 jest.mock('../substrateCustomTypes/');
-jest.mock('../../util/checkEnvVariables');
+jest.mock('../../util/envVariablesValidations');
 
 describe('getChainConfigs', () => {
   const chain1 = 'CHAIN1';
@@ -63,7 +63,9 @@ describe('getChainConfigs', () => {
       hasher: `${value}Hasher`,
       types: `${value}Types`
     }));
+
     (checkEnvVariable as jest.Mock).mockImplementation((value) => process.env[value]);
+    (checkExpectedVariables as jest.Mock).mockImplementation(() => true);
   });
 
   afterEach(() => {
@@ -71,6 +73,8 @@ describe('getChainConfigs', () => {
     (getCustomTypesAndHasher as jest.Mock).mockReset();
     (checkEnvVariable as jest.Mock).mockClear();
     (checkEnvVariable as jest.Mock).mockReset();
+    (checkExpectedVariables as jest.Mock).mockClear();
+    (checkExpectedVariables as jest.Mock).mockReset();
     process.env = {};
   });
 
@@ -85,5 +89,17 @@ describe('getChainConfigs', () => {
     process.env.REACT_APP_SS58_PREFIX_CHAIN_2 = prefix2;
 
     expect(getChainConfigs()).toEqual(expectedConfig);
+  });
+
+  test('Should validate and return chain value according env value', () => {
+    (checkExpectedVariables as jest.Mock).mockImplementation(() => {
+      throw new Error();
+    });
+    try {
+      getChainConfigs();
+      fail('it should not reach here');
+    } catch (e) {
+      console.log('Thrown exception as expected');
+    }
   });
 });

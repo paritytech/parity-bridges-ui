@@ -18,7 +18,7 @@ import { WsProvider } from '@polkadot/api';
 import { ApiOptions } from '@polkadot/api/types';
 import { ProviderInterface } from '@polkadot/rpc-provider/types';
 
-import { checkEnvVariable } from '../util/checkEnvVariables';
+import { checkEnvVariable, checkExpectedVariables } from '../util/envVariablesValidations';
 import { getCustomTypesAndHasher } from './substrateCustomTypes/';
 
 type CustomHasher = (data: Uint8Array) => Uint8Array;
@@ -59,6 +59,7 @@ const createConfigObject = (chainNumber: string) => {
 };
 
 export const getChainConfigs = (): ChainConfigs => {
+  checkExpectedVariables();
   const [chain1, chain2] = getChainNames();
   const configs = {
     [chain1]: createConfigObject('1'),
