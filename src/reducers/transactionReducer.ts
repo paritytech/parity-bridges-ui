@@ -23,6 +23,10 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return { ...state, estimatedFee: action.payload.estimatedFee };
     case TransactionActionTypes.SET_RECEIVER_ADDRESS:
       return { ...state, receiverAddress: action.payload.receiverAddress };
+    case TransactionActionTypes.CREATE_TRANSACTION_STATUS:
+      return { ...state, currentTransaction: action.payload.currentTransaction };
+    case TransactionActionTypes.UPDATE_CURRENT_TRANSACTION_STATUS:
+      return { ...state, currentTransaction: action.payload.transaction };
     default:
       throw new Error(`Unknown type: ${action.type}`);
   }

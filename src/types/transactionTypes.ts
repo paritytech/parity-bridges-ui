@@ -19,15 +19,30 @@ import { TransactionActionTypes } from '../actions/transactionActions';
 export interface TransactionContextType {
   estimatedFee: string | null;
   receiverAddress: string | null;
+  currentTransaction?: TransanctionStatus;
 }
 
 interface Payload {
-  [propName: string]: string;
+  [propName: string]: any;
+}
+
+export interface TransanctionStatus {
+  input: string;
+  sourceChain: string;
+  targetChain: string;
+  block: number;
+  messageNonce: number;
+  targetBestBlock: number;
+  sourceAccount: null | string;
+  receiverAddress: null | string;
+  type: string;
+  completed: boolean;
 }
 
 export interface TransactionState {
   estimatedFee: string | null;
   receiverAddress: string | null;
+  currentTransaction?: TransanctionStatus;
 }
 
 export type TransactionsActionType = { type: TransactionActionTypes; payload: Payload };

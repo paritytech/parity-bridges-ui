@@ -21,6 +21,7 @@ import styled from 'styled-components';
 
 import { SourceTargetActionsCreators } from '../actions/sourceTargetActions';
 import Accounts from '../components/Accounts';
+import CurrentExecutionStatus from '../components/CurrentExecutionStatus';
 import DashboardCard from '../components/DashboardCard';
 import Remark from '../components/Remark';
 import Transfer from '../components/Transfer';
@@ -85,6 +86,11 @@ export function Main({ className }: Props) {
           <Grid.Row>
             <Grid.Column width={12}>
               <Transfer />
+            </Grid.Column>
+          </Grid.Row>
+          <Grid.Row>
+            <Grid.Column width={12}>
+              <CurrentExecutionStatus />
             </Grid.Column>
           </Grid.Row>
         </Grid>

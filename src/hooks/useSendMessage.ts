@@ -18,17 +18,21 @@ import { SignerOptions } from '@polkadot/api/types';
 import { web3FromSource } from '@polkadot/extension-dapp';
 import type { KeyringPair } from '@polkadot/keyring/types';
 
+import { TransactionActionCreators } from '../actions/transactionActions';
 import { SOURCE } from '../constants';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useTransactionContext } from '../contexts/TransactionContext';
+import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
 import useDashboard from '../hooks/useDashboard';
 import useDashboardProfile from '../hooks/useDashboardProfile';
 import useLaneId from '../hooks/useLaneId';
 import useTransactionPreparation from '../hooks/useTransactionPreparation';
 import { TransactionTypes } from '../types/transactionTypes';
+import getPalletNames from '../util/getPalletNames';
 import logger from '../util/logger';
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
 interface Message {
   successfull: string;
   error: string;
@@ -44,13 +48,15 @@ interface Props {
 
 function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, input, type }: Props) {
   const { api: sourceApi } = useApiSourcePromiseContext();
-  const { estimatedFee, receiverAddress } = useTransactionContext();
+  const { estimatedFee, receiverAddress, currentTransaction } = useTransactionContext();
+  const { dispatchTransaction } = useUpdateTransactionContext();
+
   const laneId = useLaneId();
-  const { targetChain } = useSourceTarget();
+  const { targetChain, sourceChain } = useSourceTarget();
   const { account } = useAccountContext();
   const { payload } = useTransactionPreparation({ input, type });
   const { destination, local } = useDashboardProfile(SOURCE);
-  const { bestBlockFinalized, bestBlock } = useDashboard({
+  const { bestBlock, importedHeaders: bestBridgedFinalizedBlock } = useDashboard({
     destination,
     local,
     useApiContext: useApiSourcePromiseContext
@@ -61,9 +67,23 @@ function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, 
       if (!account || isRunning) {
         return;
       }
+      const initialTransaction = {
+        block: -1,
+        completed: false,
+        input,
+        messageNonce: -1,
+        receiverAddress,
+        sourceAccount: account.address,
+        sourceChain,
+        targetBestBlock: parseInt(bestBridgedFinalizedBlock),
+        targetChain,
+        type
+      };
+      dispatchTransaction(TransactionActionCreators.createTransactionStatus(initialTransaction));
       setIsRunning(true);
+      const { bridgedMessages } = getPalletNames(targetChain);
 
-      const bridgeMessage = sourceApi.tx[`bridge${targetChain}Messages`].sendMessage(laneId, payload, estimatedFee);
+      const bridgeMessage = sourceApi.tx[bridgedMessages].sendMessage(laneId, payload, estimatedFee);
       const options: Partial<SignerOptions> = {
         nonce: -1
       };
@@ -73,23 +93,25 @@ function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, 
         options.signer = injector.signer;
         sourceAccount = account.address;
       }
-      const unsub = await bridgeMessage.signAndSend(sourceAccount, { ...options }, ({ events = [], status }) => {
-        console.log(`Current status is ${status.type}`);
 
-        events.forEach(({ phase, event: { data, method, section } }) => {
-          console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
-        });
+      const unsub = await bridgeMessage.signAndSend(sourceAccount, { ...options }, ({ events = [], status }) => {
+        console.log('status', status.toJSON());
+
         if (status.isInBlock) {
-          console.log(`Transaction included in block ${bestBlockFinalized}`);
-          console.log('bestblock', bestBlock);
+          events.forEach(({ event: { data, method } }) => {
+            if (method.toString() === 'MessageAccepted') {
+              const nonce = data.toArray()[1].toString();
+              dispatchTransaction(
+                TransactionActionCreators.updateTransactionStatus(currentTransaction, {
+                  block: bestBlock,
+                  messageNonce: nonce
+                })
+              );
+            }
+          });
         }
         if (status.isFinalized) {
           console.log(`Transaction included at blockHash ${status.asFinalized}`);
-
-          // Loop through Vec<EventRecord> to display all events
-          events.forEach(({ phase, event: { data, method, section } }) => {
-            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
-          });
           unsub();
         }
       });

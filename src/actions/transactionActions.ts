@@ -14,9 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import { TransanctionStatus } from '../types/transactionTypes';
+import { includeNewTransaction } from '../util/transactionLocalStorage';
+
 enum TransactionActionTypes {
   SET_ESTIMATED_FEE = 'SET_ESTIMATED_FEE',
-  SET_RECEIVER_ADDRESS = 'SET_RECEIVER_ADDRESS'
+  SET_RECEIVER_ADDRESS = 'SET_RECEIVER_ADDRESS',
+  CREATE_TRANSACTION_STATUS = 'CREATE_TRANSACTION_STATUS',
+  UPDATE_CURRENT_TRANSACTION_STATUS = 'UPDATE_CURRENT_TRANSACTION_STATUS'
 }
 
 const estimateFee = (estimatedFee: string) => ({
@@ -29,9 +34,30 @@ const setReceiverAddress = (receiverAddress: string) => ({
   type: TransactionActionTypes.SET_RECEIVER_ADDRESS
 });
 
+const createTransactionStatus = (initialTransaction: TransanctionStatus) => {
+  includeNewTransaction(initialTransaction);
+  return {
+    payload: { initialTransaction },
+    type: TransactionActionTypes.CREATE_TRANSACTION_STATUS
+  };
+};
+
+const updateTransactionStatus = (currentTransaction: any, updatedTransaction: any) => {
+  const transaction = { ...currentTransaction };
+  transaction.block = updatedTransaction.block;
+  transaction.messageNonce = updatedTransaction.messageNonce;
+
+  return {
+    payload: { transaction },
+    type: TransactionActionTypes.UPDATE_CURRENT_TRANSACTION_STATUS
+  };
+};
+
 const TransactionActionCreators = {
+  createTransactionStatus,
   estimateFee,
-  setReceiverAddress
+  setReceiverAddress,
+  updateTransactionStatus
 };
 
 export { TransactionActionCreators, TransactionActionTypes };
