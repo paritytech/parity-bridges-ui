@@ -17,6 +17,8 @@
 import { ApiPromise } from '@polkadot/api';
 import { useEffect, useState } from 'react';
 
+import logger from '../util/logger';
+
 interface Props {
   chain: string;
   api: ApiPromise;
@@ -42,7 +44,7 @@ const useBlocksInfo = ({ isApiReady, api, chain }: Props) => {
       .then((unsub) => {
         unsubscribeBestNumber = unsub;
       })
-      .catch(console.error);
+      .catch((e) => logger.error('error reading blocks', e));
 
     let unsubscribeBestNumberFinalized: () => void;
     api.derive.chain
@@ -52,7 +54,7 @@ const useBlocksInfo = ({ isApiReady, api, chain }: Props) => {
       .then((unsub) => {
         unsubscribeBestNumberFinalized = unsub;
       })
-      .catch(console.error);
+      .catch((e) => logger.error('error reading blocks', e));
 
     return function cleanup() {
       unsubscribeBestNumberFinalized && unsubscribeBestNumberFinalized();

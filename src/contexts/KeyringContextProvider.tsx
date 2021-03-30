@@ -19,7 +19,7 @@ import type { KeyringPair } from '@polkadot/keyring/types';
 import keyring from '@polkadot/ui-keyring';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 
-import { chainsConfigs } from '../configs/substrateProviders';
+import { getChainConfigs } from '../configs/substrateProviders';
 import { KeyringContextType, KeyringStatuses } from '../types/keyringTypes';
 import logger from '../util/logger';
 import { useSourceTarget } from './SourceTargetContextProvider';
@@ -37,6 +37,7 @@ export function useKeyringContext() {
 export function KeyringContextProvider(props: KeyringContextProviderProps): React.ReactElement {
   const { children = null } = props;
   const { sourceChain } = useSourceTarget();
+  const chainsConfigs = getChainConfigs();
   const sourceChainSS58Format = chainsConfigs[sourceChain].SS58Format;
   const [keyringStatus, setKeyringStatus] = useState(KeyringStatuses.INIT);
 
@@ -55,10 +56,11 @@ export function KeyringContextProvider(props: KeyringContextProviderProps): Reac
           address,
           meta: { ...meta, name: `${meta.name} (${meta.source})` }
         }));
+
         keyring.loadAll({ isDevelopment, ss58Format: sourceChainSS58Format }, allAccounts);
         setKeyringStatus(KeyringStatuses.READY);
       } catch (e) {
-        logger.error(e);
+        logger.error('error', e);
         setKeyringStatus(KeyringStatuses.ERROR);
       }
     };

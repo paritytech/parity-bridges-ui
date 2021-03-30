@@ -14,22 +14,25 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { compactAddLength, stringToU8a } from '@polkadot/util';
-import { blake2AsHex, decodeAddress, encodeAddress } from '@polkadot/util-crypto';
+import { u8aConcat } from '@polkadot/util';
+import { blake2AsU8a, keccakAsU8a } from '@polkadot/util-crypto';
 
-const accountDerivation = 'pallet-bridge/account-derivation/account';
+import customTypesMillau from './customTypesMillau.json';
+import customTypesRialto from './customTypesRialto.json';
 
-interface Data {
-  SS58Format: number;
-  bridgeId: string;
-  address: string;
+function hasherH512(data: any) {
+  return u8aConcat(blake2AsU8a(data), keccakAsU8a(data));
 }
 
-export default function getDeriveAccount({ SS58Format = 42, bridgeId, address }: Data): string {
-  const input = [
-    ...compactAddLength(stringToU8a(accountDerivation)),
-    ...stringToU8a(bridgeId),
-    ...decodeAddress(address)
-  ];
-  return encodeAddress(blake2AsHex(Uint8Array.from(input)), SS58Format);
-}
+const getCustomTypesAndHasher = (chain: string) => {
+  switch (chain) {
+    case 'Millau':
+      return { hasher: hasherH512, types: customTypesMillau };
+    case 'Rialto':
+      return { types: customTypesRialto };
+    default:
+      throw new Error(`Unknown chain: ${chain}`);
+  }
+};
+
+export { getCustomTypesAndHasher };

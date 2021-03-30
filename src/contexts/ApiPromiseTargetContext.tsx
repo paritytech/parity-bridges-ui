@@ -16,7 +16,7 @@
 
 import React, { useContext } from 'react';
 
-import { chainsConfigs } from '../configs/substrateProviders';
+import { getChainConfigs } from '../configs/substrateProviders';
 import { TARGET } from '../constants';
 import { ApiPromiseContextType } from '../types/sourceTargetTypes';
 import { ApiPromiseContextProvider } from './ApiPromiseContextProvider';
@@ -37,6 +37,7 @@ export function useApiTargetPromiseContext() {
 export function ApiPromiseTargetContextProvider(props: ApiRxContextTargetProviderProps): React.ReactElement {
   const { children } = props;
   const { targetChain } = useSourceTarget();
+  const chainsConfigs = getChainConfigs();
   const { hasher, types, provider } = chainsConfigs[targetChain];
 
   return (
