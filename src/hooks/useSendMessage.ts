@@ -18,10 +18,13 @@ import { SignerOptions } from '@polkadot/api/types';
 import { web3FromSource } from '@polkadot/extension-dapp';
 import type { KeyringPair } from '@polkadot/keyring/types';
 
+import { SOURCE } from '../constants';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
+import useDashboard from '../hooks/useDashboard';
+import useDashboardProfile from '../hooks/useDashboardProfile';
 import useLaneId from '../hooks/useLaneId';
 import useTransactionPreparation from '../hooks/useTransactionPreparation';
 import { TransactionTypes } from '../types/transactionTypes';
@@ -46,6 +49,12 @@ function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, 
   const { targetChain } = useSourceTarget();
   const { account } = useAccountContext();
   const { payload } = useTransactionPreparation({ input, type });
+  const { destination, local } = useDashboardProfile(SOURCE);
+  const { bestBlockFinalized, bestBlock } = useDashboard({
+    destination,
+    local,
+    useApiContext: useApiSourcePromiseContext
+  });
 
   const sendLaneMessage = async () => {
     try {
@@ -64,7 +73,26 @@ function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, 
         options.signer = injector.signer;
         sourceAccount = account.address;
       }
-      await bridgeMessage.signAndSend(sourceAccount, { ...options });
+      const unsub = await bridgeMessage.signAndSend(sourceAccount, { ...options }, ({ events = [], status }) => {
+        console.log(`Current status is ${status.type}`);
+
+        events.forEach(({ phase, event: { data, method, section } }) => {
+          console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
+        });
+        if (status.isInBlock) {
+          console.log(`Transaction included in block ${bestBlockFinalized}`);
+          console.log('bestblock', bestBlock);
+        }
+        if (status.isFinalized) {
+          console.log(`Transaction included at blockHash ${status.asFinalized}`);
+
+          // Loop through Vec<EventRecord> to display all events
+          events.forEach(({ phase, event: { data, method, section } }) => {
+            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
+          });
+          unsub();
+        }
+      });
       setExecutionStatus(message.successfull);
     } catch (e) {
       setExecutionStatus(message.error);
