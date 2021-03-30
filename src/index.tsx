@@ -20,6 +20,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import App from './App';
+import { checkExpectedVariables } from './util/envVariablesValidations';
+
+checkExpectedVariables();
 
 ReactDOM.render(
   <React.StrictMode>
