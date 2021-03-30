@@ -36,8 +36,7 @@ interface ChainConfigs {
 }
 
 const getChainNames = () => {
-  const chainVarName = 'REACT_APP_CHAIN_';
-  return [checkEnvVariable(`${chainVarName}1`), checkEnvVariable(`${chainVarName}2`)];
+  return [checkEnvVariable('REACT_APP_CHAIN_1'), checkEnvVariable('REACT_APP_CHAIN_2')];
 };
 
 export const [CHAIN_1, CHAIN_2] = getChainNames();
