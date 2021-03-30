@@ -17,6 +17,8 @@
 import { ApiPromise } from '@polkadot/api';
 import { useEffect, useState } from 'react';
 
+import useLaneId from '../hooks/useLaneId';
+import getPalletNames from '../util/getPalletNames';
 interface Props {
   chain: string;
   api: ApiPromise;
@@ -36,19 +38,18 @@ interface Output {
 const useMessageLane = ({ isApiReady, api, chain }: Props): Output => {
   const [outboundLanes, setOutboudLanes] = useState({ pendingMessages: 0, totalMessages: 0 });
   const [inboundLanes, setInboudLanes] = useState({ bridgeReceivedMessages: 0 });
-
+  const laneId = useLaneId();
+  const { bridgedMessages } = getPalletNames(chain);
   useEffect(() => {
-    const bridgedMessagesLainChain = `bridge${chain}Messages`;
-
-    if (!api || !isApiReady || !api.query[bridgedMessagesLainChain] || !chain) {
+    if (!api || !isApiReady || !api.query[bridgedMessages] || !chain) {
       return;
     }
 
     // to-do: review after depending on action to perform
     let unsubscribeOutboundLanes: () => void;
     let unsubscribeInboundLanes: () => void;
-    api.query[bridgedMessagesLainChain]
-      .outboundLanes('0x00000000', (res: any) => {
+    api.query[bridgedMessages]
+      .outboundLanes(laneId, (res: any) => {
         const latest_generated_nonce = res.get('latest_generated_nonce').toNumber();
         const latest_received_nonce = res.get('latest_received_nonce').toNumber();
         const pendingMessages = latest_generated_nonce - latest_received_nonce;
@@ -61,8 +62,8 @@ const useMessageLane = ({ isApiReady, api, chain }: Props): Output => {
         unsubscribeOutboundLanes = unsub;
       });
 
-    api.query[bridgedMessagesLainChain]
-      .inboundLanes('0x00000000', (res: any) => {
+    api.query[bridgedMessages]
+      .inboundLanes(laneId, (res: any) => {
         setInboudLanes({ bridgeReceivedMessages: res.get('last_confirmed_nonce').toNumber() });
       })
       .then((unsub) => {
@@ -73,7 +74,7 @@ const useMessageLane = ({ isApiReady, api, chain }: Props): Output => {
       unsubscribeOutboundLanes && unsubscribeOutboundLanes();
       unsubscribeInboundLanes && unsubscribeInboundLanes();
     };
-  }, [api, isApiReady, chain]);
+  }, [api, isApiReady, chain, bridgedMessages, laneId]);
 
   useEffect(() => {
     if (!isApiReady) {

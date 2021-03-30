@@ -19,15 +19,13 @@ import { useEffect, useState } from 'react';
 
 interface Props {
   chain: string;
-  destination: string;
   api: ApiPromise;
   isApiReady: boolean;
 }
 
-const useBlocksInfo = ({ isApiReady, api, chain, destination }: Props) => {
+const useBlocksInfo = ({ isApiReady, api, chain }: Props) => {
   const [bestBlock, setBestBlock] = useState('');
   const [bestBlockFinalized, setBestBlockFinalized] = useState('');
-  const bridgedChain = `bridge${destination}`;
 
   useEffect(() => {
     if (!api || !isApiReady || !chain) {
@@ -60,7 +58,7 @@ const useBlocksInfo = ({ isApiReady, api, chain, destination }: Props) => {
       unsubscribeBestNumberFinalized && unsubscribeBestNumberFinalized();
       unsubscribeBestNumber && unsubscribeBestNumber();
     };
-  }, [api, isApiReady, chain, bridgedChain]);
+  }, [api, isApiReady, chain]);
 
   return { bestBlock, bestBlockFinalized };
 };
