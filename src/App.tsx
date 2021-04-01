@@ -26,44 +26,28 @@ import { SourceTargetContextProvider } from './contexts/SourceTargetContextProvi
 import { TransactionContextProvider } from './contexts/TransactionContext';
 import Main from './screens/Main';
 
-type Components = React.ReactElement | { [key: string]: any };
-
-interface ComposeProps {
-  components: Components[];
-  children: React.ReactElement;
-}
-
-export const Compose = ({ components, children }: ComposeProps): React.ReactElement => (
-  <>
-    {components.reverse().reduce((acc, curr) => {
-      const [Provider, props] = Array.isArray(curr) ? [curr[0], curr[1]] : [curr, {}];
-      return <Provider {...props}>{acc}</Provider>;
-    }, children)}
-  </>
-);
-
 function App() {
   return (
-    <Compose
-      components={[
-        BrowserRouter,
-        TransactionContextProvider,
-        AccountContextProvider,
-        KeyringContextProvider,
-        ApiPromiseTargetContextProvider,
-        ApiPromiseSourceContextProvider,
-        SourceTargetContextProvider
-      ]}
-    >
-      <div className="App">
-        <TopBar />
-        <Switch>
-          <Route path={'/'}>
-            <Main />
-          </Route>
-        </Switch>
-      </div>
-    </Compose>
+    <SourceTargetContextProvider>
+      <ApiPromiseSourceContextProvider>
+        <ApiPromiseTargetContextProvider>
+          <KeyringContextProvider>
+            <AccountContextProvider>
+              <TransactionContextProvider>
+                <BrowserRouter>
+                  <Switch>
+                    <Route path={'/'}>
+                      <TopBar />
+                      <Main />
+                    </Route>
+                  </Switch>
+                </BrowserRouter>
+              </TransactionContextProvider>
+            </AccountContextProvider>
+          </KeyringContextProvider>
+        </ApiPromiseTargetContextProvider>
+      </ApiPromiseSourceContextProvider>
+    </SourceTargetContextProvider>
   );
 }
 
