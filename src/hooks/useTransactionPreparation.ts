@@ -76,7 +76,16 @@ export default function useTransactionPreparation({ input, type }: Props): FeeAn
     if (areApiReady && payload) {
       calculateFee();
     }
-  }, [areApiReady, dispatchTransaction, laneId, payload, sourceApi.registry, sourceApi.rpc.state, targetChain]);
+  }, [
+    areApiReady,
+    dispatchTransaction,
+    estimatedFeeMethodName,
+    laneId,
+    payload,
+    sourceApi.registry,
+    sourceApi.rpc.state,
+    targetChain
+  ]);
 
   useEffect(() => {
     const getPayload = async () => {

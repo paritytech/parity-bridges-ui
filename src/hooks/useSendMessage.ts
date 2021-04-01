@@ -19,20 +19,17 @@ import { web3FromSource } from '@polkadot/extension-dapp';
 import type { KeyringPair } from '@polkadot/keyring/types';
 
 import { TransactionActionCreators } from '../actions/transactionActions';
-import { SOURCE } from '../constants';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
-import useDashboard from '../hooks/useDashboard';
 import useLaneId from '../hooks/useLaneId';
 import useTransactionPreparation from '../hooks/useTransactionPreparation';
-import { TransactionTypes } from '../types/transactionTypes';
+import { TransactionStatusEnum, TransactionTypes } from '../types/transactionTypes';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
 import logger from '../util/logger';
 
 interface Message {
-  successfull: string;
   error: string;
 }
 interface Props {
@@ -53,22 +50,20 @@ function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, 
   const { targetChain, sourceChain } = useSourceTarget();
   const { account } = useAccountContext();
   const { payload } = useTransactionPreparation({ input, type });
-  const { importedHeaders: bestBridgedFinalizedBlock } = useDashboard(SOURCE);
 
   const sendLaneMessage = async () => {
     if (!account || isRunning) {
       return;
     }
     const initialTransaction = {
-      block: -1,
-      blockHash: '',
-      completed: false,
+      block: null,
+      blockHash: null,
       input,
-      messageNonce: -1,
+      messageNonce: null,
       receiverAddress,
       sourceAccount: account.address,
       sourceChain,
-      targetBestBlock: parseInt(bestBridgedFinalizedBlock),
+      status: TransactionStatusEnum.CREATED,
       targetChain,
       type
     };
@@ -107,7 +102,8 @@ function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, 
                   TransactionActionCreators.updateTransactionStatus({
                     block,
                     blockHash: status.asInBlock.toString(),
-                    messageNonce: parseInt(messageNonce)
+                    messageNonce: parseInt(messageNonce),
+                    status: TransactionStatusEnum.IN_PROGRESS
                   })
                 );
               });
@@ -119,7 +115,6 @@ function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, 
           unsub();
         }
       });
-      setExecutionStatus(message.successfull);
     } catch (e) {
       setExecutionStatus(message.error);
       logger.error(e);

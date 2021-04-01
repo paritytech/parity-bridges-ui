@@ -40,8 +40,7 @@ const Transfer = ({ className }: Props) => {
 
   const { estimatedFee, receiverAddress } = useTransactionContext();
   const message = {
-    error: 'Error sending transfer',
-    successfull: 'Transfer was executed succesfully'
+    error: 'Error sending transfer'
   };
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
     input: transferInput,

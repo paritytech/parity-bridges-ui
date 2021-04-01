@@ -27,20 +27,24 @@ interface Payload {
 }
 
 export interface UpdatedTransanctionStatus {
-  block: number;
-  blockHash: string;
-  messageNonce: number;
+  [propName: string]: string | number | null | TransactionStatusEnum;
+}
+
+export enum TransactionStatusEnum {
+  CREATED = 'CREATED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED'
 }
 
 export interface TransanctionStatus extends UpdatedTransanctionStatus {
   input: string;
   sourceChain: string;
   targetChain: string;
-  targetBestBlock: number;
   sourceAccount: null | string;
   receiverAddress: null | string;
   type: string;
-  completed: boolean;
+  status: TransactionStatusEnum;
 }
 export interface TransactionState {
   estimatedFee: string | null;

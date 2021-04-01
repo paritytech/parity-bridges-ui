@@ -21,7 +21,8 @@ enum TransactionActionTypes {
   SET_ESTIMATED_FEE = 'SET_ESTIMATED_FEE',
   SET_RECEIVER_ADDRESS = 'SET_RECEIVER_ADDRESS',
   CREATE_TRANSACTION_STATUS = 'CREATE_TRANSACTION_STATUS',
-  UPDATE_CURRENT_TRANSACTION_STATUS = 'UPDATE_CURRENT_TRANSACTION_STATUS'
+  UPDATE_CURRENT_TRANSACTION_STATUS = 'UPDATE_CURRENT_TRANSACTION_STATUS',
+  SET_TRANSACTION_COMPLETED = 'SET_TRANSACTION_COMPLETED'
 }
 
 const estimateFee = (estimatedFee: string) => ({
@@ -42,11 +43,9 @@ const createTransactionStatus = (initialTransaction: TransanctionStatus) => {
   };
 };
 
-const updateTransactionStatus = (updatedTransaction: UpdatedTransanctionStatus) => {
-  const { block, blockHash, messageNonce } = updatedTransaction;
-
+const updateTransactionStatus = (updatedValues: UpdatedTransanctionStatus) => {
   return {
-    payload: { updatedValues: { block, blockHash, messageNonce } },
+    payload: { updatedValues },
     type: TransactionActionTypes.UPDATE_CURRENT_TRANSACTION_STATUS
   };
 };

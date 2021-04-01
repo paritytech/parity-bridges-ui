@@ -18,15 +18,14 @@ import { TransactionActionTypes } from '../actions/transactionActions';
 import type { TransactionsActionType, TransactionState, UpdatedTransanctionStatus } from '../types/transactionTypes';
 
 const updateTransactionObject = (state: TransactionState, updatedValues: UpdatedTransanctionStatus) => {
-  const { block, blockHash, messageNonce } = updatedValues;
-
+  const newState = { ...state };
   if (state.currentTransaction) {
-    state.currentTransaction.block = block;
-    state.currentTransaction.blockHash = blockHash;
-    state.currentTransaction.messageNonce = messageNonce;
+    Object.keys(updatedValues).map((key) => {
+      newState.currentTransaction![key] = updatedValues[key];
+    });
   }
 
-  return state;
+  return newState;
 };
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {

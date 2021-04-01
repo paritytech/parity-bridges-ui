@@ -18,29 +18,33 @@ import React from 'react';
 import { Card, Container } from 'semantic-ui-react';
 import styled from 'styled-components';
 
+import { useTransactionContext } from '../contexts/TransactionContext';
 import useCurrentExecutionStatus from '../hooks/useCurrentExecutionStatus';
+import { TransactionStatusEnum } from '../types/transactionTypes';
 
 interface Props {
   className?: string;
 }
 
 const CurrentExecutionStatus = ({ className }: Props) => {
-  const { step1, step2, step3, step4, step5, step6, show } = useCurrentExecutionStatus();
+  const steps = useCurrentExecutionStatus();
+  const { currentTransaction } = useTransactionContext();
 
-  if (!show) {
+  if (!steps.length || !currentTransaction) {
     return null;
   }
+
+  const status = currentTransaction.status === TransactionStatusEnum.COMPLETED ? 'Completed' : 'In Progress';
   return (
     <Container className={className}>
-      <Card className="container">
-        <Card.Content header="Current Transaction" />
+      <Card className="card">
+        <Card.Content header={`Transaction: ${status}`} />
         <Card.Description className="description">
-          <div>Step 1: {step1}</div>
-          <div>Step 2: {step2}</div>
-          <div>Step 3: {step3}</div>
-          <div>Step 4: {step4}</div>
-          <div>Step 5: {step5}</div>
-          <div>Step 6: {step6}</div>
+          {steps.map(({ chainType, label, status }, idx) => (
+            <p key={idx}>
+              {chainType}: {label}: {status}
+            </p>
+          ))}
         </Card.Description>
       </Card>
     </Container>
@@ -49,8 +53,8 @@ const CurrentExecutionStatus = ({ className }: Props) => {
 
 export default styled(CurrentExecutionStatus)`
   word-wrap: break-word;
-  .divider {
-    max-width: 80%;
+  .card {
+    min-width: 80%;
   }
   .description {
     margin: 10px;
