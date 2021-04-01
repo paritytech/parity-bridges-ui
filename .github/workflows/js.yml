@@ -25,6 +25,7 @@ jobs:
       with:
         node-version: '14'
     - run: yarn
+    - run: yarn run downloadCustomTypes
     - run: yarn lint
     - run: yarn test
 
@@ -43,6 +44,7 @@ jobs:
       with:
         node-version: '14'
     - run: yarn
+    - run: yarn run downloadCustomTypes
     - run: yarn build
       env:
         PUBLIC_URL: 'https://paritytech.github.io/parity-bridges-ui'
