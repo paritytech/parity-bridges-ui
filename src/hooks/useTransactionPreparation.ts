@@ -18,7 +18,6 @@ import { u8aToHex } from '@polkadot/util';
 import { useEffect, useState } from 'react';
 
 import { TransactionActionCreators } from '../actions/transactionActions';
-import { ESTIMATED_FEE_RUNTIME_API_CALL } from '../constants';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
@@ -26,6 +25,7 @@ import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import useLaneId from '../hooks/useLaneId';
 import useLoadingApi from '../hooks/useLoadingApi';
 import useTransactionType from '../hooks/useTransactionType';
+import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
 
 interface Props {
   input: string;
@@ -48,6 +48,7 @@ export default function useTransactionPreparation({ input, type }: Props): FeeAn
   const { callFunction, infoFunction } = useTransactionType({ input, type });
 
   const { dispatchTransaction } = useUpdateTransactionContext();
+  const { estimatedFeeMethodName } = getSubstrateDynamicNames(targetChain);
 
   useEffect(() => {
     const calculateFee = async () => {
@@ -62,7 +63,7 @@ export default function useTransactionPreparation({ input, type }: Props): FeeAn
       });
 
       const estimatedFeeCall = await sourceApi.rpc.state.call<Codec>(
-        `To${targetChain}${ESTIMATED_FEE_RUNTIME_API_CALL}`,
+        estimatedFeeMethodName,
         u8aToHex(messageFeeType.toU8a())
       );
 

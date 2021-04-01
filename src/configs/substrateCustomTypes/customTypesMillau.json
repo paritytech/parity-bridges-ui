@@ -50,7 +50,6 @@
     }
   },
   "--3": "Common types",
-  "Hash": "H512",
   "Address": "AccountId",
   "LookupSource": "AccountId",
   "AccountSigner": "MultiSigner",
@@ -90,10 +89,6 @@
     "payload": "MessagePayload",
     "fee": "Fee"
   },
-  "MessageFeeData": {
-    "lane_id": "LaneId",
-    "payload": "OutboundPayload"
-  },
   "MessagePayload": "Vec<u8>",
   "BridgedOpaqueCall": "Vec<u8>",
   "OutboundMessageFee": "Fee",
@@ -117,7 +112,7 @@
       "Ecdsa": "[u8;33]"
     }
   },
-  "MesssagesProofOf": {
+  "MessagesProofOf": {
     "bridged_header_hash": "BridgedBlockHash",
     "storage_proof": "Vec<StorageProofItem>",
     "lane": "LaneId",
@@ -136,11 +131,21 @@
     "total_messages": "MessageNonce"
   },
   "AncestryProof": "()",
+  "MessageFeeData": {
+    "lane_id": "LaneId",
+    "payload": "OutboundPayload"
+  },
   "Fee": "MillauBalance",
   "Balance": "MillauBalance",
+  "Hash": "MillauBlockHash",
   "BlockHash": "MillauBlockHash",
   "BlockNumber": "MillauBlockNumber",
   "BridgedBlockHash": "RialtoBlockHash",
   "BridgedBlockNumber": "RialtoBlockNumber",
-  "BridgedHeader": "RialtoHeader"
+  "BridgedHeader": "RialtoHeader",
+  "Parameter": {
+    "_enum": {
+      "MillauToRialtoConversionRate": "u128"
+    }
+  }
 }

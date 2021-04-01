@@ -15,7 +15,19 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { TransactionActionTypes } from '../actions/transactionActions';
-import type { TransactionsActionType, TransactionState } from '../types/transactionTypes';
+import type { TransactionsActionType, TransactionState, UpdatedTransanctionStatus } from '../types/transactionTypes';
+
+const updateTransactionObject = (state: TransactionState, updatedValues: UpdatedTransanctionStatus) => {
+  const { block, blockHash, messageNonce } = updatedValues;
+
+  if (state.currentTransaction) {
+    state.currentTransaction.block = block;
+    state.currentTransaction.blockHash = blockHash;
+    state.currentTransaction.messageNonce = messageNonce;
+  }
+
+  return state;
+};
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
   switch (action.type) {
@@ -24,9 +36,9 @@ export default function transactionReducer(state: TransactionState, action: Tran
     case TransactionActionTypes.SET_RECEIVER_ADDRESS:
       return { ...state, receiverAddress: action.payload.receiverAddress };
     case TransactionActionTypes.CREATE_TRANSACTION_STATUS:
-      return { ...state, currentTransaction: action.payload.currentTransaction };
+      return { ...state, currentTransaction: action.payload.initialTransaction };
     case TransactionActionTypes.UPDATE_CURRENT_TRANSACTION_STATUS:
-      return { ...state, currentTransaction: action.payload.transaction };
+      return updateTransactionObject(state, action.payload.updatedValues);
     default:
       throw new Error(`Unknown type: ${action.type}`);
   }

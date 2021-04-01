@@ -20,7 +20,7 @@ import { Codec } from '@polkadot/types/types';
 import BN from 'bn.js';
 import { useEffect, useState } from 'react';
 
-import getPalletNames from '../util/getPalletNames';
+import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
 interface HeaderId {
   number: BN;
   hash: Hash;
@@ -38,7 +38,7 @@ interface Props {
 const useBridgedBlocks = ({ isApiReady, api, chain }: Props) => {
   const [importedHeaders, setImportedHeaders] = useState('');
 
-  const { bridgedGrandpaChain } = getPalletNames(chain);
+  const { bridgedGrandpaChain } = getSubstrateDynamicNames(chain);
   useEffect(() => {
     if (!api || !isApiReady || !chain) {
       return;

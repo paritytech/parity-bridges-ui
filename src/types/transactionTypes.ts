@@ -26,19 +26,22 @@ interface Payload {
   [propName: string]: any;
 }
 
-export interface TransanctionStatus {
+export interface UpdatedTransanctionStatus {
+  block: number;
+  blockHash: string;
+  messageNonce: number;
+}
+
+export interface TransanctionStatus extends UpdatedTransanctionStatus {
   input: string;
   sourceChain: string;
   targetChain: string;
-  block: number;
-  messageNonce: number;
   targetBestBlock: number;
   sourceAccount: null | string;
   receiverAddress: null | string;
   type: string;
   completed: boolean;
 }
-
 export interface TransactionState {
   estimatedFee: string | null;
   receiverAddress: string | null;

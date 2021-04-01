@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { TransanctionStatus } from '../types/transactionTypes';
+import { TransanctionStatus, UpdatedTransanctionStatus } from '../types/transactionTypes';
 import { includeNewTransaction } from '../util/transactionLocalStorage';
 
 enum TransactionActionTypes {
@@ -42,13 +42,11 @@ const createTransactionStatus = (initialTransaction: TransanctionStatus) => {
   };
 };
 
-const updateTransactionStatus = (currentTransaction: any, updatedTransaction: any) => {
-  const transaction = { ...currentTransaction };
-  transaction.block = updatedTransaction.block;
-  transaction.messageNonce = updatedTransaction.messageNonce;
+const updateTransactionStatus = (updatedTransaction: UpdatedTransanctionStatus) => {
+  const { block, blockHash, messageNonce } = updatedTransaction;
 
   return {
-    payload: { transaction },
+    payload: { updatedValues: { block, blockHash, messageNonce } },
     type: TransactionActionTypes.UPDATE_CURRENT_TRANSACTION_STATUS
   };
 };

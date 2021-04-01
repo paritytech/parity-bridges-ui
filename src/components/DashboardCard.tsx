@@ -20,24 +20,22 @@ import styled from 'styled-components';
 
 import { SOURCE } from '../constants';
 import useDashboard from '../hooks/useDashboard';
-import useDashboardProfile from '../hooks/useDashboardProfile';
 import { ChainTypes } from '../types/sourceTargetTypes';
 
 interface Props {
   chainType: ChainTypes;
-  useApiContext: Function;
   className?: string;
 }
 
-const DashboardCard = ({ chainType, useApiContext, className }: Props) => {
-  const { destination, local } = useDashboardProfile(chainType);
+const DashboardCard = ({ chainType, className }: Props) => {
   const {
     bestBlockFinalized,
     bestBlock,
     importedHeaders: bestBridgedFinalizedBlock,
     outboundLanes: { totalMessages, pendingMessages },
-    inboundLanes: { bridgeReceivedMessages }
-  } = useDashboard({ destination, local, useApiContext });
+    inboundLanes: { bridgeReceivedMessages },
+    local
+  } = useDashboard(chainType);
 
   const headerText = chainType === SOURCE ? 'Source' : 'Target';
   return (

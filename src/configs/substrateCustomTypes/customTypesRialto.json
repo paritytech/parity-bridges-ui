@@ -98,10 +98,6 @@
     "origin": "CallOrigin",
     "call": "BridgedOpaqueCall"
   },
-  "MessageFeeData": {
-    "lane_id": "LaneId",
-    "payload": "OutboundPayload"
-  },
   "CallOrigin": {
     "_enum": {
       "SourceRoot": "()",
@@ -116,7 +112,7 @@
       "Ecdsa": "[u8;33]"
     }
   },
-  "MesssagesProofOf": {
+  "MessagesProofOf": {
     "bridged_header_hash": "BridgedBlockHash",
     "storage_proof": "Vec<StorageProofItem>",
     "lane": "LaneId",
@@ -135,11 +131,20 @@
     "total_messages": "MessageNonce"
   },
   "AncestryProof": "()",
+  "MessageFeeData": {
+    "lane_id": "LaneId",
+    "payload": "OutboundPayload"
+  },
   "Fee": "RialtoBalance",
   "Balance": "RialtoBalance",
   "BlockHash": "RialtoBlockHash",
   "BlockNumber": "RialtoBlockNumber",
   "BridgedBlockHash": "MillauBlockHash",
   "BridgedBlockNumber": "MillauBlockNumber",
-  "BridgedHeader": "MillauHeader"
+  "BridgedHeader": "MillauHeader",
+  "Parameter": {
+    "_enum": {
+      "RialtoToMillauConversionRate": "u128"
+    }
+  }
 }

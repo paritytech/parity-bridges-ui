@@ -14,64 +14,39 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import React from 'react';
 import { Card, Container } from 'semantic-ui-react';
 import styled from 'styled-components';
 
-import { SOURCE, TARGET } from '../constants';
-import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
-import { useApiTargetPromiseContext } from '../contexts/ApiPromiseTargetContext';
-import { useTransactionContext } from '../contexts/TransactionContext';
-import useDashboard from '../hooks/useDashboard';
-import useDashboardProfile from '../hooks/useDashboardProfile';
-import useLoadingApi from '../hooks/useLoadingApi';
+import useCurrentExecutionStatus from '../hooks/useCurrentExecutionStatus';
 
 interface Props {
   className?: string;
 }
 
 const CurrentExecutionStatus = ({ className }: Props) => {
-  const areApiLoading = useLoadingApi();
-  const { currentTransaction } = useTransactionContext();
-  const { destination: sourceDestination, local: sourceLocal } = useDashboardProfile(SOURCE);
-  const { bestBlockFinalized } = useDashboard({
-    destination: sourceDestination,
-    local: sourceLocal,
-    useApiContext: useApiSourcePromiseContext
-  });
-  const { destination, local } = useDashboardProfile(TARGET);
-  const { bestBlock: targetSourceBlock } = useDashboard({
-    destination,
-    local,
-    useApiContext: useApiTargetPromiseContext
-  });
-  if (!areApiLoading) {
+  const { step1, step2, step3, step4, step5, step6, show } = useCurrentExecutionStatus();
+
+  if (!show) {
     return null;
   }
-
-  if (!currentTransaction) {
-    return null;
-  }
-
-  const isDone = (status: boolean) => (status ? 'DONE' : 'RUNNING');
-
-  const step1 = currentTransaction.block > 0 ? `included in block ${currentTransaction.block}` : 'RUNNING';
-  const step2 = parseInt(targetSourceBlock) > currentTransaction.block;
-
   return (
     <Container className={className}>
       <Card className="container">
-        <Card.Content header={'Transaction'} />
+        <Card.Content header="Current Transaction" />
         <Card.Description className="description">
           <div>Step 1: {step1}</div>
-          <div>Step 2: {isDone(step2)}</div>
+          <div>Step 2: {step2}</div>
+          <div>Step 3: {step3}</div>
+          <div>Step 4: {step4}</div>
+          <div>Step 5: {step5}</div>
+          <div>Step 6: {step6}</div>
         </Card.Description>
       </Card>
     </Container>
   );
 };
+
 export default styled(CurrentExecutionStatus)`
   word-wrap: break-word;
   .divider {

@@ -25,14 +25,12 @@ import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext'
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
 import useDashboard from '../hooks/useDashboard';
-import useDashboardProfile from '../hooks/useDashboardProfile';
 import useLaneId from '../hooks/useLaneId';
 import useTransactionPreparation from '../hooks/useTransactionPreparation';
 import { TransactionTypes } from '../types/transactionTypes';
-import getPalletNames from '../util/getPalletNames';
+import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
 import logger from '../util/logger';
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
 interface Message {
   successfull: string;
   error: string;
@@ -48,40 +46,44 @@ interface Props {
 
 function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, input, type }: Props) {
   const { api: sourceApi } = useApiSourcePromiseContext();
-  const { estimatedFee, receiverAddress, currentTransaction } = useTransactionContext();
+  const { estimatedFee, receiverAddress } = useTransactionContext();
   const { dispatchTransaction } = useUpdateTransactionContext();
 
   const laneId = useLaneId();
   const { targetChain, sourceChain } = useSourceTarget();
   const { account } = useAccountContext();
   const { payload } = useTransactionPreparation({ input, type });
-  const { destination, local } = useDashboardProfile(SOURCE);
-  const { bestBlock, importedHeaders: bestBridgedFinalizedBlock } = useDashboard({
-    destination,
-    local,
-    useApiContext: useApiSourcePromiseContext
-  });
+  const { importedHeaders: bestBridgedFinalizedBlock } = useDashboard(SOURCE);
 
   const sendLaneMessage = async () => {
+    if (!account || isRunning) {
+      return;
+    }
+    const initialTransaction = {
+      block: -1,
+      blockHash: '',
+      completed: false,
+      input,
+      messageNonce: -1,
+      receiverAddress,
+      sourceAccount: account.address,
+      sourceChain,
+      targetBestBlock: parseInt(bestBridgedFinalizedBlock),
+      targetChain,
+      type
+    };
+    dispatchTransaction(TransactionActionCreators.createTransactionStatus(initialTransaction));
+    setIsRunning(true);
+    return makeCall();
+  };
+
+  const makeCall = async () => {
     try {
       if (!account || isRunning) {
         return;
       }
-      const initialTransaction = {
-        block: -1,
-        completed: false,
-        input,
-        messageNonce: -1,
-        receiverAddress,
-        sourceAccount: account.address,
-        sourceChain,
-        targetBestBlock: parseInt(bestBridgedFinalizedBlock),
-        targetChain,
-        type
-      };
-      dispatchTransaction(TransactionActionCreators.createTransactionStatus(initialTransaction));
-      setIsRunning(true);
-      const { bridgedMessages } = getPalletNames(targetChain);
+
+      const { bridgedMessages } = getSubstrateDynamicNames(targetChain);
 
       const bridgeMessage = sourceApi.tx[bridgedMessages].sendMessage(laneId, payload, estimatedFee);
       const options: Partial<SignerOptions> = {
@@ -95,18 +97,20 @@ function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, 
       }
 
       const unsub = await bridgeMessage.signAndSend(sourceAccount, { ...options }, ({ events = [], status }) => {
-        console.log('status', status.toJSON());
-
         if (status.isInBlock) {
           events.forEach(({ event: { data, method } }) => {
             if (method.toString() === 'MessageAccepted') {
-              const nonce = data.toArray()[1].toString();
-              dispatchTransaction(
-                TransactionActionCreators.updateTransactionStatus(currentTransaction, {
-                  block: bestBlock,
-                  messageNonce: nonce
-                })
-              );
+              const messageNonce = data.toArray()[1].toString();
+              sourceApi.rpc.chain.getBlock(status.asInBlock).then((res) => {
+                const block = res.block.header.number.toNumber();
+                dispatchTransaction(
+                  TransactionActionCreators.updateTransactionStatus({
+                    block,
+                    blockHash: status.asInBlock.toString(),
+                    messageNonce: parseInt(messageNonce)
+                  })
+                );
+              });
             }
           });
         }

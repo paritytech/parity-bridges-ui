@@ -26,8 +26,6 @@ import DashboardCard from '../components/DashboardCard';
 import Remark from '../components/Remark';
 import Transfer from '../components/Transfer';
 import { SOURCE, TARGET } from '../constants';
-import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
-import { useApiTargetPromiseContext } from '../contexts/ApiPromiseTargetContext';
 import { useSourceTarget, useUpdateSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useLoadingApi from '../hooks/useLoadingApi';
 
@@ -60,7 +58,7 @@ export function Main({ className }: Props) {
           <Grid.Row>
             <Grid.Column width={1} />
             <Grid.Column width={5}>
-              <DashboardCard chainType={SOURCE} useApiContext={useApiSourcePromiseContext} />
+              <DashboardCard chainType={SOURCE} />
             </Grid.Column>
             <Grid.Column width={1}>
               <div className="switchButton">
@@ -70,7 +68,7 @@ export function Main({ className }: Props) {
               </div>
             </Grid.Column>
             <Grid.Column width={5}>
-              <DashboardCard chainType={TARGET} useApiContext={useApiTargetPromiseContext} />
+              <DashboardCard chainType={TARGET} />
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
