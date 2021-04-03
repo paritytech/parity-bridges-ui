@@ -101,8 +101,8 @@ export default function useCurrentExecutionStatus() {
       return chainValue > transactionValue;
     };
 
-    const isDone = (status: boolean | boolean) => (currentTransaction.block && status ? 'DONE' : 'RUNNING');
-    const step1 = currentTransaction.block ? `included in block ${currentTransaction.block}` : isDone(false);
+    const completionStatus = (status: boolean) => (currentTransaction.block && status ? 'DONE' : 'RUNNING');
+    const step1 = currentTransaction.block ? `included in block ${currentTransaction.block}` : completionStatus(false);
     const step2 = stepEvaluator(currentTransaction.block, parseInt(bestBlockFinalized));
     const step3 = stepEvaluator(currentTransaction.block, parseInt(importedHeaders));
     const step4 = stepEvaluator(currentTransaction.messageNonce, latestReceivedNonceRuntimeApi);
@@ -111,11 +111,15 @@ export default function useCurrentExecutionStatus() {
 
     const steps = [
       { chainType: sourceChain, label: 'Including message in block', status: step1 },
-      { chainType: sourceChain, label: 'Waiting for block finality on source', status: isDone(step2) },
-      { chainType: targetChain, label: 'Source Chain block finality received on target', status: isDone(step3) },
-      { chainType: targetChain, label: 'Message delivered', status: isDone(step4) },
-      { chainType: targetChain, label: 'Message finality', status: isDone(step5) },
-      { chainType: sourceChain, label: 'Delivery confirmation on source', status: isDone(step6) }
+      { chainType: sourceChain, label: 'Waiting for block finality on source', status: completionStatus(step2) },
+      {
+        chainType: targetChain,
+        label: 'Source Chain block finality received on target',
+        status: completionStatus(step3)
+      },
+      { chainType: targetChain, label: 'Message delivered', status: completionStatus(step4) },
+      { chainType: targetChain, label: 'Message finality', status: completionStatus(step5) },
+      { chainType: sourceChain, label: 'Delivery confirmation on source', status: completionStatus(step6) }
     ];
 
     if (step6) {

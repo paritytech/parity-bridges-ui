@@ -14,16 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-export default function getSubstrateDynamicNames(chain: string) {
-  const bridgedGrandpaChain = `bridge${chain}Grandpa`;
-  const bridgedMessages = `bridge${chain}Messages`;
-  const estimatedFeeMethodName = `To${chain}OutboundLaneApi_estimate_message_delivery_and_dispatch_fee`;
-  const latestReceivedNonceMethodName = `From${chain}InboundLaneApi_latest_received_nonce`;
+export default function getSubstrateDynamicNames(key: string) {
+  const bridgedGrandpaChain = `bridge${key}Grandpa`;
+  const bridgedMessages = `bridge${key}Messages`;
+  const estimatedFeeMethodName = `To${key}OutboundLaneApi_estimate_message_delivery_and_dispatch_fee`;
+  const latestReceivedNonceMethodName = `From${key}InboundLaneApi_latest_received_nonce`;
+
+  const storageKey = `${key}-bridge-ui-transactions`;
 
   return {
     bridgedGrandpaChain,
     bridgedMessages,
     estimatedFeeMethodName,
-    latestReceivedNonceMethodName
+    latestReceivedNonceMethodName,
+    storageKey
   };
 }

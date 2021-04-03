@@ -14,17 +14,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import { CHAIN_1, CHAIN_2 } from '../configs/substrateProviders';
 import { TransanctionStatus } from '../types/transactionTypes';
+import getSubstrateDynamicNames from './getSubstrateDynamicNames';
+import logger from './logger';
 
-const includeNewTransaction = (transaction: TransanctionStatus) => {
-  const rawTransactions = localStorage.getItem('bridge-ui-transactions');
-  if (!rawTransactions || !rawTransactions.length) {
-    const first = [transaction];
-    return localStorage.setItem('bridge-ui-transactions', JSON.stringify(first));
+const appendNewTransaction = (transaction: TransanctionStatus) => {
+  const { storageKey } = getSubstrateDynamicNames(`${CHAIN_1}-${CHAIN_2}`);
+  try {
+    const rawTransactions = localStorage.getItem(storageKey);
+    if (!rawTransactions || !rawTransactions.length) {
+      const first = [transaction];
+      return localStorage.setItem(storageKey, JSON.stringify(first));
+    }
+    const transactions = JSON.parse(rawTransactions);
+    transactions.push(transaction);
+    return localStorage.setItem(storageKey, JSON.stringify(transactions));
+  } catch (e) {
+    logger.error(e);
+    throw new Error('Issue appending new transaction to local storage');
   }
-  const transactions = JSON.parse(rawTransactions);
-  transactions.push(transaction);
-  return localStorage.setItem('bridge-ui-transactions', JSON.stringify(transactions));
 };
 
-export { includeNewTransaction };
+export { appendNewTransaction };

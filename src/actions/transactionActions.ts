@@ -15,7 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { TransanctionStatus, UpdatedTransanctionStatus } from '../types/transactionTypes';
-import { includeNewTransaction } from '../util/transactionLocalStorage';
+import { appendNewTransaction } from '../util/transactionLocalStorage';
 
 enum TransactionActionTypes {
   SET_ESTIMATED_FEE = 'SET_ESTIMATED_FEE',
@@ -36,7 +36,7 @@ const setReceiverAddress = (receiverAddress: string) => ({
 });
 
 const createTransactionStatus = (initialTransaction: TransanctionStatus) => {
-  includeNewTransaction(initialTransaction);
+  appendNewTransaction(initialTransaction);
   return {
     payload: { initialTransaction },
     type: TransactionActionTypes.CREATE_TRANSACTION_STATUS

@@ -96,17 +96,23 @@ function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, 
           events.forEach(({ event: { data, method } }) => {
             if (method.toString() === 'MessageAccepted') {
               const messageNonce = data.toArray()[1].toString();
-              sourceApi.rpc.chain.getBlock(status.asInBlock).then((res) => {
-                const block = res.block.header.number.toNumber();
-                dispatchTransaction(
-                  TransactionActionCreators.updateTransactionStatus({
-                    block,
-                    blockHash: status.asInBlock.toString(),
-                    messageNonce: parseInt(messageNonce),
-                    status: TransactionStatusEnum.IN_PROGRESS
-                  })
-                );
-              });
+              sourceApi.rpc.chain
+                .getBlock(status.asInBlock)
+                .then((res) => {
+                  const block = res.block.header.number.toNumber();
+                  dispatchTransaction(
+                    TransactionActionCreators.updateTransactionStatus({
+                      block,
+                      blockHash: status.asInBlock.toString(),
+                      messageNonce: parseInt(messageNonce),
+                      status: TransactionStatusEnum.IN_PROGRESS
+                    })
+                  );
+                })
+                .catch((e) => {
+                  logger.error(e);
+                  throw new Error('Issue reading block information.');
+                });
             }
           });
         }
