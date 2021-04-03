@@ -47,6 +47,14 @@ Runs the test suite.
 
 Runs the linter & formatter.
 
+## customTypes config files process.
+
+There is an automated process that downloads all the required types<CHAIN>.json files available in the deployments section of [parity-bridges-common](https://github.com/paritytech/parity-bridges-common/tree/master/deployments) repository.
+This hook is executed before the local development server starts and during the lint/test/build process during deployment.
+In case there is an unexpected issue with this process you can test this process isolated by running:
+
+### `yarn prestart`
+
 ## Learn More
 
 For additional information about the Bridges Project please refer to [parity-bridges-common](https://github.com/paritytech/parity-bridges-common) repository.

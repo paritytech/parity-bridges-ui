@@ -37,7 +37,8 @@
     "winston": "^3.3.3"
   },
   "scripts": {
-    "start": "yarn run downloadCustomTypes && PORT=3001 react-app-rewired start",
+    "prestart": "yarn downloadCustomTypes",
+    "start": "PORT=3001 react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test --transformIgnorePatterns 'node_modules/(?!@codemirror)/'",
     "eject": "react-app-rewired eject",
