@@ -16,26 +16,26 @@
 
 import { Codec } from '@polkadot/types/types';
 import BN from 'bn.js';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { TransactionActionCreators } from '../actions/transactionActions';
 import { SOURCE, TARGET } from '../constants';
 import { useApiTargetPromiseContext } from '../contexts/ApiPromiseTargetContext';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
+import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import useDashboard from '../hooks/useDashboard';
 import useLaneId from '../hooks/useLaneId';
 import useLoadingApi from '../hooks/useLoadingApi';
-import { TransactionStatusEnum } from '../types/transactionTypes';
+import { TransanctionStatus } from '../types/transactionTypes';
+import { Step, TransactionStatusEnum } from '../types/transactionTypes';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
+import Transaction from './Transaction';
 
-interface Step {
-  chainType: string;
-  label: string;
-  status: string;
+interface Props {
+  transaction: TransanctionStatus;
 }
 
-export default function useCurrentExecutionStatus() {
+function TransactionStatus({ transaction }: Props) {
   const [nonceOfTargetFinalizedBlock, setNonceOfTargetFinalizedBlock] = useState<null | number>(null);
   const [latestReceivedNonceRuntimeApi, setLatestReceivedNonceRuntimeApi] = useState(0);
   const [steps, setSteps] = useState<Array<Step>>([]);
@@ -44,7 +44,7 @@ export default function useCurrentExecutionStatus() {
   const { sourceChain, targetChain } = useSourceTarget();
   const laneId = useLaneId();
   const areApiLoading = useLoadingApi();
-  const { currentTransaction } = useTransactionContext();
+
   const {
     bestBlockFinalized,
     outboundLanes: { latestReceivedNonce: latestReceivedNonceOnSource }
@@ -54,9 +54,10 @@ export default function useCurrentExecutionStatus() {
     bestBlockFinalized: bestBlockFinalizedOnTarget
   } = useDashboard(TARGET);
   const { latestReceivedNonceMethodName } = getSubstrateDynamicNames(sourceChain);
+  const completed = transaction.status === TransactionStatusEnum.COMPLETED;
 
   useEffect(() => {
-    if (!areApiLoading || !currentTransaction) {
+    if (!areApiLoading || !transaction) {
       return;
     }
     const getNonceByHash = async () => {
@@ -85,7 +86,7 @@ export default function useCurrentExecutionStatus() {
   }, [
     areApiLoading,
     bestBlockFinalizedOnTarget,
-    currentTransaction,
+    transaction,
     laneId,
     latestReceivedNonceMethodName,
     targetApi.registry,
@@ -94,7 +95,7 @@ export default function useCurrentExecutionStatus() {
   ]);
 
   useEffect(() => {
-    if (!areApiLoading || !currentTransaction) {
+    if (!areApiLoading || !transaction || completed) {
       return;
     }
 
@@ -107,15 +108,15 @@ export default function useCurrentExecutionStatus() {
       return bnChainValue.gt(bnTransactionValue);
     };
 
-    const completionStatus = (status: boolean) => (currentTransaction.block && status ? 'DONE' : 'RUNNING');
-    const sourceTransactionIncluded = currentTransaction.block
-      ? `included in block ${currentTransaction.block}`
+    const completionStatus = (status: boolean) => (transaction.block && status ? 'DONE' : 'RUNNING');
+    const sourceTransactionIncluded = transaction.block
+      ? `included in block ${transaction.block}`
       : completionStatus(false);
-    const sourceTransactionFinalized = stepEvaluator(currentTransaction.block, bestBlockFinalized);
-    const blockFinalityRelayed = stepEvaluator(currentTransaction.block, bestBridgedFinalizedBlockOnTarget);
-    const messageDelivered = stepEvaluator(currentTransaction.messageNonce, latestReceivedNonceRuntimeApi);
-    const messageFinalizedOnTarget = stepEvaluator(currentTransaction.messageNonce, nonceOfTargetFinalizedBlock);
-    const sourceConfirmationReceived = stepEvaluator(currentTransaction.messageNonce, latestReceivedNonceOnSource);
+    const sourceTransactionFinalized = stepEvaluator(transaction.block, bestBlockFinalized);
+    const blockFinalityRelayed = stepEvaluator(transaction.block, bestBridgedFinalizedBlockOnTarget);
+    const messageDelivered = stepEvaluator(transaction.messageNonce, latestReceivedNonceRuntimeApi);
+    const messageFinalizedOnTarget = stepEvaluator(transaction.messageNonce, nonceOfTargetFinalizedBlock);
+    const sourceConfirmationReceived = stepEvaluator(transaction.messageNonce, latestReceivedNonceOnSource);
 
     const steps = [
       { chainType: sourceChain, label: 'Including message in block', status: sourceTransactionIncluded },
@@ -148,7 +149,7 @@ export default function useCurrentExecutionStatus() {
   }, [
     areApiLoading,
     bestBlockFinalized,
-    currentTransaction,
+    transaction,
     dispatchTransaction,
     bestBridgedFinalizedBlockOnTarget,
     latestReceivedNonceOnSource,
@@ -158,5 +159,7 @@ export default function useCurrentExecutionStatus() {
     sourceChain
   ]);
 
-  return steps;
+  return <Transaction steps={steps} transaction={transaction} />;
 }
+
+export default TransactionStatus;

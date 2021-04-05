@@ -15,28 +15,45 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React from 'react';
-import { Container } from 'semantic-ui-react';
+import { Card, Container } from 'semantic-ui-react';
 import styled from 'styled-components';
 
-import { useTransactionContext } from '../contexts/TransactionContext';
-import TransactionStatus from './TransactionStatus';
+import { Step, TransactionStatusEnum, TransanctionStatus } from '../types/transactionTypes';
 
 interface Props {
   className?: string;
+  steps: Array<Step>;
+  transaction: TransanctionStatus;
 }
 
-const CurrentExecutionStatus = ({ className }: Props) => {
-  const { currentTransaction } = useTransactionContext();
-
-  if (!currentTransaction) {
+const Transaction = ({ transaction, steps, className }: Props) => {
+  if (!steps.length) {
     return null;
   }
 
+  const status = transaction.status === TransactionStatusEnum.COMPLETED ? 'Completed' : 'In Progress';
   return (
     <Container className={className}>
-      <TransactionStatus transaction={currentTransaction} />
+      <Card className="card">
+        <Card.Content header={`Transaction: ${status}`} />
+        <Card.Description className="description">
+          {steps.map(({ chainType, label, status }, idx) => (
+            <p key={idx}>
+              {chainType}: {label}: {status}
+            </p>
+          ))}
+        </Card.Description>
+      </Card>
     </Container>
   );
 };
 
-export default styled(CurrentExecutionStatus)``;
+export default styled(Transaction)`
+  word-wrap: break-word;
+  .card {
+    min-width: 80%;
+  }
+  .description {
+    margin: 10px;
+  }
+`;

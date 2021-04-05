@@ -58,3 +58,9 @@ export enum TransactionTypes {
   TRANSFER = 'TRANSFER',
   REMARK = 'REMARK'
 }
+
+export interface Step {
+  chainType: string;
+  label: string;
+  status: string;
+}
