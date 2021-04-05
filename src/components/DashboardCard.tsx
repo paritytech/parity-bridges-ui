@@ -31,7 +31,7 @@ const DashboardCard = ({ chainType, className }: Props) => {
   const {
     bestBlockFinalized,
     bestBlock,
-    importedHeaders: bestBridgedFinalizedBlock,
+    bestBridgedFinalizedBlock,
     outboundLanes: { totalMessages, pendingMessages },
     inboundLanes: { bridgeReceivedMessages },
     local

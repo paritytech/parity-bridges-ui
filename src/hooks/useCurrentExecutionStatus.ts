@@ -15,6 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Codec } from '@polkadot/types/types';
+import BN from 'bn.js';
 import { useEffect, useState } from 'react';
 
 import { TransactionActionCreators } from '../actions/transactionActions';
@@ -48,7 +49,10 @@ export default function useCurrentExecutionStatus() {
     bestBlockFinalized,
     outboundLanes: { latestReceivedNonce: latestReceivedNonceOnSource }
   } = useDashboard(SOURCE);
-  const { importedHeaders, bestBlockFinalized: bestBlockFinalizedOnTarget } = useDashboard(TARGET);
+  const {
+    bestBridgedFinalizedBlock: bestBridgedFinalizedBlockOnTarget,
+    bestBlockFinalized: bestBlockFinalizedOnTarget
+  } = useDashboard(TARGET);
   const { latestReceivedNonceMethodName } = getSubstrateDynamicNames(sourceChain);
 
   useEffect(() => {
@@ -94,35 +98,47 @@ export default function useCurrentExecutionStatus() {
       return;
     }
 
-    const stepEvaluator = (transactionValue: string | number | null, chainValue: number | null) => {
+    const stepEvaluator = (transactionValue: string | number | null, chainValue: string | number | null) => {
       if (!transactionValue || !chainValue) {
         return false;
       }
-      return chainValue > transactionValue;
+      const bnChainValue = new BN(chainValue);
+      const bnTransactionValue = new BN(transactionValue);
+      return bnChainValue.gt(bnTransactionValue);
     };
 
     const completionStatus = (status: boolean) => (currentTransaction.block && status ? 'DONE' : 'RUNNING');
-    const step1 = currentTransaction.block ? `included in block ${currentTransaction.block}` : completionStatus(false);
-    const step2 = stepEvaluator(currentTransaction.block, parseInt(bestBlockFinalized));
-    const step3 = stepEvaluator(currentTransaction.block, parseInt(importedHeaders));
-    const step4 = stepEvaluator(currentTransaction.messageNonce, latestReceivedNonceRuntimeApi);
-    const step5 = stepEvaluator(currentTransaction.messageNonce, nonceOfTargetFinalizedBlock);
-    const step6 = stepEvaluator(currentTransaction.messageNonce, latestReceivedNonceOnSource);
+    const sourceTransactionIncluded = currentTransaction.block
+      ? `included in block ${currentTransaction.block}`
+      : completionStatus(false);
+    const sourceTransactionFinalized = stepEvaluator(currentTransaction.block, bestBlockFinalized);
+    const blockFinalityRelayed = stepEvaluator(currentTransaction.block, bestBridgedFinalizedBlockOnTarget);
+    const messageDelivered = stepEvaluator(currentTransaction.messageNonce, latestReceivedNonceRuntimeApi);
+    const messageFinalizedOnTarget = stepEvaluator(currentTransaction.messageNonce, nonceOfTargetFinalizedBlock);
+    const sourceConfirmationReceived = stepEvaluator(currentTransaction.messageNonce, latestReceivedNonceOnSource);
 
     const steps = [
-      { chainType: sourceChain, label: 'Including message in block', status: step1 },
-      { chainType: sourceChain, label: 'Waiting for block finality on source', status: completionStatus(step2) },
+      { chainType: sourceChain, label: 'Including message in block', status: sourceTransactionIncluded },
+      {
+        chainType: sourceChain,
+        label: 'Waiting for block finality on source',
+        status: completionStatus(sourceTransactionFinalized)
+      },
       {
         chainType: targetChain,
         label: 'Source Chain block finality received on target',
-        status: completionStatus(step3)
+        status: completionStatus(blockFinalityRelayed)
       },
-      { chainType: targetChain, label: 'Message delivered', status: completionStatus(step4) },
-      { chainType: targetChain, label: 'Message finality', status: completionStatus(step5) },
-      { chainType: sourceChain, label: 'Delivery confirmation on source', status: completionStatus(step6) }
+      { chainType: targetChain, label: 'Message delivered', status: completionStatus(messageDelivered) },
+      { chainType: targetChain, label: 'Message finality', status: completionStatus(messageFinalizedOnTarget) },
+      {
+        chainType: sourceChain,
+        label: 'Delivery confirmation on source',
+        status: completionStatus(sourceConfirmationReceived)
+      }
     ];
 
-    if (step6) {
+    if (sourceConfirmationReceived) {
       dispatchTransaction(
         TransactionActionCreators.updateTransactionStatus({ status: TransactionStatusEnum.COMPLETED })
       );
@@ -134,7 +150,7 @@ export default function useCurrentExecutionStatus() {
     bestBlockFinalized,
     currentTransaction,
     dispatchTransaction,
-    importedHeaders,
+    bestBridgedFinalizedBlockOnTarget,
     latestReceivedNonceOnSource,
     latestReceivedNonceRuntimeApi,
     nonceOfTargetFinalizedBlock,

@@ -36,7 +36,7 @@ interface Props {
 }
 
 const useBridgedBlocks = ({ isApiReady, api, chain }: Props) => {
-  const [importedHeaders, setImportedHeaders] = useState('');
+  const [bestBridgedFinalizedBlock, setBestBridgedFinalizedBlock] = useState('');
 
   const { bridgedGrandpaChain } = getSubstrateDynamicNames(chain);
   useEffect(() => {
@@ -53,7 +53,7 @@ const useBridgedBlocks = ({ isApiReady, api, chain }: Props) => {
         api.query[bridgedGrandpaChain]
           .importedHeaders(bestBridgedFinalizedBlock, (res: any) => {
             if (res.toJSON()) {
-              setImportedHeaders(res.toJSON().number);
+              setBestBridgedFinalizedBlock(res.toJSON().number);
             }
           })
           .then((unsub) => {
@@ -70,7 +70,7 @@ const useBridgedBlocks = ({ isApiReady, api, chain }: Props) => {
     };
   }, [isApiReady, chain, api, bridgedGrandpaChain]);
 
-  return { importedHeaders };
+  return { bestBridgedFinalizedBlock };
 };
 
 export default useBridgedBlocks;

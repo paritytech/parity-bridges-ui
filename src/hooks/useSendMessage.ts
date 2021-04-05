@@ -99,12 +99,12 @@ function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, 
               sourceApi.rpc.chain
                 .getBlock(status.asInBlock)
                 .then((res) => {
-                  const block = res.block.header.number.toNumber();
+                  const block = res.block.header.number.toString();
                   dispatchTransaction(
                     TransactionActionCreators.updateTransactionStatus({
                       block,
                       blockHash: status.asInBlock.toString(),
-                      messageNonce: parseInt(messageNonce),
+                      messageNonce,
                       status: TransactionStatusEnum.IN_PROGRESS
                     })
                   );
