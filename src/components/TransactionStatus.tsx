@@ -27,7 +27,7 @@ import useLoadingApi from '../hooks/useLoadingApi';
 import { TransanctionStatus } from '../types/transactionTypes';
 import { Step, TransactionStatusEnum } from '../types/transactionTypes';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
-import Transaction from './Transaction';
+import TransactionDisplay from './TransactionDisplay';
 
 interface Props {
   transaction: TransanctionStatus;
@@ -140,9 +140,6 @@ function TransactionStatus({ transaction, onComplete }: Props) {
 
     if (sourceConfirmationReceived) {
       onComplete();
-      /*       dispatchTransaction(
-        TransactionActionCreators.updateTransactionStatus({ status: TransactionStatusEnum.COMPLETED, transaction })
-      ); */
     }
 
     setSteps(steps);
@@ -160,7 +157,7 @@ function TransactionStatus({ transaction, onComplete }: Props) {
     onComplete
   ]);
 
-  return <Transaction steps={steps} transaction={transaction} />;
+  return <TransactionDisplay steps={steps} transaction={transaction} />;
 }
 
 export default TransactionStatus;

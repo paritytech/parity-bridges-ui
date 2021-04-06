@@ -26,7 +26,7 @@ interface Props {
   transaction: TransanctionStatus;
 }
 
-const Transaction = ({ transaction, steps, className }: Props) => {
+const TransactionDisplay = ({ transaction, steps, className }: Props) => {
   if (!steps.length) {
     return null;
   }
@@ -48,7 +48,7 @@ const Transaction = ({ transaction, steps, className }: Props) => {
   );
 };
 
-export default styled(Transaction)`
+export default styled(TransactionDisplay)`
   word-wrap: break-word;
   .card {
     min-width: 80%;
