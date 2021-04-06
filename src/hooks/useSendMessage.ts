@@ -17,6 +17,7 @@
 import { SignerOptions } from '@polkadot/api/types';
 import { web3FromSource } from '@polkadot/extension-dapp';
 import type { KeyringPair } from '@polkadot/keyring/types';
+import moment from 'moment';
 
 import { TransactionActionCreators } from '../actions/transactionActions';
 import { useAccountContext } from '../contexts/AccountContextProvider';
@@ -28,7 +29,6 @@ import useTransactionPreparation from '../hooks/useTransactionPreparation';
 import { TransactionStatusEnum, TransactionTypes } from '../types/transactionTypes';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
 import logger from '../util/logger';
-
 interface Message {
   error: string;
 }
@@ -55,9 +55,11 @@ function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, 
     if (!account || isRunning) {
       return;
     }
+    const id = moment().format('x');
     const initialTransaction = {
       block: null,
       blockHash: null,
+      id,
       input,
       messageNonce: null,
       receiverAddress,
@@ -69,10 +71,10 @@ function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, 
     };
     dispatchTransaction(TransactionActionCreators.createTransactionStatus(initialTransaction));
     setIsRunning(true);
-    return makeCall();
+    return makeCall(id);
   };
 
-  const makeCall = async () => {
+  const makeCall = async (id: string) => {
     try {
       if (!account || isRunning) {
         return;
@@ -101,12 +103,15 @@ function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, 
                 .then((res) => {
                   const block = res.block.header.number.toString();
                   dispatchTransaction(
-                    TransactionActionCreators.updateTransactionStatus({
-                      block,
-                      blockHash: status.asInBlock.toString(),
-                      messageNonce,
-                      status: TransactionStatusEnum.IN_PROGRESS
-                    })
+                    TransactionActionCreators.updateTransactionStatus(
+                      {
+                        block,
+                        blockHash: status.asInBlock.toString(),
+                        messageNonce,
+                        status: TransactionStatusEnum.IN_PROGRESS
+                      },
+                      id
+                    )
                   );
                 })
                 .catch((e) => {

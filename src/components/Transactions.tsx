@@ -18,25 +18,41 @@ import React from 'react';
 import { Container } from 'semantic-ui-react';
 import styled from 'styled-components';
 
+import { TransactionActionCreators } from '../actions/transactionActions';
 import { useTransactionContext } from '../contexts/TransactionContext';
+import { useUpdateTransactionContext } from '../contexts/TransactionContext';
+import { TransactionStatusEnum, TransanctionStatus } from '../types/transactionTypes';
 import TransactionStatus from './TransactionStatus';
 
 interface Props {
   className?: string;
 }
 
-const CurrentExecutionStatus = ({ className }: Props) => {
-  const { currentTransaction } = useTransactionContext();
-
-  if (!currentTransaction) {
+const Transactions = ({ className }: Props) => {
+  const { transactions } = useTransactionContext();
+  const { dispatchTransaction } = useUpdateTransactionContext();
+  if (!transactions) {
     return null;
   }
 
   return (
-    <Container className={className}>
-      <TransactionStatus transaction={currentTransaction} />
-    </Container>
+    <>
+      {transactions.map((transaction: TransanctionStatus) => {
+        const onComplete = () =>
+          dispatchTransaction(
+            TransactionActionCreators.updateTransactionStatus(
+              { status: TransactionStatusEnum.COMPLETED },
+              transaction.id
+            )
+          );
+        return (
+          <Container className={className} key={transaction.id}>
+            <TransactionStatus transaction={transaction} onComplete={onComplete} />
+          </Container>
+        );
+      })}
+    </>
   );
 };
 
-export default styled(CurrentExecutionStatus)``;
+export default styled(Transactions)``;

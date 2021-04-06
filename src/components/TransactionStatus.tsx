@@ -18,11 +18,9 @@ import { Codec } from '@polkadot/types/types';
 import BN from 'bn.js';
 import React, { useEffect, useState } from 'react';
 
-import { TransactionActionCreators } from '../actions/transactionActions';
 import { SOURCE, TARGET } from '../constants';
 import { useApiTargetPromiseContext } from '../contexts/ApiPromiseTargetContext';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import useDashboard from '../hooks/useDashboard';
 import useLaneId from '../hooks/useLaneId';
 import useLoadingApi from '../hooks/useLoadingApi';
@@ -33,13 +31,14 @@ import Transaction from './Transaction';
 
 interface Props {
   transaction: TransanctionStatus;
+  onComplete: () => void;
 }
 
-function TransactionStatus({ transaction }: Props) {
+function TransactionStatus({ transaction, onComplete }: Props) {
   const [nonceOfTargetFinalizedBlock, setNonceOfTargetFinalizedBlock] = useState<null | number>(null);
   const [latestReceivedNonceRuntimeApi, setLatestReceivedNonceRuntimeApi] = useState(0);
   const [steps, setSteps] = useState<Array<Step>>([]);
-  const { dispatchTransaction } = useUpdateTransactionContext();
+
   const { api: targetApi } = useApiTargetPromiseContext();
   const { sourceChain, targetChain } = useSourceTarget();
   const laneId = useLaneId();
@@ -140,9 +139,10 @@ function TransactionStatus({ transaction }: Props) {
     ];
 
     if (sourceConfirmationReceived) {
-      dispatchTransaction(
-        TransactionActionCreators.updateTransactionStatus({ status: TransactionStatusEnum.COMPLETED })
-      );
+      onComplete();
+      /*       dispatchTransaction(
+        TransactionActionCreators.updateTransactionStatus({ status: TransactionStatusEnum.COMPLETED, transaction })
+      ); */
     }
 
     setSteps(steps);
@@ -150,14 +150,14 @@ function TransactionStatus({ transaction }: Props) {
     areApiLoading,
     bestBlockFinalized,
     transaction,
-    dispatchTransaction,
     bestBridgedFinalizedBlockOnTarget,
     latestReceivedNonceOnSource,
     latestReceivedNonceRuntimeApi,
     nonceOfTargetFinalizedBlock,
     targetChain,
     sourceChain,
-    completed
+    completed,
+    onComplete
   ]);
 
   return <Transaction steps={steps} transaction={transaction} />;

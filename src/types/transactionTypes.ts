@@ -19,15 +19,15 @@ import { TransactionActionTypes } from '../actions/transactionActions';
 export interface TransactionContextType {
   estimatedFee: string | null;
   receiverAddress: string | null;
-  currentTransaction?: TransanctionStatus;
+  transactions: Array<TransanctionStatus>;
 }
 
-interface Payload {
+export interface Payload {
   [propName: string]: any;
 }
 
 export interface UpdatedTransanctionStatus {
-  [propName: string]: string | number | null | TransactionStatusEnum;
+  [propName: string]: any;
 }
 
 export enum TransactionStatusEnum {
@@ -49,7 +49,7 @@ export interface TransanctionStatus extends UpdatedTransanctionStatus {
 export interface TransactionState {
   estimatedFee: string | null;
   receiverAddress: string | null;
-  currentTransaction?: TransanctionStatus;
+  transactions: Array<TransanctionStatus>;
 }
 
 export type TransactionsActionType = { type: TransactionActionTypes; payload: Payload };

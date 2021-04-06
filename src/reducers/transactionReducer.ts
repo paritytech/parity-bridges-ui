@@ -15,16 +15,29 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { TransactionActionTypes } from '../actions/transactionActions';
-import type { TransactionsActionType, TransactionState, UpdatedTransanctionStatus } from '../types/transactionTypes';
+import type { Payload, TransactionsActionType, TransactionState, TransanctionStatus } from '../types/transactionTypes';
 
-const updateTransactionObject = (state: TransactionState, updatedValues: UpdatedTransanctionStatus) => {
-  const newState = { ...state };
-  if (state.currentTransaction) {
-    Object.keys(updatedValues).map((key) => {
-      newState.currentTransaction![key] = updatedValues[key];
+const updateTransaction = (state: TransactionState, payload: Payload): TransactionState => {
+  if (state.transactions) {
+    const newState = { ...state };
+    const { updatedValues, id } = payload;
+    newState.transactions = newState.transactions.map((stateTransaction) => {
+      const { id: transactionId } = stateTransaction;
+      if (transactionId === id) {
+        return {
+          ...stateTransaction,
+          ...updatedValues
+        };
+      }
     });
+    return newState;
   }
+  return state;
+};
 
+const createTransaction = (state: TransactionState, initialTransaction: TransanctionStatus): TransactionState => {
+  const newState = { ...state };
+  newState.transactions.push(initialTransaction);
   return newState;
 };
 
@@ -35,9 +48,9 @@ export default function transactionReducer(state: TransactionState, action: Tran
     case TransactionActionTypes.SET_RECEIVER_ADDRESS:
       return { ...state, receiverAddress: action.payload.receiverAddress };
     case TransactionActionTypes.CREATE_TRANSACTION_STATUS:
-      return { ...state, currentTransaction: action.payload.initialTransaction };
+      return createTransaction(state, action.payload.initialTransaction);
     case TransactionActionTypes.UPDATE_CURRENT_TRANSACTION_STATUS:
-      return updateTransactionObject(state, action.payload.updatedValues);
+      return updateTransaction(state, action.payload);
     default:
       throw new Error(`Unknown type: ${action.type}`);
   }

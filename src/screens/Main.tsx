@@ -21,9 +21,9 @@ import styled from 'styled-components';
 
 import { SourceTargetActionsCreators } from '../actions/sourceTargetActions';
 import Accounts from '../components/Accounts';
-import CurrentExecutionStatus from '../components/CurrentExecutionStatus';
 import DashboardCard from '../components/DashboardCard';
 import Remark from '../components/Remark';
+import Transactions from '../components/Transactions';
 import Transfer from '../components/Transfer';
 import { SOURCE, TARGET } from '../constants';
 import { useSourceTarget, useUpdateSourceTarget } from '../contexts/SourceTargetContextProvider';
@@ -88,7 +88,7 @@ export function Main({ className }: Props) {
           </Grid.Row>
           <Grid.Row>
             <Grid.Column width={12}>
-              <CurrentExecutionStatus />
+              <Transactions />
             </Grid.Column>
           </Grid.Row>
         </Grid>
