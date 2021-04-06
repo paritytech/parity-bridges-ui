@@ -23,6 +23,7 @@ import { SourceTargetActionsCreators } from '../actions/sourceTargetActions';
 import Accounts from '../components/Accounts';
 import DashboardCard from '../components/DashboardCard';
 import Remark from '../components/Remark';
+import SnackBar from '../components/SnackBar';
 import Transactions from '../components/Transactions';
 import Transfer from '../components/Transfer';
 import { SOURCE, TARGET } from '../constants';
@@ -93,6 +94,7 @@ export function Main({ className }: Props) {
           </Grid.Row>
         </Grid>
       </Container>
+      <SnackBar />
     </>
   );
 }
