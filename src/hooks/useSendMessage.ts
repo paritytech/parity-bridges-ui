@@ -29,7 +29,6 @@ import useTransactionPreparation from '../hooks/useTransactionPreparation';
 import { TransactionStatusEnum, TransactionTypes } from '../types/transactionTypes';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
 import logger from '../util/logger';
-
 interface Message {
   error: string;
 }
@@ -42,14 +41,10 @@ interface Props {
   type: string;
 }
 
-function useSendMessage({ isRunning, setIsRunning, input, type }: Props) {
+function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, input, type }: Props) {
   const { api: sourceApi } = useApiSourcePromiseContext();
   const { estimatedFee, receiverAddress } = useTransactionContext();
-<<<<<<< HEAD
   const { dispatchTransaction } = useUpdateTransactionContext();
-=======
->>>>>>> c4abe3a (Adding snackbar functionalities)
-
   const laneId = useLaneId();
   const { targetChain, sourceChain } = useSourceTarget();
   const { account } = useAccountContext();
@@ -131,7 +126,8 @@ function useSendMessage({ isRunning, setIsRunning, input, type }: Props) {
         }
       });
     } catch (e) {
-      logger.error(e.message);
+      setExecutionStatus(message.error);
+      logger.error(e);
     } finally {
       setIsRunning(false);
     }

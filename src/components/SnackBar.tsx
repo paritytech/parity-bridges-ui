@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
+
 import { useSnackbar } from 'notistack';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
@@ -48,6 +49,6 @@ export default function SnackBar() {
       dispatchMessage(messageActionsCreators.clearMessage());
     }
   }, [closeSnackbar, message, variant, enqueueSnackbar, dispatchMessage]);
-  console.log('SnackBar', message, variant);
+
   return null;
 }
