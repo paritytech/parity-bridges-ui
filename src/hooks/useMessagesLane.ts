@@ -15,10 +15,11 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
+import BN from 'bn.js';
 import { useEffect, useState } from 'react';
 
 import useLaneId from '../hooks/useLaneId';
-import getPalletNames from '../util/getPalletNames';
+import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
 interface Props {
   chain: string;
   api: ApiPromise;
@@ -27,19 +28,25 @@ interface Props {
 
 interface Output {
   inboundLanes: {
-    bridgeReceivedMessages: number;
+    bridgeReceivedMessages: string;
   };
   outboundLanes: {
-    pendingMessages: number;
-    totalMessages: number;
+    pendingMessages: string;
+    totalMessages: string;
+    latestReceivedNonce: string;
   };
 }
 
 const useMessageLane = ({ isApiReady, api, chain }: Props): Output => {
-  const [outboundLanes, setOutboudLanes] = useState({ pendingMessages: 0, totalMessages: 0 });
-  const [inboundLanes, setInboudLanes] = useState({ bridgeReceivedMessages: 0 });
+  const [outboundLanes, setOutboudLanes] = useState({
+    latestReceivedNonce: '0',
+    pendingMessages: '0',
+    totalMessages: '0'
+  });
+  const [inboundLanes, setInboudLanes] = useState({ bridgeReceivedMessages: '0' });
+
   const laneId = useLaneId();
-  const { bridgedMessages } = getPalletNames(chain);
+  const { bridgedMessages, latestReceivedNonceMethodName } = getSubstrateDynamicNames(chain);
   useEffect(() => {
     if (!api || !isApiReady || !api.query[bridgedMessages] || !chain) {
       return;
@@ -50,21 +57,22 @@ const useMessageLane = ({ isApiReady, api, chain }: Props): Output => {
     let unsubscribeInboundLanes: () => void;
     api.query[bridgedMessages]
       .outboundLanes(laneId, (res: any) => {
-        const latest_generated_nonce = res.get('latest_generated_nonce').toNumber();
-        const latest_received_nonce = res.get('latest_received_nonce').toNumber();
-        const pendingMessages = latest_generated_nonce - latest_received_nonce;
+        const latest_generated_nonce = res.get('latest_generated_nonce').toString();
+        const latest_received_nonce = res.get('latest_received_nonce').toString();
+        const pendingMessages = new BN(latest_generated_nonce).sub(new BN(latest_received_nonce));
+
         setOutboudLanes({
-          pendingMessages: pendingMessages < 0 ? 0 : pendingMessages,
+          latestReceivedNonce: latest_received_nonce.toString(),
+          pendingMessages: pendingMessages.isNeg() ? '0' : pendingMessages.toString(),
           totalMessages: latest_generated_nonce
         });
       })
       .then((unsub) => {
         unsubscribeOutboundLanes = unsub;
       });
-
     api.query[bridgedMessages]
       .inboundLanes(laneId, (res: any) => {
-        setInboudLanes({ bridgeReceivedMessages: res.get('last_confirmed_nonce').toNumber() });
+        setInboudLanes({ bridgeReceivedMessages: res.get('last_confirmed_nonce').toString() });
       })
       .then((unsub) => {
         unsubscribeInboundLanes = unsub;
@@ -74,14 +82,7 @@ const useMessageLane = ({ isApiReady, api, chain }: Props): Output => {
       unsubscribeOutboundLanes && unsubscribeOutboundLanes();
       unsubscribeInboundLanes && unsubscribeInboundLanes();
     };
-  }, [api, isApiReady, chain, bridgedMessages, laneId]);
-
-  useEffect(() => {
-    if (!isApiReady) {
-      setOutboudLanes({ pendingMessages: 0, totalMessages: 0 });
-      setInboudLanes({ bridgeReceivedMessages: 0 });
-    }
-  }, [isApiReady]);
+  }, [api, isApiReady, chain, bridgedMessages, laneId, latestReceivedNonceMethodName]);
 
   return { inboundLanes, outboundLanes };
 };

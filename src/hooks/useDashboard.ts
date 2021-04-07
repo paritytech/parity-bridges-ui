@@ -14,24 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import { ChainTypes } from '../types/sourceTargetTypes';
 import useBlocksInfo from './useBlocksInfo';
 import useBridgedBlocks from './useBridgedBlocks';
+import useDashboardProfile from './useDashboardProfile';
 import useMessagesLane from './useMessagesLane';
 
-interface Props {
-  local: string;
-  destination: string;
-  useApiContext: Function;
-}
-
-const useDashboard = ({ destination, local, useApiContext }: Props) => {
-  const { isApiReady, api } = useApiContext();
+const useDashboard = (chainType: ChainTypes) => {
+  const { destination, local, useApi } = useDashboardProfile(chainType);
+  const { isApiReady, api } = useApi();
 
   const blockInfo = useBlocksInfo({ api, chain: local, isApiReady });
   const bridgedBlocks = useBridgedBlocks({ api, chain: destination, isApiReady });
   const messagesLane = useMessagesLane({ api, chain: destination, isApiReady });
 
-  return { ...blockInfo, ...bridgedBlocks, ...messagesLane };
+  return { ...blockInfo, ...bridgedBlocks, ...messagesLane, local };
 };
 
 export default useDashboard;

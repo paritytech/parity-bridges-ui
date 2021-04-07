@@ -20,7 +20,7 @@ import { Codec } from '@polkadot/types/types';
 import BN from 'bn.js';
 import { useEffect, useState } from 'react';
 
-import getPalletNames from '../util/getPalletNames';
+import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
 interface HeaderId {
   number: BN;
   hash: Hash;
@@ -36,9 +36,9 @@ interface Props {
 }
 
 const useBridgedBlocks = ({ isApiReady, api, chain }: Props) => {
-  const [importedHeaders, setImportedHeaders] = useState('');
+  const [bestBridgedFinalizedBlock, setBestBridgedFinalizedBlock] = useState('');
 
-  const { bridgedGrandpaChain } = getPalletNames(chain);
+  const { bridgedGrandpaChain } = getSubstrateDynamicNames(chain);
   useEffect(() => {
     if (!api || !isApiReady || !chain) {
       return;
@@ -53,7 +53,7 @@ const useBridgedBlocks = ({ isApiReady, api, chain }: Props) => {
         api.query[bridgedGrandpaChain]
           .importedHeaders(bestBridgedFinalizedBlock, (res: any) => {
             if (res.toJSON()) {
-              setImportedHeaders(res.toJSON().number);
+              setBestBridgedFinalizedBlock(res.toJSON().number);
             }
           })
           .then((unsub) => {
@@ -70,7 +70,7 @@ const useBridgedBlocks = ({ isApiReady, api, chain }: Props) => {
     };
   }, [isApiReady, chain, api, bridgedGrandpaChain]);
 
-  return { importedHeaders };
+  return { bestBridgedFinalizedBlock };
 };
 
 export default useBridgedBlocks;

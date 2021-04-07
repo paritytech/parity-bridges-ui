@@ -17,27 +17,32 @@
 import { useEffect, useState } from 'react';
 
 import { TARGET } from '../constants';
+import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
+import { useApiTargetPromiseContext } from '../contexts/ApiPromiseTargetContext';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { ChainTypes } from '../types/sourceTargetTypes';
 
 interface Output {
   local: string;
   destination: string;
+  useApi: Function;
 }
 
 export default function useDashboardProfile(chainType: ChainTypes): Output {
   const { sourceChain, targetChain } = useSourceTarget();
 
-  const [profile, setProfile] = useState({ destination: '', local: '' });
+  const [profile, setProfile] = useState({ destination: '', local: '', useApi: useApiSourcePromiseContext });
 
   useEffect(() => {
     let local = sourceChain;
     let destination = targetChain;
+    let useApi = useApiSourcePromiseContext;
     if (chainType === TARGET) {
       local = targetChain;
       destination = sourceChain;
+      useApi = useApiTargetPromiseContext;
     }
-    setProfile({ destination, local });
+    setProfile({ destination, local, useApi });
   }, [chainType, sourceChain, targetChain]);
 
   return profile;

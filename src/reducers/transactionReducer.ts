@@ -15,7 +15,31 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { TransactionActionTypes } from '../actions/transactionActions';
-import type { TransactionsActionType, TransactionState } from '../types/transactionTypes';
+import type { Payload, TransactionsActionType, TransactionState, TransanctionStatus } from '../types/transactionTypes';
+
+const updateTransaction = (state: TransactionState, payload: Payload): TransactionState => {
+  if (state.transactions) {
+    const newState = { ...state };
+    const { updatedValues, id } = payload;
+    newState.transactions = newState.transactions.map((stateTransaction) => {
+      const { id: transactionId } = stateTransaction;
+      if (transactionId === id) {
+        return {
+          ...stateTransaction,
+          ...updatedValues
+        };
+      }
+    });
+    return newState;
+  }
+  return state;
+};
+
+const createTransaction = (state: TransactionState, initialTransaction: TransanctionStatus): TransactionState => {
+  const newState = { ...state };
+  newState.transactions.push(initialTransaction);
+  return newState;
+};
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
   switch (action.type) {
@@ -23,6 +47,10 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return { ...state, estimatedFee: action.payload.estimatedFee };
     case TransactionActionTypes.SET_RECEIVER_ADDRESS:
       return { ...state, receiverAddress: action.payload.receiverAddress };
+    case TransactionActionTypes.CREATE_TRANSACTION_STATUS:
+      return createTransaction(state, action.payload.initialTransaction);
+    case TransactionActionTypes.UPDATE_CURRENT_TRANSACTION_STATUS:
+      return updateTransaction(state, action.payload);
     default:
       throw new Error(`Unknown type: ${action.type}`);
   }

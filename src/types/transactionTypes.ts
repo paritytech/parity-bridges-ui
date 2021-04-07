@@ -19,15 +19,37 @@ import { TransactionActionTypes } from '../actions/transactionActions';
 export interface TransactionContextType {
   estimatedFee: string | null;
   receiverAddress: string | null;
+  transactions: Array<TransanctionStatus>;
 }
 
-interface Payload {
-  [propName: string]: string;
+export interface Payload {
+  [propName: string]: any;
 }
 
+export interface UpdatedTransanctionStatus {
+  [propName: string]: any;
+}
+
+export enum TransactionStatusEnum {
+  CREATED = 'CREATED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED'
+}
+
+export interface TransanctionStatus extends UpdatedTransanctionStatus {
+  input: string;
+  sourceChain: string;
+  targetChain: string;
+  sourceAccount: null | string;
+  receiverAddress: null | string;
+  type: string;
+  status: TransactionStatusEnum;
+}
 export interface TransactionState {
   estimatedFee: string | null;
   receiverAddress: string | null;
+  transactions: Array<TransanctionStatus>;
 }
 
 export type TransactionsActionType = { type: TransactionActionTypes; payload: Payload };
@@ -35,4 +57,10 @@ export type TransactionsActionType = { type: TransactionActionTypes; payload: Pa
 export enum TransactionTypes {
   TRANSFER = 'TRANSFER',
   REMARK = 'REMARK'
+}
+
+export interface Step {
+  chainType: string;
+  label: string;
+  status: string;
 }

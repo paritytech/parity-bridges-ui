@@ -17,17 +17,19 @@
 import { SignerOptions } from '@polkadot/api/types';
 import { web3FromSource } from '@polkadot/extension-dapp';
 import type { KeyringPair } from '@polkadot/keyring/types';
+import moment from 'moment';
 
+import { TransactionActionCreators } from '../actions/transactionActions';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useTransactionContext } from '../contexts/TransactionContext';
+import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
 import useLaneId from '../hooks/useLaneId';
 import useTransactionPreparation from '../hooks/useTransactionPreparation';
-import { TransactionTypes } from '../types/transactionTypes';
+import { TransactionStatusEnum, TransactionTypes } from '../types/transactionTypes';
+import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
 import logger from '../util/logger';
 interface Message {
-  successfull: string;
   error: string;
 }
 interface Props {
@@ -42,19 +44,45 @@ interface Props {
 function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, input, type }: Props) {
   const { api: sourceApi } = useApiSourcePromiseContext();
   const { estimatedFee, receiverAddress } = useTransactionContext();
+  const { dispatchTransaction } = useUpdateTransactionContext();
+
   const laneId = useLaneId();
-  const { targetChain } = useSourceTarget();
+  const { targetChain, sourceChain } = useSourceTarget();
   const { account } = useAccountContext();
   const { payload } = useTransactionPreparation({ input, type });
 
   const sendLaneMessage = async () => {
+    if (!account || isRunning) {
+      return;
+    }
+    const id = moment().format('x');
+    const initialTransaction = {
+      block: null,
+      blockHash: null,
+      id,
+      input,
+      messageNonce: null,
+      receiverAddress,
+      sourceAccount: account.address,
+      sourceChain,
+      status: TransactionStatusEnum.CREATED,
+      targetChain,
+      type
+    };
+    dispatchTransaction(TransactionActionCreators.createTransactionStatus(initialTransaction));
+    setIsRunning(true);
+    return makeCall(id);
+  };
+
+  const makeCall = async (id: string) => {
     try {
       if (!account || isRunning) {
         return;
       }
-      setIsRunning(true);
 
-      const bridgeMessage = sourceApi.tx[`bridge${targetChain}Messages`].sendMessage(laneId, payload, estimatedFee);
+      const { bridgedMessages } = getSubstrateDynamicNames(targetChain);
+
+      const bridgeMessage = sourceApi.tx[bridgedMessages].sendMessage(laneId, payload, estimatedFee);
       const options: Partial<SignerOptions> = {
         nonce: -1
       };
@@ -64,8 +92,40 @@ function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, 
         options.signer = injector.signer;
         sourceAccount = account.address;
       }
-      await bridgeMessage.signAndSend(sourceAccount, { ...options });
-      setExecutionStatus(message.successfull);
+
+      const unsub = await bridgeMessage.signAndSend(sourceAccount, { ...options }, ({ events = [], status }) => {
+        if (status.isInBlock) {
+          events.forEach(({ event: { data, method } }) => {
+            if (method.toString() === 'MessageAccepted') {
+              const messageNonce = data.toArray()[1].toString();
+              sourceApi.rpc.chain
+                .getBlock(status.asInBlock)
+                .then((res) => {
+                  const block = res.block.header.number.toString();
+                  dispatchTransaction(
+                    TransactionActionCreators.updateTransactionStatus(
+                      {
+                        block,
+                        blockHash: status.asInBlock.toString(),
+                        messageNonce,
+                        status: TransactionStatusEnum.IN_PROGRESS
+                      },
+                      id
+                    )
+                  );
+                })
+                .catch((e) => {
+                  logger.error(e);
+                  throw new Error('Issue reading block information.');
+                });
+            }
+          });
+        }
+        if (status.isFinalized) {
+          console.log(`Transaction included at blockHash ${status.asFinalized}`);
+          unsub();
+        }
+      });
     } catch (e) {
       setExecutionStatus(message.error);
       logger.error(e);

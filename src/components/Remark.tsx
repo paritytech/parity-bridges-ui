@@ -33,8 +33,7 @@ const Remark = ({ className }: Props) => {
   const areApiReady = useLoadingApi();
   const { estimatedFee } = useTransactionContext();
   const message = {
-    error: 'Error sending remark',
-    successfull: '- Remark was executed succesfully'
+    error: 'Error sending remark'
   };
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
     input: remarkInput,

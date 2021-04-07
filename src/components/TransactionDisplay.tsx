@@ -18,49 +18,40 @@ import React from 'react';
 import { Card, Container } from 'semantic-ui-react';
 import styled from 'styled-components';
 
-import { SOURCE } from '../constants';
-import useDashboard from '../hooks/useDashboard';
-import { ChainTypes } from '../types/sourceTargetTypes';
+import { Step, TransactionStatusEnum, TransanctionStatus } from '../types/transactionTypes';
 
 interface Props {
-  chainType: ChainTypes;
   className?: string;
+  steps: Array<Step>;
+  transaction: TransanctionStatus;
 }
 
-const DashboardCard = ({ chainType, className }: Props) => {
-  const {
-    bestBlockFinalized,
-    bestBlock,
-    bestBridgedFinalizedBlock,
-    outboundLanes: { totalMessages, pendingMessages },
-    inboundLanes: { bridgeReceivedMessages },
-    local
-  } = useDashboard(chainType);
+const TransactionDisplay = ({ transaction, steps, className }: Props) => {
+  if (!steps.length) {
+    return null;
+  }
 
-  const headerText = chainType === SOURCE ? 'Source' : 'Target';
+  const status = transaction.status === TransactionStatusEnum.COMPLETED ? 'Completed' : 'In Progress';
   return (
     <Container className={className}>
-      <Card className="container">
-        <Card.Content header={`${headerText}: ${local}`} />
+      <Card className="card">
+        <Card.Content header={`Transaction: ${status}`} />
         <Card.Description className="description">
-          <div>Best Block: {bestBlock}</div>
-          <div>Best Finalized block: {bestBlockFinalized}</div>
-
-          <div>Pending Messages: {pendingMessages}</div>
-          <div>Total Messages: {totalMessages}</div>
-
-          <hr className="divider" />
-          <div>Best Target Finalized block: {bestBridgedFinalizedBlock}</div>
-          <div>Received Messages: {bridgeReceivedMessages}</div>
+          {steps.map(({ chainType, label, status }, idx) => (
+            <p key={idx}>
+              {chainType}: {label}: {status}
+            </p>
+          ))}
         </Card.Description>
       </Card>
     </Container>
   );
 };
-export default styled(DashboardCard)`
+
+export default styled(TransactionDisplay)`
   word-wrap: break-word;
-  .divider {
-    max-width: 80%;
+  .card {
+    min-width: 80%;
   }
   .description {
     margin: 10px;
