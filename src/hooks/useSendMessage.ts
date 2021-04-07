@@ -19,9 +19,11 @@ import { web3FromSource } from '@polkadot/extension-dapp';
 import type { KeyringPair } from '@polkadot/keyring/types';
 import moment from 'moment';
 
+import { MessageActionsCreators } from '../actions/messageActions';
 import { TransactionActionCreators } from '../actions/transactionActions';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
+import { useUpdateMessageContext } from '../contexts/MessageContext';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
 import useLaneId from '../hooks/useLaneId';
@@ -29,27 +31,23 @@ import useTransactionPreparation from '../hooks/useTransactionPreparation';
 import { TransactionStatusEnum, TransactionTypes } from '../types/transactionTypes';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
 import logger from '../util/logger';
-interface Message {
-  error: string;
-}
+
 interface Props {
   isRunning: boolean;
   setIsRunning: (status: boolean) => void;
-  setExecutionStatus: (message: string) => void;
-  message: Message;
   input: string;
   type: string;
 }
 
-function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, input, type }: Props) {
+function useSendMessage({ isRunning, setIsRunning, input, type }: Props) {
   const { api: sourceApi } = useApiSourcePromiseContext();
   const { estimatedFee, receiverAddress } = useTransactionContext();
   const { dispatchTransaction } = useUpdateTransactionContext();
-
   const laneId = useLaneId();
   const { targetChain, sourceChain } = useSourceTarget();
   const { account } = useAccountContext();
   const { payload } = useTransactionPreparation({ input, type });
+  const { dispatchMessage } = useUpdateMessageContext();
 
   const sendLaneMessage = async () => {
     if (!account || isRunning) {
@@ -93,7 +91,11 @@ function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, 
         sourceAccount = account.address;
       }
 
+      ///sourceAccount = 'test';
       const unsub = await bridgeMessage.signAndSend(sourceAccount, { ...options }, ({ events = [], status }) => {
+        if (status.isBroadcast) {
+          dispatchMessage(MessageActionsCreators.triggerInfoMessage({ message: 'Transaction was broadcasted' }));
+        }
         if (status.isInBlock) {
           events.forEach(({ event: { data, method } }) => {
             if (method.toString() === 'MessageAccepted') {
@@ -126,9 +128,9 @@ function useSendMessage({ isRunning, setIsRunning, setExecutionStatus, message, 
           unsub();
         }
       });
-    } catch (e) {
-      setExecutionStatus(message.error);
-      logger.error(e);
+    } catch ({ e: { message } }) {
+      dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message }));
+      logger.error(message);
     } finally {
       setIsRunning(false);
     }

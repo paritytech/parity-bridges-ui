@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import { SnackbarProvider } from 'notistack';
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
@@ -22,32 +23,37 @@ import { AccountContextProvider } from './contexts/AccountContextProvider';
 import { ApiPromiseSourceContextProvider } from './contexts/ApiPromiseSourceContext';
 import { ApiPromiseTargetContextProvider } from './contexts/ApiPromiseTargetContext';
 import { KeyringContextProvider } from './contexts/KeyringContextProvider';
+import { MessageContextProvider } from './contexts/MessageContext';
 import { SourceTargetContextProvider } from './contexts/SourceTargetContextProvider';
 import { TransactionContextProvider } from './contexts/TransactionContext';
 import Main from './screens/Main';
 
 function App() {
   return (
-    <SourceTargetContextProvider>
-      <ApiPromiseSourceContextProvider>
-        <ApiPromiseTargetContextProvider>
-          <KeyringContextProvider>
-            <AccountContextProvider>
-              <TransactionContextProvider>
-                <BrowserRouter>
-                  <Switch>
-                    <Route path={'/'}>
-                      <TopBar />
-                      <Main />
-                    </Route>
-                  </Switch>
-                </BrowserRouter>
-              </TransactionContextProvider>
-            </AccountContextProvider>
-          </KeyringContextProvider>
-        </ApiPromiseTargetContextProvider>
-      </ApiPromiseSourceContextProvider>
-    </SourceTargetContextProvider>
+    <MessageContextProvider>
+      <SnackbarProvider>
+        <SourceTargetContextProvider>
+          <ApiPromiseSourceContextProvider>
+            <ApiPromiseTargetContextProvider>
+              <KeyringContextProvider>
+                <AccountContextProvider>
+                  <TransactionContextProvider>
+                    <BrowserRouter>
+                      <Switch>
+                        <Route path={'/'}>
+                          <TopBar />
+                          <Main />
+                        </Route>
+                      </Switch>
+                    </BrowserRouter>
+                  </TransactionContextProvider>
+                </AccountContextProvider>
+              </KeyringContextProvider>
+            </ApiPromiseTargetContextProvider>
+          </ApiPromiseSourceContextProvider>
+        </SourceTargetContextProvider>
+      </SnackbarProvider>
+    </MessageContextProvider>
   );
 }
 
