@@ -18,7 +18,7 @@ import { useSnackbar } from 'notistack';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 
-import { messageActionsCreators } from '../actions/messageActions';
+import { MessageActionsCreators } from '../actions/messageActions';
 import { useMessageContext, useUpdateMessageContext } from '../contexts/MessageContext';
 
 const CloseButton = styled.button`
@@ -46,7 +46,7 @@ export default function SnackBar() {
         anchorOrigin: { horizontal: 'right', vertical: 'top' },
         variant
       });
-      dispatchMessage(messageActionsCreators.clearMessage());
+      dispatchMessage(MessageActionsCreators.clearMessage());
     }
   }, [closeSnackbar, message, variant, enqueueSnackbar, dispatchMessage]);
 

@@ -34,25 +34,19 @@ const Transfer = ({ className }: Props) => {
   const [receiverInput, setReceiverInput] = useState('');
 
   const [receiverMessage, setReceiverMessage] = useState<string | null>();
-  const [executionStatus, setExecutionStatus] = useState('');
   const setConnectedReceiver = useConnectedReceiver();
   const areApiReady = useLoadingApi();
 
   const { estimatedFee, receiverAddress } = useTransactionContext();
-  const message = {
-    error: 'Error sending transfer'
-  };
+
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
     input: transferInput,
     isRunning,
-    message,
-    setExecutionStatus,
     setIsRunning,
     type: TransactionTypes.TRANSFER
   });
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setExecutionStatus('');
     setTransferInput(event.target.value);
   };
 
@@ -92,9 +86,6 @@ const Transfer = ({ className }: Props) => {
           <p>{receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
         </Grid.Column>
       </Grid.Row>
-      <div className="status">
-        <p>{executionStatus !== '' && executionStatus}</p>
-      </div>
     </Container>
   );
 };

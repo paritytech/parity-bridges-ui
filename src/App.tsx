@@ -30,14 +30,14 @@ import Main from './screens/Main';
 
 function App() {
   return (
-    <SourceTargetContextProvider>
-      <ApiPromiseSourceContextProvider>
-        <ApiPromiseTargetContextProvider>
-          <KeyringContextProvider>
-            <AccountContextProvider>
-              <TransactionContextProvider>
-                <MessageContextProvider>
-                  <SnackbarProvider>
+    <MessageContextProvider>
+      <SnackbarProvider>
+        <SourceTargetContextProvider>
+          <ApiPromiseSourceContextProvider>
+            <ApiPromiseTargetContextProvider>
+              <KeyringContextProvider>
+                <AccountContextProvider>
+                  <TransactionContextProvider>
                     <BrowserRouter>
                       <Switch>
                         <Route path={'/'}>
@@ -46,14 +46,14 @@ function App() {
                         </Route>
                       </Switch>
                     </BrowserRouter>
-                  </SnackbarProvider>
-                </MessageContextProvider>
-              </TransactionContextProvider>
-            </AccountContextProvider>
-          </KeyringContextProvider>
-        </ApiPromiseTargetContextProvider>
-      </ApiPromiseSourceContextProvider>
-    </SourceTargetContextProvider>
+                  </TransactionContextProvider>
+                </AccountContextProvider>
+              </KeyringContextProvider>
+            </ApiPromiseTargetContextProvider>
+          </ApiPromiseSourceContextProvider>
+        </SourceTargetContextProvider>
+      </SnackbarProvider>
+    </MessageContextProvider>
   );
 }
 

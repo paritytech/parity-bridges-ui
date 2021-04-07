@@ -21,8 +21,23 @@ enum MessageActionsTypes {
   CLEAR_MESSAGE = 'CLEAR_MESSAGE'
 }
 
-const triggerMessage = (payload: Payload) => ({
-  payload: { message: payload.message, variant: payload.variant },
+const triggerInfoMessage = (payload: Payload) => ({
+  payload: { message: payload.message, variant: 'info' },
+  type: MessageActionsTypes.TRIGGER_MESSAGE
+});
+
+const triggerSuccessMessage = (payload: Payload) => ({
+  payload: { message: payload.message, variant: 'success' },
+  type: MessageActionsTypes.TRIGGER_MESSAGE
+});
+
+const triggerErrorMessage = (payload: Payload) => ({
+  payload: { message: payload.message, variant: 'error' },
+  type: MessageActionsTypes.TRIGGER_MESSAGE
+});
+
+const triggerWarningMessage = (payload: Payload) => ({
+  payload: { message: payload.message, variant: 'warning' },
   type: MessageActionsTypes.TRIGGER_MESSAGE
 });
 
@@ -31,9 +46,12 @@ const clearMessage = () => ({
   type: MessageActionsTypes.CLEAR_MESSAGE
 });
 
-const messageActionsCreators = {
+const MessageActionsCreators = {
   clearMessage,
-  triggerMessage
+  triggerErrorMessage,
+  triggerInfoMessage,
+  triggerSuccessMessage,
+  triggerWarningMessage
 };
 
-export { MessageActionsTypes, messageActionsCreators };
+export { MessageActionsTypes, MessageActionsCreators };

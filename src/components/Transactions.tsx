@@ -18,7 +18,9 @@ import React from 'react';
 import { Container } from 'semantic-ui-react';
 import styled from 'styled-components';
 
+import { MessageActionsCreators } from '../actions/messageActions';
 import { TransactionActionCreators } from '../actions/transactionActions';
+import { useUpdateMessageContext } from '../contexts/MessageContext';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import { TransactionStatusEnum, TransanctionStatus } from '../types/transactionTypes';
@@ -31,6 +33,7 @@ interface Props {
 const Transactions = ({ className }: Props) => {
   const { transactions } = useTransactionContext();
   const { dispatchTransaction } = useUpdateTransactionContext();
+  const { dispatchMessage } = useUpdateMessageContext();
   if (!transactions) {
     return null;
   }
@@ -38,13 +41,17 @@ const Transactions = ({ className }: Props) => {
   return (
     <>
       {transactions.map((transaction: TransanctionStatus) => {
-        const onComplete = () =>
+        const onComplete = () => {
           dispatchTransaction(
             TransactionActionCreators.updateTransactionStatus(
               { status: TransactionStatusEnum.COMPLETED },
               transaction.id
             )
           );
+          dispatchMessage(
+            MessageActionsCreators.triggerSuccessMessage({ message: `Transaction: ${transaction.hash} is completed` })
+          );
+        };
         return (
           <Container className={className} key={transaction.id}>
             <TransactionStatus transaction={transaction} onComplete={onComplete} />

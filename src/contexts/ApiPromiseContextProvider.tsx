@@ -20,6 +20,8 @@ import { ProviderInterface } from '@polkadot/rpc-provider/types';
 import { TypeRegistry } from '@polkadot/types';
 import React, { useEffect, useState } from 'react';
 
+import { MessageActionsCreators } from '../actions/messageActions';
+import { useUpdateMessageContext } from '../contexts/MessageContext';
 import { ApiPromiseContextType } from '../types/sourceTargetTypes';
 import logger from '../util/logger';
 import { useSourceTarget } from './SourceTargetContextProvider';
@@ -41,7 +43,7 @@ export function ApiPromiseContextProvider(props: ApiRxContextProviderProps): Rea
   const options = { hasher, provider, types };
   const [apiPromise, setApiPromise] = useState<ApiPromise>(new ApiPromise(options));
   const [isReady, setIsReady] = useState(false);
-
+  const { dispatchMessage } = useUpdateMessageContext();
   useEffect(() => {
     if (isReady) {
       logger.info(`${contextType} was changed`);
@@ -61,7 +63,10 @@ export function ApiPromiseContextProvider(props: ApiRxContextProviderProps): Rea
         logger.info(`${contextType} type registration ready`);
         setIsReady(true);
       })
-      .catch((e) => logger.error(`${contextType} error in registration: ${e}`));
+      .catch(({ e: { message } }) => {
+        dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message }));
+        logger.error(`${contextType} error in registration: ${message}`);
+      });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiPromise.isReady]);

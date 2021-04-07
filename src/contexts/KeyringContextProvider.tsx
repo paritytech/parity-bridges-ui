@@ -19,7 +19,9 @@ import type { KeyringPair } from '@polkadot/keyring/types';
 import keyring from '@polkadot/ui-keyring';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 
+import { MessageActionsCreators } from '../actions/messageActions';
 import { getChainConfigs } from '../configs/substrateProviders';
+import { useUpdateMessageContext } from '../contexts/MessageContext';
 import { KeyringContextType, KeyringStatuses } from '../types/keyringTypes';
 import logger from '../util/logger';
 import { useSourceTarget } from './SourceTargetContextProvider';
@@ -40,7 +42,7 @@ export function KeyringContextProvider(props: KeyringContextProviderProps): Reac
   const chainsConfigs = getChainConfigs();
   const sourceChainSS58Format = chainsConfigs[sourceChain].SS58Format;
   const [keyringStatus, setKeyringStatus] = useState(KeyringStatuses.INIT);
-
+  const { dispatchMessage } = useUpdateMessageContext();
   const [keyringPairs, setKeyringPairs] = useState<Array<KeyringPair>>([]);
   const [keyringPairsReady, setkeyringPairsReady] = useState(false);
 
@@ -60,7 +62,8 @@ export function KeyringContextProvider(props: KeyringContextProviderProps): Reac
         keyring.loadAll({ isDevelopment, ss58Format: sourceChainSS58Format }, allAccounts);
         setKeyringStatus(KeyringStatuses.READY);
       } catch (e) {
-        logger.error('error', e);
+        dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e }));
+        logger.error(e);
         setKeyringStatus(KeyringStatuses.ERROR);
       }
     };
@@ -68,7 +71,7 @@ export function KeyringContextProvider(props: KeyringContextProviderProps): Reac
     if (keyringStatus === KeyringStatuses.LOADING || keyringStatus === KeyringStatuses.READY) return;
 
     asyncLoadAccounts();
-  }, [isDevelopment, keyringStatus, sourceChainSS58Format]);
+  }, [dispatchMessage, isDevelopment, keyringStatus, sourceChainSS58Format]);
 
   useEffect(() => {
     if (keyringStatus === KeyringStatuses.INIT) {

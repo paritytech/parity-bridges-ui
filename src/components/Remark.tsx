@@ -29,22 +29,16 @@ interface Props {
 const Remark = ({ className }: Props) => {
   const [isRunning, setIsRunning] = useState(false);
   const [remarkInput, setRemarkInput] = useState('0x');
-  const [executionStatus, setExecutionStatus] = useState('');
   const areApiReady = useLoadingApi();
   const { estimatedFee } = useTransactionContext();
-  const message = {
-    error: 'Error sending remark'
-  };
+
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
     input: remarkInput,
     isRunning,
-    message,
-    setExecutionStatus,
     setIsRunning,
     type: TransactionTypes.REMARK
   });
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setExecutionStatus('');
     setRemarkInput(event.target.value);
   };
 
@@ -59,9 +53,6 @@ const Remark = ({ className }: Props) => {
         Send Remark
       </Button>
       <p>{estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
-      <div className="status">
-        <p>{executionStatus !== '' && executionStatus}</p>
-      </div>
     </Container>
   );
 };
