@@ -16,19 +16,25 @@
 
 import React, { useContext, useReducer } from 'react';
 
-import { CHAIN_1, CHAIN_2 } from '../configs/substrateProviders';
 import sourceTargetReducer from '../reducers/sourceTargetReducer';
-import type { SourceTarget, SourceTargetAction } from '../types/sourceTargetTypes';
+import { ChainDetails, SourceTargetAction, SourceTargetState } from '../types/sourceTargetTypes';
+import { ApiPromiseConnectionType } from '../types/sourceTargetTypes';
 
 export interface UpdateSourceTargetContext {
   dispatchChangeSourceTarget: React.Dispatch<SourceTargetAction>;
 }
 
+type Connections = {
+  chainName: string;
+  apiConnection: ApiPromiseConnectionType;
+};
+
 export interface SourceTargetContextProps {
-  children?: React.ReactElement;
+  connections: Array<Connections>;
+  children: React.ReactElement;
 }
 
-export const SourceTargetContext: React.Context<SourceTarget> = React.createContext({} as SourceTarget);
+export const SourceTargetContext: React.Context<SourceTargetState> = React.createContext({} as SourceTargetState);
 
 export function useSourceTarget() {
   return useContext(SourceTargetContext);
@@ -42,14 +48,27 @@ export function useUpdateSourceTarget() {
   return useContext(UpdateSourceTargetContext);
 }
 
-export function SourceTargetContextProvider({ children }: SourceTargetContextProps): React.ReactElement {
-  const [currentSourceTarget, dispatchChangeSourceTarget] = useReducer(sourceTargetReducer, {
-    sourceChain: CHAIN_1,
-    targetChain: CHAIN_2
-  });
+const initState = (connections: Array<Connections>) => {
+  const { apiConnection: sourceApiConnection, chainName: sourceChain } = connections[0];
+  const { apiConnection: targetApiConnection, chainName: targetChain } = connections[1];
+  return {
+    [ChainDetails.SOURCE]: {
+      sourceApiConnection,
+      sourceChain
+    },
+    [ChainDetails.TARGET]: {
+      targetApiConnection,
+      targetChain
+    }
+  };
+};
+
+export function SourceTargetContextProvider({ connections, children }: SourceTargetContextProps): React.ReactElement {
+  const initialState = initState(connections);
+  const [sourceTargetChains, dispatchChangeSourceTarget] = useReducer(sourceTargetReducer, initialState);
 
   return (
-    <SourceTargetContext.Provider value={currentSourceTarget}>
+    <SourceTargetContext.Provider value={sourceTargetChains}>
       <UpdateSourceTargetContext.Provider value={{ dispatchChangeSourceTarget }}>
         {children}
       </UpdateSourceTargetContext.Provider>

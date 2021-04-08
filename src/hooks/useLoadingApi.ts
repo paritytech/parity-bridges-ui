@@ -16,12 +16,13 @@
 
 import { useEffect, useState } from 'react';
 
-import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
-import { useApiTargetPromiseContext } from '../contexts/ApiPromiseTargetContext';
+import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 
 export default function useLoadingApi(): boolean {
-  const { isApiReady: isSourceApiReady } = useApiSourcePromiseContext();
-  const { isApiReady: isTargetApiReady } = useApiTargetPromiseContext();
+  const {
+    sourceApiConnection: { isApiReady: isSourceApiReady },
+    targetApiConnection: { isApiReady: isTargetApiReady }
+  } = useSourceTarget();
 
   const [areReady, setAreReady] = useState(false);
 

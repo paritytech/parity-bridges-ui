@@ -19,42 +19,58 @@ import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import TopBar from './components/TopBar';
+import { CHAIN_1, CHAIN_2 } from './configs/substrateProviders';
 import { AccountContextProvider } from './contexts/AccountContextProvider';
-import { ApiPromiseSourceContextProvider } from './contexts/ApiPromiseSourceContext';
-import { ApiPromiseTargetContextProvider } from './contexts/ApiPromiseTargetContext';
+/* import { ApiPromiseSourceContextProvider } from './contexts/ApiPromiseSourceContext';
+import { ApiPromiseTargetContextProvider } from './contexts/ApiPromiseTargetContext'; */
 import { KeyringContextProvider } from './contexts/KeyringContextProvider';
 import { MessageContextProvider } from './contexts/MessageContext';
 import { SourceTargetContextProvider } from './contexts/SourceTargetContextProvider';
 import { TransactionContextProvider } from './contexts/TransactionContext';
+import { useApiConnection } from './hooks/useApiConnection';
 import Main from './screens/Main';
 
 function App() {
+  const apiChain1 = useApiConnection(CHAIN_1);
+  const apiChain2 = useApiConnection(CHAIN_2);
+  const connections = [
+    { apiConnection: apiChain1, chainName: CHAIN_1 },
+    { apiConnection: apiChain2, chainName: CHAIN_2 }
+  ];
   return (
-    <MessageContextProvider>
-      <SnackbarProvider>
-        <SourceTargetContextProvider>
-          <ApiPromiseSourceContextProvider>
-            <ApiPromiseTargetContextProvider>
-              <KeyringContextProvider>
-                <AccountContextProvider>
-                  <TransactionContextProvider>
-                    <BrowserRouter>
-                      <Switch>
-                        <Route path={'/'}>
-                          <TopBar />
-                          <Main />
-                        </Route>
-                      </Switch>
-                    </BrowserRouter>
-                  </TransactionContextProvider>
-                </AccountContextProvider>
-              </KeyringContextProvider>
-            </ApiPromiseTargetContextProvider>
-          </ApiPromiseSourceContextProvider>
-        </SourceTargetContextProvider>
-      </SnackbarProvider>
-    </MessageContextProvider>
+    <SourceTargetContextProvider connections={connections}>
+      <MessageContextProvider>
+        <SnackbarProvider>
+          <KeyringContextProvider>
+            <AccountContextProvider>
+              <TransactionContextProvider>
+                <BrowserRouter>
+                  <Switch>
+                    <Route path={'/'}>
+                      <TopBar />
+                      <Main />
+                    </Route>
+                  </Switch>
+                </BrowserRouter>
+              </TransactionContextProvider>
+            </AccountContextProvider>
+          </KeyringContextProvider>
+        </SnackbarProvider>
+      </MessageContextProvider>
+    </SourceTargetContextProvider>
   );
 }
+/* 
+function App() {
+  return (
+    <SourceTargetContextProvider>
+      <ApiPromiseSourceContextProvider>
+        <ApiPromiseTargetContextProvider>
+          <Hoc />
+        </ApiPromiseTargetContextProvider>
+      </ApiPromiseSourceContextProvider>
+    </SourceTargetContextProvider>
+  );
+} */
 
 export default App;

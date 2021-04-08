@@ -21,7 +21,7 @@ import { ProviderInterface } from '@polkadot/rpc-provider/types';
 import { checkEnvVariable } from '../util/envVariablesValidations';
 import { getCustomTypesAndHasher } from './substrateCustomTypes/';
 
-type CustomHasher = (data: Uint8Array) => Uint8Array;
+export type CustomHasher = (data: Uint8Array) => Uint8Array;
 
 interface ChainConfig {
   bridgeId: string;

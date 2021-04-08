@@ -18,12 +18,10 @@ import { ApiPromise } from '@polkadot/api';
 
 import { SourceTargetActionsTypes } from '../actions/sourceTargetActions';
 
-export interface SourceTarget {
-  sourceChain: string;
-  targetChain: string;
+export interface ApiPromiseConnectionType {
+  api: ApiPromise; // From @polkadot/api\
+  isApiReady: boolean;
 }
-
-export type ChainTypes = 'sourceChain' | 'targetChain';
 
 interface Payload {
   [propName: string]: string;
@@ -33,4 +31,20 @@ export type SourceTargetAction = { type: SourceTargetActionsTypes; payload?: Pay
 export interface ApiPromiseContextType {
   api: ApiPromise; // From @polkadot/api\
   isApiReady: boolean;
+}
+
+export enum ChainDetails {
+  SOURCE = 'sourceChainDetails',
+  TARGET = 'targetChainDetails'
+}
+
+export interface SourceTargetState {
+  [ChainDetails.SOURCE]: {
+    sourceApiConnection: ApiPromiseConnectionType;
+    sourceChain: string;
+  };
+  [ChainDetails.TARGET]: {
+    targetApiConnection: ApiPromiseConnectionType;
+    targetChain: string;
+  };
 }

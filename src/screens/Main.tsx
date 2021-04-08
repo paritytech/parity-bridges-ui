@@ -36,7 +36,7 @@ interface Props {
 
 export function Main({ className }: Props) {
   const areApiLoading = useLoadingApi();
-  const { sourceChain, targetChain } = useSourceTarget();
+  const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
   const { dispatchChangeSourceTarget } = useUpdateSourceTarget();
   const onChangeSourceTarget = () => dispatchChangeSourceTarget(SourceTargetActionsCreators.switchChains());
@@ -54,7 +54,9 @@ export function Main({ className }: Props) {
       <Container className={className}>
         <Grid>
           <Grid.Row>
-            <Grid.Column width={5}>{`${sourceChain} => ${targetChain}`}</Grid.Column>
+            <Grid.Column
+              width={5}
+            >{`${sourceChainDetails.sourceChain} => ${targetChainDetails.targetChain}`}</Grid.Column>
           </Grid.Row>
           <Grid.Row>
             <Grid.Column width={1} />
