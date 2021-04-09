@@ -33,8 +33,8 @@ import Main from './screens/Main';
 const providers = getChainProviders();
 
 function App() {
-  const apiChain1 = useApiConnection(providers[CHAIN_1]);
-  const apiChain2 = useApiConnection(providers[CHAIN_2]);
+  const apiChain1 = useApiConnection({ ...providers[CHAIN_1], chain: CHAIN_1 });
+  const apiChain2 = useApiConnection({ ...providers[CHAIN_2], chain: CHAIN_2 });
   const connections = [
     { apiConnection: apiChain1, chainName: CHAIN_1 },
     { apiConnection: apiChain2, chainName: CHAIN_2 }

@@ -14,19 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { ApiPromise } from '@polkadot/api';
 import { ApiOptions } from '@polkadot/api/types';
 import { ProviderInterface } from '@polkadot/rpc-provider/types';
-/* import { ApiOptions } from '@polkadot/api/types';
-import { ProviderInterface } from '@polkadot/rpc-provider/types'; */
 import { TypeRegistry } from '@polkadot/types';
 import React, { useEffect, useState } from 'react';
 
 import { ApiPromiseConnectionType } from '../types/sourceTargetTypes';
+import logger from '../util/logger';
 
 export interface ApiRxProviderProps {
+  chain: string;
   hasher?: (data: Uint8Array) => Uint8Array;
   provider: ProviderInterface;
   types?: ApiOptions['types'];
@@ -38,31 +36,37 @@ export const ApiPromiseContext: React.Context<ApiPromiseConnectionType> = React.
 
 const registry = new TypeRegistry();
 
-export function useApiConnection({ hasher, provider, types }: ApiRxProviderProps): ApiPromiseConnectionType {
+export function useApiConnection({ chain, hasher, provider, types }: ApiRxProviderProps): ApiPromiseConnectionType {
   const [apiPromise, setApiPromise] = useState<ApiPromise>({} as ApiPromise);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     ApiPromise.create({ hasher, provider, types })
       .then((api): void => {
+        logger.info(`${chain}: connection created.`);
         setApiPromise(api);
       })
       .catch((err): void => {
-        console.error(err);
+        logger.error(`${chain}: Error creating connection. Details: ${err.message}`);
       });
-  }, [hasher, provider, types]);
+  }, [chain, hasher, provider, types]);
 
   useEffect(() => {
     !isReady &&
       apiPromise &&
       apiPromise.isReady &&
-      apiPromise.isReady.then(() => {
-        if (types) {
-          registry.register(types);
-        }
-        setIsReady(true);
-      });
-  }, [apiPromise, isReady, types]);
+      apiPromise.isReady
+        .then(() => {
+          if (types) {
+            registry.register(types);
+          }
+          logger.info(`${chain}: types registration ready`);
+          setIsReady(true);
+        })
+        .catch((err): void => {
+          logger.error(`${chain}: Error registering types. Details: ${err.message}`);
+        });
+  }, [apiPromise, chain, isReady, types]);
 
   return { api: apiPromise, isApiReady: isReady };
 }
