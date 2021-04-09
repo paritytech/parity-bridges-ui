@@ -131,9 +131,9 @@ function useSendMessage({ isRunning, setIsRunning, input, type }: Props) {
           unsub();
         }
       });
-    } catch ({ e: { message } }) {
-      dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message }));
-      logger.error(message);
+    } catch (e) {
+      dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e }));
+      logger.error(e);
     } finally {
       setIsRunning(false);
     }

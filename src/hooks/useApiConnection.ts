@@ -47,7 +47,7 @@ export function useApiConnection({ chain, hasher, provider, types }: ApiRxProvid
         setApiPromise(api);
       })
       .catch((err): void => {
-        logger.error(`${chain}: Error creating connection. Details: ${err.message}`);
+        logger.error(`${chain}: Error creating connection. Details: ${err}`);
       });
   }, [chain, hasher, provider, types]);
 
@@ -64,7 +64,7 @@ export function useApiConnection({ chain, hasher, provider, types }: ApiRxProvid
           setIsReady(true);
         })
         .catch((err): void => {
-          logger.error(`${chain}: Error registering types. Details: ${err.message}`);
+          logger.error(`${chain}: Error registering types. Details: ${err}`);
         });
   }, [apiPromise, chain, isReady, types]);
 

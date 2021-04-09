@@ -24,8 +24,8 @@ import { useUpdateMessageContext } from '../contexts/MessageContext';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import { TransactionStatusEnum, TransanctionStatus } from '../types/transactionTypes';
+import shortenItem from '../util/shortenItem';
 import TransactionStatus from './TransactionStatus';
-
 interface Props {
   className?: string;
 }
@@ -49,7 +49,9 @@ const Transactions = ({ className }: Props) => {
             )
           );
           dispatchMessage(
-            MessageActionsCreators.triggerSuccessMessage({ message: `Transaction: ${transaction.hash} is completed` })
+            MessageActionsCreators.triggerSuccessMessage({
+              message: `Transaction: ${shortenItem(transaction.hash)} is completed`
+            })
           );
         };
         return (
