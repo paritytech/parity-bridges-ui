@@ -19,7 +19,6 @@ import { useEffect, useState } from 'react';
 
 import { TransactionActionCreators } from '../actions/transactionActions';
 import { useAccountContext } from '../contexts/AccountContextProvider';
-import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import useLaneId from '../hooks/useLaneId';
@@ -38,10 +37,13 @@ interface FeeAndPayload {
 
 export default function useTransactionPreparation({ input, type }: Props): FeeAndPayload {
   const areApiReady = useLoadingApi();
-  const { api: sourceApi } = useApiSourcePromiseContext();
-
   const laneId = useLaneId();
-  const { targetChain } = useSourceTarget();
+  const {
+    sourceChainDetails: {
+      sourceApiConnection: { api: sourceApi }
+    },
+    targetChainDetails: { targetChain }
+  } = useSourceTarget();
   const { account } = useAccountContext();
 
   const [payload, setPayload] = useState<null | {}>(null);

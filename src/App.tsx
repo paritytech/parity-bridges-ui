@@ -17,43 +17,58 @@
 import { SnackbarProvider } from 'notistack';
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { Dimmer, Loader } from 'semantic-ui-react';
 
 import TopBar from './components/TopBar';
+import { getChainProviders } from './configs/substrateProviders';
+import { CHAIN_1, CHAIN_2 } from './configs/substrateProviders';
 import { AccountContextProvider } from './contexts/AccountContextProvider';
-import { ApiPromiseSourceContextProvider } from './contexts/ApiPromiseSourceContext';
-import { ApiPromiseTargetContextProvider } from './contexts/ApiPromiseTargetContext';
 import { KeyringContextProvider } from './contexts/KeyringContextProvider';
 import { MessageContextProvider } from './contexts/MessageContext';
 import { SourceTargetContextProvider } from './contexts/SourceTargetContextProvider';
 import { TransactionContextProvider } from './contexts/TransactionContext';
+import { useApiConnection } from './hooks/useApiConnection';
 import Main from './screens/Main';
 
+const providers = getChainProviders();
+
 function App() {
+  const apiChain1 = useApiConnection({ ...providers[CHAIN_1], chain: CHAIN_1 });
+  const apiChain2 = useApiConnection({ ...providers[CHAIN_2], chain: CHAIN_2 });
+  const connections = [
+    { apiConnection: apiChain1, chainName: CHAIN_1 },
+    { apiConnection: apiChain2, chainName: CHAIN_2 }
+  ];
+
+  if (!apiChain1.isApiReady || !apiChain2.isApiReady) {
+    return (
+      <Dimmer active>
+        <Loader />
+      </Dimmer>
+    );
+  }
+
   return (
-    <MessageContextProvider>
-      <SnackbarProvider>
-        <SourceTargetContextProvider>
-          <ApiPromiseSourceContextProvider>
-            <ApiPromiseTargetContextProvider>
-              <KeyringContextProvider>
-                <AccountContextProvider>
-                  <TransactionContextProvider>
-                    <BrowserRouter>
-                      <Switch>
-                        <Route path={'/'}>
-                          <TopBar />
-                          <Main />
-                        </Route>
-                      </Switch>
-                    </BrowserRouter>
-                  </TransactionContextProvider>
-                </AccountContextProvider>
-              </KeyringContextProvider>
-            </ApiPromiseTargetContextProvider>
-          </ApiPromiseSourceContextProvider>
-        </SourceTargetContextProvider>
-      </SnackbarProvider>
-    </MessageContextProvider>
+    <SourceTargetContextProvider connections={connections}>
+      <MessageContextProvider>
+        <SnackbarProvider>
+          <KeyringContextProvider>
+            <AccountContextProvider>
+              <TransactionContextProvider>
+                <BrowserRouter>
+                  <Switch>
+                    <Route path={'/'}>
+                      <TopBar />
+                      <Main />
+                    </Route>
+                  </Switch>
+                </BrowserRouter>
+              </TransactionContextProvider>
+            </AccountContextProvider>
+          </KeyringContextProvider>
+        </SnackbarProvider>
+      </MessageContextProvider>
+    </SourceTargetContextProvider>
   );
 }
 

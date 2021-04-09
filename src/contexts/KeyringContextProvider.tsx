@@ -38,7 +38,9 @@ export function useKeyringContext() {
 
 export function KeyringContextProvider(props: KeyringContextProviderProps): React.ReactElement {
   const { children = null } = props;
-  const { sourceChain } = useSourceTarget();
+  const {
+    sourceChainDetails: { sourceChain }
+  } = useSourceTarget();
   const chainsConfigs = getChainConfigs();
   const sourceChainSS58Format = chainsConfigs[sourceChain].SS58Format;
   const [keyringStatus, setKeyringStatus] = useState(KeyringStatuses.INIT);

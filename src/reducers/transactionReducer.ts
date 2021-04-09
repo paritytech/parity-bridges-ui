@@ -29,6 +29,7 @@ const updateTransaction = (state: TransactionState, payload: Payload): Transacti
           ...updatedValues
         };
       }
+      return stateTransaction;
     });
     return newState;
   }

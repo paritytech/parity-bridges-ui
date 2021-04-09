@@ -22,7 +22,6 @@ import moment from 'moment';
 import { MessageActionsCreators } from '../actions/messageActions';
 import { TransactionActionCreators } from '../actions/transactionActions';
 import { useAccountContext } from '../contexts/AccountContextProvider';
-import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
 import { useUpdateMessageContext } from '../contexts/MessageContext';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
@@ -40,11 +39,16 @@ interface Props {
 }
 
 function useSendMessage({ isRunning, setIsRunning, input, type }: Props) {
-  const { api: sourceApi } = useApiSourcePromiseContext();
   const { estimatedFee, receiverAddress } = useTransactionContext();
   const { dispatchTransaction } = useUpdateTransactionContext();
   const laneId = useLaneId();
-  const { targetChain, sourceChain } = useSourceTarget();
+  const {
+    sourceChainDetails: {
+      sourceApiConnection: { api: sourceApi },
+      sourceChain
+    },
+    targetChainDetails: { targetChain }
+  } = useSourceTarget();
   const { account } = useAccountContext();
   const { payload } = useTransactionPreparation({ input, type });
   const { dispatchMessage } = useUpdateMessageContext();
@@ -91,7 +95,6 @@ function useSendMessage({ isRunning, setIsRunning, input, type }: Props) {
         sourceAccount = account.address;
       }
 
-      ///sourceAccount = 'test';
       const unsub = await bridgeMessage.signAndSend(sourceAccount, { ...options }, ({ events = [], status }) => {
         if (status.isBroadcast) {
           dispatchMessage(MessageActionsCreators.triggerInfoMessage({ message: 'Transaction was broadcasted' }));
@@ -128,9 +131,9 @@ function useSendMessage({ isRunning, setIsRunning, input, type }: Props) {
           unsub();
         }
       });
-    } catch ({ e: { message } }) {
-      dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message }));
-      logger.error(message);
+    } catch (e) {
+      dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e }));
+      logger.error(e);
     } finally {
       setIsRunning(false);
     }

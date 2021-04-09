@@ -27,7 +27,9 @@ interface Props {
 
 export default function useConnectedReceiver(): Function {
   const { dispatchTransaction } = useUpdateTransactionContext();
-  const { targetChain } = useSourceTarget();
+  const {
+    targetChainDetails: { targetChain }
+  } = useSourceTarget();
 
   const setConnectedReceiver = ({ setReceiverMessage, receiver }: Props) => {
     setReceiverMessage('');

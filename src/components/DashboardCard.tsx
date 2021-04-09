@@ -18,16 +18,15 @@ import React from 'react';
 import { Card, Container } from 'semantic-ui-react';
 import styled from 'styled-components';
 
-import { SOURCE } from '../constants';
 import useDashboard from '../hooks/useDashboard';
-import { ChainTypes } from '../types/sourceTargetTypes';
+import { ChainDetails } from '../types/sourceTargetTypes';
 
 interface Props {
-  chainType: ChainTypes;
+  chainDetail: ChainDetails;
   className?: string;
 }
 
-const DashboardCard = ({ chainType, className }: Props) => {
+const DashboardCard = ({ chainDetail, className }: Props) => {
   const {
     bestBlockFinalized,
     bestBlock,
@@ -35,9 +34,9 @@ const DashboardCard = ({ chainType, className }: Props) => {
     outboundLanes: { totalMessages, pendingMessages },
     inboundLanes: { bridgeReceivedMessages },
     local
-  } = useDashboard(chainType);
+  } = useDashboard(chainDetail);
 
-  const headerText = chainType === SOURCE ? 'Source' : 'Target';
+  const headerText = chainDetail === ChainDetails.SOURCE ? 'Source' : 'Target';
   return (
     <Container className={className}>
       <Card className="container">

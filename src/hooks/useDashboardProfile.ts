@@ -16,34 +16,33 @@
 
 import { useEffect, useState } from 'react';
 
-import { TARGET } from '../constants';
-import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
-import { useApiTargetPromiseContext } from '../contexts/ApiPromiseTargetContext';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { ChainTypes } from '../types/sourceTargetTypes';
+import { ChainDetails } from '../types/sourceTargetTypes';
 
-interface Output {
-  local: string;
-  destination: string;
-  useApi: Function;
-}
+export default function useDashboardProfile(chainDetail: ChainDetails) {
+  const {
+    sourceChainDetails: { sourceApiConnection, sourceChain },
+    targetChainDetails: { targetApiConnection, targetChain }
+  } = useSourceTarget();
+  const { isApiReady: isSourceApiReady, api: sourceApi } = sourceApiConnection;
+  const { isApiReady: isTargetApiReady, api: targetApi } = targetApiConnection;
 
-export default function useDashboardProfile(chainType: ChainTypes): Output {
-  const { sourceChain, targetChain } = useSourceTarget();
-
-  const [profile, setProfile] = useState({ destination: '', local: '', useApi: useApiSourcePromiseContext });
+  const [profile, setProfile] = useState({ api: sourceApi, destination: '', isApiReady: isSourceApiReady, local: '' });
 
   useEffect(() => {
     let local = sourceChain;
     let destination = targetChain;
-    let useApi = useApiSourcePromiseContext;
-    if (chainType === TARGET) {
+    let api = sourceApi;
+    let isApiReady = isSourceApiReady;
+    if (chainDetail === ChainDetails.TARGET) {
       local = targetChain;
       destination = sourceChain;
-      useApi = useApiTargetPromiseContext;
+      api = targetApi;
+      isApiReady = isTargetApiReady;
     }
-    setProfile({ destination, local, useApi });
-  }, [chainType, sourceChain, targetChain]);
+
+    setProfile({ api, destination, isApiReady, local });
+  }, [chainDetail, isSourceApiReady, isTargetApiReady, sourceApi, sourceChain, targetApi, targetChain]);
 
   return profile;
 }

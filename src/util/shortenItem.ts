@@ -14,12 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-export default (address: string, eth: boolean = false) => {
-  if (!address || address.length < 8) {
-    return address;
+export default (item: string) => {
+  if (!item || item.length < 8) {
+    return item;
   }
 
-  return eth
-    ? `${address.substring(0, 8)}...${address.substring(address.length - 8)}`
-    : `${address.substring(0, 6)}...${address.substring(address.length - 8)}`;
+  return `${item.substring(0, 6)}...${item.substring(item.length - 8)}`;
 };

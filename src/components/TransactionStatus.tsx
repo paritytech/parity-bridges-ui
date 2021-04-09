@@ -18,12 +18,11 @@ import { Codec } from '@polkadot/types/types';
 import BN from 'bn.js';
 import React, { useEffect, useState } from 'react';
 
-import { SOURCE, TARGET } from '../constants';
-import { useApiTargetPromiseContext } from '../contexts/ApiPromiseTargetContext';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useDashboard from '../hooks/useDashboard';
 import useLaneId from '../hooks/useLaneId';
 import useLoadingApi from '../hooks/useLoadingApi';
+import { ChainDetails } from '../types/sourceTargetTypes';
 import { TransanctionStatus } from '../types/transactionTypes';
 import { Step, TransactionStatusEnum } from '../types/transactionTypes';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
@@ -39,19 +38,24 @@ function TransactionStatus({ transaction, onComplete }: Props) {
   const [latestReceivedNonceRuntimeApi, setLatestReceivedNonceRuntimeApi] = useState(0);
   const [steps, setSteps] = useState<Array<Step>>([]);
 
-  const { api: targetApi } = useApiTargetPromiseContext();
-  const { sourceChain, targetChain } = useSourceTarget();
+  const {
+    sourceChainDetails: { sourceChain },
+    targetChainDetails: {
+      targetApiConnection: { api: targetApi },
+      targetChain
+    }
+  } = useSourceTarget();
   const laneId = useLaneId();
   const areApiLoading = useLoadingApi();
 
   const {
     bestBlockFinalized,
     outboundLanes: { latestReceivedNonce: latestReceivedNonceOnSource }
-  } = useDashboard(SOURCE);
+  } = useDashboard(ChainDetails.SOURCE);
   const {
     bestBridgedFinalizedBlock: bestBridgedFinalizedBlockOnTarget,
     bestBlockFinalized: bestBlockFinalizedOnTarget
-  } = useDashboard(TARGET);
+  } = useDashboard(ChainDetails.TARGET);
   const { latestReceivedNonceMethodName } = getSubstrateDynamicNames(sourceChain);
   const completed = transaction.status === TransactionStatusEnum.COMPLETED;
 

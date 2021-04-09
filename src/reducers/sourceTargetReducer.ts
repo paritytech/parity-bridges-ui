@@ -15,12 +15,21 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { SourceTargetActionsTypes } from '../actions/sourceTargetActions';
-import type { SourceTarget, SourceTargetAction } from '../types/sourceTargetTypes';
+import { ChainDetails, SourceTargetAction, SourceTargetState } from '../types/sourceTargetTypes';
 
-export default function sourceTargetReducer(state: SourceTarget, action: SourceTargetAction): SourceTarget {
+export default function sourceTargetReducer(state: SourceTargetState, action: SourceTargetAction): SourceTargetState {
   switch (action.type) {
     case SourceTargetActionsTypes.SWAP_CHAINS: {
-      return { ...state, sourceChain: state.targetChain, targetChain: state.sourceChain };
+      return {
+        [ChainDetails.SOURCE]: {
+          sourceApiConnection: state[ChainDetails.TARGET].targetApiConnection,
+          sourceChain: state[ChainDetails.TARGET].targetChain
+        },
+        [ChainDetails.TARGET]: {
+          targetApiConnection: state[ChainDetails.SOURCE].sourceApiConnection,
+          targetChain: state[ChainDetails.SOURCE].sourceChain
+        }
+      };
     }
     default: {
       throw new Error(`Unhandled type: ${action.type}`);
