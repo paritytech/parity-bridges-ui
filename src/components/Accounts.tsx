@@ -36,7 +36,10 @@ const formatOptions = (accounts: Array<KeyringPair>) =>
 
 const Accounts = ({ className }: Props) => {
   const { account, accounts, derivedAccount, setCurrentAccount } = useAccounts();
-  const { sourceChain, targetChain } = useSourceTarget();
+  const {
+    sourceChainDetails: { sourceChain },
+    targetChainDetails: { targetChain }
+  } = useSourceTarget();
 
   const value = account?.address || '';
 

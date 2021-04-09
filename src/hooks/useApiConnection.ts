@@ -14,20 +14,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-//copied over from @substrate/context This needs to be updated.
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { ApiPromise } from '@polkadot/api';
+import { ApiOptions } from '@polkadot/api/types';
+import { ProviderInterface } from '@polkadot/rpc-provider/types';
 /* import { ApiOptions } from '@polkadot/api/types';
 import { ProviderInterface } from '@polkadot/rpc-provider/types'; */
 import { TypeRegistry } from '@polkadot/types';
 import React, { useEffect, useState } from 'react';
 
-import { getChainConfigs } from '../configs/substrateProviders';
 import { ApiPromiseConnectionType } from '../types/sourceTargetTypes';
-import { useDidUpdateEffect } from '../util/useDidUpdateEffect';
 
 export interface ApiRxProviderProps {
-  chain: string;
+  hasher?: (data: Uint8Array) => Uint8Array;
+  provider: ProviderInterface;
+  types?: ApiOptions['types'];
 }
 
 export const ApiPromiseContext: React.Context<ApiPromiseConnectionType> = React.createContext(
@@ -36,34 +38,31 @@ export const ApiPromiseContext: React.Context<ApiPromiseConnectionType> = React.
 
 const registry = new TypeRegistry();
 
-export function useApiConnection(chain: string): ApiPromiseConnectionType {
-  const configs = getChainConfigs();
-  const { hasher, provider, types } = configs[chain];
-  const options = { hasher, provider, types };
-  const [apiPromise, setApiPromise] = useState<ApiPromise>(new ApiPromise(options));
+export function useApiConnection({ hasher, provider, types }: ApiRxProviderProps): ApiPromiseConnectionType {
+  const [apiPromise, setApiPromise] = useState<ApiPromise>({} as ApiPromise);
   const [isReady, setIsReady] = useState(false);
 
-  useDidUpdateEffect(() => {
-    // We want to fetch all the information again each time we reconnect. We
-    // might be connecting to a different node, or the node might have changed
-    // settings.
-    setApiPromise(new ApiPromise(options));
-
-    setIsReady(false);
-  }, [provider]);
+  useEffect(() => {
+    ApiPromise.create({ hasher, provider, types })
+      .then((api): void => {
+        setApiPromise(api);
+      })
+      .catch((err): void => {
+        console.error(err);
+      });
+  }, [hasher, provider, types]);
 
   useEffect(() => {
-    // We want to fetch all the information again each time we reconnect. We
-    // might be connecting to a different node, or the node might have changed
-    // settings.
-    apiPromise.isReady.then(() => {
-      if (types) {
-        registry.register(types);
-      }
-      console.log('Api ready.');
-      setIsReady(true);
-    });
-  }, [apiPromise.isReady, types]);
+    !isReady &&
+      apiPromise &&
+      apiPromise.isReady &&
+      apiPromise.isReady.then(() => {
+        if (types) {
+          registry.register(types);
+        }
+        setIsReady(true);
+      });
+  }, [apiPromise, isReady, types]);
 
   return { api: apiPromise, isApiReady: isReady };
 }

@@ -14,9 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { WsProvider } from '@polkadot/api';
 import { ApiOptions } from '@polkadot/api/types';
-import { ProviderInterface } from '@polkadot/rpc-provider/types';
 
 import { checkEnvVariable } from '../util/envVariablesValidations';
 import { getCustomTypesAndHasher } from './substrateCustomTypes/';
@@ -25,10 +23,17 @@ export type CustomHasher = (data: Uint8Array) => Uint8Array;
 
 interface ChainConfig {
   bridgeId: string;
+  SS58Format: number;
+}
+
+interface ProviderConfig {
   hasher?: CustomHasher;
   types: ApiOptions['types'];
-  SS58Format: number;
-  provider: ProviderInterface;
+  provider: string;
+}
+
+interface ProviderConfigs {
+  [chain: string]: ProviderConfig;
 }
 
 interface ChainConfigs {
@@ -41,19 +46,13 @@ const getChainNames = () => {
 
 export const [CHAIN_1, CHAIN_2] = getChainNames();
 
-const getProvider = (provider: string) => new WsProvider(provider);
-
 const getTypeAndHasher = (chainNumber: string) =>
   getCustomTypesAndHasher(checkEnvVariable(`REACT_APP_CHAIN_${chainNumber}`));
 
 const createConfigObject = (chainNumber: string) => {
-  const { types, hasher } = getTypeAndHasher(chainNumber);
   return {
     SS58Format: parseInt(checkEnvVariable(`REACT_APP_SS58_PREFIX_CHAIN_${chainNumber}`)),
-    bridgeId: checkEnvVariable(`REACT_APP_BRIDGE_ID_CHAIN_${chainNumber}`),
-    hasher,
-    provider: getProvider(checkEnvVariable(`REACT_APP_SUBSTRATE_PROVIDER_CHAIN_${chainNumber}`)),
-    types
+    bridgeId: checkEnvVariable(`REACT_APP_BRIDGE_ID_CHAIN_${chainNumber}`)
   };
 };
 
@@ -65,4 +64,23 @@ export const getChainConfigs = (): ChainConfigs => {
   };
 
   return configs;
+};
+
+const createProviderObject = (chainNumber: string) => {
+  const { types, hasher } = getTypeAndHasher(chainNumber);
+  return {
+    hasher,
+    provider: checkEnvVariable(`REACT_APP_SUBSTRATE_PROVIDER_CHAIN_${chainNumber}`),
+    types
+  };
+};
+
+export const getChainProviders = (): ProviderConfigs => {
+  const [chain1, chain2] = getChainNames();
+  const providers = {
+    [chain1]: createProviderObject('1'),
+    [chain2]: createProviderObject('2')
+  };
+
+  return providers;
 };

@@ -17,8 +17,7 @@
 import { useEffect, useState } from 'react';
 
 import { useAccountContext } from '../contexts/AccountContextProvider';
-import { useApiSourcePromiseContext } from '../contexts/ApiPromiseSourceContext';
-import { useApiTargetPromiseContext } from '../contexts/ApiPromiseTargetContext';
+import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import useLoadingApi from '../hooks/useLoadingApi';
 import { TransactionTypes } from '../types/transactionTypes';
@@ -34,8 +33,15 @@ interface Props {
 
 export default function useTransactionType({ input, type }: Props): TransactionFunction {
   const areApiReady = useLoadingApi();
-  const { api: sourceApi } = useApiSourcePromiseContext();
-  const { api: targetApi } = useApiTargetPromiseContext();
+  const {
+    sourceChainDetails: {
+      sourceApiConnection: { api: sourceApi }
+    },
+    targetChainDetails: {
+      targetApiConnection: { api: targetApi }
+    }
+  } = useSourceTarget();
+
   const { account } = useAccountContext();
   const { receiverAddress } = useTransactionContext();
 

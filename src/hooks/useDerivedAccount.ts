@@ -20,7 +20,10 @@ import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import getDerivedAccount from '../util/getDeriveAccount';
 
 const useDerivedAccount = () => {
-  const { targetChain, sourceChain } = useSourceTarget();
+  const {
+    sourceChainDetails: { sourceChain },
+    targetChainDetails: { targetChain }
+  } = useSourceTarget();
   const { account } = useAccountContext();
   const chainsConfigs = getChainConfigs();
   const { SS58Format } = chainsConfigs[targetChain];

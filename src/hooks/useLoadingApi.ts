@@ -20,8 +20,12 @@ import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 
 export default function useLoadingApi(): boolean {
   const {
-    sourceApiConnection: { isApiReady: isSourceApiReady },
-    targetApiConnection: { isApiReady: isTargetApiReady }
+    sourceChainDetails: {
+      sourceApiConnection: { isApiReady: isSourceApiReady }
+    },
+    targetChainDetails: {
+      targetApiConnection: { isApiReady: isTargetApiReady }
+    }
   } = useSourceTarget();
 
   const [areReady, setAreReady] = useState(false);
