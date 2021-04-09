@@ -14,7 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import { WsProvider } from '@polkadot/api';
 import { ApiOptions } from '@polkadot/api/types';
+import { ProviderInterface } from '@polkadot/rpc-provider/types';
 
 import { checkEnvVariable } from '../util/envVariablesValidations';
 import { getCustomTypesAndHasher } from './substrateCustomTypes/';
@@ -29,7 +31,7 @@ interface ChainConfig {
 interface ProviderConfig {
   hasher?: CustomHasher;
   types: ApiOptions['types'];
-  provider: string;
+  provider: ProviderInterface;
 }
 
 interface ProviderConfigs {
@@ -48,6 +50,8 @@ export const [CHAIN_1, CHAIN_2] = getChainNames();
 
 const getTypeAndHasher = (chainNumber: string) =>
   getCustomTypesAndHasher(checkEnvVariable(`REACT_APP_CHAIN_${chainNumber}`));
+
+const getProvider = (provider: string) => new WsProvider(provider);
 
 const createConfigObject = (chainNumber: string) => {
   return {
@@ -70,7 +74,7 @@ const createProviderObject = (chainNumber: string) => {
   const { types, hasher } = getTypeAndHasher(chainNumber);
   return {
     hasher,
-    provider: checkEnvVariable(`REACT_APP_SUBSTRATE_PROVIDER_CHAIN_${chainNumber}`),
+    provider: getProvider(checkEnvVariable(`REACT_APP_SUBSTRATE_PROVIDER_CHAIN_${chainNumber}`)),
     types
   };
 };

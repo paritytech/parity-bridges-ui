@@ -18,6 +18,14 @@ import { checkEnvVariable, checkExpectedVariables } from '../../util/envVariable
 import { getCustomTypesAndHasher } from '../substrateCustomTypes/';
 import { getChainConfigs, getChainProviders } from '../substrateProviders';
 
+jest.mock('@polkadot/api', () => {
+  return {
+    WsProvider: function (value: string) {
+      return { connection: `ws://${value}` };
+    }
+  };
+});
+
 jest.mock('../substrateCustomTypes/');
 jest.mock('../../util/envVariablesValidations');
 
@@ -26,8 +34,8 @@ describe('getChainConfigs', () => {
   const chain2 = 'CHAIN2';
   const prefix1 = '11';
   const prefix2 = '22';
-  const wsProvider1 = 'ws://provider1';
-  const wsProvider2 = 'ws://provider2';
+  const wsProvider1 = 'provider1';
+  const wsProvider2 = 'provider2';
   const bridgeId1 = 'bridge1';
   const bridgeId2 = 'bridge2';
 
@@ -45,12 +53,12 @@ describe('getChainConfigs', () => {
   const expectedProviders = {
     [chain1]: {
       hasher: `${chain1}Hasher`,
-      provider: wsProvider1,
+      provider: { connection: `ws://${wsProvider1}` },
       types: `${chain1}Types`
     },
     [chain2]: {
       hasher: `${chain2}Hasher`,
-      provider: wsProvider2,
+      provider: { connection: `ws://${wsProvider2}` },
       types: `${chain2}Types`
     }
   };
@@ -82,8 +90,6 @@ describe('getChainConfigs', () => {
     process.env.REACT_APP_CHAIN_2 = chain2;
     process.env.REACT_APP_BRIDGE_ID_CHAIN_1 = bridgeId1;
     process.env.REACT_APP_BRIDGE_ID_CHAIN_2 = bridgeId2;
-    process.env.REACT_APP_SUBSTRATE_PROVIDER_CHAIN_1 = wsProvider1;
-    process.env.REACT_APP_SUBSTRATE_PROVIDER_CHAIN_2 = wsProvider2;
     process.env.REACT_APP_SS58_PREFIX_CHAIN_1 = prefix1;
     process.env.REACT_APP_SS58_PREFIX_CHAIN_2 = prefix2;
 
@@ -93,12 +99,8 @@ describe('getChainConfigs', () => {
   test('Should validate and return chain value according env value', () => {
     process.env.REACT_APP_CHAIN_1 = chain1;
     process.env.REACT_APP_CHAIN_2 = chain2;
-    process.env.REACT_APP_BRIDGE_ID_CHAIN_1 = bridgeId1;
-    process.env.REACT_APP_BRIDGE_ID_CHAIN_2 = bridgeId2;
     process.env.REACT_APP_SUBSTRATE_PROVIDER_CHAIN_1 = wsProvider1;
     process.env.REACT_APP_SUBSTRATE_PROVIDER_CHAIN_2 = wsProvider2;
-    process.env.REACT_APP_SS58_PREFIX_CHAIN_1 = prefix1;
-    process.env.REACT_APP_SS58_PREFIX_CHAIN_2 = prefix2;
 
     expect(getChainProviders()).toEqual(expectedProviders);
   });

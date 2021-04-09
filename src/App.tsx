@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { WsProvider } from '@polkadot/api';
 import { SnackbarProvider } from 'notistack';
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
@@ -32,17 +31,10 @@ import { useApiConnection } from './hooks/useApiConnection';
 import Main from './screens/Main';
 
 const providers = getChainProviders();
-const { provider: providerChain1, ...restChain1 } = providers[CHAIN_1];
-const wsProviderChain1 = new WsProvider(providerChain1);
-const options1 = { ...restChain1, provider: wsProviderChain1 };
-
-const { provider: providerChain2, ...restChain2 } = providers[CHAIN_2];
-const wsProviderChain2 = new WsProvider(providerChain2);
-const options2 = { ...restChain2, provider: wsProviderChain2 };
 
 function App() {
-  const apiChain1 = useApiConnection(options1);
-  const apiChain2 = useApiConnection(options2);
+  const apiChain1 = useApiConnection(providers[CHAIN_1]);
+  const apiChain2 = useApiConnection(providers[CHAIN_2]);
   const connections = [
     { apiConnection: apiChain1, chainName: CHAIN_1 },
     { apiConnection: apiChain2, chainName: CHAIN_2 }
