@@ -33,14 +33,26 @@ const DashboardCard = ({ chainDetail, className }: Props) => {
     bestBridgedFinalizedBlock,
     outboundLanes: { totalMessages, pendingMessages },
     inboundLanes: { bridgeReceivedMessages },
-    local
+    local,
+    polkadotjsUrl
   } = useDashboard(chainDetail);
 
   const headerText = chainDetail === ChainDetails.SOURCE ? 'Source' : 'Target';
+
+  const Header = () => (
+    <>
+      <h3>
+        {headerText}:{' '}
+        <a href={polkadotjsUrl} target="_blank" rel="noreferrer">
+          {local}
+        </a>
+      </h3>
+    </>
+  );
   return (
     <Container className={className}>
       <Card className="container">
-        <Card.Content header={`${headerText}: ${local}`} />
+        <Card.Content header={<Header />} />
         <Card.Description className="description">
           <div>Best Block: {bestBlock}</div>
           <div>Best Finalized block: {bestBlockFinalized}</div>

@@ -32,6 +32,7 @@ interface ProviderConfig {
   hasher?: CustomHasher;
   types: ApiOptions['types'];
   provider: ProviderInterface;
+  polkadotjsUrl: string;
 }
 
 interface ProviderConfigs {
@@ -48,8 +49,8 @@ const getChainNames = () => {
 
 export const [CHAIN_1, CHAIN_2] = getChainNames();
 
-const getTypeAndHasher = (chainNumber: string) =>
-  getCustomTypesAndHasher(checkEnvVariable(`REACT_APP_CHAIN_${chainNumber}`));
+const getTypeAndHasher = (chainNumber: string, providerUrl: string) =>
+  getCustomTypesAndHasher(checkEnvVariable(`REACT_APP_CHAIN_${chainNumber}`), providerUrl);
 
 const getProvider = (provider: string) => new WsProvider(provider);
 
@@ -71,10 +72,12 @@ export const getChainConfigs = (): ChainConfigs => {
 };
 
 const createProviderObject = (chainNumber: string) => {
-  const { types, hasher } = getTypeAndHasher(chainNumber);
+  const providerUrl = checkEnvVariable(`REACT_APP_SUBSTRATE_PROVIDER_CHAIN_${chainNumber}`);
+  const { types, hasher, polkadotjsUrl } = getTypeAndHasher(chainNumber, providerUrl);
   return {
     hasher,
-    provider: getProvider(checkEnvVariable(`REACT_APP_SUBSTRATE_PROVIDER_CHAIN_${chainNumber}`)),
+    polkadotjsUrl,
+    provider: getProvider(providerUrl),
     types
   };
 };
