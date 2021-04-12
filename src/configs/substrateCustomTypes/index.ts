@@ -25,7 +25,7 @@ function hasherH512(data: any) {
   return u8aConcat(blake2AsU8a(data), keccakAsU8a(data));
 }
 
-const getCustomTypesAndHasher = (chain: string, providerUrl: string) => {
+const getConnectionChainInformation = (chain: string, providerUrl: string) => {
   switch (chain) {
     case 'Millau':
       return {
@@ -40,4 +40,4 @@ const getCustomTypesAndHasher = (chain: string, providerUrl: string) => {
   }
 };
 
-export { getCustomTypesAndHasher };
+export { getConnectionChainInformation };

@@ -19,7 +19,7 @@ import { ApiOptions } from '@polkadot/api/types';
 import { ProviderInterface } from '@polkadot/rpc-provider/types';
 
 import { checkEnvVariable } from '../util/envVariablesValidations';
-import { getCustomTypesAndHasher } from './substrateCustomTypes/';
+import { getConnectionChainInformation } from './substrateCustomTypes/';
 
 export type CustomHasher = (data: Uint8Array) => Uint8Array;
 
@@ -50,7 +50,7 @@ const getChainNames = () => {
 export const [CHAIN_1, CHAIN_2] = getChainNames();
 
 const getTypeAndHasher = (chainNumber: string, providerUrl: string) =>
-  getCustomTypesAndHasher(checkEnvVariable(`REACT_APP_CHAIN_${chainNumber}`), providerUrl);
+  getConnectionChainInformation(checkEnvVariable(`REACT_APP_CHAIN_${chainNumber}`), providerUrl);
 
 const getProvider = (provider: string) => new WsProvider(provider);
 
