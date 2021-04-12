@@ -50,7 +50,7 @@ const Transactions = ({ className }: Props) => {
           );
           dispatchMessage(
             MessageActionsCreators.triggerSuccessMessage({
-              message: `Transaction: ${shortenItem(transaction.hash)} is completed`
+              message: `Transaction: ${shortenItem(transaction.blockHash)} is completed`
             })
           );
         };
