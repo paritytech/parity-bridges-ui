@@ -27,6 +27,7 @@ export interface UpdateSourceTargetContext {
 type Connections = {
   chainName: string;
   apiConnection: ApiPromiseConnectionType;
+  polkadotjsUrl: string;
 };
 
 export interface SourceTargetContextProps {
@@ -49,16 +50,26 @@ export function useUpdateSourceTarget() {
 }
 
 const initState = (connections: Array<Connections>) => {
-  const { apiConnection: sourceApiConnection, chainName: sourceChain } = connections[0];
-  const { apiConnection: targetApiConnection, chainName: targetChain } = connections[1];
+  const {
+    apiConnection: sourceApiConnection,
+    chainName: sourceChain,
+    polkadotjsUrl: sourcePolkadotjsUrl
+  } = connections[0];
+  const {
+    apiConnection: targetApiConnection,
+    chainName: targetChain,
+    polkadotjsUrl: targetPolkadotjsUrl
+  } = connections[1];
   return {
     [ChainDetails.SOURCE]: {
       sourceApiConnection,
-      sourceChain
+      sourceChain,
+      sourcePolkadotjsUrl
     },
     [ChainDetails.TARGET]: {
       targetApiConnection,
-      targetChain
+      targetChain,
+      targetPolkadotjsUrl
     }
   };
 };

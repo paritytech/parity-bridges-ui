@@ -21,13 +21,13 @@ import useDashboardProfile from './useDashboardProfile';
 import useMessagesLane from './useMessagesLane';
 
 const useDashboard = (ChainDetail: ChainDetails) => {
-  const { api, destination, local, isApiReady } = useDashboardProfile(ChainDetail);
+  const { api, destination, local, isApiReady, polkadotjsUrl } = useDashboardProfile(ChainDetail);
 
   const blockInfo = useBlocksInfo({ api, chain: local, isApiReady });
   const bridgedBlocks = useBridgedBlocks({ api, chain: destination, isApiReady });
   const messagesLane = useMessagesLane({ api, chain: destination, isApiReady });
 
-  return { ...blockInfo, ...bridgedBlocks, ...messagesLane, local };
+  return { ...blockInfo, ...bridgedBlocks, ...messagesLane, local, polkadotjsUrl };
 };
 
 export default useDashboard;

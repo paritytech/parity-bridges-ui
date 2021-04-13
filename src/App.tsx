@@ -36,8 +36,8 @@ function App() {
   const apiChain1 = useApiConnection({ ...providers[CHAIN_1], chain: CHAIN_1 });
   const apiChain2 = useApiConnection({ ...providers[CHAIN_2], chain: CHAIN_2 });
   const connections = [
-    { apiConnection: apiChain1, chainName: CHAIN_1 },
-    { apiConnection: apiChain2, chainName: CHAIN_2 }
+    { apiConnection: apiChain1, chainName: CHAIN_1, polkadotjsUrl: providers[CHAIN_1].polkadotjsUrl },
+    { apiConnection: apiChain2, chainName: CHAIN_2, polkadotjsUrl: providers[CHAIN_2].polkadotjsUrl }
   ];
 
   if (!apiChain1.isApiReady || !apiChain2.isApiReady) {

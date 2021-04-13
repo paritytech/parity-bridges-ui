@@ -21,28 +21,46 @@ import { ChainDetails } from '../types/sourceTargetTypes';
 
 export default function useDashboardProfile(chainDetail: ChainDetails) {
   const {
-    sourceChainDetails: { sourceApiConnection, sourceChain },
-    targetChainDetails: { targetApiConnection, targetChain }
+    sourceChainDetails: { sourceApiConnection, sourceChain, sourcePolkadotjsUrl },
+    targetChainDetails: { targetApiConnection, targetChain, targetPolkadotjsUrl }
   } = useSourceTarget();
   const { isApiReady: isSourceApiReady, api: sourceApi } = sourceApiConnection;
   const { isApiReady: isTargetApiReady, api: targetApi } = targetApiConnection;
 
-  const [profile, setProfile] = useState({ api: sourceApi, destination: '', isApiReady: isSourceApiReady, local: '' });
+  const [profile, setProfile] = useState({
+    api: sourceApi,
+    destination: '',
+    isApiReady: isSourceApiReady,
+    local: '',
+    polkadotjsUrl: sourcePolkadotjsUrl
+  });
 
   useEffect(() => {
     let local = sourceChain;
     let destination = targetChain;
     let api = sourceApi;
     let isApiReady = isSourceApiReady;
+    let polkadotjsUrl = sourcePolkadotjsUrl;
     if (chainDetail === ChainDetails.TARGET) {
       local = targetChain;
       destination = sourceChain;
       api = targetApi;
       isApiReady = isTargetApiReady;
+      polkadotjsUrl = targetPolkadotjsUrl;
     }
 
-    setProfile({ api, destination, isApiReady, local });
-  }, [chainDetail, isSourceApiReady, isTargetApiReady, sourceApi, sourceChain, targetApi, targetChain]);
+    setProfile({ api, destination, isApiReady, local, polkadotjsUrl });
+  }, [
+    chainDetail,
+    isSourceApiReady,
+    isTargetApiReady,
+    sourceApi,
+    sourceChain,
+    sourcePolkadotjsUrl,
+    targetApi,
+    targetChain,
+    targetPolkadotjsUrl
+  ]);
 
   return profile;
 }

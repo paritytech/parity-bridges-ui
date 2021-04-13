@@ -31,6 +31,7 @@ export type SourceTargetAction = { type: SourceTargetActionsTypes; payload?: Pay
 export interface ApiPromiseContextType {
   api: ApiPromise; // From @polkadot/api\
   isApiReady: boolean;
+  polkadotjsUrl: string;
 }
 
 export enum ChainDetails {
@@ -42,9 +43,11 @@ export interface SourceTargetState {
   [ChainDetails.SOURCE]: {
     sourceApiConnection: ApiPromiseConnectionType;
     sourceChain: string;
+    sourcePolkadotjsUrl: string;
   };
   [ChainDetails.TARGET]: {
     targetApiConnection: ApiPromiseConnectionType;
     targetChain: string;
+    targetPolkadotjsUrl: string;
   };
 }

@@ -15,7 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { checkEnvVariable, checkExpectedVariables } from '../../util/envVariablesValidations';
-import { getCustomTypesAndHasher } from '../substrateCustomTypes/';
+import { getConnectionChainInformation } from '../substrateCustomTypes/';
 import { getChainConfigs, getChainProviders } from '../substrateProviders';
 
 jest.mock('@polkadot/api', () => {
@@ -66,7 +66,7 @@ describe('getChainConfigs', () => {
   beforeEach(() => {
     jest.resetModules();
     process.env = {};
-    (getCustomTypesAndHasher as jest.Mock).mockImplementation((value) => ({
+    (getConnectionChainInformation as jest.Mock).mockImplementation((value) => ({
       hasher: `${value}Hasher`,
       types: `${value}Types`
     }));
@@ -76,8 +76,8 @@ describe('getChainConfigs', () => {
   });
 
   afterEach(() => {
-    (getCustomTypesAndHasher as jest.Mock).mockClear();
-    (getCustomTypesAndHasher as jest.Mock).mockReset();
+    (getConnectionChainInformation as jest.Mock).mockClear();
+    (getConnectionChainInformation as jest.Mock).mockReset();
     (checkEnvVariable as jest.Mock).mockClear();
     (checkEnvVariable as jest.Mock).mockReset();
     (checkExpectedVariables as jest.Mock).mockClear();

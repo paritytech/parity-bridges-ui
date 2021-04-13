@@ -17,6 +17,7 @@
 import { u8aConcat } from '@polkadot/util';
 import { blake2AsU8a, keccakAsU8a } from '@polkadot/util-crypto';
 
+import createPolkadotJsUrl from '../../util/createPolkadotJsUrl';
 import customTypesMillau from './customTypesMillau.json';
 import customTypesRialto from './customTypesRialto.json';
 
@@ -24,15 +25,19 @@ function hasherH512(data: any) {
   return u8aConcat(blake2AsU8a(data), keccakAsU8a(data));
 }
 
-const getCustomTypesAndHasher = (chain: string) => {
+const getConnectionChainInformation = (chain: string, providerUrl: string) => {
   switch (chain) {
     case 'Millau':
-      return { hasher: hasherH512, types: customTypesMillau };
+      return {
+        hasher: hasherH512,
+        polkadotjsUrl: createPolkadotJsUrl(customTypesMillau, providerUrl),
+        types: customTypesMillau
+      };
     case 'Rialto':
-      return { types: customTypesRialto };
+      return { polkadotjsUrl: createPolkadotJsUrl(customTypesRialto, providerUrl), types: customTypesRialto };
     default:
       throw new Error(`Unknown chain: ${chain}`);
   }
 };
 
-export { getCustomTypesAndHasher };
+export { getConnectionChainInformation };
