@@ -18,7 +18,7 @@ import { stringToU8a } from '@polkadot/util';
 import { base64Encode } from '@polkadot/util-crypto';
 import { zlibSync } from 'fflate';
 
-export default function encodeUrlTypes(types: Record<string, any>, providerUrl: string): string {
+export default function createPolkadotJsUrl(types: Record<string, any>, providerUrl: string): string {
   const jsonU8a = stringToU8a(JSON.stringify(types));
   const compressed = zlibSync(jsonU8a, { level: 9 });
   const encoded = base64Encode(compressed);

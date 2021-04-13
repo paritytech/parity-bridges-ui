@@ -17,7 +17,7 @@
 import { u8aConcat } from '@polkadot/util';
 import { blake2AsU8a, keccakAsU8a } from '@polkadot/util-crypto';
 
-import encodeUrlTypes from '../../util/encodeUrl';
+import createPolkadotJsUrl from '../../util/createPolkadotJsUrl';
 import customTypesMillau from './customTypesMillau.json';
 import customTypesRialto from './customTypesRialto.json';
 
@@ -30,11 +30,11 @@ const getConnectionChainInformation = (chain: string, providerUrl: string) => {
     case 'Millau':
       return {
         hasher: hasherH512,
-        polkadotjsUrl: encodeUrlTypes(customTypesMillau, providerUrl),
+        polkadotjsUrl: createPolkadotJsUrl(customTypesMillau, providerUrl),
         types: customTypesMillau
       };
     case 'Rialto':
-      return { polkadotjsUrl: encodeUrlTypes(customTypesRialto, providerUrl), types: customTypesRialto };
+      return { polkadotjsUrl: createPolkadotJsUrl(customTypesRialto, providerUrl), types: customTypesRialto };
     default:
       throw new Error(`Unknown chain: ${chain}`);
   }

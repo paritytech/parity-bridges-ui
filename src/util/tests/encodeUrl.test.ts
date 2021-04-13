@@ -19,9 +19,9 @@ import { base64Encode } from '@polkadot/util-crypto';
 import { zlibSync } from 'fflate';
 
 import customTypesRialto from '../../configs/substrateCustomTypes/customTypesRialto.json';
-import encodeUrl from '../encodeUrl';
+import createPolkadotJsUrl from '../createPolkadotJsUrl';
 
-describe('encodeUrl', () => {
+describe('createPolkadotJsUrl', () => {
   const jsonU8a = stringToU8a(JSON.stringify(customTypesRialto));
   const compressed = zlibSync(jsonU8a, { level: 9 });
   const encoded = base64Encode(compressed);
@@ -32,7 +32,7 @@ describe('encodeUrl', () => {
 
   describe('Test chain', () => {
     it('should retrieve the expected URL for provided types', async () => {
-      const result = encodeUrl(customTypesRialto, providerUrl);
+      const result = createPolkadotJsUrl(customTypesRialto, providerUrl);
       expect(result).toEqual(expectedUrl);
     });
   });
