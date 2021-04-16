@@ -81,13 +81,13 @@ const CustomCall = ({ className }: Props) => {
       <h2>Custom Call</h2>
       <Container className={className}>
         <div>
-          <p>call</p>
+          <p>Call</p>
           <Input onChange={onChange} value={customCallInput} />
           <p>{error && `${error}`}</p>
         </div>
-
+        <br />
         <div>
-          <p>weight</p>
+          <p>Weight</p>
           <Input onChange={onWeightChange} value={weightInput} />
 
           <Button disabled={isButtonDisabled()} onClick={sendLaneMessage}>
@@ -112,5 +112,5 @@ const CustomCall = ({ className }: Props) => {
 
 export default styled(CustomCall)`
   display: flex !important;
-  justify-content: center !important;
+  justify-content: start !important;
 `;

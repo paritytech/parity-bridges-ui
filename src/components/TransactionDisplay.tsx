@@ -35,8 +35,9 @@ const TransactionDisplay = ({ transaction, steps, className }: Props) => {
   return (
     <Container className={className}>
       <Card className="card">
-        <Card.Content header={`Transaction: ${status}`} />
+        <Card.Content header={`Transaction: ${transaction.type}`} />
         <Card.Description className="description">
+          <h4>Status: ${status}</h4>
           {steps.map(({ chainType, label, status }, idx) => (
             <p key={idx}>
               {chainType}: {label}: {status}
