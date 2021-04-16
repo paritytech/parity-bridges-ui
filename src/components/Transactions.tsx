@@ -40,6 +40,7 @@ const Transactions = ({ className }: Props) => {
 
   return (
     <>
+      <h2>{`${transactions.length ? 'Transactions' : ''}`}</h2>
       {transactions.map((transaction: TransanctionStatus) => {
         const onComplete = () => {
           dispatchTransaction(

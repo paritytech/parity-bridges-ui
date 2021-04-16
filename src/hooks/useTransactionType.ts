@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import { hexToU8a, isHex } from '@polkadot/util';
 import { useEffect, useState } from 'react';
 
 import { useAccountContext } from '../contexts/AccountContextProvider';
@@ -22,16 +23,17 @@ import { useTransactionContext } from '../contexts/TransactionContext';
 import useLoadingApi from '../hooks/useLoadingApi';
 import { TransactionTypes } from '../types/transactionTypes';
 interface TransactionFunction {
-  callFunction: Function | null;
-  infoFunction: Function | null;
+  call: Uint8Array | null;
+  weight: number | null;
 }
 
 interface Props {
   input: string;
   type: string;
+  weightInput?: string;
 }
 
-export default function useTransactionType({ input, type }: Props): TransactionFunction {
+export default function useTransactionType({ input, type, weightInput }: Props): TransactionFunction {
   const areApiReady = useLoadingApi();
   const {
     sourceChainDetails: {
@@ -45,34 +47,45 @@ export default function useTransactionType({ input, type }: Props): TransactionF
   const { account } = useAccountContext();
   const { receiverAddress } = useTransactionContext();
 
-  const [transactionFunction, setTransactionFunction] = useState<TransactionFunction>({
-    callFunction: null,
-    infoFunction: null
+  const [values, setValues] = useState<TransactionFunction>({
+    call: null,
+    weight: null
   });
 
   useEffect(() => {
-    if (areApiReady) {
-      let callFunction = null;
-      let infoFunction = null;
+    async function getValues() {
+      let weight = null;
+      let call = null;
+
       if (account) {
         switch (type) {
           case TransactionTypes.REMARK:
-            callFunction = () => targetApi.tx.system.remark(input);
-            infoFunction = () => sourceApi.tx.system.remark(input).paymentInfo(account);
+            call = (await targetApi.tx.system.remark(input)).toU8a();
+            weight = (await sourceApi.tx.system.remark(input).paymentInfo(account!)).weight.toNumber();
             break;
           case TransactionTypes.TRANSFER:
             if (receiverAddress) {
-              callFunction = () => targetApi.tx.balances.transfer(receiverAddress, input);
-              infoFunction = () => sourceApi.tx.balances.transfer(receiverAddress, input).paymentInfo(account);
+              call = (await targetApi.tx.balances.transfer(receiverAddress, input)).toU8a();
+              weight = (
+                await sourceApi.tx.balances.transfer(receiverAddress, input).paymentInfo(account)
+              ).weight.toNumber();
             }
+            break;
+          case TransactionTypes.CUSTOM:
+            call = isHex(input) ? hexToU8a(input) : null;
+            weight = parseInt(weightInput!);
             break;
           default:
             throw new Error(`Unknown type: ${type}`);
         }
-        setTransactionFunction({ callFunction, infoFunction });
+        setValues({ call, weight });
       }
     }
-  }, [account, areApiReady, input, receiverAddress, sourceApi, targetApi, type]);
 
-  return transactionFunction;
+    if (areApiReady) {
+      getValues();
+    }
+  }, [account, areApiReady, input, receiverAddress, sourceApi, targetApi, type, weightInput]);
+
+  return values;
 }

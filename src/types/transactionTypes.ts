@@ -55,6 +55,7 @@ export interface TransactionState {
 export type TransactionsActionType = { type: TransactionActionTypes; payload: Payload };
 
 export enum TransactionTypes {
+  CUSTOM = 'CUSTOM',
   TRANSFER = 'TRANSFER',
   REMARK = 'REMARK'
 }

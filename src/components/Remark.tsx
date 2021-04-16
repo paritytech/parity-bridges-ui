@@ -47,17 +47,20 @@ const Remark = ({ className }: Props) => {
   }
 
   return (
-    <Container className={className}>
-      <Input onChange={onChange} value={remarkInput} />
-      <Button disabled={isButtonDisabled()} onClick={sendLaneMessage}>
-        Send Remark
-      </Button>
-      <p>{estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
-    </Container>
+    <>
+      <h2>Remark</h2>
+      <Container className={className}>
+        <Input onChange={onChange} value={remarkInput} />
+        <Button disabled={isButtonDisabled()} onClick={sendLaneMessage}>
+          Send Remark
+        </Button>
+        <p>{estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
+      </Container>
+    </>
   );
 };
 
 export default styled(Remark)`
   display: flex !important;
-  justify-content: center !important;
+  justify-content: start !important;
 `;

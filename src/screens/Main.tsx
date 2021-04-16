@@ -21,6 +21,7 @@ import styled from 'styled-components';
 
 import { SourceTargetActionsCreators } from '../actions/sourceTargetActions';
 import Accounts from '../components/Accounts';
+import CustomCall from '../components/CustomCall';
 import DashboardCard from '../components/DashboardCard';
 import Remark from '../components/Remark';
 import SnackBar from '../components/SnackBar';
@@ -87,6 +88,11 @@ export function Main({ className }: Props) {
           <Grid.Row>
             <Grid.Column width={12}>
               <Transfer />
+            </Grid.Column>
+          </Grid.Row>
+          <Grid.Row>
+            <Grid.Column width={12}>
+              <CustomCall />
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>

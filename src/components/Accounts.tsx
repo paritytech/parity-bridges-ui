@@ -49,7 +49,7 @@ const Accounts = ({ className }: Props) => {
 
   return (
     <Container className={className}>
-      <p>{sourceChain}</p>
+      <h2>{sourceChain} Account</h2>
       <Dropdown
         value={value}
         onChange={onChange}

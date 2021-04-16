@@ -32,13 +32,15 @@ import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
 import logger from '../util/logger';
 
 interface Props {
+  isValidCall?: boolean;
   isRunning: boolean;
   setIsRunning: (status: boolean) => void;
   input: string;
   type: string;
+  weightInput?: string;
 }
 
-function useSendMessage({ isRunning, setIsRunning, input, type }: Props) {
+function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, weightInput }: Props) {
   const { estimatedFee, receiverAddress } = useTransactionContext();
   const { dispatchTransaction } = useUpdateTransactionContext();
   const laneId = useLaneId();
@@ -50,7 +52,7 @@ function useSendMessage({ isRunning, setIsRunning, input, type }: Props) {
     targetChainDetails: { targetChain }
   } = useSourceTarget();
   const { account } = useAccountContext();
-  const { payload } = useTransactionPreparation({ input, type });
+  const { payload } = useTransactionPreparation({ input, isValidCall, type, weightInput });
   const { dispatchMessage } = useUpdateMessageContext();
 
   const sendLaneMessage = async () => {
@@ -146,6 +148,9 @@ function useSendMessage({ isRunning, setIsRunning, input, type }: Props) {
         break;
       case TransactionTypes.TRANSFER:
         return isRunning || !receiverAddress || !account;
+        break;
+      case TransactionTypes.CUSTOM:
+        return isRunning || !account || !input || !weightInput || !isValidCall;
         break;
       default:
         throw new Error(`Unknown type: ${type}`);

@@ -29,13 +29,20 @@ import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
 interface Props {
   input: string;
   type: string;
+  weightInput?: string;
+  isValidCall?: boolean;
 }
 
 interface FeeAndPayload {
   payload: any;
 }
 
-export default function useTransactionPreparation({ input, type }: Props): FeeAndPayload {
+export default function useTransactionPreparation({
+  input,
+  type,
+  weightInput,
+  isValidCall = true
+}: Props): FeeAndPayload {
   const areApiReady = useLoadingApi();
   const laneId = useLaneId();
   const {
@@ -47,7 +54,7 @@ export default function useTransactionPreparation({ input, type }: Props): FeeAn
   const { account } = useAccountContext();
 
   const [payload, setPayload] = useState<null | {}>(null);
-  const { callFunction, infoFunction } = useTransactionType({ input, type });
+  const { call, weight } = useTransactionType({ input, type, weightInput });
 
   const { dispatchTransaction } = useUpdateTransactionContext();
   const { estimatedFeeMethodName } = getSubstrateDynamicNames(targetChain);
@@ -91,11 +98,7 @@ export default function useTransactionPreparation({ input, type }: Props): FeeAn
 
   useEffect(() => {
     const getPayload = async () => {
-      if (account && infoFunction && callFunction) {
-        const transferInfo = await infoFunction();
-        const weight = transferInfo.weight.toNumber();
-        const transferCall = await callFunction();
-        const call = transferCall.toU8a();
+      if (account && call && weight) {
         const payload = {
           call,
           origin: {
@@ -107,9 +110,10 @@ export default function useTransactionPreparation({ input, type }: Props): FeeAn
         setPayload(payload);
       }
     };
-
-    getPayload();
-  }, [account, callFunction, infoFunction]);
+    if (isValidCall) {
+      getPayload();
+    }
+  }, [account, call, isValidCall, type, weight]);
 
   return {
     payload
