@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.3",
+    "@material-ui/icons": "^4.11.2",
     "@polkadot/api": "^4.4.1",
     "@polkadot/extension-dapp": "^0.37.2",
     "@polkadot/keyring": "^6.0.5",

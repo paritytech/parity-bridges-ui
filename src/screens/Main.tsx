@@ -14,9 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import React from 'react';
 import { Container, Grid } from 'semantic-ui-react';
-import { Button, Dimmer, Icon, Loader } from 'semantic-ui-react';
+import { Button, Icon } from 'semantic-ui-react';
 import styled from 'styled-components';
 
 import { SourceTargetActionsCreators } from '../actions/sourceTargetActions';
@@ -44,9 +46,9 @@ export function Main({ className }: Props) {
 
   if (!areApiLoading) {
     return (
-      <Dimmer active>
-        <Loader />
-      </Dimmer>
+      <Backdrop open>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     );
   }
 
