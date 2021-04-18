@@ -20,7 +20,6 @@ import { SnackbarProvider } from 'notistack';
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
-import TopBar from './components/TopBar';
 import { getChainProviders } from './configs/substrateProviders';
 import { CHAIN_1, CHAIN_2 } from './configs/substrateProviders';
 import { AccountContextProvider } from './contexts/AccountContextProvider';
@@ -61,7 +60,6 @@ function App() {
                 <BrowserRouter>
                   <Switch>
                     <Route path={'/'}>
-                      <TopBar />
                       <Main />
                     </Route>
                   </Switch>

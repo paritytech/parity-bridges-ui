@@ -14,8 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Container from '@material-ui/core/Container';
 import React from 'react';
-import { Card, Container } from 'semantic-ui-react';
 import styled from 'styled-components';
 
 import useDashboard from '../hooks/useDashboard';
@@ -52,8 +54,8 @@ const DashboardCard = ({ chainDetail, className }: Props) => {
   return (
     <Container className={className}>
       <Card className="container">
-        <Card.Content header={<Header />} />
-        <Card.Description className="description">
+        <CardContent>
+          <Header />
           <div>Best Block: {bestBlock}</div>
           <div>Best Finalized block: {bestBlockFinalized}</div>
 
@@ -63,7 +65,7 @@ const DashboardCard = ({ chainDetail, className }: Props) => {
           <hr className="divider" />
           <div>Best Target Finalized block: {bestBridgedFinalizedBlock}</div>
           <div>Received Messages: {bridgeReceivedMessages}</div>
-        </Card.Description>
+        </CardContent>
       </Card>
     </Container>
   );

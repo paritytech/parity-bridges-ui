@@ -14,8 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
+import Container from '@material-ui/core/Container';
 import React from 'react';
-import { Card, Container } from 'semantic-ui-react';
 import styled from 'styled-components';
 
 import { Step, TransactionStatusEnum, TransanctionStatus } from '../types/transactionTypes';
@@ -35,15 +38,15 @@ const TransactionDisplay = ({ transaction, steps, className }: Props) => {
   return (
     <Container className={className}>
       <Card className="card">
-        <Card.Content header={`Transaction: ${transaction.type}`} />
-        <Card.Description className="description">
-          <h4>Status: ${status}</h4>
+        <CardHeader className="description" title={`Transaction: ${transaction.type}`} />
+        <CardContent>
+          <h4>Status: {status}</h4>
           {steps.map(({ chainType, label, status }, idx) => (
             <p key={idx}>
               {chainType}: {label}: {status}
             </p>
           ))}
-        </Card.Description>
+        </CardContent>
       </Card>
     </Container>
   );

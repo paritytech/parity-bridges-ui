@@ -14,8 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import Button from '@material-ui/core/Button';
+import Container from '@material-ui/core/Container';
+import TextField from '@material-ui/core/TextField';
 import React, { useState } from 'react';
-import { Button, Container, Grid, Input } from 'semantic-ui-react';
 import styled from 'styled-components';
 
 import { useTransactionContext } from '../contexts/TransactionContext';
@@ -63,36 +65,33 @@ const Transfer = ({ className }: Props) => {
     return null;
   }
 
+  // TO-DO: Remove <br /> by proper margins
+
   return (
     <>
       <h2>Transfer</h2>
       <Container className={className}>
-        <Grid.Row>
-          <Grid.Column>
-            <label>Receiver</label>
-            <Input fluid onChange={onReceiverChange} value={receiverInput} />
-            <p>{receiverMessage && `${receiverMessage}`}</p>
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row>
-          <Grid.Column>
-            <label>Sender</label>
-            <br />
-            <Input onChange={onChange} value={transferInput} />
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row>
-          <Grid.Column>
-            <br />
-            <Button disabled={isButtonDisabled()} onClick={sendLaneMessage}>
-              Send Transfer
-            </Button>
-            <p>{receiverAddress && estimatedFee && `Estimated Source Fee: ${estimatedFee}`}</p>
-          </Grid.Column>
-        </Grid.Row>
+        <div className="receiver">
+          <TextField fullWidth onChange={onReceiverChange} value={receiverInput} label="Receiver" variant="outlined" />
+        </div>
+        <p>{receiverMessage && `${receiverMessage}`}</p>
+
+        <br />
+        <TextField onChange={onChange} value={transferInput} label="Sender" variant="outlined" />
+
+        <br />
+        <Button variant="contained" disabled={isButtonDisabled()} onClick={sendLaneMessage}>
+          Send Transfer
+        </Button>
+        <p>{receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
       </Container>
     </>
   );
 };
 
-export default styled(Transfer)``;
+export default styled(Transfer)`
+  margin: 40px 0;
+  .receiver {
+    max-width: 700px;
+  }
+`;

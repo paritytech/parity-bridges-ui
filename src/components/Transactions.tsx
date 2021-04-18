@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import Container from '@material-ui/core/Container';
 import React from 'react';
-import { Container } from 'semantic-ui-react';
 import styled from 'styled-components';
 
 import { MessageActionsCreators } from '../actions/messageActions';
