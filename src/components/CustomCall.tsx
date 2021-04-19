@@ -91,7 +91,7 @@ const CustomCall = ({ className }: Props) => {
           <Input onChange={onWeightChange} value={weightInput} />
 
           <Button disabled={isButtonDisabled()} onClick={sendLaneMessage}>
-            Send CustomCall
+            Send Custom Call
           </Button>
         </div>
       </Container>
