@@ -88,9 +88,9 @@ const CustomCall = ({ className }: Props) => {
         </div>
         <br />
         <div>
-          <TextField onChange={onWeightChange} value={weightInput} label="Call" variant="outlined" />
+          <TextField onChange={onWeightChange} value={weightInput} label="Weight" variant="outlined" />
 
-          <Button disabled={isButtonDisabled()} onClick={sendLaneMessage}>
+          <Button variant="contained" disabled={isButtonDisabled()} onClick={sendLaneMessage}>
             Send Custom Call
           </Button>
         </div>
