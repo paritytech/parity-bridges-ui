@@ -87,7 +87,7 @@ const Transfer = ({ className }: Props) => {
             <Button disabled={isButtonDisabled()} onClick={sendLaneMessage}>
               Send Transfer
             </Button>
-            <p>{receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
+            <p>{receiverAddress && estimatedFee && `Estimated Source Fee: ${estimatedFee}`}</p>
           </Grid.Column>
         </Grid.Row>
       </Container>
