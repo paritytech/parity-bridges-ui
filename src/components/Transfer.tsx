@@ -65,7 +65,7 @@ const Transfer = ({ className }: Props) => {
 
   return (
     <>
-      <h2>Transfers</h2>
+      <h2>Transfer</h2>
       <Container className={className}>
         <Grid.Row>
           <Grid.Column>
