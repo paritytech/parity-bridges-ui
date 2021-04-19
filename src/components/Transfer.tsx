@@ -64,29 +64,34 @@ const Transfer = ({ className }: Props) => {
   }
 
   return (
-    <Container className={className}>
-      <Grid.Row>
-        <Grid.Column>
-          <label>Receiver</label>
-          <Input fluid onChange={onReceiverChange} value={receiverInput} />
-          <p>{receiverMessage && `${receiverMessage}`}</p>
-        </Grid.Column>
-      </Grid.Row>
-      <Grid.Row>
-        <Grid.Column>
-          <label>Sender</label>
-          <Input onChange={onChange} value={transferInput} />
-        </Grid.Column>
-      </Grid.Row>
-      <Grid.Row>
-        <Grid.Column>
-          <Button disabled={isButtonDisabled()} onClick={sendLaneMessage}>
-            Send Transfer
-          </Button>
-          <p>{receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
-        </Grid.Column>
-      </Grid.Row>
-    </Container>
+    <>
+      <h2>Transfer</h2>
+      <Container className={className}>
+        <Grid.Row>
+          <Grid.Column>
+            <label>Receiver</label>
+            <Input fluid onChange={onReceiverChange} value={receiverInput} />
+            <p>{receiverMessage && `${receiverMessage}`}</p>
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row>
+          <Grid.Column>
+            <label>Sender</label>
+            <br />
+            <Input onChange={onChange} value={transferInput} />
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row>
+          <Grid.Column>
+            <br />
+            <Button disabled={isButtonDisabled()} onClick={sendLaneMessage}>
+              Send Transfer
+            </Button>
+            <p>{receiverAddress && estimatedFee && `Estimated Source Fee: ${estimatedFee}`}</p>
+          </Grid.Column>
+        </Grid.Row>
+      </Container>
+    </>
   );
 };
 
