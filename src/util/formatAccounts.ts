@@ -14,17 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-enum SourceTargetActionsTypes {
-  SWAP_CHAINS = 'SWAP_CHAINS'
+import type { KeyringPair } from '@polkadot/keyring/types';
+import { encodeAddress } from '@polkadot/util-crypto';
+
+import getChainSS58 from '../util/getSS58';
+
+export default function formatAccounts(accounts: Array<KeyringPair>, chain: string) {
+  return accounts.map(({ meta, address }) => {
+    const ss58Format = getChainSS58(chain);
+    const formatedAddress = encodeAddress(address, ss58Format);
+    return {
+      icon: 'user',
+      key: formatedAddress,
+      text: (meta.name as string).toLocaleUpperCase(),
+      value: formatedAddress
+    };
+  });
 }
-
-const switchChains = (chain: string) => ({
-  payload: { chain },
-  type: SourceTargetActionsTypes.SWAP_CHAINS
-});
-
-const SourceTargetActionsCreators = {
-  switchChains
-};
-
-export { SourceTargetActionsTypes, SourceTargetActionsCreators };

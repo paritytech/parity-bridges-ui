@@ -14,17 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-enum SourceTargetActionsTypes {
-  SWAP_CHAINS = 'SWAP_CHAINS'
+import { getChainConfigs } from '../configs/substrateProviders';
+const chainsConfigs = getChainConfigs();
+
+export default function getChainSS58(chain: string) {
+  return chainsConfigs[chain].SS58Format;
 }
-
-const switchChains = (chain: string) => ({
-  payload: { chain },
-  type: SourceTargetActionsTypes.SWAP_CHAINS
-});
-
-const SourceTargetActionsCreators = {
-  switchChains
-};
-
-export { SourceTargetActionsTypes, SourceTargetActionsCreators };

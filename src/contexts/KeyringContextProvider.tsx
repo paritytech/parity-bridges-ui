@@ -20,11 +20,9 @@ import keyring from '@polkadot/ui-keyring';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 import { MessageActionsCreators } from '../actions/messageActions';
-import { getChainConfigs } from '../configs/substrateProviders';
 import { useUpdateMessageContext } from '../contexts/MessageContext';
 import { KeyringContextType, KeyringStatuses } from '../types/keyringTypes';
 import logger from '../util/logger';
-import { useSourceTarget } from './SourceTargetContextProvider';
 
 interface KeyringContextProviderProps {
   children: React.ReactElement;
@@ -38,11 +36,6 @@ export function useKeyringContext() {
 
 export function KeyringContextProvider(props: KeyringContextProviderProps): React.ReactElement {
   const { children = null } = props;
-  const {
-    sourceChainDetails: { sourceChain }
-  } = useSourceTarget();
-  const chainsConfigs = getChainConfigs();
-  const sourceChainSS58Format = chainsConfigs[sourceChain].SS58Format;
   const [keyringStatus, setKeyringStatus] = useState(KeyringStatuses.INIT);
   const { dispatchMessage } = useUpdateMessageContext();
   const [keyringPairs, setKeyringPairs] = useState<Array<KeyringPair>>([]);
@@ -61,7 +54,7 @@ export function KeyringContextProvider(props: KeyringContextProviderProps): Reac
           meta: { ...meta, name: `${meta.name} (${meta.source})` }
         }));
 
-        keyring.loadAll({ isDevelopment, ss58Format: sourceChainSS58Format }, allAccounts);
+        keyring.loadAll({ isDevelopment }, allAccounts);
         setKeyringStatus(KeyringStatuses.READY);
       } catch (e) {
         dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e }));
@@ -73,7 +66,7 @@ export function KeyringContextProvider(props: KeyringContextProviderProps): Reac
     if (keyringStatus === KeyringStatuses.LOADING || keyringStatus === KeyringStatuses.READY) return;
 
     asyncLoadAccounts();
-  }, [dispatchMessage, isDevelopment, keyringStatus, sourceChainSS58Format]);
+  }, [dispatchMessage, isDevelopment, keyringStatus]);
 
   useEffect(() => {
     if (keyringStatus === KeyringStatuses.INIT) {
