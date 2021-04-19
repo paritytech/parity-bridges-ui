@@ -99,7 +99,7 @@ const CustomCall = ({ className }: Props) => {
       <div>
         {decoded && (
           <Message>
-            <Message.Header>Decoded call</Message.Header>
+            <Message.Header>Decoded Call</Message.Header>
             <p>
               <pre>{decoded}</pre>
             </p>
