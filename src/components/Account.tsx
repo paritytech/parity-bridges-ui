@@ -19,6 +19,8 @@ import People from '@material-ui/icons/People';
 import React from 'react';
 import styled from 'styled-components';
 
+import useBalance from '../hooks/useBalance';
+
 interface Props {
   value: string;
   text: string;
@@ -26,33 +28,38 @@ interface Props {
   showDerivedBalance?: boolean;
 }
 
-// TO-DO: To replace fake balances by real balances
-const Account = ({ className, text, value, showDerivedBalance = false }: Props) => (
-  <Container className={className}>
-    <div className="address">
-      <div className="topAddress">
-        <People />
-        <div className="text">
-          <p>{text}</p>
-        </div>
-      </div>
-      <div className="bottomAddress">
-        <p>{value}</p>
-      </div>
-    </div>
+const Account = ({ className, text, value, showDerivedBalance = false }: Props) => {
+  const results = useBalance(value, true);
+  const source = results[0];
+  const target = results[1];
 
-    <div className="balances">
-      <div className="balance">
-        <p>0.1 RLTO</p>
-      </div>
-      {showDerivedBalance && (
-        <div className="balance">
-          <p>0.1 MLAU</p>
+  return (
+    <Container className={className}>
+      <div className="address">
+        <div className="topAddress">
+          <People />
+          <div className="text">
+            <p>{text}</p>
+          </div>
         </div>
-      )}
-    </div>
-  </Container>
-);
+        <div className="bottomAddress">
+          <p>{value}</p>
+        </div>
+      </div>
+
+      <div className="balances">
+        <div className="balance">
+          <p>{source ? source[0] : '-'}</p>
+        </div>
+        {showDerivedBalance && (
+          <div className="balance">
+            <p>{target ? target[0] : '-'}</p>
+          </div>
+        )}
+      </div>
+    </Container>
+  );
+};
 
 export default styled(Account)`
   margin: auto 0;
