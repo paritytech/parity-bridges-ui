@@ -70,7 +70,7 @@ const Accounts = ({ className }: Props) => {
     return [<SubHeader key={chain} chain={chain} />, items];
   };
 
-  const Input = () => {
+  const AccountSelected = () => {
     if (account) {
       const text = (account.meta.name as string).toLocaleUpperCase();
       return <Account text={text} value={value} />;
@@ -88,7 +88,7 @@ const Accounts = ({ className }: Props) => {
           inputProps={{
             id: 'name-native-error'
           }}
-          renderValue={(): React.ReactNode => <Input />}
+          renderValue={(): React.ReactNode => <AccountSelected />}
         >
           {accounts.length && chains.map((chain) => renderAccounts(chain))}
         </Select>
