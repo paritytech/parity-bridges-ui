@@ -90,7 +90,7 @@ const Accounts = ({ className }: Props) => {
           }}
           renderValue={(): React.ReactNode => <AccountSelected />}
         >
-          {accounts.length && chains.map((chain) => renderAccounts(chain))}
+          {chains.map((chain) => renderAccounts(chain))}
         </Select>
       </FormControl>
       {derivedAccount && (
