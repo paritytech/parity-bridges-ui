@@ -19,12 +19,14 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import type { KeyringPair } from '@polkadot/keyring/types';
-import React from 'react';
+import { encodeAddress } from '@polkadot/util-crypto';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useAccounts from '../hooks/useAccounts';
+import formatAccounts from '../util/formatAccounts';
+import getChainSS58 from '../util/getSS58';
 import Account from './Account';
 import SubHeader from './SubHeader';
 
@@ -32,42 +34,43 @@ interface Props {
   className?: string;
 }
 
-const formatOptions = (accounts: Array<KeyringPair>) =>
-  accounts.map(({ meta, address }) => ({
-    icon: 'user',
-    key: address,
-    text: (meta.name as string).toLocaleUpperCase(),
-    value: address
-  }));
-
 const Accounts = ({ className }: Props) => {
+  const [chains, setChains] = useState<Array<string>>([]);
   const { account, accounts, derivedAccount, setCurrentAccount } = useAccounts();
   const {
-    sourceChainDetails: { sourceChain }
+    sourceChainDetails: { sourceChain },
+    targetChainDetails: { targetChain }
   } = useSourceTarget();
 
-  const value = account?.address || '';
+  useEffect(() => {
+    if (!chains.length) {
+      setChains([sourceChain, targetChain]);
+    }
+  }, [chains.length, sourceChain, targetChain]);
 
-  const onChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setCurrentAccount(event.target.value as string);
+  const value = account ? encodeAddress(account.address, getChainSS58(sourceChain)) : '';
+
+  const onChange = (value: string, chain: string) => {
+    setCurrentAccount(value, chain);
   };
 
-  if (!accounts.length) {
-    return null;
-  }
-
-  const formatedAccounts = formatOptions(accounts);
-
-  const renderAccounts = ({ formatedAccounts, chain }: any) => {
+  const renderAccounts = (chain: string) => {
+    const formatedAccounts = formatAccounts(accounts, chain);
     const items = formatedAccounts.map(({ text, value, key }: any) => (
-      <MenuItem key={key} value={value}>
+      <MenuItem
+        key={key}
+        value={value}
+        onClick={() => {
+          onChange(value, chain);
+        }}
+      >
         <Account text={text} value={value} showDerivedBalance />
       </MenuItem>
     ));
     return [<SubHeader key={chain} chain={chain} />, items];
   };
 
-  const Input = () => {
+  const AccountSelected = () => {
     if (account) {
       const text = (account.meta.name as string).toLocaleUpperCase();
       return <Account text={text} value={value} />;
@@ -81,17 +84,20 @@ const Accounts = ({ className }: Props) => {
       <FormControl variant="outlined" className="formControl">
         <Select
           value={value}
-          onChange={onChange}
           name="name"
           inputProps={{
             id: 'name-native-error'
           }}
-          renderValue={(): React.ReactNode => <Input />}
+          renderValue={(): React.ReactNode => <AccountSelected />}
         >
-          {renderAccounts({ chain: sourceChain, formatedAccounts })}
+          {chains.map((chain) => renderAccounts(chain))}
         </Select>
       </FormControl>
-      {derivedAccount && <Account text="Derived Account" value={derivedAccount} />}
+      {derivedAccount && (
+        <div className="formControl">
+          <Account text="Derived Account" value={derivedAccount} />
+        </div>
+      )}
     </Container>
   );
 };
@@ -99,7 +105,7 @@ const Accounts = ({ className }: Props) => {
 export default styled(Accounts)`
   margin: 40px 0;
   .formControl {
-    min-width: 700px;
+    width: 700px;
   }
   .chainSelect {
     font-size: 18px;

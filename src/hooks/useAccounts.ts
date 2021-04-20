@@ -15,24 +15,29 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import type { KeyringPair } from '@polkadot/keyring/types';
+import { encodeAddress } from '@polkadot/util-crypto';
 import { useEffect, useState } from 'react';
 
 import { AccountActionCreators } from '../actions/accountActions';
+import { SourceTargetActionsCreators } from '../actions/sourceTargetActions';
 import { useUpdateAccountContext } from '../contexts/AccountContextProvider';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useKeyringContext } from '../contexts/KeyringContextProvider';
+import { useUpdateSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useDerivedAccount from '../hooks/useDerivedAccount';
+import getChainSS58 from '../util/getSS58';
 interface Accounts {
   account: KeyringPair | null;
   accounts: Array<KeyringPair> | [];
   derivedAccount: string | null;
-  setCurrentAccount: (value: string) => void;
+  setCurrentAccount: (value: string, chain: string) => void;
 }
 
 const useAccounts = (): Accounts => {
   const { keyringPairs, keyringPairsReady } = useKeyringContext();
   const [accounts, setAccounts] = useState<Array<KeyringPair> | []>([]);
   const { dispatchAccount } = useUpdateAccountContext();
+  const { dispatchChangeSourceTarget } = useUpdateSourceTarget();
   const derivedAccount = useDerivedAccount();
   const { account } = useAccountContext();
 
@@ -42,9 +47,12 @@ const useAccounts = (): Accounts => {
     }
   }, [keyringPairsReady, keyringPairs, setAccounts]);
 
-  const setCurrentAccount = (value: string) => {
-    const account = accounts.find(({ address }) => address === value);
+  const setCurrentAccount = (value: string, chain: string) => {
+    const ss58Format = getChainSS58(chain);
+
+    const account = accounts.find(({ address }) => encodeAddress(address, ss58Format) === value);
     if (account) {
+      dispatchChangeSourceTarget(SourceTargetActionsCreators.switchChains(chain));
       dispatchAccount(AccountActionCreators.setAccount(account));
     }
   };
