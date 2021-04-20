@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import Backdrop from '@material-ui/core/Backdrop';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import React from 'react';
@@ -44,14 +42,6 @@ export function Main({ className }: Props) {
 
   const { dispatchChangeSourceTarget } = useUpdateSourceTarget();
   const onChangeSourceTarget = () => dispatchChangeSourceTarget(SourceTargetActionsCreators.switchChains());
-
-  if (!areApiLoading) {
-    return (
-      <Backdrop open>
-        <CircularProgress color="inherit" />
-      </Backdrop>
-    );
-  }
 
   return (
     <>
