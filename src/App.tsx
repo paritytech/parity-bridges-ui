@@ -14,14 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { SnackbarProvider } from 'notistack';
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import { Dimmer, Loader } from 'semantic-ui-react';
 
-import TopBar from './components/TopBar';
-import { getChainProviders } from './configs/substrateProviders';
-import { CHAIN_1, CHAIN_2 } from './configs/substrateProviders';
+import { CHAIN_1, CHAIN_2, getChainProviders } from './configs/substrateProviders';
 import { AccountContextProvider } from './contexts/AccountContextProvider';
 import { KeyringContextProvider } from './contexts/KeyringContextProvider';
 import { MessageContextProvider } from './contexts/MessageContext';
@@ -40,11 +39,13 @@ function App() {
     { apiConnection: apiChain2, chainName: CHAIN_2, polkadotjsUrl: providers[CHAIN_2].polkadotjsUrl }
   ];
 
-  if (!apiChain1.isApiReady || !apiChain2.isApiReady) {
+  const apiReady = apiChain1.isApiReady && apiChain2.isApiReady;
+
+  if (!apiReady) {
     return (
-      <Dimmer active>
-        <Loader />
-      </Dimmer>
+      <Backdrop open>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     );
   }
 
@@ -58,7 +59,6 @@ function App() {
                 <BrowserRouter>
                   <Switch>
                     <Route path={'/'}>
-                      <TopBar />
                       <Main />
                     </Route>
                   </Switch>

@@ -14,9 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
 import React from 'react';
-import { Container, Grid } from 'semantic-ui-react';
-import { Button, Dimmer, Icon, Loader } from 'semantic-ui-react';
+import { Button, Icon } from 'semantic-ui-react';
 import styled from 'styled-components';
 
 import { SourceTargetActionsCreators } from '../actions/sourceTargetActions';
@@ -42,64 +43,51 @@ export function Main({ className }: Props) {
   const { dispatchChangeSourceTarget } = useUpdateSourceTarget();
   const onChangeSourceTarget = () => dispatchChangeSourceTarget(SourceTargetActionsCreators.switchChains());
 
-  if (!areApiLoading) {
-    return (
-      <Dimmer active>
-        <Loader />
-      </Dimmer>
-    );
-  }
-
   return (
     <>
       <Container className={className}>
-        <Grid>
-          <Grid.Row>
-            <Grid.Column
-              width={5}
-            >{`${sourceChainDetails.sourceChain} => ${targetChainDetails.targetChain}`}</Grid.Column>
-          </Grid.Row>
-          <Grid.Row>
-            <Grid.Column width={1} />
-            <Grid.Column width={5}>
-              <DashboardCard chainDetail={ChainDetails.SOURCE} />
-            </Grid.Column>
-            <Grid.Column width={1}>
-              <div className="switchButton">
-                <Button disabled={!areApiLoading} onClick={onChangeSourceTarget}>
-                  <Icon fitted name="exchange" />
-                </Button>
-              </div>
-            </Grid.Column>
-            <Grid.Column width={5}>
-              <DashboardCard chainDetail={ChainDetails.TARGET} />
-            </Grid.Column>
-          </Grid.Row>
-          <Grid.Row>
-            <Grid.Column width={12}>
-              <Accounts />
-            </Grid.Column>
-          </Grid.Row>
-          <Grid.Row>
-            <Grid.Column width={12}>
-              <Remark />
-            </Grid.Column>
-          </Grid.Row>
-          <Grid.Row>
-            <Grid.Column width={12}>
-              <Transfer />
-            </Grid.Column>
-          </Grid.Row>
-          <Grid.Row>
-            <Grid.Column width={12}>
-              <CustomCall />
-            </Grid.Column>
-          </Grid.Row>
-          <Grid.Row>
-            <Grid.Column width={12}>
-              <Transactions />
-            </Grid.Column>
-          </Grid.Row>
+        <Grid container>
+          <Grid item md={5}>{`${sourceChainDetails.sourceChain} => ${targetChainDetails.targetChain}`}</Grid>
+        </Grid>
+        <Grid container>
+          <Grid item md={5}>
+            <DashboardCard chainDetail={ChainDetails.SOURCE} />
+          </Grid>
+          <Grid item md={1}>
+            <div className="switchButton">
+              <Button disabled={!areApiLoading} onClick={onChangeSourceTarget}>
+                <Icon fitted name="exchange" />
+              </Button>
+            </div>
+          </Grid>
+          <Grid item md={5}>
+            <DashboardCard chainDetail={ChainDetails.TARGET} />
+          </Grid>
+        </Grid>
+        <Grid container>
+          <Grid item md={12}>
+            <Accounts />
+          </Grid>
+        </Grid>
+        <Grid container>
+          <Grid item md={12}>
+            <Remark />
+          </Grid>
+        </Grid>
+        <Grid container>
+          <Grid item md={12}>
+            <Transfer />
+          </Grid>
+        </Grid>
+        <Grid container>
+          <Grid item md={12}>
+            <CustomCall />
+          </Grid>
+        </Grid>
+        <Grid container>
+          <Grid item md={12}>
+            <Transactions />
+          </Grid>
         </Grid>
       </Container>
       <SnackBar />

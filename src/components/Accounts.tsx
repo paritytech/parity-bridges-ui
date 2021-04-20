@@ -14,13 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import Container from '@material-ui/core/Container';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 import type { KeyringPair } from '@polkadot/keyring/types';
 import React from 'react';
-import { Container, Dropdown } from 'semantic-ui-react';
 import styled from 'styled-components';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useAccounts from '../hooks/useAccounts';
+import Account from './Account';
+import SubHeader from './SubHeader';
 
 interface Props {
   className?: string;
@@ -37,30 +43,66 @@ const formatOptions = (accounts: Array<KeyringPair>) =>
 const Accounts = ({ className }: Props) => {
   const { account, accounts, derivedAccount, setCurrentAccount } = useAccounts();
   const {
-    sourceChainDetails: { sourceChain },
-    targetChainDetails: { targetChain }
+    sourceChainDetails: { sourceChain }
   } = useSourceTarget();
 
   const value = account?.address || '';
 
-  const onChange = (evt: any, { value }: any) => {
-    setCurrentAccount(value);
+  const onChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setCurrentAccount(event.target.value as string);
+  };
+
+  if (!accounts.length) {
+    return null;
+  }
+
+  const formatedAccounts = formatOptions(accounts);
+
+  const renderAccounts = ({ formatedAccounts, chain }: any) => {
+    const items = formatedAccounts.map(({ text, value, key }: any) => (
+      <MenuItem key={key} value={value}>
+        <Account text={text} value={value} showDerivedBalance />
+      </MenuItem>
+    ));
+    return [<SubHeader key={chain} chain={chain} />, items];
+  };
+
+  const Input = () => {
+    if (account) {
+      const text = (account.meta.name as string).toLocaleUpperCase();
+      return <Account text={text} value={value} />;
+    }
+    return null;
   };
 
   return (
     <Container className={className}>
-      <h2>{sourceChain} Account</h2>
-      <Dropdown
-        value={value}
-        onChange={onChange}
-        placeholder="Select Account"
-        fluid
-        selection
-        options={formatOptions(accounts)}
-      />
-      <p>{derivedAccount && `Derived account on ${targetChain}: ${derivedAccount}`}</p>
+      <InputLabel id="demo-simple-select-label">{sourceChain} Account</InputLabel>
+      <FormControl variant="outlined" className="formControl">
+        <Select
+          value={value}
+          onChange={onChange}
+          name="name"
+          inputProps={{
+            id: 'name-native-error'
+          }}
+          renderValue={(): React.ReactNode => <Input />}
+        >
+          {renderAccounts({ chain: sourceChain, formatedAccounts })}
+        </Select>
+      </FormControl>
+      {derivedAccount && <Account text="Derived Account" value={derivedAccount} />}
     </Container>
   );
 };
 
-export default styled(Accounts)``;
+export default styled(Accounts)`
+  margin: 40px 0;
+  .formControl {
+    min-width: 700px;
+  }
+  .chainSelect {
+    font-size: 18px;
+    color: blue !important;
+  }
+`;

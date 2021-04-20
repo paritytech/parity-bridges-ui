@@ -14,8 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import Button from '@material-ui/core/Button';
+import Container from '@material-ui/core/Container';
+import TextField from '@material-ui/core/TextField';
 import React, { useState } from 'react';
-import { Button, Container, Input } from 'semantic-ui-react';
 import { Message } from 'semantic-ui-react';
 import styled from 'styled-components';
 
@@ -81,16 +83,14 @@ const CustomCall = ({ className }: Props) => {
       <h2>Custom Call</h2>
       <Container className={className}>
         <div>
-          <p>Call</p>
-          <Input onChange={onChange} value={customCallInput} />
+          <TextField onChange={onChange} value={customCallInput} label="Call" variant="outlined" />
           <p>{error && `${error}`}</p>
         </div>
         <br />
         <div>
-          <p>Weight</p>
-          <Input onChange={onWeightChange} value={weightInput} />
+          <TextField onChange={onWeightChange} value={weightInput} label="Weight" variant="outlined" />
 
-          <Button disabled={isButtonDisabled()} onClick={sendLaneMessage}>
+          <Button variant="contained" disabled={isButtonDisabled()} onClick={sendLaneMessage}>
             Send Custom Call
           </Button>
         </div>

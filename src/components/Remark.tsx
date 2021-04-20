@@ -14,8 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import Button from '@material-ui/core/Button';
+import Container from '@material-ui/core/Container';
+import TextField from '@material-ui/core/TextField';
 import React, { useState } from 'react';
-import { Button, Container, Input } from 'semantic-ui-react';
 import styled from 'styled-components';
 
 import { useTransactionContext } from '../contexts/TransactionContext';
@@ -46,12 +48,13 @@ const Remark = ({ className }: Props) => {
     return null;
   }
 
+  // TO-DO: Remove <br /> by proper margins
   return (
     <>
       <h2>Remark</h2>
       <Container className={className}>
-        <Input onChange={onChange} value={remarkInput} />
-        <Button disabled={isButtonDisabled()} onClick={sendLaneMessage}>
+        <TextField onChange={onChange} value={remarkInput} variant="outlined" />
+        <Button variant="contained" disabled={isButtonDisabled()} onClick={sendLaneMessage}>
           Send Remark
         </Button>
         <p>{estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
@@ -61,6 +64,7 @@ const Remark = ({ className }: Props) => {
 };
 
 export default styled(Remark)`
+  margin: 40px 0;
   display: flex !important;
   justify-content: start !important;
 `;
