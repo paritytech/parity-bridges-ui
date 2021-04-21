@@ -32,9 +32,6 @@ export default function AccountFormatFeedback({ receiverToDerive, targetChain, o
   const { isReceiverValid, receiverAddress } = useTransactionContext();
   const { formatFound, formattedAccount } = receiverToDerive;
 
-  console.log('isReceiverValid', isReceiverValid);
-  console.log('receiverToDerive', receiverToDerive);
-
   if (formatFound && !isReceiverValid && receiverAddress) {
     if (formatFound === INCORRECT_FORMAT) {
       return (

@@ -122,20 +122,20 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
                   );
                 })
                 .catch((e) => {
-                  logger.error(e);
+                  logger.error(e.message);
                   throw new Error('Issue reading block information.');
                 });
             }
           });
         }
         if (status.isFinalized) {
-          console.log(`Transaction included at blockHash ${status.asFinalized}`);
+          logger.info(`Transaction included at blockHash ${status.asFinalized}`);
           unsub();
         }
       });
     } catch (e) {
-      dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e }));
-      logger.error(e);
+      dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e.message }));
+      logger.error(e.message);
     } finally {
       setIsRunning(false);
     }

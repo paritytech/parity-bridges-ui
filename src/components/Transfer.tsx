@@ -74,7 +74,7 @@ const Transfer = ({ className }: Props) => {
   }
 
   // TO-DO: Remove <br /> by proper margins
-  console.log('Transfer', receiverToDerive);
+
   return (
     <>
       <h2>Transfer</h2>
