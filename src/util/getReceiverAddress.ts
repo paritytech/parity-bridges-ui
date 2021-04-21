@@ -16,6 +16,7 @@
 import { checkAddress } from '@polkadot/util-crypto';
 
 import { getChainConfigs } from '../configs/substrateProviders';
+import { INCORRECT_FORMAT } from '../constants';
 import getDeriveAccount from './getDeriveAccount';
 
 interface Props {
@@ -28,7 +29,7 @@ const getReceiverAddress = ({ receiverAddress, chain }: Props) => {
 
   try {
     const [validatedDerivedAcccount, rest] = checkAddress(receiverAddress, SS58Format);
-    let address = receiverAddress;
+    const address = receiverAddress;
     let formatFound;
     if (!validatedDerivedAcccount) {
       const parts = rest?.split(',');
@@ -48,20 +49,15 @@ const getReceiverAddress = ({ receiverAddress, chain }: Props) => {
         address: receiverAddress,
         bridgeId
       });
-      address = formattedAccount;
+
+      return { address: formattedAccount, formatFound, isReceiverValid: false };
     }
-    return { address, formatFound };
+    return { address, formatFound, isReceiverValid: true };
   } catch (e) {
-    console.log('----');
-    console.log('receiverAddress', receiverAddress);
     if (receiverAddress) {
-      console.log('throw error');
-
-      throw new Error('INCORRECT-FORMAT');
+      throw new Error(INCORRECT_FORMAT);
     }
-    console.log('NOT throw error');
-
-    return { address: '', formatFound: null };
+    return { address: '', formatFound: null, isReceiverValid: false };
   }
 };
 

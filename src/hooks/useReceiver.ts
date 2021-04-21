@@ -15,13 +15,15 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { TransactionActionCreators } from '../actions/transactionActions';
+import { INCORRECT_FORMAT } from '../constants';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import getReceiverAddress from '../util/getReceiverAddress';
 import logger from '../util/logger';
 
-export default function useConnectedReceiver() {
+export default function useReceiver() {
   const { dispatchTransaction } = useUpdateTransactionContext();
+
   const {
     targetChainDetails: { targetChain }
   } = useSourceTarget();
@@ -29,22 +31,27 @@ export default function useConnectedReceiver() {
   const setReceiverAddress = (address: string | null) =>
     dispatchTransaction(TransactionActionCreators.setReceiverAddress(address));
 
-  const setConnectedReceiver = (address: string | null) => setReceiverAddress(address);
+  const setReceiverValidation = (value: boolean) =>
+    dispatchTransaction(TransactionActionCreators.setReceiverValidation(value));
+
+  const setReceiver = (address: string | null) => setReceiverAddress(address);
 
   const validateAccount = (receiver: string) => {
     try {
-      const { address, formatFound } = getReceiverAddress({
+      const { address, formatFound, isReceiverValid } = getReceiverAddress({
         chain: targetChain,
         receiverAddress: receiver
       });
+      setReceiverValidation(isReceiverValid);
       return { formatFound, formattedAccount: address };
     } catch (e) {
+      setReceiverValidation(false);
       logger.error(e);
-      if (e.message === 'INCORRECT-FORMAT') {
+      if (e.message === INCORRECT_FORMAT) {
         return { formatFound: e.message, formattedAccount: receiver };
       }
     }
   };
 
-  return { setConnectedReceiver, validateAccount };
+  return { setReceiver, setReceiverValidation, validateAccount };
 }

@@ -17,4 +17,4 @@
 export const SOURCE = 'sourceChain';
 export const TARGET = 'targetChain';
 
-export const ESTIMATED_FEE_RUNTIME_API_CALL = 'OutboundLaneApi_estimate_message_delivery_and_dispatch_fee';
+export const INCORRECT_FORMAT = 'INCORRECT_FORMAT';

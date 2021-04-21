@@ -45,7 +45,7 @@ export default function useTransactionType({ input, type, weightInput }: Props):
   } = useSourceTarget();
 
   const { account } = useAccountContext();
-  const { receiverAddress } = useTransactionContext();
+  const { receiverAddress, isReceiverValid } = useTransactionContext();
 
   const [values, setValues] = useState<TransactionFunction>({
     call: null,
@@ -64,7 +64,7 @@ export default function useTransactionType({ input, type, weightInput }: Props):
             weight = (await sourceApi.tx.system.remark(input).paymentInfo(account!)).weight.toNumber();
             break;
           case TransactionTypes.TRANSFER:
-            if (receiverAddress) {
+            if (receiverAddress && isReceiverValid) {
               call = (await targetApi.tx.balances.transfer(receiverAddress, input)).toU8a();
               weight = (
                 await sourceApi.tx.balances.transfer(receiverAddress, input).paymentInfo(account)
@@ -85,7 +85,7 @@ export default function useTransactionType({ input, type, weightInput }: Props):
     if (areApiReady) {
       getValues();
     }
-  }, [account, areApiReady, input, receiverAddress, sourceApi, targetApi, type, weightInput]);
+  }, [account, areApiReady, input, isReceiverValid, receiverAddress, sourceApi, targetApi, type, weightInput]);
 
   return values;
 }

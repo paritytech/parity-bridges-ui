@@ -20,8 +20,8 @@ import styled from 'styled-components';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
-import useConnectedReceiver from '../hooks/useConnectedReceiver';
 import useLoadingApi from '../hooks/useLoadingApi';
+import useReceiver from '../hooks/useReceiver';
 import useSendMessage from '../hooks/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
 import AccountFormatFeedback from './AccountFormatFeedback';
@@ -34,7 +34,7 @@ const Transfer = ({ className }: Props) => {
   const [isRunning, setIsRunning] = useState(false);
   const [transferInput, setTransferInput] = useState('0');
   const [receiverToDerive, setReceiverToDerive] = useState({ formatFound: '', formattedAccount: '' });
-  const { setConnectedReceiver, validateAccount } = useConnectedReceiver();
+  const { setReceiver, validateAccount, setReceiverValidation } = useReceiver();
 
   const areApiReady = useLoadingApi();
 
@@ -56,8 +56,7 @@ const Transfer = ({ className }: Props) => {
 
   const onReceiverChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const receiver = event.target.value;
-    console.log('onReceiverChange receiver', receiver);
-    setConnectedReceiver(receiver);
+    setReceiver(receiver);
     const { formattedAccount, formatFound } = validateAccount(receiver)!;
     if (formatFound) {
       setReceiverToDerive({ formatFound, formattedAccount });
@@ -65,8 +64,9 @@ const Transfer = ({ className }: Props) => {
   };
 
   const onDeriveReceiver = () => {
-    setConnectedReceiver(receiverToDerive.formattedAccount);
+    setReceiver(receiverToDerive.formattedAccount);
     setReceiverToDerive({ formatFound: '', formattedAccount: '' });
+    setReceiverValidation(true);
   };
 
   if (!areApiReady) {
@@ -90,7 +90,6 @@ const Transfer = ({ className }: Props) => {
         </div>
         <AccountFormatFeedback
           receiverToDerive={receiverToDerive}
-          receiverAddress={receiverAddress}
           targetChain={targetChain}
           onDeriveReceiver={onDeriveReceiver}
         />

@@ -16,26 +16,27 @@
 
 import Button from '@material-ui/core/Button';
 import React from 'react';
+
+import { INCORRECT_FORMAT } from '../constants';
+import { useTransactionContext } from '../contexts/TransactionContext';
 interface Props {
   receiverToDerive: {
     formatFound: string;
     formattedAccount: string;
   };
-  receiverAddress: string | null;
   targetChain: string;
   onDeriveReceiver: () => void;
 }
 
-export default function AccountFormatFeedback({
-  receiverAddress,
-  receiverToDerive,
-  targetChain,
-  onDeriveReceiver
-}: Props) {
+export default function AccountFormatFeedback({ receiverToDerive, targetChain, onDeriveReceiver }: Props) {
+  const { isReceiverValid, receiverAddress } = useTransactionContext();
   const { formatFound, formattedAccount } = receiverToDerive;
-  console.log('AccountFormatFeedback', receiverToDerive);
-  if (formatFound && receiverAddress) {
-    if (formatFound === 'INCORRECT-FORMAT') {
+
+  console.log('isReceiverValid', isReceiverValid);
+  console.log('receiverToDerive', receiverToDerive);
+
+  if (formatFound && !isReceiverValid && receiverAddress) {
+    if (formatFound === INCORRECT_FORMAT) {
       return (
         <p>
           Address provided does not seem to belong to any recognized chain for this bridge. Please provide a valid
@@ -45,7 +46,7 @@ export default function AccountFormatFeedback({
     }
     return (
       <div>
-        <p>The address entered belongs to {formatFound} chain.</p>
+        <p>The address provided has a format from a {formatFound} chain.</p>
         <p>
           Please confirm if you want to transfer to the corresponding {targetChain} account {formattedAccount}
         </p>

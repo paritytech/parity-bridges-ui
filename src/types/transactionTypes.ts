@@ -19,6 +19,7 @@ import { TransactionActionTypes } from '../actions/transactionActions';
 export interface TransactionContextType {
   estimatedFee: string | null;
   receiverAddress: string | null;
+  isReceiverValid: boolean;
   transactions: Array<TransanctionStatus>;
 }
 
@@ -49,6 +50,7 @@ export interface TransanctionStatus extends UpdatedTransanctionStatus {
 export interface TransactionState {
   estimatedFee: string | null;
   receiverAddress: string | null;
+  isReceiverValid: boolean;
   transactions: Array<TransanctionStatus>;
 }
 

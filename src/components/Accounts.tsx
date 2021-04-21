@@ -21,7 +21,7 @@ import styled from 'styled-components';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useAccounts from '../hooks/useAccounts';
-import useConnectedReceiver from '../hooks/useConnectedReceiver';
+import useReceiver from '../hooks/useReceiver';
 import formatAccounts from '../util/formatAccounts';
 import getChainSS58 from '../util/getSS58';
 import Account from './Account';
@@ -38,7 +38,7 @@ const Accounts = ({ className }: Props) => {
     sourceChainDetails: { sourceChain },
     targetChainDetails: { targetChain }
   } = useSourceTarget();
-  const { setConnectedReceiver } = useConnectedReceiver();
+  const { setReceiver } = useReceiver();
 
   useEffect(() => {
     if (!chains.length) {
@@ -50,7 +50,7 @@ const Accounts = ({ className }: Props) => {
 
   const onChange = (value: string, chain: string) => {
     setCurrentAccount(value, chain);
-    setConnectedReceiver(null);
+    setReceiver(null);
   };
   const renderAccounts = (chain: string) => {
     const formatedAccounts = formatAccounts(accounts, chain);
