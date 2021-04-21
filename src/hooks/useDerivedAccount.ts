@@ -17,7 +17,7 @@
 import { getChainConfigs } from '../configs/substrateProviders';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import getDerivedAccount from '../util/getDeriveAccount';
+import getDeriveAccount from '../util/getDeriveAccount';
 
 const useDerivedAccount = () => {
   const {
@@ -38,7 +38,7 @@ const useDerivedAccount = () => {
     address: account.address,
     bridgeId
   };
-  return getDerivedAccount(toDerive);
+  return getDeriveAccount(toDerive);
 };
 
 export default useDerivedAccount;

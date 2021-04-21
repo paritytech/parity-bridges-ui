@@ -29,9 +29,7 @@ interface Props {
 }
 
 const Account = ({ className, text, value, showDerivedBalance = false }: Props) => {
-  const results = useBalance(value, true);
-  const source = results[0];
-  const target = results[1];
+  const [source, target] = useBalance(value, true);
 
   return (
     <Container className={className}>
@@ -49,11 +47,11 @@ const Account = ({ className, text, value, showDerivedBalance = false }: Props) 
 
       <div className="balances">
         <div className="balance">
-          <p>{source ? source[0] : '-'}</p>
+          <p>{source ? source.formattedBalance : '-'}</p>
         </div>
         {showDerivedBalance && (
           <div className="balance">
-            <p>{target ? target[0] : '-'}</p>
+            <p>{target ? target.formattedBalance : '-'}</p>
           </div>
         )}
       </div>

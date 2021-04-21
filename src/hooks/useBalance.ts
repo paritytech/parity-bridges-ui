@@ -13,75 +13,91 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
+import { ApiPromise } from '@polkadot/api';
+import { VoidFn } from '@polkadot/api/types';
 import { Balance } from '@polkadot/types/interfaces';
 import { formatBalance } from '@polkadot/util';
 import BN from 'bn.js';
 import { useEffect, useState } from 'react';
 
+import { MessageActionsCreators } from '../actions/messageActions';
+import { getChainConfigs } from '../configs/substrateProviders';
+import { useUpdateMessageContext } from '../contexts/MessageContext';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
+import getDeriveAccount from '../util/getDeriveAccount';
+import logger from '../util/logger';
 
-type State = [string, Balance, boolean, string];
+type State = {
+  chainTokens: string;
+  formattedBalance: string;
+  free: Balance;
+};
 
 const ZERO = new BN(0);
 
-const useBalance = (address: string, providedSi: boolean = false): State[] => {
-  const [sourceState, setSourceState] = useState<State>(['0', new BN(ZERO) as Balance, true, '-']);
-  const [targetState, setTargetState] = useState<State>(['0', new BN(ZERO) as Balance, true, '-']);
+const initValues = {
+  chainTokens: '-',
+  formattedBalance: '0',
+  free: new BN(ZERO) as Balance
+};
 
+const useBalance = (address: string, providedSi: boolean = false): State[] => {
+  const { dispatchMessage } = useUpdateMessageContext();
+  const [sourceState, setSourceState] = useState<State>(initValues);
+  const [targetState, setTargetState] = useState<State>(initValues);
   const {
     sourceChainDetails: {
-      sourceApiConnection: { api: sourceApi }
+      sourceApiConnection: { api: sourceApi },
+      sourceChain
     },
     targetChainDetails: {
-      targetApiConnection: { api: targetApi }
+      targetApiConnection: { api: targetApi },
+      targetChain
     }
   } = useSourceTarget();
 
-  useEffect((): (() => void) => {
-    let unsubscribeSource: null | (() => void) = null;
-    let unsubscribeTarget: null | (() => void) = null;
-    if (address) {
-      sourceApi.query.system
-        .account(address, ({ data }): void => {
-          setSourceState([
-            formatBalance(data.free, {
-              decimals: sourceApi.registry.chainDecimals[0],
-              forceUnit: '-',
-              withSi: providedSi
-            }),
-            data.free,
-            data.free.isZero(),
-            data.free.registry.chainTokens[0]
-          ]);
-        })
-        .then((u): void => {
-          unsubscribeSource = u;
-        })
-        .catch(console.error);
+  const chainsConfigs = getChainConfigs();
+  const { SS58Format } = chainsConfigs[targetChain];
+  const { bridgeId } = chainsConfigs[sourceChain];
+  const derivedAddress = getDeriveAccount({
+    SS58Format,
+    address: address,
+    bridgeId
+  });
 
-      targetApi.query.system
-        .account(address, ({ data }): void => {
-          setTargetState([
-            formatBalance(data.free, {
-              decimals: sourceApi.registry.chainDecimals[0],
+  useEffect((): (() => void) => {
+    const getBalance = async (api: ApiPromise, address: string, setState: any): Promise<VoidFn> => {
+      try {
+        const u = await api.query.system.account(address, ({ data }): void => {
+          setState({
+            chainTokens: data.free.registry.chainTokens[0],
+            formattedBalance: formatBalance(data.free, {
+              decimals: api.registry.chainDecimals[0],
               forceUnit: '-',
               withSi: providedSi
             }),
-            data.free,
-            data.free.isZero(),
-            data.free.registry.chainTokens[0]
-          ]);
-        })
-        .then((u): void => {
-          unsubscribeTarget = u;
-        })
-        .catch(console.error);
-    }
-    return (): void => {
-      unsubscribeSource && unsubscribeSource();
-      unsubscribeTarget && unsubscribeTarget();
+            free: data.free
+          });
+        });
+        return Promise.resolve(u);
+      } catch (e) {
+        dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e }));
+        logger.error(e);
+        return Promise.reject();
+      }
     };
-  }, [address, sourceApi, targetApi, providedSi]);
+
+    let unsubscribeSource: Promise<VoidFn>;
+    let unsubscribeTarget: Promise<VoidFn>;
+    if (address) {
+      unsubscribeSource = getBalance(sourceApi, address, setSourceState);
+      unsubscribeTarget = getBalance(targetApi, derivedAddress, setTargetState);
+    }
+    return async (): Promise<void> => {
+      unsubscribeSource && (await unsubscribeSource)();
+      unsubscribeTarget && (await unsubscribeTarget)();
+    };
+  }, [address, derivedAddress, sourceApi, targetApi, providedSi, dispatchMessage]);
 
   return [sourceState, targetState];
 };
