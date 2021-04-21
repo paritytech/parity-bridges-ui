@@ -20,18 +20,21 @@ import { ChainDetails, SourceTargetAction, SourceTargetState } from '../types/so
 export default function sourceTargetReducer(state: SourceTargetState, action: SourceTargetAction): SourceTargetState {
   switch (action.type) {
     case SourceTargetActionsTypes.SWAP_CHAINS: {
-      return {
-        [ChainDetails.SOURCE]: {
-          sourceApiConnection: state[ChainDetails.TARGET].targetApiConnection,
-          sourceChain: state[ChainDetails.TARGET].targetChain,
-          sourcePolkadotjsUrl: state[ChainDetails.TARGET].targetPolkadotjsUrl
-        },
-        [ChainDetails.TARGET]: {
-          targetApiConnection: state[ChainDetails.SOURCE].sourceApiConnection,
-          targetChain: state[ChainDetails.SOURCE].sourceChain,
-          targetPolkadotjsUrl: state[ChainDetails.SOURCE].sourcePolkadotjsUrl
-        }
-      };
+      if (action.payload!.chain !== state[ChainDetails.SOURCE].sourceChain) {
+        return {
+          [ChainDetails.SOURCE]: {
+            sourceApiConnection: state[ChainDetails.TARGET].targetApiConnection,
+            sourceChain: state[ChainDetails.TARGET].targetChain,
+            sourcePolkadotjsUrl: state[ChainDetails.TARGET].targetPolkadotjsUrl
+          },
+          [ChainDetails.TARGET]: {
+            targetApiConnection: state[ChainDetails.SOURCE].sourceApiConnection,
+            targetChain: state[ChainDetails.SOURCE].sourceChain,
+            targetPolkadotjsUrl: state[ChainDetails.SOURCE].sourcePolkadotjsUrl
+          }
+        };
+      }
+      return state;
     }
     default: {
       throw new Error(`Unhandled type: ${action.type}`);

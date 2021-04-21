@@ -17,10 +17,9 @@
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import React from 'react';
-import { Button, Icon } from 'semantic-ui-react';
+import { Icon } from 'semantic-ui-react';
 import styled from 'styled-components';
 
-import { SourceTargetActionsCreators } from '../actions/sourceTargetActions';
 import Accounts from '../components/Accounts';
 import CustomCall from '../components/CustomCall';
 import DashboardCard from '../components/DashboardCard';
@@ -28,8 +27,7 @@ import Remark from '../components/Remark';
 import SnackBar from '../components/SnackBar';
 import Transactions from '../components/Transactions';
 import Transfer from '../components/Transfer';
-import { useSourceTarget, useUpdateSourceTarget } from '../contexts/SourceTargetContextProvider';
-import useLoadingApi from '../hooks/useLoadingApi';
+import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { ChainDetails } from '../types/sourceTargetTypes';
 
 interface Props {
@@ -37,11 +35,7 @@ interface Props {
 }
 
 export function Main({ className }: Props) {
-  const areApiLoading = useLoadingApi();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
-
-  const { dispatchChangeSourceTarget } = useUpdateSourceTarget();
-  const onChangeSourceTarget = () => dispatchChangeSourceTarget(SourceTargetActionsCreators.switchChains());
 
   return (
     <>
@@ -55,9 +49,7 @@ export function Main({ className }: Props) {
           </Grid>
           <Grid item md={1}>
             <div className="switchButton">
-              <Button disabled={!areApiLoading} onClick={onChangeSourceTarget}>
-                <Icon fitted name="exchange" />
-              </Button>
+              <Icon fitted name="exchange" />
             </div>
           </Grid>
           <Grid item md={5}>
