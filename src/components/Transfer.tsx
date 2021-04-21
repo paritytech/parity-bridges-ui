@@ -18,11 +18,13 @@ import { Button, Container, TextField } from '@material-ui/core';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
+import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import useConnectedReceiver from '../hooks/useConnectedReceiver';
 import useLoadingApi from '../hooks/useLoadingApi';
 import useSendMessage from '../hooks/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
+import AccountFormatFeedback from './AccountFormatFeedback';
 
 interface Props {
   className?: string;
@@ -31,13 +33,15 @@ interface Props {
 const Transfer = ({ className }: Props) => {
   const [isRunning, setIsRunning] = useState(false);
   const [transferInput, setTransferInput] = useState('0');
-  const [receiverInput, setReceiverInput] = useState('');
+  const [receiverToDerive, setReceiverToDerive] = useState({ formatFound: '', formattedAccount: '' });
+  const { setConnectedReceiver, validateAccount } = useConnectedReceiver();
 
-  const [receiverMessage, setReceiverMessage] = useState<string | null>();
-  const setConnectedReceiver = useConnectedReceiver();
   const areApiReady = useLoadingApi();
 
   const { estimatedFee, receiverAddress } = useTransactionContext();
+  const {
+    targetChainDetails: { targetChain }
+  } = useSourceTarget();
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
     input: transferInput,
@@ -52,11 +56,17 @@ const Transfer = ({ className }: Props) => {
 
   const onReceiverChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const receiver = event.target.value;
-    setReceiverInput(receiver);
-    setConnectedReceiver({
-      receiver,
-      setReceiverMessage
-    });
+    console.log('onReceiverChange receiver', receiver);
+    setConnectedReceiver(receiver);
+    const { formattedAccount, formatFound } = validateAccount(receiver)!;
+    if (formatFound) {
+      setReceiverToDerive({ formatFound, formattedAccount });
+    }
+  };
+
+  const onDeriveReceiver = () => {
+    setConnectedReceiver(receiverToDerive.formattedAccount);
+    setReceiverToDerive({ formatFound: '', formattedAccount: '' });
   };
 
   if (!areApiReady) {
@@ -64,15 +74,26 @@ const Transfer = ({ className }: Props) => {
   }
 
   // TO-DO: Remove <br /> by proper margins
-
+  console.log('Transfer', receiverToDerive);
   return (
     <>
       <h2>Transfer</h2>
       <Container className={className}>
         <div className="receiver">
-          <TextField fullWidth onChange={onReceiverChange} value={receiverInput} label="Receiver" variant="outlined" />
+          <TextField
+            fullWidth
+            onChange={onReceiverChange}
+            value={receiverAddress}
+            label="Receiver"
+            variant="outlined"
+          />
         </div>
-        <p>{receiverMessage && `${receiverMessage}`}</p>
+        <AccountFormatFeedback
+          receiverToDerive={receiverToDerive}
+          receiverAddress={receiverAddress}
+          targetChain={targetChain}
+          onDeriveReceiver={onDeriveReceiver}
+        />
 
         <br />
         <TextField onChange={onChange} value={transferInput} label="Sender" variant="outlined" />

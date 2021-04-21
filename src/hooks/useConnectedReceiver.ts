@@ -20,32 +20,31 @@ import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import getReceiverAddress from '../util/getReceiverAddress';
 import logger from '../util/logger';
 
-interface Props {
-  setReceiverMessage: (message: string) => void;
-  receiver: string;
-}
-
-export default function useConnectedReceiver(): Function {
+export default function useConnectedReceiver() {
   const { dispatchTransaction } = useUpdateTransactionContext();
   const {
     targetChainDetails: { targetChain }
   } = useSourceTarget();
 
-  const setConnectedReceiver = ({ setReceiverMessage, receiver }: Props) => {
-    setReceiverMessage('');
+  const setReceiverAddress = (address: string | null) =>
+    dispatchTransaction(TransactionActionCreators.setReceiverAddress(address));
+
+  const setConnectedReceiver = (address: string | null) => setReceiverAddress(address);
+
+  const validateAccount = (receiver: string) => {
     try {
-      const receiverAddress = getReceiverAddress({ chain: targetChain, receiverAddress: receiver });
-      if (receiverAddress !== receiver) {
-        setReceiverMessage(`The format for the account is incorrect, funds will be sent to ${receiverAddress}`);
-      }
-      dispatchTransaction(TransactionActionCreators.setReceiverAddress(receiverAddress));
+      const { address, formatFound } = getReceiverAddress({
+        chain: targetChain,
+        receiverAddress: receiver
+      });
+      return { formatFound, formattedAccount: address };
     } catch (e) {
       logger.error(e);
       if (e.message === 'INCORRECT-FORMAT') {
-        setReceiverMessage('Invalid address, please provide a valid address');
+        return { formatFound: e.message, formattedAccount: receiver };
       }
     }
   };
 
-  return setConnectedReceiver;
+  return { setConnectedReceiver, validateAccount };
 }

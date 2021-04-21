@@ -29,7 +29,7 @@ const estimateFee = (estimatedFee: string) => ({
   type: TransactionActionTypes.SET_ESTIMATED_FEE
 });
 
-const setReceiverAddress = (receiverAddress: string) => ({
+const setReceiverAddress = (receiverAddress: string | null) => ({
   payload: { receiverAddress },
   type: TransactionActionTypes.SET_RECEIVER_ADDRESS
 });
