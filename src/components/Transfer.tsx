@@ -30,10 +30,12 @@ interface Props {
   className?: string;
 }
 
+const emptyReceiverToDerive = { formatFound: '', formattedAccount: '' };
+
 const Transfer = ({ className }: Props) => {
   const [isRunning, setIsRunning] = useState(false);
   const [transferInput, setTransferInput] = useState('0');
-  const [receiverToDerive, setReceiverToDerive] = useState({ formatFound: '', formattedAccount: '' });
+  const [receiverToDerive, setReceiverToDerive] = useState(emptyReceiverToDerive);
   const { setReceiver, validateAccount, setReceiverValidation } = useReceiver();
 
   const areApiReady = useLoadingApi();
@@ -65,7 +67,7 @@ const Transfer = ({ className }: Props) => {
 
   const onDeriveReceiver = () => {
     setReceiver(receiverToDerive.formattedAccount);
-    setReceiverToDerive({ formatFound: '', formattedAccount: '' });
+    setReceiverToDerive(emptyReceiverToDerive);
     setReceiverValidation(true);
   };
 
