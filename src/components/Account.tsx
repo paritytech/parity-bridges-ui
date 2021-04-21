@@ -25,11 +25,12 @@ interface Props {
   value: string;
   text: string;
   className?: string;
+  chain?: string | undefined;
   showDerivedBalance?: boolean;
 }
 
-const Account = ({ className, text, value, showDerivedBalance = false }: Props) => {
-  const [source, target] = useBalance(value, true);
+const Account = ({ className, text, value, chain, showDerivedBalance = false }: Props) => {
+  const [source, target] = useBalance(text, value, chain, true);
 
   return (
     <Container className={className}>

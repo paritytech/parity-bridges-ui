@@ -41,7 +41,7 @@ const initValues = {
   free: new BN(ZERO) as Balance
 };
 
-const useBalance = (address: string, providedSi: boolean = false): State[] => {
+const useBalance = (name: string, address: string, chain: string | undefined, providedSi: boolean = false): State[] => {
   const { dispatchMessage } = useUpdateMessageContext();
   const [sourceState, setSourceState] = useState<State>(initValues);
   const [targetState, setTargetState] = useState<State>(initValues);
@@ -56,16 +56,19 @@ const useBalance = (address: string, providedSi: boolean = false): State[] => {
     }
   } = useSourceTarget();
 
-  const chainsConfigs = getChainConfigs();
-  const { SS58Format } = chainsConfigs[targetChain];
-  const { bridgeId } = chainsConfigs[sourceChain];
-  const derivedAddress = getDeriveAccount({
-    SS58Format,
-    address: address,
-    bridgeId
-  });
-
   useEffect((): (() => void) => {
+    let unsubscribeSource: Promise<VoidFn>;
+    let unsubscribeTarget: Promise<VoidFn>;
+
+    const chainsConfigs = getChainConfigs();
+    const { SS58Format } = chainsConfigs[chain === sourceChain ? targetChain : sourceChain];
+    const { bridgeId } = chainsConfigs[chain === sourceChain ? sourceChain : targetChain];
+    const derivedAddress = getDeriveAccount({
+      SS58Format,
+      address: address,
+      bridgeId
+    });
+
     const getBalance = async (api: ApiPromise, address: string, setState: any): Promise<VoidFn> => {
       try {
         const u = await api.query.system.account(address, ({ data }): void => {
@@ -81,15 +84,14 @@ const useBalance = (address: string, providedSi: boolean = false): State[] => {
         });
         return Promise.resolve(u);
       } catch (e) {
-        dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e }));
-        logger.error(e);
+        dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e.message }));
+        logger.error(e.message);
         return Promise.reject();
       }
     };
 
-    let unsubscribeSource: Promise<VoidFn>;
-    let unsubscribeTarget: Promise<VoidFn>;
     if (address) {
+      console.log('name: ', name, 'address', address, ' => derievedAddress', derivedAddress);
       unsubscribeSource = getBalance(sourceApi, address, setSourceState);
       unsubscribeTarget = getBalance(targetApi, derivedAddress, setTargetState);
     }
@@ -97,7 +99,7 @@ const useBalance = (address: string, providedSi: boolean = false): State[] => {
       unsubscribeSource && (await unsubscribeSource)();
       unsubscribeTarget && (await unsubscribeTarget)();
     };
-  }, [address, derivedAddress, sourceApi, targetApi, providedSi, dispatchMessage]);
+  }, [name, address, chain, sourceChain, targetChain, sourceApi, targetApi, providedSi, dispatchMessage]);
 
   return [sourceState, targetState];
 };
