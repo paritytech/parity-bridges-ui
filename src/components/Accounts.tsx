@@ -54,7 +54,6 @@ const Accounts = ({ className }: Props) => {
     setCurrentAccount(value, chain);
   };
   const renderAccounts = (chain: string) => {
-    console.log('chain is:', chain);
     const formatedAccounts = formatAccounts(accounts, chain);
     const items = formatedAccounts.map(({ text, value, key }: any) => (
       <MenuItem
