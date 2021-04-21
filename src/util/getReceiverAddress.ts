@@ -24,11 +24,35 @@ interface Props {
 }
 const getReceiverAddress = ({ receiverAddress, chain }: Props) => {
   const chainsConfigs = getChainConfigs();
+  console.log('chainsConfigs', chainsConfigs);
   const { SS58Format, bridgeId } = chainsConfigs[chain];
+
   try {
-    const [validatedDerivedAcccount] = checkAddress(receiverAddress, SS58Format);
+    const [validatedDerivedAcccount, rest] = checkAddress(receiverAddress, SS58Format);
+    console.log('validatedDerivedAcccount', validatedDerivedAcccount);
+    console.log('rest', rest);
     let address = receiverAddress;
     if (!validatedDerivedAcccount) {
+      const parts = rest?.split(',');
+      console.log('parts', parts);
+      console.log('parts![2]', parts![2]);
+      const prefix = parts![2].split(' ');
+      console.log('prefix:', prefix[2]);
+      let found;
+      Object.keys(chainsConfigs).map((key) => {
+        console.log('chainsConfigs[key].SS58Format', chainsConfigs[key].SS58Format);
+        console.log('parseInt(prefix[2])', parseInt(prefix[2]));
+
+        if (chainsConfigs[key].SS58Format === parseInt(prefix[2])) {
+          found = key;
+        }
+        if (parseInt(prefix[2]) === 42) {
+          found = 'Substrate';
+        }
+      });
+
+      console.log('chain found', found);
+
       const formattedAccount = getDeriveAccount({
         SS58Format,
         address: receiverAddress,
