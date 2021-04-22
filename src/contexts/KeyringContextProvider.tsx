@@ -49,7 +49,6 @@ export function KeyringContextProvider(props: KeyringContextProviderProps): Reac
       setKeyringStatus(KeyringStatuses.LOADING);
       try {
         const extExists = await web3Enable('Substrate Bridges UI');
-
         if (extExists.length === 0) {
           return;
         } else {
