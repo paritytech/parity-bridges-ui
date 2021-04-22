@@ -27,6 +27,7 @@ import Remark from '../components/Remark';
 import SnackBar from '../components/SnackBar';
 import Transactions from '../components/Transactions';
 import Transfer from '../components/Transfer';
+import { useKeyringContext } from '../contexts/KeyringContextProvider';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { ChainDetails } from '../types/sourceTargetTypes';
 
@@ -35,7 +36,22 @@ interface Props {
 }
 
 export function Main({ className }: Props) {
+  const { extensionExists, accountExists } = useKeyringContext();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
+
+  const proj = [];
+
+  if (!extensionExists) {
+    proj.push(<p className="messageNote">Connect to a wallet. Install polkadotjs extension</p>);
+  } else {
+    if (!accountExists) {
+      proj.push(
+        <p className="messageNote">There are no accounts in the extension. Please create one. Please create one</p>
+      );
+    } else {
+      proj.push(<Accounts />);
+    }
+  }
 
   return (
     <>
@@ -58,7 +74,7 @@ export function Main({ className }: Props) {
         </Grid>
         <Grid container>
           <Grid item md={12}>
-            <Accounts />
+            {proj}
           </Grid>
         </Grid>
         <Grid container>
@@ -93,5 +109,14 @@ export default styled(Main)`
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .messageNote {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    height: 50px;
+    width: 100%;
+    padding: 50px 0;
   }
 `;

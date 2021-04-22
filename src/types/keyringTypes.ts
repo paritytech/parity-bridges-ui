@@ -17,6 +17,8 @@
 import type { KeyringPair } from '@polkadot/keyring/types';
 
 export interface KeyringContextType {
+  accountExists: boolean;
+  extensionExists: boolean;
   keyringPairs: Array<KeyringPair>;
   keyringPairsReady: boolean;
 }
