@@ -14,8 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
+import { Container, Grid } from '@material-ui/core';
 import React from 'react';
 import { Icon } from 'semantic-ui-react';
 import styled from 'styled-components';
