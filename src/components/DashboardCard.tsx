@@ -18,7 +18,7 @@ import { Card, CardContent, Container } from '@material-ui/core';
 import React from 'react';
 import styled from 'styled-components';
 
-import { useDashboard } from '../hooks';
+import useDashboard from '../hooks/useDashboard';
 import { ChainDetails } from '../types/sourceTargetTypes';
 
 interface Props {

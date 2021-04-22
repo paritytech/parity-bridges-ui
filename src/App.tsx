@@ -25,7 +25,7 @@ import { KeyringContextProvider } from './contexts/KeyringContextProvider';
 import { MessageContextProvider } from './contexts/MessageContext';
 import { SourceTargetContextProvider } from './contexts/SourceTargetContextProvider';
 import { TransactionContextProvider } from './contexts/TransactionContext';
-import { useApiConnection } from './hooks';
+import { useApiConnection } from './hooks/useApiConnection';
 import Main from './screens/Main';
 
 const providers = getChainProviders();

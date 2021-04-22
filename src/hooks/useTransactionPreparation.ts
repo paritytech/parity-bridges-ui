@@ -21,7 +21,9 @@ import { TransactionActionCreators } from '../actions/transactionActions';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useUpdateTransactionContext } from '../contexts/TransactionContext';
-import { useLaneId, useLoadingApi, useTransactionType } from '../hooks';
+import useLaneId from '../hooks/useLaneId';
+import useLoadingApi from '../hooks/useLoadingApi';
+import useTransactionType from '../hooks/useTransactionType';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
 
 interface Props {

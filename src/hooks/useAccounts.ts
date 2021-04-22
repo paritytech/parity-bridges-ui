@@ -24,7 +24,7 @@ import { useUpdateAccountContext } from '../contexts/AccountContextProvider';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useKeyringContext } from '../contexts/KeyringContextProvider';
 import { useUpdateSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useDerivedAccount } from '../hooks';
+import useDerivedAccount from '../hooks/useDerivedAccount';
 import getChainSS58 from '../util/getSS58';
 interface Accounts {
   account: KeyringPair | null;

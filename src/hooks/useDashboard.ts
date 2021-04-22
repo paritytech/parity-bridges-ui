@@ -15,7 +15,10 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ChainDetails } from '../types/sourceTargetTypes';
-import { useBlocksInfo, useBridgedBlocks, useDashboardProfile, useMessagesLane } from '.';
+import useBlocksInfo from './useBlocksInfo';
+import useBridgedBlocks from './useBridgedBlocks';
+import useDashboardProfile from './useDashboardProfile';
+import useMessagesLane from './useMessagesLane';
 
 const useDashboard = (ChainDetail: ChainDetails) => {
   const { api, destination, local, isApiReady, polkadotjsUrl } = useDashboardProfile(ChainDetail);

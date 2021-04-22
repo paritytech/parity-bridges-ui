@@ -19,7 +19,9 @@ import BN from 'bn.js';
 import React, { useEffect, useState } from 'react';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useDashboard, useLaneId, useLoadingApi } from '../hooks';
+import useDashboard from '../hooks/useDashboard';
+import useLaneId from '../hooks/useLaneId';
+import useLoadingApi from '../hooks/useLoadingApi';
 import { ChainDetails } from '../types/sourceTargetTypes';
 import { Step, TransactionStatusEnum, TransanctionStatus } from '../types/transactionTypes';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';

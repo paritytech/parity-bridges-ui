@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Container } from '@material-ui/core';
-import { People } from '@material-ui/icons';
+import Container from '@material-ui/core/Container';
+import People from '@material-ui/icons/People';
 import React from 'react';
 import styled from 'styled-components';
 
-import { useBalance } from '../hooks';
+import useBalance from '../hooks/useBalance';
 
 interface Props {
   value: string;

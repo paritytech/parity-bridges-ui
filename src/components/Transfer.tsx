@@ -19,8 +19,9 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 
 import { useTransactionContext } from '../contexts/TransactionContext';
-import { useConnectedReceiver } from '../hooks';
-import { useLoadingApi, useSendMessage } from '../hooks';
+import useConnectedReceiver from '../hooks/useConnectedReceiver';
+import useLoadingApi from '../hooks/useLoadingApi';
+import useSendMessage from '../hooks/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
 
 interface Props {

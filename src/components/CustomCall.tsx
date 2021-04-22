@@ -21,7 +21,8 @@ import styled from 'styled-components';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
-import { useLoadingApi, useSendMessage } from '../hooks';
+import useLoadingApi from '../hooks/useLoadingApi';
+import useSendMessage from '../hooks/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
 interface Props {
   className?: string;

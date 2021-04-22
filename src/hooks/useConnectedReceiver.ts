@@ -25,7 +25,7 @@ interface Props {
   receiver: string;
 }
 
-function useConnectedReceiver(): Function {
+export default function useConnectedReceiver(): Function {
   const { dispatchTransaction } = useUpdateTransactionContext();
   const {
     targetChainDetails: { targetChain }
@@ -49,5 +49,3 @@ function useConnectedReceiver(): Function {
 
   return setConnectedReceiver;
 }
-
-export default useConnectedReceiver;
