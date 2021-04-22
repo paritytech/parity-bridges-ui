@@ -91,7 +91,6 @@ const useBalance = (name: string, address: string, chain: string | undefined, pr
     };
 
     if (address) {
-      console.log('name: ', name, 'address', address, ' => derievedAddress', derivedAddress);
       unsubscribeSource = getBalance(sourceApi, address, setSourceState);
       unsubscribeTarget = getBalance(targetApi, derivedAddress, setTargetState);
     }
