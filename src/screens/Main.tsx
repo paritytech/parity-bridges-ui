@@ -22,6 +22,7 @@ import styled from 'styled-components';
 import Accounts from '../components/Accounts';
 import CustomCall from '../components/CustomCall';
 import DashboardCard from '../components/DashboardCard';
+import ExtensionAccountCheck from '../components/ExtensionAccountCheck';
 import Remark from '../components/Remark';
 import SnackBar from '../components/SnackBar';
 import Transactions from '../components/Transactions';
@@ -33,7 +34,7 @@ interface Props {
   className?: string;
 }
 
-export function Main({ className }: Props) {
+function Main({ className }: Props) {
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
   return (
@@ -57,7 +58,7 @@ export function Main({ className }: Props) {
         </Grid>
         <Grid container>
           <Grid item md={12}>
-            <Accounts />
+            <ExtensionAccountCheck component={<Accounts />} />
           </Grid>
         </Grid>
         <Grid container>
