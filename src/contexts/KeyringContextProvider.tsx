@@ -51,8 +51,6 @@ export function KeyringContextProvider(props: KeyringContextProviderProps): Reac
         const extExists = await web3Enable('Substrate Bridges UI');
 
         if (extExists.length === 0) {
-          // no extension installed, or the user did not accept the authorization
-          // in this case we should inform the use and give a link to the extension
           return;
         } else {
           setExtensionExists(true);
