@@ -23,7 +23,8 @@ import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useAccounts from '../hooks/useAccounts';
 import formatAccounts from '../util/formatAccounts';
 import getChainSS58 from '../util/getSS58';
-import { Account, SubHeader } from '.';
+import Account from './Account';
+import SubHeader from './SubHeader';
 
 interface Props {
   className?: string;

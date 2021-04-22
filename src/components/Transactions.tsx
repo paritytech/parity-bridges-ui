@@ -25,7 +25,7 @@ import { useTransactionContext } from '../contexts/TransactionContext';
 import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import { TransactionStatusEnum, TransanctionStatus } from '../types/transactionTypes';
 import shortenItem from '../util/shortenItem';
-import { TransactionStatus } from '.';
+import TransactionStatus from './TransactionStatus';
 interface Props {
   className?: string;
 }

@@ -23,16 +23,17 @@ import useDashboard from '../hooks/useDashboard';
 import useLaneId from '../hooks/useLaneId';
 import useLoadingApi from '../hooks/useLoadingApi';
 import { ChainDetails } from '../types/sourceTargetTypes';
-import { Step, TransactionStatusEnum, TransanctionStatus } from '../types/transactionTypes';
+import { TransanctionStatus } from '../types/transactionTypes';
+import { Step, TransactionStatusEnum } from '../types/transactionTypes';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
-import { TransactionDisplay } from '.';
+import TransactionDisplay from './TransactionDisplay';
 
 interface Props {
   transaction: TransanctionStatus;
   onComplete: () => void;
 }
 
-const TransactionStatus = ({ transaction, onComplete }: Props) => {
+function TransactionStatus({ transaction, onComplete }: Props) {
   const [nonceOfTargetFinalizedBlock, setNonceOfTargetFinalizedBlock] = useState<null | number>(null);
   const [latestReceivedNonceRuntimeApi, setLatestReceivedNonceRuntimeApi] = useState(0);
   const [steps, setSteps] = useState<Array<Step>>([]);
@@ -161,6 +162,6 @@ const TransactionStatus = ({ transaction, onComplete }: Props) => {
   ]);
 
   return <TransactionDisplay steps={steps} transaction={transaction} />;
-};
+}
 
 export default TransactionStatus;

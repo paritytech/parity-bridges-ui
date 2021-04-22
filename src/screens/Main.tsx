@@ -19,7 +19,13 @@ import React from 'react';
 import { Icon } from 'semantic-ui-react';
 import styled from 'styled-components';
 
-import { Accounts, CustomCall, DashboardCard, Remark, SnackBar, Transactions, Transfer } from '../components';
+import Accounts from '../components/Accounts';
+import CustomCall from '../components/CustomCall';
+import DashboardCard from '../components/DashboardCard';
+import Remark from '../components/Remark';
+import SnackBar from '../components/SnackBar';
+import Transactions from '../components/Transactions';
+import Transfer from '../components/Transfer';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { ChainDetails } from '../types/sourceTargetTypes';
 
