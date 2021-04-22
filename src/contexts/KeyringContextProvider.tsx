@@ -58,7 +58,7 @@ export function KeyringContextProvider(props: KeyringContextProviderProps): Reac
           setExtensionExists(true);
         }
         let allAccounts = await web3Accounts();
-        allAccounts?.length > 0 && setAccountExists(true);
+        allAccounts?.length && setAccountExists(true);
         allAccounts = allAccounts.map(({ address, meta }) => ({
           address,
           meta: { ...meta, name: `${meta.name} (${meta.source})` }

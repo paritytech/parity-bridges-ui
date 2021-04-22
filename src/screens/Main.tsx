@@ -39,17 +39,17 @@ export function Main({ className }: Props) {
   const { extensionExists, accountExists } = useKeyringContext();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
-  const proj = [];
+  const outcomeAfterChecks = [];
 
   if (!extensionExists) {
-    proj.push(<p className="messageNote">Connect to a wallet. Install polkadotjs extension</p>);
+    outcomeAfterChecks.push(<p className="messageNote">Connect to a wallet. Install polkadotjs extension</p>);
   } else {
     if (!accountExists) {
-      proj.push(
+      outcomeAfterChecks.push(
         <p className="messageNote">There are no accounts in the extension. Please create one. Please create one</p>
       );
     } else {
-      proj.push(<Accounts />);
+      outcomeAfterChecks.push(<Accounts />);
     }
   }
 
@@ -74,7 +74,7 @@ export function Main({ className }: Props) {
         </Grid>
         <Grid container>
           <Grid item md={12}>
-            {proj}
+            {outcomeAfterChecks}
           </Grid>
         </Grid>
         <Grid container>
