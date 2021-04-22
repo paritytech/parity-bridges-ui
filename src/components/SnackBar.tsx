@@ -34,7 +34,7 @@ const CloseButton = styled.button`
   font-weight: 600;
 `;
 
-export default function SnackBar() {
+const SnackBar = (): null => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { message, variant } = useMessageContext();
   const { dispatchMessage } = useUpdateMessageContext();
@@ -51,4 +51,6 @@ export default function SnackBar() {
   }, [closeSnackbar, message, variant, enqueueSnackbar, dispatchMessage]);
 
   return null;
-}
+};
+
+export default SnackBar;
