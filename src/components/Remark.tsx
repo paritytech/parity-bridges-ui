@@ -21,8 +21,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 
 import { useTransactionContext } from '../contexts/TransactionContext';
-import useLoadingApi from '../hooks/useLoadingApi';
-import useSendMessage from '../hooks/useSendMessage';
+import { useLoadingApi, useSendMessage } from '../hooks';
 import { TransactionTypes } from '../types/transactionTypes';
 interface Props {
   className?: string;

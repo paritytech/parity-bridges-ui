@@ -20,7 +20,7 @@ import Container from '@material-ui/core/Container';
 import React from 'react';
 import styled from 'styled-components';
 
-import useDashboard from '../hooks/useDashboard';
+import { useDashboard } from '../hooks';
 import { ChainDetails } from '../types/sourceTargetTypes';
 
 interface Props {

@@ -24,7 +24,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import useAccounts from '../hooks/useAccounts';
+import { useAccounts } from '../hooks';
 import formatAccounts from '../util/formatAccounts';
 import getChainSS58 from '../util/getSS58';
 import Account from './Account';

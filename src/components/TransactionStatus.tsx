@@ -19,9 +19,7 @@ import BN from 'bn.js';
 import React, { useEffect, useState } from 'react';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import useDashboard from '../hooks/useDashboard';
-import useLaneId from '../hooks/useLaneId';
-import useLoadingApi from '../hooks/useLoadingApi';
+import { useDashboard, useLaneId, useLoadingApi } from '../hooks';
 import { ChainDetails } from '../types/sourceTargetTypes';
 import { TransanctionStatus } from '../types/transactionTypes';
 import { Step, TransactionStatusEnum } from '../types/transactionTypes';

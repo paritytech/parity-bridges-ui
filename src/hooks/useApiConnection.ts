@@ -70,3 +70,5 @@ export function useApiConnection({ chain, hasher, provider, types }: ApiRxProvid
 
   return { api: apiPromise, isApiReady: isReady };
 }
+
+export default useApiConnection;

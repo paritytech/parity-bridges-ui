@@ -18,7 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import BN from 'bn.js';
 import { useEffect, useState } from 'react';
 
-import useLaneId from '../hooks/useLaneId';
+import { useLaneId } from '../hooks';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
 interface Props {
   chain: string;
