@@ -14,9 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Container from '@material-ui/core/Container';
+import { Card, CardContent, Container } from '@material-ui/core';
 import React from 'react';
 import styled from 'styled-components';
 
