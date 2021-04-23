@@ -14,12 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { SnackbarProvider } from 'notistack';
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
+import { light } from './components';
 import { CHAIN_1, CHAIN_2, getChainProviders } from './configs/substrateProviders';
 import { AccountContextProvider } from './contexts/AccountContextProvider';
 import { KeyringContextProvider } from './contexts/KeyringContextProvider';
@@ -59,7 +61,9 @@ function App() {
                 <BrowserRouter>
                   <Switch>
                     <Route path={'/'}>
-                      <Main />
+                      <ThemeProvider theme={createMuiTheme(light)}>
+                        <Main />
+                      </ThemeProvider>
                     </Route>
                   </Switch>
                 </BrowserRouter>

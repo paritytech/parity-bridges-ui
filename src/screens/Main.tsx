@@ -20,6 +20,7 @@ import React from 'react';
 import { Icon } from 'semantic-ui-react';
 import styled from 'styled-components';
 
+import { BoxMain, BoxSidebar, BoxUI } from '../components';
 import Accounts from '../components/Accounts';
 import CustomCall from '../components/CustomCall';
 import DashboardCard from '../components/DashboardCard';
@@ -39,50 +40,52 @@ export function Main({ className }: Props) {
 
   return (
     <>
-      <Container className={className}>
-        <Grid container>
-          <Grid item md={5}>{`${sourceChainDetails.sourceChain} => ${targetChainDetails.targetChain}`}</Grid>
-        </Grid>
-        <Grid container>
-          <Grid item md={5}>
-            <DashboardCard chainDetail={ChainDetails.SOURCE} />
-          </Grid>
-          <Grid item md={1}>
-            <div className="switchButton">
-              <Icon fitted name="exchange" />
-            </div>
-          </Grid>
-          <Grid item md={5}>
-            <DashboardCard chainDetail={ChainDetails.TARGET} />
-          </Grid>
-        </Grid>
-        <Grid container>
-          <Grid item md={12}>
-            <Accounts />
-          </Grid>
-        </Grid>
-        <Grid container>
-          <Grid item md={12}>
-            <Remark />
-          </Grid>
-        </Grid>
-        <Grid container>
-          <Grid item md={12}>
-            <Transfer />
-          </Grid>
-        </Grid>
-        <Grid container>
-          <Grid item md={12}>
-            <CustomCall />
-          </Grid>
-        </Grid>
-        <Grid container>
-          <Grid item md={12}>
-            <Transactions />
-          </Grid>
-        </Grid>
-      </Container>
-      <SnackBar />
+      <BoxMain>
+        <BoxSidebar>{`${sourceChainDetails.sourceChain} => ${targetChainDetails.targetChain}`}</BoxSidebar>
+        <BoxUI>
+          <Container className={className}>
+            <Grid container>
+              <Grid item md={5}>
+                <DashboardCard chainDetail={ChainDetails.SOURCE} />
+              </Grid>
+              <Grid item md={1}>
+                <div className="switchButton">
+                  <Icon fitted name="exchange" />
+                </div>
+              </Grid>
+              <Grid item md={5}>
+                <DashboardCard chainDetail={ChainDetails.TARGET} />
+              </Grid>
+            </Grid>
+            <Grid container>
+              <Grid item md={12}>
+                <Accounts />
+              </Grid>
+            </Grid>
+            <Grid container>
+              <Grid item md={12}>
+                <Remark />
+              </Grid>
+            </Grid>
+            <Grid container>
+              <Grid item md={12}>
+                <Transfer />
+              </Grid>
+            </Grid>
+            <Grid container>
+              <Grid item md={12}>
+                <CustomCall />
+              </Grid>
+            </Grid>
+            <Grid container>
+              <Grid item md={12}>
+                <Transactions />
+              </Grid>
+            </Grid>
+          </Container>
+          <SnackBar />
+        </BoxUI>
+      </BoxMain>
     </>
   );
 }
