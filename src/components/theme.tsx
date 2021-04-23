@@ -20,19 +20,19 @@ import { ThemeOptions } from '@material-ui/core/styles';
 import { PaletteOptions } from '@material-ui/core/styles/createPalette';
 import { Shadows } from '@material-ui/core/styles/shadows';
 
-export const substrateGreen = {
-  100: '#7E8D96',
-  200: '#5CFFC8',
-  300: '#18FFB2',
-  400: '#16DB9A',
-  500: '#11B37C',
-  600: '#1A9A6C'
+export const bridgesBlue = {
+  100: '#2E99E5',
+  300: '#2E99E5',
+  400: '#2E99E5',
+  500: '#2E99E5'
 };
 export const substrateGray = {
   100: '#F5F8FA',
+  150: '#F0F2F5',
   200: '#EAEEF1',
   400: '#C6D0D7',
   500: '#ABB8BF',
+  700: '#556068',
   600: '#7E8D95',
   800: '#323F47',
   900: '#202B33'
@@ -49,15 +49,15 @@ const paletteLight: PaletteOptions = {
     default: '#FFFFFF'
   },
   primary: {
-    light: substrateGreen[100],
-    main: substrateGreen[400],
-    dark: substrateGreen[500],
-    contrastText: 'black'
+    light: bridgesBlue[100],
+    main: bridgesBlue[400],
+    dark: bridgesBlue[500],
+    contrastText: 'white'
   },
   secondary: {
-    light: substrateGreen[100],
-    main: substrateGreen[400],
-    dark: substrateGreen[500],
+    light: substrateGray[100],
+    main: substrateGray[150],
+    dark: substrateGray[500],
     contrastText: 'black'
   },
   error: {
@@ -68,12 +68,12 @@ const paletteLight: PaletteOptions = {
   },
   text: {
     primary: substrateGray[900],
-    secondary: '#fff',
-    disabled: grey[300],
-    hint: grey[700]
+    secondary: bridgesBlue[400],
+    disabled: substrateGray[400],
+    hint: substrateGray[700]
   },
   action: {
-    active: substrateGreen[300]
+    active: bridgesBlue[300]
   },
   divider: grey[300]
 };
@@ -149,8 +149,8 @@ export const light: ThemeOptions = {
     },
     button: {
       fontWeight: 500,
-      fontSize: 14,
-      lineHeight: '120%',
+      fontSize: 16,
+      lineHeight: '140%',
       letterSpacing: 0.2,
       textTransform: 'none'
     },

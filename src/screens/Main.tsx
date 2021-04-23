@@ -20,7 +20,7 @@ import React from 'react';
 import { Icon } from 'semantic-ui-react';
 import styled from 'styled-components';
 
-import { BoxMain, BoxSidebar, BoxUI } from '../components';
+import { BoxMain, BoxSidebar, BoxUI, MenuAction, MenuActionMockData } from '../components';
 import Accounts from '../components/Accounts';
 import CustomCall from '../components/CustomCall';
 import DashboardCard from '../components/DashboardCard';
@@ -43,6 +43,7 @@ export function Main({ className }: Props) {
       <BoxMain>
         <BoxSidebar>{`${sourceChainDetails.sourceChain} => ${targetChainDetails.targetChain}`}</BoxSidebar>
         <BoxUI>
+          <MenuAction items={MenuActionMockData} />
           <Container className={className}>
             <Grid container>
               <Grid item md={5}>
