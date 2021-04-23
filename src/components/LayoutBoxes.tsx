@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Box, Container } from '@material-ui/core';
+import { Box, Container, Paper } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 
@@ -22,18 +22,28 @@ import React from 'react';
 // This way to inject the styles works.
 const useStyles = makeStyles((theme) => ({
   main: {
-    display: 'flex'
+    display: 'flex',
+    [theme.breakpoints.down('md')]: {
+      flexDirection: 'column'
+    }
   },
   ui: {
     display: 'flex',
     justifyContent: 'center',
-    padding: theme.spacing(3)
+    padding: theme.spacing(3),
+    '& .MuiPaper-root': {
+      maxWidth: '100%',
+      borderRadius: theme.spacing(1.5)
+    }
   },
   sidebar: {
     width: 200,
     padding: theme.spacing(3),
     '& .inner': {
       position: 'fixed'
+    },
+    [theme.breakpoints.down('md')]: {
+      width: '100%'
     }
   }
 }));
@@ -44,18 +54,14 @@ interface BoxUIProps {
 
 export const BoxMain = ({ children }: BoxUIProps) => {
   const classes = useStyles();
-  return (
-    <Box className={classes.main}>
-      <>{children}</>
-    </Box>
-  );
+  return <Box className={classes.main}>{children}</Box>;
 };
 
 export const BoxUI = ({ children }: BoxUIProps) => {
   const classes = useStyles();
   return (
     <Container className={classes.ui}>
-      <>{children}</>
+      <Paper elevation={24}>{children}</Paper>
     </Container>
   );
 };
