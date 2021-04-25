@@ -59,6 +59,7 @@ describe('envVariablesValidations', () => {
 
 describe('Validate .env file', () => {
   const envVars = dotenv.config().parsed;
+
   test('.env file should exist', () => {
     expect(envVars).toBeTruthy();
   });
