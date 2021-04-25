@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import dotenv from 'dotenv';
+
 import { checkEnvVariable } from '../envVariablesValidations';
 
 describe('envVariablesValidations', () => {
@@ -52,5 +54,43 @@ describe('envVariablesValidations', () => {
         expect(e.message).toEqual(`Env Variable ${variable} was not defined`);
       }
     });
+  });
+});
+
+describe('Validate .env file', () => {
+  const envVars = dotenv.config().parsed;
+  test('.env file should exist', () => {
+    expect(envVars).toBeTruthy();
+  });
+
+  test('REACT_APP_CHAIN_1 environmental variable should exist and have a value', () => {
+    expect(envVars?.REACT_APP_CHAIN_1).toBeTruthy();
+  });
+  test('REACT_APP_CHAIN_2 environmental variable should exist and have a value', () => {
+    expect(envVars?.REACT_APP_CHAIN_2).toBeTruthy();
+  });
+  test('REACT_APP_SUBSTRATE_PROVIDER_CHAIN_1 environmental variable should exist and have a value', () => {
+    expect(envVars?.REACT_APP_SUBSTRATE_PROVIDER_CHAIN_1).toBeTruthy();
+  });
+  test('REACT_APP_SUBSTRATE_PROVIDER_CHAIN_2 environmental variable should exist and have a value', () => {
+    expect(envVars?.REACT_APP_SUBSTRATE_PROVIDER_CHAIN_2).toBeTruthy();
+  });
+  test('REACT_APP_LANE_ID environmental variable should exist and have a value', () => {
+    expect(envVars?.REACT_APP_LANE_ID).toBeTruthy();
+  });
+  test('REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS environmental variable should exist and have a value', () => {
+    expect(envVars?.REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS).toBeTruthy();
+  });
+  test('REACT_APP_SS58_PREFIX_CHAIN_1 environmental variable should exist and have a value', () => {
+    expect(envVars?.REACT_APP_SS58_PREFIX_CHAIN_1).toBeTruthy();
+  });
+  test('REACT_APP_SS58_PREFIX_CHAIN_2 environmental variable should exist and have a value', () => {
+    expect(envVars?.REACT_APP_SS58_PREFIX_CHAIN_2).toBeTruthy();
+  });
+  test('REACT_APP_BRIDGE_ID_CHAIN_1 environmental variable should exist and have a value', () => {
+    expect(envVars?.REACT_APP_BRIDGE_ID_CHAIN_1).toBeTruthy();
+  });
+  test('REACT_APP_BRIDGE_ID_CHAIN_2 environmental variable should exist and have a value', () => {
+    expect(envVars?.REACT_APP_BRIDGE_ID_CHAIN_2).toBeTruthy();
   });
 });
