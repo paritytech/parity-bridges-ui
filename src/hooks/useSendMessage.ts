@@ -84,20 +84,21 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
       }
       const unsub = await bridgeMessage.signAndSend(sourceAccount, { ...options }, ({ events = [], status }) => {
         if (startProcess) {
-          const initialTransaction = {
-            block: null,
-            blockHash: null,
-            id,
-            input,
-            messageNonce: null,
-            receiverAddress,
-            sourceAccount: account.address,
-            sourceChain,
-            status: TransactionStatusEnum.CREATED,
-            targetChain,
-            type
-          };
-          dispatchTransaction(TransactionActionCreators.createTransactionStatus(initialTransaction));
+          dispatchTransaction(
+            TransactionActionCreators.createTransactionStatus({
+              block: null,
+              blockHash: null,
+              id,
+              input,
+              messageNonce: null,
+              receiverAddress,
+              sourceAccount: account.address,
+              sourceChain,
+              status: TransactionStatusEnum.CREATED,
+              targetChain,
+              type
+            })
+          );
           startProcess = false;
         }
         if (status.isBroadcast) {
