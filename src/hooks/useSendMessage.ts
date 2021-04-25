@@ -60,32 +60,18 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
       return;
     }
     const id = moment().format('x');
-    const initialTransaction = {
-      block: null,
-      blockHash: null,
-      id,
-      input,
-      messageNonce: null,
-      receiverAddress,
-      sourceAccount: account.address,
-      sourceChain,
-      status: TransactionStatusEnum.CREATED,
-      targetChain,
-      type
-    };
-    dispatchTransaction(TransactionActionCreators.createTransactionStatus(initialTransaction));
     setIsRunning(true);
     return makeCall(id);
   };
 
   const makeCall = async (id: string) => {
+    let startProcess: boolean = true;
     try {
       if (!account || isRunning) {
         return;
       }
 
       const { bridgedMessages } = getSubstrateDynamicNames(targetChain);
-
       const bridgeMessage = sourceApi.tx[bridgedMessages].sendMessage(laneId, payload, estimatedFee);
       const options: Partial<SignerOptions> = {
         nonce: -1
@@ -96,8 +82,24 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
         options.signer = injector.signer;
         sourceAccount = account.address;
       }
-
       const unsub = await bridgeMessage.signAndSend(sourceAccount, { ...options }, ({ events = [], status }) => {
+        if (startProcess) {
+          const initialTransaction = {
+            block: null,
+            blockHash: null,
+            id,
+            input,
+            messageNonce: null,
+            receiverAddress,
+            sourceAccount: account.address,
+            sourceChain,
+            status: TransactionStatusEnum.CREATED,
+            targetChain,
+            type
+          };
+          dispatchTransaction(TransactionActionCreators.createTransactionStatus(initialTransaction));
+          startProcess = false;
+        }
         if (status.isBroadcast) {
           dispatchMessage(MessageActionsCreators.triggerInfoMessage({ message: 'Transaction was broadcasted' }));
         }
@@ -134,8 +136,8 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
         }
       });
     } catch (e) {
-      dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e }));
-      logger.error(e);
+      dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e.message }));
+      logger.error(e.message);
     } finally {
       setIsRunning(false);
     }
