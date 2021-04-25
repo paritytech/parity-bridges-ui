@@ -14,6 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { Button, Container, TextField } from '@material-ui/core';
 import React, { useState } from 'react';
 import styled from 'styled-components';
@@ -25,7 +28,7 @@ import useReceiver from '../hooks/useReceiver';
 import useSendMessage from '../hooks/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
 import AccountFormatFeedback from './AccountFormatFeedback';
-
+import Receiver from './Receiver';
 interface Props {
   className?: string;
 }
@@ -82,13 +85,16 @@ const Transfer = ({ className }: Props) => {
       <h2>Transfer</h2>
       <Container className={className}>
         <div className="receiver">
-          <TextField
+          {/*           <TextField
             fullWidth
             onChange={onReceiverChange}
             value={receiverAddress}
             label="Receiver"
             variant="outlined"
-          />
+          /> */}
+        </div>
+        <div className="receiver">
+          <Receiver />
         </div>
         <AccountFormatFeedback
           receiverToDerive={receiverToDerive}

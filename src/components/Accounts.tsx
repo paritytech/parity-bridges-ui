@@ -52,6 +52,7 @@ const Accounts = ({ className }: Props) => {
     setCurrentAccount(value, chain);
     setReceiver(null);
   };
+
   const renderAccounts = (chain: string) => {
     const formatedAccounts = formatAccounts(accounts, chain);
     const items = formatedAccounts.map(({ text, value, key }: any) => (
@@ -62,7 +63,8 @@ const Accounts = ({ className }: Props) => {
           onChange(value, chain);
         }}
       >
-        <Account text={text} value={value} showDerivedBalance chain={chain} />
+        <Account text={text} value={value} chain={chain} />
+        <Account text={text} value={value} isDerived chain={chain} />
       </MenuItem>
     ));
     return [<SubHeader key={chain} chain={chain} />, items];

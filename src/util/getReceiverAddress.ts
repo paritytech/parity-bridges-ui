@@ -40,7 +40,7 @@ const getReceiverAddress = ({ receiverAddress, chain }: Props) => {
           formatFound = key;
         }
         if (parseInt(prefix[2]) === 42) {
-          formatFound = 'Substrate';
+          formatFound = 'GENERIC';
         }
       });
 

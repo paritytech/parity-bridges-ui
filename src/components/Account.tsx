@@ -19,42 +19,34 @@ import People from '@material-ui/icons/People';
 import React from 'react';
 import styled from 'styled-components';
 
+import useApiBalance from '../hooks/useApiBalance';
 import useBalance from '../hooks/useBalance';
 
 interface Props {
   value: string;
-  text: string;
+  text?: string;
   className?: string;
   chain?: string | undefined;
-  showDerivedBalance?: boolean;
+  isDerived?: boolean;
+  onClick?: any;
 }
 
-const Account = ({ className, text, value, chain, showDerivedBalance = false }: Props) => {
-  const [source, target] = useBalance(text, value, chain, true);
+const Account = ({ className, text, value, chain, isDerived = false, onClick }: Props) => {
+  const { api, address } = useApiBalance(value, chain, isDerived);
+  const state = useBalance(api, address, true);
+  const verifiedText = text ? text : value;
 
   return (
-    <Container className={className}>
+    <Container onClick={onClick} className={className}>
+      <div className="icon">
+        <People />
+      </div>
       <div className="address">
-        <div className="topAddress">
-          <People />
-          <div className="text">
-            <p>{text}</p>
-          </div>
-        </div>
-        <div className="bottomAddress">
-          <p>{value}</p>
-        </div>
+        <p>{verifiedText}</p>
       </div>
 
-      <div className="balances">
-        <div className="balance">
-          <p>{source ? source.formattedBalance : '-'}</p>
-        </div>
-        {showDerivedBalance && (
-          <div className="balance">
-            <p>{target ? target.formattedBalance : '-'}</p>
-          </div>
-        )}
+      <div className="balance">
+        <p>{state ? state.formattedBalance : '-'}</p>
       </div>
     </Container>
   );
@@ -64,28 +56,19 @@ export default styled(Account)`
   margin: auto 0;
   display: flex;
   justify-content: space-between;
-
+  min-width: 700px;
+  .icon {
+    float: left;
+  }
   .address {
-    min-width: 70%;
-    display: flex;
-    flex-direction: column;
+    float: left;
+    margin-left: 10px;
+    min-width: 80%;
   }
 
-  .topAddress {
-    display: flex;
-  }
-
-  .bottomAddress {
-    min-width: 100%;
-  }
-
-  .text {
-  }
   .balances {
     min-width: 20%;
     float: right;
-  }
-  .balance {
     padding: 5px;
     border: 1px solid;
   }
