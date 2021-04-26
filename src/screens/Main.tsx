@@ -18,7 +18,16 @@ import { Container, Grid, Typography } from '@material-ui/core';
 import React from 'react';
 import { Icon } from 'semantic-ui-react';
 
-import { BoxMain, BoxSidebar, BoxUI, MenuAction, MenuActionMockData, NetworkSides, NetworkStats } from '../components';
+import {
+  BoxMain,
+  BoxSidebar,
+  BoxUI,
+  ButtonExt,
+  MenuAction,
+  MenuActionMockData,
+  NetworkSides,
+  NetworkStats
+} from '../components';
 import Accounts from '../components/Accounts';
 import CustomCall from '../components/CustomCall';
 import DashboardCard from '../components/DashboardCard';
@@ -37,11 +46,12 @@ function Main({ className }: Props) {
   return (
     <BoxMain>
       <BoxSidebar>
-        <>
+        <div>
           <Typography variant="button">Bridges UI</Typography>
           <NetworkSides />
           <NetworkStats />
-        </>
+        </div>
+        <ButtonExt> Help & Feedback </ButtonExt>
       </BoxSidebar>
       <BoxUI>
         <MenuAction items={MenuActionMockData} />

@@ -43,6 +43,9 @@ const useStyles = makeStyles((theme) => ({
     width: 240,
     '& .inner': {
       position: 'fixed',
+      display: 'flex',
+      justifyContent: 'space-between',
+      flexDirection: 'column',
       top: 0,
       width: 240,
       padding: theme.spacing(3),
