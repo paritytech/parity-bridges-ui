@@ -14,7 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import dotenv from 'dotenv';
+
 import { checkEnvVariable } from '../envVariablesValidations';
+import { checkExpectedVariables, checkUnexpectedVariables } from '../envVariablesValidations';
 
 describe('envVariablesValidations', () => {
   beforeEach(() => {
@@ -52,5 +55,28 @@ describe('envVariablesValidations', () => {
         expect(e.message).toEqual(`Env Variable ${variable} was not defined`);
       }
     });
+  });
+});
+
+describe('Validate .env file', () => {
+  beforeEach(() => {
+    jest.resetModules();
+    process.env = JSON.parse(JSON.stringify(dotenv.config().parsed));
+  });
+
+  afterAll(() => {
+    process.env = {};
+  });
+
+  test('.env file should exist', () => {
+    expect(process.env).toBeTruthy();
+  });
+
+  test('expected ENV variables are set', () => {
+    expect(checkExpectedVariables()).toBeTruthy();
+  });
+
+  test('Unexpected ENV variables should not exist', () => {
+    expect(checkUnexpectedVariables()).toBeTruthy();
   });
 });

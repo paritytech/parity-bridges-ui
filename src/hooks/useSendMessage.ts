@@ -60,20 +60,6 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
       return;
     }
     const id = moment().format('x');
-    const initialTransaction = {
-      block: null,
-      blockHash: null,
-      id,
-      input,
-      messageNonce: null,
-      receiverAddress,
-      sourceAccount: account.address,
-      sourceChain,
-      status: TransactionStatusEnum.CREATED,
-      targetChain,
-      type
-    };
-    dispatchTransaction(TransactionActionCreators.createTransactionStatus(initialTransaction));
     setIsRunning(true);
     return makeCall(id);
   };
@@ -85,7 +71,6 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
       }
 
       const { bridgedMessages } = getSubstrateDynamicNames(targetChain);
-
       const bridgeMessage = sourceApi.tx[bridgedMessages].sendMessage(laneId, payload, estimatedFee);
       const options: Partial<SignerOptions> = {
         nonce: -1
@@ -96,8 +81,24 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
         options.signer = injector.signer;
         sourceAccount = account.address;
       }
-
       const unsub = await bridgeMessage.signAndSend(sourceAccount, { ...options }, ({ events = [], status }) => {
+        if (status.isReady) {
+          dispatchTransaction(
+            TransactionActionCreators.createTransactionStatus({
+              block: null,
+              blockHash: null,
+              id,
+              input,
+              messageNonce: null,
+              receiverAddress,
+              sourceAccount: account.address,
+              sourceChain,
+              status: TransactionStatusEnum.CREATED,
+              targetChain,
+              type
+            })
+          );
+        }
         if (status.isBroadcast) {
           dispatchMessage(MessageActionsCreators.triggerInfoMessage({ message: 'Transaction was broadcasted' }));
         }
@@ -134,8 +135,8 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
         }
       });
     } catch (e) {
-      dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e }));
-      logger.error(e);
+      dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e.message }));
+      logger.error(e.message);
     } finally {
       setIsRunning(false);
     }
