@@ -14,11 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import Container from '@material-ui/core/Container';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
+import { Container, FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
 import { encodeAddress } from '@polkadot/util-crypto';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';

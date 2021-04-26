@@ -13,7 +13,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
-
 import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
 import type { KeyringPair } from '@polkadot/keyring/types';
 import keyring from '@polkadot/ui-keyring';
@@ -39,7 +38,9 @@ export function KeyringContextProvider(props: KeyringContextProviderProps): Reac
   const [keyringStatus, setKeyringStatus] = useState(KeyringStatuses.INIT);
   const { dispatchMessage } = useUpdateMessageContext();
   const [keyringPairs, setKeyringPairs] = useState<Array<KeyringPair>>([]);
-  const [keyringPairsReady, setkeyringPairsReady] = useState(false);
+  const [keyringPairsReady, setkeyringPairsReady] = useState<boolean>(false);
+  const [extensionExists, setExtensionExists] = useState<boolean>(false);
+  const [accountExists, setAccountExists] = useState<boolean>(false);
 
   const isDevelopment = Boolean(process.env.REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS);
 
@@ -47,8 +48,14 @@ export function KeyringContextProvider(props: KeyringContextProviderProps): Reac
     const asyncLoadAccounts = async () => {
       setKeyringStatus(KeyringStatuses.LOADING);
       try {
-        await web3Enable('Substrate Bridges UI');
+        const extExists = await web3Enable('Substrate Bridges UI');
+        if (extExists.length === 0) {
+          return;
+        } else {
+          setExtensionExists(true);
+        }
         let allAccounts = await web3Accounts();
+        allAccounts?.length && setAccountExists(true);
         allAccounts = allAccounts.map(({ address, meta }) => ({
           address,
           meta: { ...meta, name: `${meta.name} (${meta.source})` }
@@ -82,5 +89,9 @@ export function KeyringContextProvider(props: KeyringContextProviderProps): Reac
     }
   }, [keyringStatus]);
 
-  return <KeyringContext.Provider value={{ keyringPairs, keyringPairsReady }}>{children}</KeyringContext.Provider>;
+  return (
+    <KeyringContext.Provider value={{ accountExists, extensionExists, keyringPairs, keyringPairsReady }}>
+      {children}
+    </KeyringContext.Provider>
+  );
 }
