@@ -39,54 +39,52 @@ export function Main({ className }: Props) {
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
   return (
-    <>
-      <BoxMain>
-        <BoxSidebar>{`${sourceChainDetails.sourceChain} => ${targetChainDetails.targetChain}`}</BoxSidebar>
-        <BoxUI>
-          <Container className={className}>
-            <Grid container>
-              <Grid item md={5}>
-                <DashboardCard chainDetail={ChainDetails.SOURCE} />
-              </Grid>
-              <Grid item md={1}>
-                <div className="switchButton">
-                  <Icon fitted name="exchange" />
-                </div>
-              </Grid>
-              <Grid item md={5}>
-                <DashboardCard chainDetail={ChainDetails.TARGET} />
-              </Grid>
+    <BoxMain>
+      <BoxSidebar>{`${sourceChainDetails.sourceChain} => ${targetChainDetails.targetChain}`}</BoxSidebar>
+      <BoxUI>
+        <Container className={className}>
+          <Grid container>
+            <Grid item md={5}>
+              <DashboardCard chainDetail={ChainDetails.SOURCE} />
             </Grid>
-            <Grid container>
-              <Grid item md={12}>
-                <Accounts />
-              </Grid>
+            <Grid item md={1}>
+              <div className="switchButton">
+                <Icon fitted name="exchange" />
+              </div>
             </Grid>
-            <Grid container>
-              <Grid item md={12}>
-                <Remark />
-              </Grid>
+            <Grid item md={5}>
+              <DashboardCard chainDetail={ChainDetails.TARGET} />
             </Grid>
-            <Grid container>
-              <Grid item md={12}>
-                <Transfer />
-              </Grid>
+          </Grid>
+          <Grid container>
+            <Grid item md={12}>
+              <Accounts />
             </Grid>
-            <Grid container>
-              <Grid item md={12}>
-                <CustomCall />
-              </Grid>
+          </Grid>
+          <Grid container>
+            <Grid item md={12}>
+              <Remark />
             </Grid>
-            <Grid container>
-              <Grid item md={12}>
-                <Transactions />
-              </Grid>
+          </Grid>
+          <Grid container>
+            <Grid item md={12}>
+              <Transfer />
             </Grid>
-          </Container>
-          <SnackBar />
-        </BoxUI>
-      </BoxMain>
-    </>
+          </Grid>
+          <Grid container>
+            <Grid item md={12}>
+              <CustomCall />
+            </Grid>
+          </Grid>
+          <Grid container>
+            <Grid item md={12}>
+              <Transactions />
+            </Grid>
+          </Grid>
+        </Container>
+        <SnackBar />
+      </BoxUI>
+    </BoxMain>
   );
 }
 
