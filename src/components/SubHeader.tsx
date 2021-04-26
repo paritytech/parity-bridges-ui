@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import Container from '@material-ui/core/Container';
+import { Container } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Star from '@material-ui/icons/Star';
+import { Star } from '@material-ui/icons';
 import React from 'react';
 
 // As this is placed as a child in the Material UI Select component, for some reason style components classes are not working.
