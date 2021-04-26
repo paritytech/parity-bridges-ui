@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(3),
     '& .MuiPaper-root': {
       maxWidth: '100%',
+      padding: theme.spacing(2),
       borderRadius: theme.spacing(1.5)
     }
   },

@@ -15,4 +15,5 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 export { BoxUI, BoxSidebar, BoxMain } from './LayoutBoxes';
+export { MenuAction, MenuActionMockData } from './MenuAction';
 export { light } from './theme';
