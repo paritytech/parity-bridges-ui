@@ -33,6 +33,11 @@ const checkExpectedVariables = () => {
       throw new Error(`Missing ${v} variable`);
     }
   }
+  for (const v of Object.keys(process.env)) {
+    if (!expectedVariables.includes(v)) {
+      throw new Error(`Unexpected ${v} variable`);
+    }
+  }
   return true;
 };
 

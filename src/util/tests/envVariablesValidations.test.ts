@@ -17,6 +17,7 @@
 import dotenv from 'dotenv';
 
 import { checkEnvVariable } from '../envVariablesValidations';
+import { checkExpectedVariables } from '../envVariablesValidations';
 
 describe('envVariablesValidations', () => {
   beforeEach(() => {
@@ -58,40 +59,20 @@ describe('envVariablesValidations', () => {
 });
 
 describe('Validate .env file', () => {
-  const envVars = dotenv.config().parsed;
+  beforeEach(() => {
+    jest.resetModules();
+    process.env = JSON.parse(JSON.stringify(dotenv.config().parsed));
+  });
+
+  afterAll(() => {
+    process.env = {};
+  });
 
   test('.env file should exist', () => {
-    expect(envVars).toBeTruthy();
+    expect(process.env).toBeTruthy();
   });
 
-  test('REACT_APP_CHAIN_1 environmental variable should exist and have a value', () => {
-    expect(envVars?.REACT_APP_CHAIN_1).toBeTruthy();
-  });
-  test('REACT_APP_CHAIN_2 environmental variable should exist and have a value', () => {
-    expect(envVars?.REACT_APP_CHAIN_2).toBeTruthy();
-  });
-  test('REACT_APP_SUBSTRATE_PROVIDER_CHAIN_1 environmental variable should exist and have a value', () => {
-    expect(envVars?.REACT_APP_SUBSTRATE_PROVIDER_CHAIN_1).toBeTruthy();
-  });
-  test('REACT_APP_SUBSTRATE_PROVIDER_CHAIN_2 environmental variable should exist and have a value', () => {
-    expect(envVars?.REACT_APP_SUBSTRATE_PROVIDER_CHAIN_2).toBeTruthy();
-  });
-  test('REACT_APP_LANE_ID environmental variable should exist and have a value', () => {
-    expect(envVars?.REACT_APP_LANE_ID).toBeTruthy();
-  });
-  test('REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS environmental variable should exist and have a value', () => {
-    expect(envVars?.REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS).toBeTruthy();
-  });
-  test('REACT_APP_SS58_PREFIX_CHAIN_1 environmental variable should exist and have a value', () => {
-    expect(envVars?.REACT_APP_SS58_PREFIX_CHAIN_1).toBeTruthy();
-  });
-  test('REACT_APP_SS58_PREFIX_CHAIN_2 environmental variable should exist and have a value', () => {
-    expect(envVars?.REACT_APP_SS58_PREFIX_CHAIN_2).toBeTruthy();
-  });
-  test('REACT_APP_BRIDGE_ID_CHAIN_1 environmental variable should exist and have a value', () => {
-    expect(envVars?.REACT_APP_BRIDGE_ID_CHAIN_1).toBeTruthy();
-  });
-  test('REACT_APP_BRIDGE_ID_CHAIN_2 environmental variable should exist and have a value', () => {
-    expect(envVars?.REACT_APP_BRIDGE_ID_CHAIN_2).toBeTruthy();
+  test('expected ENV variables are set', () => {
+    expect(checkExpectedVariables()).toBeTruthy();
   });
 });
