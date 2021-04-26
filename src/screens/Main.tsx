@@ -17,8 +17,8 @@
 import { Container, Grid } from '@material-ui/core';
 import React from 'react';
 import { Icon } from 'semantic-ui-react';
-import styled from 'styled-components';
 
+import { BoxMain, BoxSidebar, BoxUI } from '../components';
 import Accounts from '../components/Accounts';
 import CustomCall from '../components/CustomCall';
 import DashboardCard from '../components/DashboardCard';
@@ -38,60 +38,51 @@ function Main({ className }: Props) {
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
   return (
-    <>
-      <Container className={className}>
-        <Grid container>
-          <Grid item md={5}>{`${sourceChainDetails.sourceChain} => ${targetChainDetails.targetChain}`}</Grid>
-        </Grid>
-        <Grid container>
-          <Grid item md={5}>
-            <DashboardCard chainDetail={ChainDetails.SOURCE} />
-          </Grid>
-          <Grid item md={1}>
-            <div className="switchButton">
+    <BoxMain>
+      <BoxSidebar>{`${sourceChainDetails.sourceChain} => ${targetChainDetails.targetChain}`}</BoxSidebar>
+      <BoxUI>
+        <Container className={className}>
+          <Grid container alignItems="center">
+            <Grid item md={5}>
+              <DashboardCard chainDetail={ChainDetails.SOURCE} />
+            </Grid>
+            <Grid item>
               <Icon fitted name="exchange" />
-            </div>
+            </Grid>
+            <Grid item md={5}>
+              <DashboardCard chainDetail={ChainDetails.TARGET} />
+            </Grid>
           </Grid>
-          <Grid item md={5}>
-            <DashboardCard chainDetail={ChainDetails.TARGET} />
+          <Grid container>
+            <Grid item md={12}>
+              <Accounts />
+            </Grid>
           </Grid>
-        </Grid>
-        <Grid container>
-          <Grid item md={12}>
-            <ExtensionAccountCheck component={<Accounts />} />
+          <Grid container>
+            <Grid item md={12}>
+              <Remark />
+            </Grid>
           </Grid>
-        </Grid>
-        <Grid container>
-          <Grid item md={12}>
-            <Remark />
+          <Grid container>
+            <Grid item md={12}>
+              <Transfer />
+              <ExtensionAccountCheck component={<Accounts />} />
+            </Grid>
+            <Grid container>
+              <Grid item md={12}>
+                <CustomCall />
+              </Grid>
+            </Grid>
+            <Grid container>
+              <Grid item md={12}>
+                <Transactions />
+              </Grid>
+            </Grid>
           </Grid>
-        </Grid>
-        <Grid container>
-          <Grid item md={12}>
-            <Transfer />
-          </Grid>
-        </Grid>
-        <Grid container>
-          <Grid item md={12}>
-            <CustomCall />
-          </Grid>
-        </Grid>
-        <Grid container>
-          <Grid item md={12}>
-            <Transactions />
-          </Grid>
-        </Grid>
-      </Container>
-      <SnackBar />
-    </>
+        </Container>
+        <SnackBar />
+      </BoxUI>
+    </BoxMain>
   );
 }
-
-export default styled(Main)`
-  .switchButton {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-`;
+export default Main;
