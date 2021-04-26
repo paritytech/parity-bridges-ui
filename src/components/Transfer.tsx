@@ -39,13 +39,14 @@ const Transfer = ({ className }: Props) => {
   const [isRunning, setIsRunning] = useState(false);
   const [transferInput, setTransferInput] = useState('0');
   const [receiverToDerive, setReceiverToDerive] = useState(emptyReceiverToDerive);
-  const { setReceiver, validateAccount, setReceiverValidation } = useReceiver();
+  const { setReceiver, validateAccount } = useReceiver();
 
   const areApiReady = useLoadingApi();
 
   const { estimatedFee, receiverAddress } = useTransactionContext();
   const {
-    targetChainDetails: { targetChain }
+    targetChainDetails: { targetChain },
+    sourceChainDetails: { sourceChain }
   } = useSourceTarget();
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
@@ -71,7 +72,6 @@ const Transfer = ({ className }: Props) => {
   const onDeriveReceiver = () => {
     setReceiver(receiverToDerive.formattedAccount);
     setReceiverToDerive(emptyReceiverToDerive);
-    setReceiverValidation(true);
   };
 
   if (!areApiReady) {
@@ -84,15 +84,6 @@ const Transfer = ({ className }: Props) => {
     <>
       <h2>Transfer</h2>
       <Container className={className}>
-        <div className="receiver">
-          {/*           <TextField
-            fullWidth
-            onChange={onReceiverChange}
-            value={receiverAddress}
-            label="Receiver"
-            variant="outlined"
-          /> */}
-        </div>
         <div className="receiver">
           <Receiver />
         </div>
@@ -107,7 +98,7 @@ const Transfer = ({ className }: Props) => {
 
         <br />
         <Button variant="contained" disabled={isButtonDisabled()} onClick={sendLaneMessage}>
-          Send Transfer
+          Transfer from {sourceChain} to {targetChain}
         </Button>
         <p>{receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
       </Container>

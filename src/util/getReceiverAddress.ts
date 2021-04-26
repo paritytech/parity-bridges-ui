@@ -30,7 +30,7 @@ const getReceiverAddress = ({ receiverAddress, chain }: Props) => {
   try {
     const [validatedDerivedAcccount, rest] = checkAddress(receiverAddress, SS58Format);
     const address = receiverAddress;
-    let formatFound;
+    let formatFound = chain;
     if (!validatedDerivedAcccount) {
       const parts = rest?.split(',');
       const prefix = parts![2].split(' ');

@@ -15,32 +15,26 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import Container from '@material-ui/core/Container';
-import People from '@material-ui/icons/People';
 import { encodeAddress } from '@polkadot/util-crypto';
-import ctx from 'classnames';
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
+import { AccountActionCreators } from '../actions/accountActions';
 import { getChainConfigs } from '../configs/substrateProviders';
+import { useUpdateAccountContext } from '../contexts/AccountContextProvider';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useBalance from '../hooks/useBalance';
 import useReceiver from '../hooks/useReceiver';
 import getDeriveAccount from '../util/getDeriveAccount';
+import AccountDisplay from './AccountDisplay';
 
 interface Props {
   value: string;
   className?: string;
   isDerived?: boolean;
-  onClick?: any;
 }
 
-export enum ConvertionType {
-  COMPANION = 'COMPANION',
-  DERIVED_TARGET = 'DERIVED_TARGET'
-}
-
-const GenericAccount = ({ className, value, onClick }: Props) => {
-  const [selected, setSelected] = useState('');
+const GenericAccount = ({ className, value }: Props) => {
   const {
     targetChainDetails: {
       targetApiConnection: { api: targetApi },
@@ -49,68 +43,49 @@ const GenericAccount = ({ className, value, onClick }: Props) => {
     sourceChainDetails: { sourceChain }
   } = useSourceTarget();
   const { setReceiver } = useReceiver();
+  const { dispatchAccount } = useUpdateAccountContext();
   const chainsConfigs = getChainConfigs();
   const { bridgeId, SS58Format: sourceSS58Format } = chainsConfigs[sourceChain];
   const { SS58Format: targetSS58Format } = chainsConfigs[targetChain];
 
-  const companionAddress = encodeAddress(value, targetSS58Format);
-  const companionState = useBalance(targetApi, companionAddress, true);
+  const nativeAddress = encodeAddress(value, targetSS58Format);
+  const nativeState = useBalance(targetApi, nativeAddress, true);
 
   const sourceAddressType = encodeAddress(value, sourceSS58Format);
-  const targetAddressFormat = getDeriveAccount({
+  const companionAddress = getDeriveAccount({
     SS58Format: targetSS58Format,
     address: sourceAddressType,
     bridgeId
   });
-  const derivedState = useBalance(targetApi, targetAddressFormat, true);
+  const companionState = useBalance(targetApi, companionAddress, true);
 
-  console.log('companionAddress', companionAddress);
-  console.log('targetAddressFormat', targetAddressFormat);
+  const setReceiverandCleanGeneric = (address: string) => {
+    dispatchAccount(AccountActionCreators.setGenericAccount(null));
+    dispatchAccount(AccountActionCreators.setDerivedAccount(nativeAddress));
+
+    setReceiver(address);
+  };
+
+  const setNativeAsTarget = () => {
+    setReceiverandCleanGeneric(nativeAddress);
+  };
 
   const setCompanionAsTarget = () => {
-    setSelected(ConvertionType.COMPANION);
-    setReceiver(companionAddress);
+    setReceiverandCleanGeneric(companionAddress);
   };
-
-  const setTargetAsTarget = () => {
-    setSelected(ConvertionType.DERIVED_TARGET);
-    setReceiver(targetAddressFormat);
-  };
-
-  const getClassName = (addressType: string) => ctx('row', selected === addressType && 'selected');
 
   return (
     <Container className={className}>
-      <div className="row" onClick={onClick}>
-        <div className="icon">
-          <People />
-        </div>
-        <div className="address">
-          <p>Generic: {value}</p>
-        </div>
+      <div className="row" onClick={setNativeAsTarget}>
+        <AccountDisplay accountName="Native" address={nativeAddress} balance={nativeState.formattedBalance} hasBorder />
       </div>
-      <div className={getClassName(ConvertionType.COMPANION)} onClick={setCompanionAsTarget}>
-        <div className="icon">
-          <People />
-        </div>
-        <div className="address">
-          <p>Companion: {companionAddress}</p>
-        </div>
-
-        <div className="balance">
-          <p>{companionState ? companionState.formattedBalance : '-'}</p>
-        </div>
-      </div>
-      <div className={getClassName(ConvertionType.DERIVED_TARGET)} onClick={setTargetAsTarget}>
-        <div className="icon">
-          <People />
-        </div>
-        <div className="address">
-          <p>Target Derived Address: {targetAddressFormat}</p>
-        </div>
-        <div className="balance">
-          <p>{derivedState ? derivedState.formattedBalance : '-'}</p>
-        </div>
+      <div className="row" onClick={setCompanionAsTarget}>
+        <AccountDisplay
+          address={companionAddress}
+          accountName="Companion"
+          balance={companionState.formattedBalance}
+          hasBorder
+        />
       </div>
     </Container>
   );
@@ -121,11 +96,11 @@ export default styled(GenericAccount)`
   display: flex;
   justify-content: space-between;
   flex-direction: column;
-  min-width: 800px;
+  min-width: 100%;
   .row {
-    width: 100%
+    min-width: 100%;
     flex-direction: column;
-  min-width: 800px;
+    min-width: 800px;
   }
   .icon {
     float: left;
@@ -140,7 +115,7 @@ export default styled(GenericAccount)`
     padding: 5px;
     border: 1px solid;
   }
-.selected {
-color: green;
-}
+  .selected {
+    color: green;
+  }
 `;

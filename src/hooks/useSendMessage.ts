@@ -41,7 +41,7 @@ interface Props {
 }
 
 function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, weightInput }: Props) {
-  const { estimatedFee, receiverAddress, isReceiverValid } = useTransactionContext();
+  const { estimatedFee, receiverAddress } = useTransactionContext();
   const { dispatchTransaction } = useUpdateTransactionContext();
   const laneId = useLaneId();
   const {
@@ -147,7 +147,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
         return isRunning || !account;
         break;
       case TransactionTypes.TRANSFER:
-        return isRunning || !receiverAddress || !account || !isReceiverValid;
+        return isRunning || !receiverAddress || !account;
         break;
       case TransactionTypes.CUSTOM:
         return isRunning || !account || !input || !weightInput || !isValidCall;

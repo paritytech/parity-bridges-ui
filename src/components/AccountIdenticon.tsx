@@ -14,18 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { AccountActionsTypes } from '../actions/accountActions';
-import type { AccountsActionType, AccountState } from '../types/accountTypes';
+import Identicon from '@polkadot/react-identicon';
+import React from 'react';
+interface Props {
+  address: string;
+}
 
-export default function accountReducer(state: AccountState, action: AccountsActionType): AccountState {
-  switch (action.type) {
-    case AccountActionsTypes.SET_ACCOUNT:
-      return { ...state, account: action.payload.account };
-    case AccountActionsTypes.SET_DERIVED_ACCOUNT:
-      return { ...state, derivedAccount: action.payload.derivedAccount };
-    case AccountActionsTypes.SET_GENERIC_ACCOUNT:
-      return { ...state, genericAccount: action.payload.genericAccount };
-    default:
-      throw new Error(`Unknown type: ${action.type}`);
-  }
+export default function AccountIdenticon({ address }: Props) {
+  return <Identicon value={address} size={32} theme={'polkadot'} />;
 }

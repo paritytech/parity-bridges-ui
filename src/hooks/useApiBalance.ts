@@ -24,7 +24,7 @@ type State = {
   api: ApiPromise;
 };
 
-const useApiBalance = (address: string, chain: string | undefined, isDerived: boolean): State => {
+const useApiBalance = (address: string | null, chain: string | undefined, isDerived: boolean): State => {
   const {
     sourceChainDetails: {
       sourceApiConnection: { api: sourceApi },
@@ -36,10 +36,18 @@ const useApiBalance = (address: string, chain: string | undefined, isDerived: bo
     }
   } = useSourceTarget();
 
+  if (!chain || !address || chain === 'INCORRECT_FORMAT' || chain === 'GENERIC') {
+    return { address: '', api: {} as ApiPromise };
+  }
+
   const chainsConfigs = getChainConfigs();
-  const { SS58Format } = chainsConfigs[chain === sourceChain ? targetChain : sourceChain];
-  const { bridgeId } = chainsConfigs[chain === sourceChain ? sourceChain : targetChain];
+  const { SS58Format } = chainsConfigs[chain === targetChain ? targetChain : sourceChain];
+  const { bridgeId } = chainsConfigs[chain === targetChain ? sourceChain : targetChain];
   let addressResult = address;
+  console.log('isDerived', isDerived);
+  console.log('SS58Format', SS58Format);
+  console.log('bridgeId', bridgeId);
+
   if (isDerived) {
     addressResult = getDeriveAccount({
       SS58Format,
@@ -47,6 +55,8 @@ const useApiBalance = (address: string, chain: string | undefined, isDerived: bo
       bridgeId
     });
   }
+
+  console.log('addressResult', addressResult);
 
   const processedApi = isDerived ? targetApi : sourceApi;
 

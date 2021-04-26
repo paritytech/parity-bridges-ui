@@ -58,7 +58,7 @@ export function KeyringContextProvider(props: KeyringContextProviderProps): Reac
         allAccounts?.length && setAccountExists(true);
         allAccounts = allAccounts.map(({ address, meta }) => ({
           address,
-          meta: { ...meta, name: `${meta.name} (${meta.source})` }
+          meta: { ...meta, name: `${meta.name}` }
         }));
 
         keyring.loadAll({ isDevelopment }, allAccounts);

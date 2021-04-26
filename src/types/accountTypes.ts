@@ -22,14 +22,18 @@ export type Account = KeyringPair | null;
 
 export interface AccountContextType {
   account: Account;
+  derivedAccount: string | null;
+  genericAccount: string | null;
 }
 
 interface Payload {
-  [propName: string]: Account;
+  [propName: string]: any;
 }
 
 export interface AccountState {
   account: Account;
+  derivedAccount: string | null;
+  genericAccount: string | null;
 }
 
 export type AccountsActionType = { type: AccountActionsTypes; payload: Payload };

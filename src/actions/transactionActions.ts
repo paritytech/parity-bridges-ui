@@ -35,11 +35,6 @@ const setReceiverAddress = (receiverAddress: string | null) => ({
   type: TransactionActionTypes.SET_RECEIVER_ADDRESS
 });
 
-const setReceiverValidation = (isReceiverValid: boolean) => ({
-  payload: { isReceiverValid },
-  type: TransactionActionTypes.SET_RECEIVER_VALIDATION
-});
-
 const createTransactionStatus = (initialTransaction: TransanctionStatus) => {
   return {
     payload: { initialTransaction },
@@ -58,7 +53,6 @@ const TransactionActionCreators = {
   createTransactionStatus,
   estimateFee,
   setReceiverAddress,
-  setReceiverValidation,
   updateTransactionStatus
 };
 

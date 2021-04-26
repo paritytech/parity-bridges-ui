@@ -14,62 +14,37 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import Container from '@material-ui/core/Container';
-import People from '@material-ui/icons/People';
 import React from 'react';
-import styled from 'styled-components';
 
 import useApiBalance from '../hooks/useApiBalance';
 import useBalance from '../hooks/useBalance';
+import AccountDisplay from './AccountDisplay';
 
 interface Props {
   value: string;
-  text?: string;
+  accountName?: string;
   className?: string;
   chain?: string | undefined;
   isDerived?: boolean;
   onClick?: any;
+  hasBorder?: boolean;
+  fromSender?: boolean;
 }
 
-const Account = ({ className, text, value, chain, isDerived = false, onClick }: Props) => {
+const Account = ({ accountName, value, chain, isDerived = false, hasBorder = false, fromSender = false }: Props) => {
   const { api, address } = useApiBalance(value, chain, isDerived);
   const state = useBalance(api, address, true);
-  const verifiedText = text ? text : value;
 
   return (
-    <Container onClick={onClick} className={className}>
-      <div className="icon">
-        <People />
-      </div>
-      <div className="address">
-        <p>{verifiedText}</p>
-      </div>
-
-      <div className="balance">
-        <p>{state ? state.formattedBalance : '-'}</p>
-      </div>
-    </Container>
+    <AccountDisplay
+      accountName={accountName}
+      address={address}
+      balance={state.formattedBalance}
+      hasBorder={hasBorder}
+      isDerived={isDerived}
+      fromSender={fromSender}
+    />
   );
 };
 
-export default styled(Account)`
-  margin: auto 0;
-  display: flex;
-  justify-content: space-between;
-  min-width: 700px;
-  .icon {
-    float: left;
-  }
-  .address {
-    float: left;
-    margin-left: 10px;
-    min-width: 80%;
-  }
-
-  .balances {
-    min-width: 20%;
-    float: right;
-    padding: 5px;
-    border: 1px solid;
-  }
-`;
+export default Account;

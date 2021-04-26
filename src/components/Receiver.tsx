@@ -17,111 +17,42 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { Container, TextField } from '@material-ui/core';
+import { Container, InputBase } from '@material-ui/core';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
+import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import useReceiver from '../hooks/useReceiver';
 import Account from './Account';
 import GenericAddress from './GenericAccount';
-
+import ReceiverInput from './ReceiverInput';
 interface Props {
   className?: string;
 }
 const emptyReceiverToDerive = { formatFound: '', formattedAccount: '' };
 
 const AccountInput = ({ className }: Props) => {
-  const [addressInput, setAddresInput] = useState('');
-  const [derivedAddress, setDeriveAddress] = useState('');
-  const [isGeneric, setIsGeneric] = useState(false);
-  const [showAccount, setShowAccount] = useState(false);
-  const [receiverToDerive, setReceiverToDerive] = useState(emptyReceiverToDerive);
-  const { setReceiver, validateAccount, setReceiverValidation } = useReceiver();
+  const { genericAccount, derivedAccount } = useAccountContext();
+
   const {
     targetChainDetails: { targetChain }
   } = useSourceTarget();
-  const { receiverAddress } = useTransactionContext();
-  const onClick = () => {
-    setShowAccount(false);
-    setIsGeneric(false);
-  };
-
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const receiver = event.target.value;
-
-    setAddresInput(receiver);
-    setIsGeneric(false);
-    if (!receiver) {
-      return;
-    }
-    const { formattedAccount, formatFound } = validateAccount(receiver)!;
-    setShowAccount(true);
-    if (formatFound === 'GENERIC') {
-      setIsGeneric(true);
-      return;
-    }
-    if (formatFound) {
-      setReceiver(formattedAccount);
-      setDeriveAddress(formattedAccount);
-    } else {
-      setDeriveAddress('');
-      setReceiver(receiver);
-    }
-  };
-
-  const onDeriveReceiver = () => {
-    setReceiver(receiverToDerive.formattedAccount);
-    setReceiverToDerive(emptyReceiverToDerive);
-    setReceiverValidation(true);
-  };
-
-  /**
-
-   cambiar logica para que muestre 3 casos:
-  todo:  crear state que diga que caso es
-
-  1) valid target account
-  2) valid derived: muestra  addressInput arriba y derived abajo.
-  3) seleccionador de caso: decodeAsTarget() o derived.
-  */
-
-  console.log('isGeneric', isGeneric);
-  console.log('addressInput', addressInput);
-  console.log('showAccount', showAccount);
-  console.log('receiverAddress', receiverAddress);
-
+  console.log('derivedAccount', derivedAccount);
   return (
     <Container className={className}>
-      {!showAccount && (
-        <TextField
-          fullWidth
-          onClick={onClick}
-          onChange={onChange}
-          value={addressInput}
-          label="Receiver"
-          variant="outlined"
-        />
-      )}
+      <ReceiverInput />
       <div className="values">
-        {showAccount && receiverAddress && !derivedAddress && !isGeneric && (
-          <>
-            <div>
-              <Account value={receiverAddress} chain={targetChain} onClick={onClick} />
-            </div>
-          </>
-        )}
-        {showAccount && derivedAddress && !isGeneric && (
+        {derivedAccount && (
           <div>
-            <Account value={addressInput} chain={targetChain} onClick={onClick} />{' '}
-            <Account value={derivedAddress} chain={targetChain} onClick={onClick} isDerived />{' '}
+            <Account value={derivedAccount} chain={targetChain} isDerived hasBorder />{' '}
           </div>
         )}
 
-        {isGeneric && (
-          <div>
-            <GenericAddress value={addressInput} onClick={onClick} />
+        {genericAccount && (
+          <div className="genericAddress">
+            <GenericAddress value={genericAccount} />
           </div>
         )}
       </div>
@@ -133,6 +64,7 @@ export default styled(AccountInput)`
   margin: auto 0;
   display: flex;
   justify-content: space-between;
+  flex-direction: column;
   min-width: 100%;
   .icon {
     min-width: 20%;
@@ -141,7 +73,6 @@ export default styled(AccountInput)`
   .address {
     min-width: 60%;
   }
-
   .balances {
     min-width: 20%;
     float: right;
@@ -151,5 +82,16 @@ export default styled(AccountInput)`
   .values {
     display: flex;
     flex-direction: column;
+  }
+  .input {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid grey;
+    padding: 5px 10px;
+  }
+  .genericAddress {
+    display: flex;
+    justify-content: space-between;
   }
 `;

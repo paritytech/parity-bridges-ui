@@ -15,6 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Container, FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { encodeAddress } from '@polkadot/util-crypto';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -22,6 +23,7 @@ import styled from 'styled-components';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useAccounts from '../hooks/useAccounts';
 import useReceiver from '../hooks/useReceiver';
+import { Account as AccountType } from '../types/accountTypes';
 import formatAccounts from '../util/formatAccounts';
 import getChainSS58 from '../util/getSS58';
 import Account from './Account';
@@ -31,8 +33,15 @@ interface Props {
   className?: string;
 }
 
-const Accounts = ({ className }: Props) => {
-  const [chains, setChains] = useState<Array<string>>([]);
+const useStyles = makeStyles(() => ({
+  row: {
+    minWidth: '100%'
+  }
+}));
+
+const Sender = ({ className }: Props) => {
+  const classes = useStyles();
+  const [chains, setChains] = useState<Array<string[]>>([]);
   const { account, accounts, derivedAccount, setCurrentAccount } = useAccounts();
   const {
     sourceChainDetails: { sourceChain },
@@ -42,7 +51,10 @@ const Accounts = ({ className }: Props) => {
 
   useEffect(() => {
     if (!chains.length) {
-      setChains([sourceChain, targetChain]);
+      setChains([
+        [sourceChain, targetChain],
+        [targetChain, sourceChain]
+      ]);
     }
   }, [chains.length, sourceChain, targetChain]);
 
@@ -53,27 +65,32 @@ const Accounts = ({ className }: Props) => {
     setReceiver(null);
   };
 
-  const renderAccounts = (chain: string) => {
-    const formatedAccounts = formatAccounts(accounts, chain);
+  const renderAccounts = (chains: string[]) => {
+    const [source, target] = chains;
+    const formatedAccounts = formatAccounts(accounts, source);
     const items = formatedAccounts.map(({ text, value, key }: any) => (
       <MenuItem
         key={key}
         value={value}
         onClick={() => {
-          onChange(value, chain);
+          onChange(value, source);
         }}
       >
-        <Account text={text} value={value} chain={chain} />
-        <Account text={text} value={value} isDerived chain={chain} />
+        <div className={classes.row}>
+          <Account accountName={text} value={value} chain={source} />
+          <Account accountName={text} value={value} isDerived fromSender chain={target} />
+        </div>
       </MenuItem>
     ));
-    return [<SubHeader key={chain} chain={chain} />, items];
+    return [<SubHeader key={source} chain={source} />, items];
   };
+
+  const getName = (account: AccountType) => (account!.meta.name as string).toLocaleUpperCase();
 
   const AccountSelected = () => {
     if (account) {
-      const text = (account.meta.name as string).toLocaleUpperCase();
-      return <Account text={text} value={value} />;
+      const text = getName(account);
+      return <Account accountName={text} value={value} chain={sourceChain} />;
     }
     return null;
   };
@@ -95,14 +112,14 @@ const Accounts = ({ className }: Props) => {
       </FormControl>
       {derivedAccount && (
         <div className="formControl">
-          <Account text="Derived Account" value={derivedAccount} />
+          <Account accountName={getName(account)} value={derivedAccount} isDerived hasBorder chain={targetChain} />
         </div>
       )}
     </Container>
   );
 };
 
-export default styled(Accounts)`
+export default styled(Sender)`
   margin: 40px 0;
   .formControl {
     width: 700px;
@@ -110,5 +127,8 @@ export default styled(Accounts)`
   .chainSelect {
     font-size: 18px;
     color: blue !important;
+  }
+  .row {
+    width: 100%;
   }
 `;

@@ -31,27 +31,23 @@ export default function useReceiver() {
   const setReceiverAddress = (address: string | null) =>
     dispatchTransaction(TransactionActionCreators.setReceiverAddress(address));
 
-  const setReceiverValidation = (value: boolean) =>
-    dispatchTransaction(TransactionActionCreators.setReceiverValidation(value));
-
   const setReceiver = (address: string | null) => setReceiverAddress(address);
 
   const validateAccount = (receiver: string) => {
     try {
-      const { address, formatFound, isReceiverValid } = getReceiverAddress({
+      const { address, formatFound } = getReceiverAddress({
         chain: targetChain,
         receiverAddress: receiver
       });
-      setReceiverValidation(isReceiverValid);
+
       return { formatFound, formattedAccount: address };
     } catch (e) {
-      setReceiverValidation(false);
-      logger.error(e);
+      logger.error(e.message);
       if (e.message === INCORRECT_FORMAT) {
         return { formatFound: e.message, formattedAccount: receiver };
       }
     }
   };
 
-  return { setReceiver, setReceiverValidation, validateAccount };
+  return { setReceiver, validateAccount };
 }
