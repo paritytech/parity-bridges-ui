@@ -24,21 +24,15 @@ interface Props {
 
 const ExtensionAccountCheck = ({ component }: Props): JSX.Element => {
   const { extensionExists, accountExists } = useKeyringContext();
-  const outcomeAfterChecks: JSX.Element[] = [];
 
+  let msg: string = '';
   if (!extensionExists) {
-    outcomeAfterChecks.push(<p className="messageNote">Connect to a wallet. Install polkadotjs extension</p>);
-  } else {
-    if (!accountExists) {
-      outcomeAfterChecks.push(
-        <p className="messageNote">There are no accounts in the extension. Please create one. Please create one</p>
-      );
-    } else {
-      outcomeAfterChecks.push(component);
-    }
+    msg = 'Connect to a wallet. Install polkadotjs extension';
+  } else if (!accountExists) {
+    msg = 'There are no accounts in the extension. Please create one. Please create one';
   }
 
-  return <>{outcomeAfterChecks}</>;
+  return <>{accountExists ? component : <p className="messageNote">{msg}</p>}</>;
 };
 
 export default styled(ExtensionAccountCheck)`
