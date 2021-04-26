@@ -76,7 +76,7 @@ describe('Validate .env file', () => {
     expect(checkExpectedVariables()).toBeTruthy();
   });
 
-  test('Unexpected ENV variables are set', () => {
+  test('Unexpected ENV variables should not exist', () => {
     expect(checkUnexpectedVariables()).toBeTruthy();
   });
 });
