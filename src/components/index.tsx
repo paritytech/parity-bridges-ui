@@ -16,4 +16,5 @@
 
 export { BoxUI, BoxSidebar, BoxMain } from './LayoutBoxes';
 export { MenuAction, MenuActionMockData } from './MenuAction';
+export { NetworkSides, NetworkStats } from './Network';
 export { light } from './theme';

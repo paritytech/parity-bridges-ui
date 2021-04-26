@@ -15,8 +15,10 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Box, Container, Paper } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { fade, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
+
+import { substrateGray } from './theme';
 
 // As this is placed as a child in the Material UI Select component, for some reason style components classes are not working.
 // This way to inject the styles works.
@@ -38,10 +40,15 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   sidebar: {
-    width: 200,
-    padding: theme.spacing(3),
+    width: 240,
     '& .inner': {
-      position: 'fixed'
+      position: 'fixed',
+      top: 0,
+      width: 240,
+      padding: theme.spacing(3),
+      height: '100vh',
+      backgroundColor: substrateGray[50],
+      borderRight: `1px solid ${fade(theme.palette.divider, 0.5)}`
     },
     [theme.breakpoints.down('md')]: {
       width: '100%'
