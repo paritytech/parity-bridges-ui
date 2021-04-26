@@ -17,7 +17,7 @@
 import { ButtonBase, Popover } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import React from 'react';
+import React, { Dispatch, SetStateAction, useEffect } from 'react';
 
 // As this is placed as a child in the Material UI Select component, for some reason style components classes are not working.
 // This way to inject the styles works.
@@ -54,52 +54,35 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface MenuActionItemsProps {
+  idx: number;
   title: string;
-  isCurrent: boolean;
   isEnabled: boolean;
 }
 interface MenuActionProps {
   items: Array<MenuActionItemsProps>;
+  menuIdx: number;
+  changeMenu: Dispatch<SetStateAction<number>>;
 }
 
-export const MenuActionMockData = [
-  {
-    title: 'Transfer',
-    isCurrent: true,
-    isEnabled: true
-  },
-  {
-    title: 'Remark',
-    isCurrent: false,
-    isEnabled: true
-  },
-  {
-    title: 'Custom Call',
-    isCurrent: false,
-    isEnabled: false
-  },
-  {
-    title: 'Connect to a wallet',
-    isCurrent: false,
-    isEnabled: true
-  }
-];
-
-export const MenuAction = ({ items }: MenuActionProps) => {
+export const MenuAction = ({ items, changeMenu, menuIdx }: MenuActionProps) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+  const [id, setId] = React.useState<string | undefined>(undefined);
+  const [open, setOpen] = React.useState<boolean>(false);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
+  useEffect(() => {
+    setOpen(Boolean(anchorEl));
+    setId(anchorEl ? 'simple-popover' : undefined);
+  }, [anchorEl]);
 
   return (
     <>
       <ButtonBase className={`${classes.item} current`} onClick={handleClick}>
-        Transfer
+        {items[menuIdx]?.title || '-'}
         <ArrowDropDownIcon />
       </ButtonBase>
       <Popover
@@ -120,7 +103,13 @@ export const MenuAction = ({ items }: MenuActionProps) => {
         }}
       >
         {items.map((i, n) => (
-          <ButtonBase className={`${classes.item} ${!i.isEnabled && 'disabled'}`} key={n}>
+          <ButtonBase
+            className={`${classes.item} ${!i.isEnabled && 'disabled'}`}
+            key={n}
+            onClick={() => {
+              changeMenu(i.idx);
+            }}
+          >
             {i.title}
           </ButtonBase>
         ))}

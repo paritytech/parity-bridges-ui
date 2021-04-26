@@ -18,7 +18,7 @@ import { Container, Grid } from '@material-ui/core';
 import React from 'react';
 import { Icon } from 'semantic-ui-react';
 
-import { BoxMain, BoxSidebar, BoxUI, MenuAction, MenuActionMockData } from '../components';
+import { BoxMain, BoxSidebar, BoxUI, MenuAction } from '../components';
 import Accounts from '../components/Accounts';
 import CustomCall from '../components/CustomCall';
 import DashboardCard from '../components/DashboardCard';
@@ -34,14 +34,67 @@ interface Props {
   className?: string;
 }
 
+interface MenuActionItemsProps {
+  idx: number;
+  title: string;
+  isEnabled: boolean;
+  component: React.ReactElement;
+}
+
+const MenuContents = [
+  {
+    idx: 0,
+    title: 'Transfer',
+    isEnabled: true,
+    component: (
+      <>
+        <Transfer />
+        <ExtensionAccountCheck component={<Accounts />} />
+      </>
+    )
+  },
+  {
+    idx: 1,
+    title: 'Remark',
+    isEnabled: true,
+    component: <Remark />
+  },
+  {
+    idx: 2,
+    title: 'Custom Call',
+    isEnabled: true,
+    component: <CustomCall />
+  },
+  {
+    idx: 3,
+    title: 'Connect to a wallet',
+    isEnabled: true,
+    component: <p>Connect to a wallet</p>
+  }
+];
+
 function Main({ className }: Props) {
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
+  const [items, setItems] = React.useState<MenuActionItemsProps[]>([] as MenuActionItemsProps[]);
+  const [index, setIndex] = React.useState<number>(0);
+
+  const searchItems = (choice: number) => {
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].idx === choice) {
+        return items[i];
+      }
+    }
+  };
+
+  React.useEffect(() => {
+    setItems(MenuContents);
+  }, []);
 
   return (
     <BoxMain>
       <BoxSidebar>{`${sourceChainDetails.sourceChain} => ${targetChainDetails.targetChain}`}</BoxSidebar>
       <BoxUI>
-        <MenuAction items={MenuActionMockData} />
+        <MenuAction items={items} menuIdx={index} changeMenu={setIndex} />
         <Container className={className}>
           <Grid container alignItems="center">
             <Grid item md={5}>
@@ -61,23 +114,12 @@ function Main({ className }: Props) {
           </Grid>
           <Grid container>
             <Grid item md={12}>
-              <Remark />
+              {searchItems(index)?.component}
             </Grid>
           </Grid>
           <Grid container>
             <Grid item md={12}>
-              <Transfer />
-              <ExtensionAccountCheck component={<Accounts />} />
-            </Grid>
-            <Grid container>
-              <Grid item md={12}>
-                <CustomCall />
-              </Grid>
-            </Grid>
-            <Grid container>
-              <Grid item md={12}>
-                <Transactions />
-              </Grid>
+              <Transactions />
             </Grid>
           </Grid>
         </Container>
