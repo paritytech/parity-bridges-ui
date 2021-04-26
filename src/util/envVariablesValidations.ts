@@ -36,6 +36,15 @@ const checkExpectedVariables = () => {
   return true;
 };
 
+const checkUnexpectedVariables = () => {
+  for (const v of Object.keys(process.env)) {
+    if (!expectedVariables.includes(v)) {
+      throw new Error(`Unexpected ${v} variable found.`);
+    }
+  }
+  return true;
+};
+
 const checkEnvVariable = (variable: string) => {
   const envVariable = process.env[variable];
   if (!envVariable) {
@@ -44,4 +53,4 @@ const checkEnvVariable = (variable: string) => {
   return envVariable;
 };
 
-export { checkEnvVariable, checkExpectedVariables };
+export { checkEnvVariable, checkExpectedVariables, checkUnexpectedVariables };
