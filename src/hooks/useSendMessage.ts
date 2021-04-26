@@ -65,7 +65,6 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
   };
 
   const makeCall = async (id: string) => {
-    let startProcess: boolean = true;
     try {
       if (!account || isRunning) {
         return;
@@ -83,7 +82,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
         sourceAccount = account.address;
       }
       const unsub = await bridgeMessage.signAndSend(sourceAccount, { ...options }, ({ events = [], status }) => {
-        if (startProcess) {
+        if (status.isReady) {
           dispatchTransaction(
             TransactionActionCreators.createTransactionStatus({
               block: null,
@@ -99,7 +98,6 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
               type
             })
           );
-          startProcess = false;
         }
         if (status.isBroadcast) {
           dispatchMessage(MessageActionsCreators.triggerInfoMessage({ message: 'Transaction was broadcasted' }));
