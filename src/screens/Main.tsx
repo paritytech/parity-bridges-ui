@@ -98,7 +98,7 @@ function Main({ className }: Props) {
           </Grid>
           <Grid container>
             <Grid item md={12}>
-              <Accounts />
+              <ExtensionAccountCheck component={<Accounts />} />
             </Grid>
           </Grid>
           <Grid container>
@@ -108,7 +108,6 @@ function Main({ className }: Props) {
           </Grid>
           <Grid container>
             <Grid item md={12}>
-              <ExtensionAccountCheck component={<Accounts />} />
               <Transactions />
             </Grid>
           </Grid>
