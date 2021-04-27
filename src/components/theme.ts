@@ -145,8 +145,7 @@ export const light: ThemeOptions = {
     body2: {
       fontWeight: 400,
       fontSize: 12,
-      lineHeight: '135%',
-      letterSpacing: 0.25
+      lineHeight: '140%'
     },
     button: {
       fontWeight: 500,

@@ -14,9 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Container } from '@material-ui/core';
 import React from 'react';
-import styled from 'styled-components';
 
 import { MessageActionsCreators } from '../actions/messageActions';
 import { TransactionActionCreators } from '../actions/transactionActions';
@@ -26,11 +24,8 @@ import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import { TransactionStatusEnum, TransanctionStatus } from '../types/transactionTypes';
 import shortenItem from '../util/shortenItem';
 import TransactionStatus from './TransactionStatus';
-interface Props {
-  className?: string;
-}
 
-const Transactions = ({ className }: Props) => {
+const Transactions = () => {
   const { transactions } = useTransactionContext();
   const { dispatchTransaction } = useUpdateTransactionContext();
   const { dispatchMessage } = useUpdateMessageContext();
@@ -55,14 +50,10 @@ const Transactions = ({ className }: Props) => {
             })
           );
         };
-        return (
-          <Container className={className} key={transaction.id}>
-            <TransactionStatus transaction={transaction} onComplete={onComplete} />
-          </Container>
-        );
+        return <TransactionStatus key={transaction.id} transaction={transaction} onComplete={onComplete} />;
       })}
     </>
   );
 };
 
-export default styled(Transactions)``;
+export default Transactions;

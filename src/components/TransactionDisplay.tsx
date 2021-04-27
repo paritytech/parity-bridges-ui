@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Card, CardContent, CardHeader } from '@material-ui/core';
+import { Card, CardContent, CardHeader, makeStyles } from '@material-ui/core';
 import React from 'react';
 
 import { Step, TransactionStatusEnum, TransanctionStatus } from '../types/transactionTypes';
@@ -25,10 +25,30 @@ interface Props {
   transaction: TransanctionStatus;
 }
 
+const useStyles = makeStyles((theme) => ({
+  card: {
+    '& *': {
+      ...theme.typography.body2
+    },
+    '& .MuiCardHeader-root': {
+      padding: 0,
+      '& .MuiTypography-root': {
+        fontWeight: 600
+      }
+    },
+    '& .MuiCardContent-root': {
+      padding: 0
+    }
+  }
+}));
+
 export const TransactionDisplay = ({ transaction, steps }: Props) => {
+  const classes = useStyles();
   if (!steps.length) {
     return null;
   }
+
+  console.log(transaction);
 
   const status = transaction.status === TransactionStatusEnum.COMPLETED ? 'Completed' : 'In Progress';
   return (
@@ -36,8 +56,8 @@ export const TransactionDisplay = ({ transaction, steps }: Props) => {
       <ButtonSwitchMode disabled> Payload</ButtonSwitchMode>
       <ButtonSwitchMode color="primary"> Reciept</ButtonSwitchMode>
       <ButtonSwitchMode disabled> Human</ButtonSwitchMode>
-      <Card elevation={24}>
-        <CardHeader title={`Transaction: ${transaction.type}`} />
+      <Card elevation={24} className={classes.card}>
+        <CardHeader title={`${transaction.type} ${transaction.sourceChain} -> ${transaction.targetChain}`} />
         <CardContent>
           <h4>Status: {status}</h4>
           {steps.map(({ chainType, label, status }, idx) => (
