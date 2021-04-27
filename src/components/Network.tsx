@@ -92,19 +92,21 @@ export const NetworkSides = () => {
 
 export const NetworkStats = () => {
   const classes = useStyles();
-  const chainDetailSource = useDashboard(ChainDetails.SOURCE);
+  const dbSource = useDashboard(ChainDetails.SOURCE);
 
   return (
     <>
       <Box className={classes.statsEntry}>
-        Finalised:
-        <span>real / bridged</span>
+        Bridged blocks:
+        <span>
+          {dbSource.bestBridgedFinalizedBlock} / {dbSource.bestBlockFinalized}
+        </span>
       </Box>
       <Box className={classes.statsEntry}>
-        Messages:<span>{chainDetailSource.outboundLanes.totalMessages}</span>
+        Outbound messages:<span>{dbSource.outboundLanes.totalMessages}</span>
       </Box>
       <Box className={classes.statsEntry}>
-        Pending:<span>{chainDetailSource.outboundLanes.pendingMessages}</span>
+        Pending:<span>{dbSource.outboundLanes.pendingMessages}</span>
       </Box>
     </>
   );
