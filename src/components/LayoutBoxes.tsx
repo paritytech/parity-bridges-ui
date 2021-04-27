@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   sidebar: {
-    width: 240,
+    width: 240 + theme.spacing(6),
     '& .inner': {
       position: 'fixed',
       display: 'flex',

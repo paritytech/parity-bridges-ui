@@ -16,7 +16,6 @@
 
 import { Container, Grid, Typography } from '@material-ui/core';
 import React from 'react';
-import { Icon } from 'semantic-ui-react';
 
 import {
   BoxMain,
@@ -30,19 +29,13 @@ import {
 } from '../components';
 import Accounts from '../components/Accounts';
 import CustomCall from '../components/CustomCall';
-import DashboardCard from '../components/DashboardCard';
 import ExtensionAccountCheck from '../components/ExtensionAccountCheck';
 import Remark from '../components/Remark';
 import SnackBar from '../components/SnackBar';
 import Transactions from '../components/Transactions';
 import Transfer from '../components/Transfer';
-import { ChainDetails } from '../types/sourceTargetTypes';
 
-interface Props {
-  className?: string;
-}
-
-function Main({ className }: Props) {
+function Main() {
   return (
     <BoxMain>
       <BoxSidebar>
@@ -55,18 +48,7 @@ function Main({ className }: Props) {
       </BoxSidebar>
       <BoxUI>
         <MenuAction items={MenuActionMockData} />
-        <Container className={className}>
-          <Grid container alignItems="center">
-            <Grid item md={5}>
-              <DashboardCard chainDetail={ChainDetails.SOURCE} />
-            </Grid>
-            <Grid item>
-              <Icon fitted name="exchange" />
-            </Grid>
-            <Grid item md={5}>
-              <DashboardCard chainDetail={ChainDetails.TARGET} />
-            </Grid>
-          </Grid>
+        <Container>
           <Grid container>
             <Grid item md={12}>
               <Accounts />
