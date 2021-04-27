@@ -57,29 +57,19 @@ function Main({ className }: Props) {
           </Grid>
         </Grid>
         <Grid container>
-          <Grid item md={12}>
-            <ExtensionAccountCheck component={<Sender />} />
-          </Grid>
+          <ExtensionAccountCheck component={<Sender />} />
         </Grid>
         <Grid container>
-          <Grid item md={12}>
-            <Remark />
-          </Grid>
+          <Remark />
         </Grid>
         <Grid container>
-          <Grid item md={12}>
-            <Transfer />
-          </Grid>
+          <Transfer />
         </Grid>
         <Grid container>
-          <Grid item md={12}>
-            <CustomCall />
-          </Grid>
+          <CustomCall />
         </Grid>
         <Grid container>
-          <Grid item md={12}>
-            <Transactions />
-          </Grid>
+          <Transactions />
         </Grid>
       </Container>
       <SnackBar />

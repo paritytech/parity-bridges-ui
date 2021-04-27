@@ -14,14 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { AccountActionsTypes } from '../actions/accountActions';
-import type { AccountsActionType, AccountState } from '../types/accountTypes';
+import { useRef, useEffect } from 'react';
 
-export default function accountReducer(state: AccountState, action: AccountsActionType): AccountState {
-  switch (action.type) {
-    case AccountActionsTypes.SET_ACCOUNT:
-      return { ...state, account: action.payload.account };
-    default:
-      throw new Error(`Unknown type: ${action.type}`);
-  }
+export default function usePrevious(value: any) {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
 }

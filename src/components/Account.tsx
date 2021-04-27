@@ -27,11 +27,11 @@ interface Props {
   chain?: string | undefined;
   isDerived?: boolean;
   onClick?: any;
-  hasBorder?: boolean;
+
   fromSender?: boolean;
 }
 
-const Account = ({ accountName, value, chain, isDerived = false, hasBorder = false, fromSender = false }: Props) => {
+const Account = ({ accountName, value, chain, isDerived = false, fromSender = false }: Props) => {
   const { api, address } = useApiBalance(value, chain, isDerived);
   const state = useBalance(api, address, true);
 
@@ -40,7 +40,6 @@ const Account = ({ accountName, value, chain, isDerived = false, hasBorder = fal
       accountName={accountName}
       address={address}
       balance={state.formattedBalance}
-      hasBorder={hasBorder}
       isDerived={isDerived}
       fromSender={fromSender}
     />

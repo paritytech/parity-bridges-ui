@@ -44,10 +44,6 @@ const useApiBalance = (address: string | null, chain: string | undefined, isDeri
   const { SS58Format } = chainsConfigs[chain === targetChain ? targetChain : sourceChain];
   const { bridgeId } = chainsConfigs[chain === targetChain ? sourceChain : targetChain];
   let addressResult = address;
-  console.log('isDerived', isDerived);
-  console.log('SS58Format', SS58Format);
-  console.log('bridgeId', bridgeId);
-
   if (isDerived) {
     addressResult = getDeriveAccount({
       SS58Format,
@@ -55,8 +51,6 @@ const useApiBalance = (address: string | null, chain: string | undefined, isDeri
       bridgeId
     });
   }
-
-  console.log('addressResult', addressResult);
 
   const processedApi = isDerived ? targetApi : sourceApi;
 

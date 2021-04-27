@@ -14,32 +14,30 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { Button, Container, TextField } from '@material-ui/core';
 import React, { useState } from 'react';
-import styled from 'styled-components';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import useLoadingApi from '../hooks/useLoadingApi';
-import useReceiver from '../hooks/useReceiver';
+import { makeStyles } from '@material-ui/core/styles';
 import useSendMessage from '../hooks/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
-import AccountFormatFeedback from './AccountFormatFeedback';
+
 import Receiver from './Receiver';
-interface Props {
-  className?: string;
-}
 
-const emptyReceiverToDerive = { formatFound: '', formattedAccount: '' };
+const useStyles = makeStyles(() => ({
+  container: {
+    width: '700px',
+    marginLeft: '0'
+  },
+  receiver: {}
+}));
 
-const Transfer = ({ className }: Props) => {
+const Transfer = () => {
+  const classes = useStyles();
   const [isRunning, setIsRunning] = useState(false);
   const [transferInput, setTransferInput] = useState('0');
-  const [receiverToDerive, setReceiverToDerive] = useState(emptyReceiverToDerive);
-  const { setReceiver, validateAccount } = useReceiver();
 
   const areApiReady = useLoadingApi();
 
@@ -60,20 +58,6 @@ const Transfer = ({ className }: Props) => {
     setTransferInput(event.target.value);
   };
 
-  const onReceiverChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const receiver = event.target.value;
-    setReceiver(receiver);
-    const { formattedAccount, formatFound } = validateAccount(receiver)!;
-    if (formatFound) {
-      setReceiverToDerive({ formatFound, formattedAccount });
-    }
-  };
-
-  const onDeriveReceiver = () => {
-    setReceiver(receiverToDerive.formattedAccount);
-    setReceiverToDerive(emptyReceiverToDerive);
-  };
-
   if (!areApiReady) {
     return null;
   }
@@ -81,34 +65,21 @@ const Transfer = ({ className }: Props) => {
   // TO-DO: Remove <br /> by proper margins
 
   return (
-    <>
+    <Container className={classes.container}>
       <h2>Transfer</h2>
-      <Container className={className}>
-        <div className="receiver">
-          <Receiver />
-        </div>
-        <AccountFormatFeedback
-          receiverToDerive={receiverToDerive}
-          targetChain={targetChain}
-          onDeriveReceiver={onDeriveReceiver}
-        />
+      <div className={classes.receiver}>
+        <Receiver />
+      </div>
 
-        <br />
-        <TextField onChange={onChange} value={transferInput} label="Sender" variant="outlined" />
+      <TextField onChange={onChange} value={transferInput} label="Amount" variant="outlined" />
 
-        <br />
-        <Button variant="contained" disabled={isButtonDisabled()} onClick={sendLaneMessage}>
-          Transfer from {sourceChain} to {targetChain}
-        </Button>
-        <p>{receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
-      </Container>
-    </>
+      <Button variant="contained" disabled={isButtonDisabled()} onClick={sendLaneMessage}>
+        Transfer from {sourceChain} to {targetChain}
+      </Button>
+
+      <p>{receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
+    </Container>
   );
 };
 
-export default styled(Transfer)`
-  margin: 40px 0;
-  .receiver {
-    max-width: 700px;
-  }
-`;
+export default Transfer;

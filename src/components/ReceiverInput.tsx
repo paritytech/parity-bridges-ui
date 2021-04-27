@@ -16,19 +16,39 @@
 
 import { Container, InputBase } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
-import { AccountActionCreators } from '../actions/accountActions';
-import { useUpdateAccountContext } from '../contexts/AccountContextProvider';
+import { TransactionActionCreators } from '../actions/transactionActions';
+
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
+import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
 import useApiBalance from '../hooks/useApiBalance';
 import useBalance from '../hooks/useBalance';
+import usePrevious from '../hooks/usePrevious';
+
 import useReceiver from '../hooks/useReceiver';
 import AccountIdenticon from './AccountIdenticon';
 
 const useStyles = makeStyles(() => ({
   container: {
-    minWidth: '100%'
+    padding: '0',
+    float: 'left'
+  },
+  row: {
+    border: '1px solid grey',
+    borderRadius: '5px 5px 0 0',
+    display: 'flex',
+    padding: '10px'
+  },
+  address: {
+    marginLeft: '10px'
+  },
+  balances: {
+    marginLeft: 'auto'
+  },
+  input: {
+    marginLeft: '10px',
+    width: '80%'
   }
 }));
 
@@ -41,22 +61,35 @@ function ReceiverInput() {
   const [showBalance, setShowBalance] = useState(false);
 
   const { setReceiver, validateAccount } = useReceiver();
-  const { dispatchAccount } = useUpdateAccountContext();
 
+  const { dispatchTransaction } = useUpdateTransactionContext();
+  const { receiverAddress } = useTransactionContext();
   const { api, address } = useApiBalance(addressInput, formatFound, false);
   const state = useBalance(api, address, true);
 
   const {
     targetChainDetails: { targetChain }
   } = useSourceTarget();
+  const prevTargetChain = usePrevious(targetChain);
+
+  const reset = useCallback(() => {
+    dispatchTransaction(TransactionActionCreators.setGenericAccount(null));
+    dispatchTransaction(TransactionActionCreators.setDerivedAccount(null));
+    setShowBalance(false);
+    setError('');
+  }, [dispatchTransaction]);
+
+  useEffect(() => {
+    if (prevTargetChain !== targetChain) {
+      reset();
+      setAddresInput('');
+    }
+  }, [addressInput, prevTargetChain, receiverAddress, reset, targetChain]);
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const receiver = event.target.value;
-    dispatchAccount(AccountActionCreators.setGenericAccount(null));
-    dispatchAccount(AccountActionCreators.setDerivedAccount(null));
+    reset();
     setAddresInput(receiver);
-    setShowBalance(false);
-    setError('');
     if (!receiver) {
       return;
     }
@@ -69,14 +102,14 @@ function ReceiverInput() {
     }
 
     if (formatFound === 'GENERIC') {
-      dispatchAccount(AccountActionCreators.setGenericAccount(receiver));
+      dispatchTransaction(TransactionActionCreators.setGenericAccount(receiver));
       return;
     }
 
     if (formatFound === targetChain) {
       setReceiver(formattedAccount);
     } else {
-      dispatchAccount(AccountActionCreators.setDerivedAccount(formattedAccount));
+      dispatchTransaction(TransactionActionCreators.setDerivedAccount(formattedAccount));
       setReceiver(receiver);
     }
 
@@ -85,9 +118,12 @@ function ReceiverInput() {
 
   return (
     <Container className={classes.container}>
-      <div className="input">
-        {showBalance && <AccountIdenticon address={addressInput} />}
-        <InputBase fullWidth onChange={onChange} value={addressInput} />
+      <div className={classes.row}>
+        <AccountIdenticon address={addressInput} />
+        <div className={classes.input}>
+          <InputBase fullWidth onChange={onChange} value={addressInput} placeholder="address" />
+        </div>
+
         <p>{showBalance && state && state.formattedBalance}</p>
       </div>
       <div>

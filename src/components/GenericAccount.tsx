@@ -17,11 +17,10 @@
 import Container from '@material-ui/core/Container';
 import { encodeAddress } from '@polkadot/util-crypto';
 import React from 'react';
-import styled from 'styled-components';
-
-import { AccountActionCreators } from '../actions/accountActions';
+import { useUpdateTransactionContext } from '../contexts/TransactionContext';
+import { TransactionActionCreators } from '../actions/transactionActions';
 import { getChainConfigs } from '../configs/substrateProviders';
-import { useUpdateAccountContext } from '../contexts/AccountContextProvider';
+import { makeStyles } from '@material-ui/core/styles';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useBalance from '../hooks/useBalance';
 import useReceiver from '../hooks/useReceiver';
@@ -30,11 +29,29 @@ import AccountDisplay from './AccountDisplay';
 
 interface Props {
   value: string;
-  className?: string;
   isDerived?: boolean;
 }
 
-const GenericAccount = ({ className, value }: Props) => {
+const useStyles = makeStyles(() => ({
+  container: {
+    padding: '0',
+    float: 'left'
+  },
+  native: {
+    border: '1px solid',
+    borderTop: 'none',
+    padding: '5px 0'
+  },
+  companion: {
+    border: '1px solid',
+    borderTop: 'none',
+    borderRadius: '0 0 5px 5px',
+    padding: '5px 0'
+  }
+}));
+
+const GenericAccount = ({ value }: Props) => {
+  const classes = useStyles();
   const {
     targetChainDetails: {
       targetApiConnection: { api: targetApi },
@@ -43,7 +60,8 @@ const GenericAccount = ({ className, value }: Props) => {
     sourceChainDetails: { sourceChain }
   } = useSourceTarget();
   const { setReceiver } = useReceiver();
-  const { dispatchAccount } = useUpdateAccountContext();
+
+  const { dispatchTransaction } = useUpdateTransactionContext();
   const chainsConfigs = getChainConfigs();
   const { bridgeId, SS58Format: sourceSS58Format } = chainsConfigs[sourceChain];
   const { SS58Format: targetSS58Format } = chainsConfigs[targetChain];
@@ -60,8 +78,8 @@ const GenericAccount = ({ className, value }: Props) => {
   const companionState = useBalance(targetApi, companionAddress, true);
 
   const setReceiverandCleanGeneric = (address: string) => {
-    dispatchAccount(AccountActionCreators.setGenericAccount(null));
-    dispatchAccount(AccountActionCreators.setDerivedAccount(nativeAddress));
+    dispatchTransaction(TransactionActionCreators.setGenericAccount(null));
+    dispatchTransaction(TransactionActionCreators.setDerivedAccount(nativeAddress));
 
     setReceiver(address);
   };
@@ -75,47 +93,15 @@ const GenericAccount = ({ className, value }: Props) => {
   };
 
   return (
-    <Container className={className}>
-      <div className="row" onClick={setNativeAsTarget}>
-        <AccountDisplay accountName="Native" address={nativeAddress} balance={nativeState.formattedBalance} hasBorder />
+    <Container className={classes.container}>
+      <div className={classes.native} onClick={setNativeAsTarget}>
+        <AccountDisplay accountName="Native" address={nativeAddress} balance={nativeState.formattedBalance} />
       </div>
-      <div className="row" onClick={setCompanionAsTarget}>
-        <AccountDisplay
-          address={companionAddress}
-          accountName="Companion"
-          balance={companionState.formattedBalance}
-          hasBorder
-        />
+      <div className={classes.companion} onClick={setCompanionAsTarget}>
+        <AccountDisplay address={companionAddress} accountName="Companion" balance={companionState.formattedBalance} />
       </div>
     </Container>
   );
 };
 
-export default styled(GenericAccount)`
-  margin: auto 0;
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-  min-width: 100%;
-  .row {
-    min-width: 100%;
-    flex-direction: column;
-    min-width: 800px;
-  }
-  .icon {
-    float: left;
-  }
-  .address {
-    float: left;
-    margin-left: 10px;
-  }
-
-  .balances {
-    float: right;
-    padding: 5px;
-    border: 1px solid;
-  }
-  .selected {
-    color: green;
-  }
-`;
+export default GenericAccount;

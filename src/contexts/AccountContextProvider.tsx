@@ -45,9 +45,7 @@ export function AccountContextProvider(props: AccountContextProviderProps): Reac
   const { children = null } = props;
 
   const [account, dispatchAccount] = useReducer(accountReducer, {
-    account: null,
-    derivedAccount: null,
-    genericAccount: null
+    account: null
   });
 
   return (

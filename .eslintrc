@@ -27,9 +27,7 @@
         "header",
         "promise",
         "react",
-        "react-hooks",
-        "simple-import-sort",
-        "sort-keys-fix"
+        "react-hooks"
     ],
     "settings": {
         "react": {
@@ -86,16 +84,6 @@
         "semi": [
             2,
             "always"
-        ],
-        "simple-import-sort/imports": "error",
-        "sort-keys": [
-            "error",
-            "asc",
-            {
-                "caseSensitive": true,
-                "natural": false,
-                "minKeys": 2
-            }
         ],
         "switch-colon-spacing": [
             "error",

@@ -22,7 +22,9 @@ enum TransactionActionTypes {
   CREATE_TRANSACTION_STATUS = 'CREATE_TRANSACTION_STATUS',
   UPDATE_CURRENT_TRANSACTION_STATUS = 'UPDATE_CURRENT_TRANSACTION_STATUS',
   SET_TRANSACTION_COMPLETED = 'SET_TRANSACTION_COMPLETED',
-  SET_RECEIVER_VALIDATION = 'SET_RECEIVER_VALIDATION'
+  SET_RECEIVER_VALIDATION = 'SET_RECEIVER_VALIDATION',
+  SET_DERIVED_RECEIVER_ACCOUNT = 'SET_DERIVED_RECEIVER_ACCOUNT ',
+  SET_GENERIC_RECEIVER_ACCOUNT = 'SET_GENERIC_RECEIVER_ACCOUNT '
 }
 
 const estimateFee = (estimatedFee: string) => ({
@@ -49,11 +51,23 @@ const updateTransactionStatus = (updatedValues: UpdatedTransanctionStatus, id: s
   };
 };
 
+const setGenericAccount = (genericReceiverAccount: string | null) => ({
+  payload: { genericReceiverAccount },
+  type: TransactionActionTypes.SET_GENERIC_RECEIVER_ACCOUNT
+});
+
+const setDerivedAccount = (derivedReceiverAccount: string | null) => ({
+  payload: { derivedReceiverAccount },
+  type: TransactionActionTypes.SET_DERIVED_RECEIVER_ACCOUNT
+});
+
 const TransactionActionCreators = {
   createTransactionStatus,
   estimateFee,
   setReceiverAddress,
-  updateTransactionStatus
+  updateTransactionStatus,
+  setGenericAccount,
+  setDerivedAccount
 };
 
 export { TransactionActionCreators, TransactionActionTypes };

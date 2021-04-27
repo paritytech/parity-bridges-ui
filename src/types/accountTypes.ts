@@ -22,8 +22,6 @@ export type Account = KeyringPair | null;
 
 export interface AccountContextType {
   account: Account;
-  derivedAccount: string | null;
-  genericAccount: string | null;
 }
 
 interface Payload {
@@ -32,8 +30,6 @@ interface Payload {
 
 export interface AccountState {
   account: Account;
-  derivedAccount: string | null;
-  genericAccount: string | null;
 }
 
 export type AccountsActionType = { type: AccountActionsTypes; payload: Payload };

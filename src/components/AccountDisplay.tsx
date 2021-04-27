@@ -21,7 +21,6 @@ import Container from '@material-ui/core/Container';
 import { makeStyles } from '@material-ui/core/styles';
 import ctx from 'classnames';
 import React from 'react';
-import styled from 'styled-components';
 
 import shorterItem from '../util/shortenItem';
 import AccountIdenticon from './AccountIdenticon';
@@ -29,35 +28,36 @@ import AccountIdenticon from './AccountIdenticon';
 interface Props {
   address: string;
   accountName?: string | null;
-  className?: string;
   isDerived?: boolean;
   onClick?: any;
   balance?: string | null | undefined;
-  hasBorder?: boolean;
   fromSender?: boolean;
 }
 
 const useStyles = makeStyles(() => ({
-  border: {
-    border: '1px solid grey'
-  },
   onlyBalance: {
     display: 'flex',
     justifyContent: 'flex-end',
-    width: '100%'
+    width: '100%',
+    padding: '0 10px'
+  },
+  icon: {
+    float: 'left'
+  },
+  container: {
+    display: 'flex',
+    minWidth: '100%',
+    padding: '0 10px'
+  },
+  address: {
+    marginLeft: '10px'
+  },
+  balances: {
+    marginLeft: 'auto'
   }
 }));
 
-const AccountDisplay = ({
-  className,
-  accountName,
-  address,
-  balance,
-  isDerived = false,
-  onClick,
-  hasBorder = false,
-  fromSender = false
-}: Props) => {
+const AccountDisplay = ({ accountName, address, balance, isDerived = false, onClick, fromSender = false }: Props) => {
   const classes = useStyles();
   const displayText = () => {
     if (isDerived && accountName) {
@@ -83,51 +83,19 @@ const AccountDisplay = ({
     );
   }
 
-  // TO-DO to replace icon
   return (
-    <div className={ctx(hasBorder && classes.border)}>
-      <Container onClick={onClick} className={className}>
-        <div className="icon">
-          <AccountIdenticon address={address} />
-        </div>
-        <div className="address">
-          <p>{displayText()}</p>
-        </div>
-        <div className="balance">
-          <p>{balance ? balance : '-'}</p>
-        </div>
-      </Container>
-    </div>
+    <Container onClick={onClick} className={classes.container}>
+      <div className={classes.icon}>
+        <AccountIdenticon address={address} />
+      </div>
+      <div className={classes.address}>
+        <p>{displayText()}</p>
+      </div>
+      <div className={classes.balances}>
+        <p>{balance ? balance : '-'}</p>
+      </div>
+    </Container>
   );
 };
 
-export default styled(AccountDisplay)`
-  margin: auto 0;
-  display: flex;
-  justify-content: space-between;
-  min-width: 100%;
-  .icon {
-    float: left;
-  }
-  .address {
-    float: left;
-    margin-left: 10px;
-    min-width: 80%;
-  }
-
-  .balances {
-    min-width: 20%;
-    float: right;
-    padding: 5px;
-    border: 1px solid;
-  }
-
-  .border {
-    border: 1px solid grey;
-  }
-
-  .onlyBalance {
-    min-width: 100%;
-    float: right;
-  }
-`;
+export default AccountDisplay;

@@ -21,6 +21,8 @@ export interface TransactionContextType {
   receiverAddress: string | null;
   isReceiverValid: boolean;
   transactions: Array<TransanctionStatus>;
+  derivedReceiverAccount: string | null;
+  genericReceiverAccount: string | null;
 }
 
 export interface Payload {
@@ -50,6 +52,8 @@ export interface TransanctionStatus extends UpdatedTransanctionStatus {
 export interface TransactionState {
   estimatedFee: string | null;
   receiverAddress: string | null;
+  derivedReceiverAccount: string | null;
+  genericReceiverAccount: string | null;
   isReceiverValid: boolean;
   transactions: Array<TransanctionStatus>;
 }

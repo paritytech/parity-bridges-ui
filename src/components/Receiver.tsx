@@ -14,84 +14,62 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
-import { Container, InputBase } from '@material-ui/core';
-import React, { useState } from 'react';
-import styled from 'styled-components';
-
-import { useAccountContext } from '../contexts/AccountContextProvider';
+import { Container } from '@material-ui/core';
+import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
-import useReceiver from '../hooks/useReceiver';
 import Account from './Account';
 import GenericAddress from './GenericAccount';
 import ReceiverInput from './ReceiverInput';
-interface Props {
-  className?: string;
-}
-const emptyReceiverToDerive = { formatFound: '', formattedAccount: '' };
 
-const AccountInput = ({ className }: Props) => {
-  const { genericAccount, derivedAccount } = useAccountContext();
+const useStyles = makeStyles(() => ({
+  container: {
+    minWidth: '100%',
+    padding: '0',
+    marginBottom: '20px',
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  derived: {
+    padding: '10px',
+    minHeight: '50px',
+    minWidth: '100%',
+    border: '1px solid grey',
+    borderRadius: '0 0 5px 5px',
+    borderTop: 'none'
+  },
+  input: {
+    minWidth: '100%'
+  }
+}));
+
+const Receiver = () => {
+  const classes = useStyles();
+  const { genericReceiverAccount, derivedReceiverAccount } = useTransactionContext();
 
   const {
     targetChainDetails: { targetChain }
   } = useSourceTarget();
-  console.log('derivedAccount', derivedAccount);
-  return (
-    <Container className={className}>
-      <ReceiverInput />
-      <div className="values">
-        {derivedAccount && (
-          <div>
-            <Account value={derivedAccount} chain={targetChain} isDerived hasBorder />{' '}
-          </div>
-        )}
 
-        {genericAccount && (
-          <div className="genericAddress">
-            <GenericAddress value={genericAccount} />
-          </div>
-        )}
+  return (
+    <Container className={classes.container}>
+      <div className={classes.input}>
+        <ReceiverInput />
       </div>
+      {!genericReceiverAccount && (
+        <div className={classes.derived}>
+          {derivedReceiverAccount && <Account value={derivedReceiverAccount} chain={targetChain} isDerived />}
+        </div>
+      )}
+
+      {genericReceiverAccount && (
+        <div>
+          <GenericAddress value={genericReceiverAccount} />
+        </div>
+      )}
     </Container>
   );
 };
 
-export default styled(AccountInput)`
-  margin: auto 0;
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-  min-width: 100%;
-  .icon {
-    min-width: 20%;
-    float: left;
-  }
-  .address {
-    min-width: 60%;
-  }
-  .balances {
-    min-width: 20%;
-    float: right;
-    padding: 5px;
-    border: 1px solid;
-  }
-  .values {
-    display: flex;
-    flex-direction: column;
-  }
-  .input {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    border: 1px solid grey;
-    padding: 5px 10px;
-  }
-  .genericAddress {
-    display: flex;
-    justify-content: space-between;
-  }
-`;
+export default Receiver;

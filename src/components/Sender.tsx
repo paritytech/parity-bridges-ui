@@ -35,7 +35,8 @@ interface Props {
 
 const useStyles = makeStyles(() => ({
   row: {
-    minWidth: '100%'
+    minWidth: '100%',
+    margin: '10px 0'
   }
 }));
 
@@ -97,38 +98,54 @@ const Sender = ({ className }: Props) => {
 
   return (
     <Container className={className}>
-      <InputLabel id="demo-simple-select-label">{sourceChain} Account</InputLabel>
-      <FormControl variant="outlined" className="formControl">
-        <Select
-          value={value}
-          name="name"
-          inputProps={{
-            id: 'name-native-error'
-          }}
-          renderValue={(): React.ReactNode => <AccountSelected />}
-        >
-          {chains.map((chain) => renderAccounts(chain))}
-        </Select>
-      </FormControl>
-      {derivedAccount && (
-        <div className="formControl">
-          <Account accountName={getName(account)} value={derivedAccount} isDerived hasBorder chain={targetChain} />
-        </div>
-      )}
+      <InputLabel className="label" id="demo-simple-select-label">
+        {sourceChain} Account
+      </InputLabel>
+      <div className="senderSelect">
+        <FormControl className="formControl">
+          <Select
+            value={value}
+            name="name"
+            inputProps={{ disableUnderline: true }}
+            renderValue={(): React.ReactNode => <AccountSelected />}
+          >
+            {chains.map((chain) => renderAccounts(chain))}
+          </Select>
+        </FormControl>
+      </div>
+
+      <div className="derivedAccount">
+        {derivedAccount && (
+          <Account accountName={getName(account)} value={derivedAccount} isDerived chain={targetChain} />
+        )}
+      </div>
     </Container>
   );
 };
 
 export default styled(Sender)`
   margin: 40px 0;
-  .formControl {
+  border: 1px solid;
+  border-radius: 5px;
+  width: 700px;
+  padding-left: 0;
+  .label {
+    padding: 5px;
+  }
+  .senderSelect {
+    min-height: 40px;
     width: 700px;
+  }
+  .formControl {
+    min-height: 40px;
+    width: 700px;
+  }
+  .derivedAccount {
+    min-height: 40px;
+    padding: 10px;
   }
   .chainSelect {
     font-size: 18px;
     color: blue !important;
-  }
-  .row {
-    width: 100%;
   }
 `;
