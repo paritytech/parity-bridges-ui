@@ -39,17 +39,20 @@ export const ButtonExt = ({
   ...props
 }: ButtonProps) => {
   const classes = useStyles();
+  const openInNewTab = (url: string): void => {
+    const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
+    if (newWindow) newWindow.opener = null;
+  };
   return (
-    <a href={href} target="_blank" rel="noreferrer">
-      <Button
-        className={classes.contact}
-        variant={variant}
-        startIcon={startIcon}
-        disableElevation={disableElevation}
-        {...props}
-      >
-        {children}
-      </Button>
-    </a>
+    <Button
+      className={classes.contact}
+      variant={variant}
+      startIcon={startIcon}
+      disableElevation={disableElevation}
+      onClick={() => openInNewTab(href)}
+      {...props}
+    >
+      {children}
+    </Button>
   );
 };
