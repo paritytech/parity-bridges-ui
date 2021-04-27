@@ -25,7 +25,7 @@ export interface AccountContextType {
 }
 
 interface Payload {
-  [propName: string]: any;
+  [propName: string]: Account;
 }
 
 export interface AccountState {

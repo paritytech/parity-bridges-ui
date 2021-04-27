@@ -17,9 +17,7 @@
 import type { Account } from '../types/accountTypes';
 
 enum AccountActionsTypes {
-  SET_ACCOUNT = 'SET_ACCOUNT',
-  SET_DERIVED_ACCOUNT = 'SET_DERIVED_ACCOUNT ',
-  SET_GENERIC_ACCOUNT = 'SET_GENERIC_ACCOUNT '
+  SET_ACCOUNT = 'SET_ACCOUNT'
 }
 
 const setAccount = (account: Account) => ({
@@ -27,20 +25,8 @@ const setAccount = (account: Account) => ({
   type: AccountActionsTypes.SET_ACCOUNT
 });
 
-const setGenericAccount = (genericAccount: string | null) => ({
-  payload: { genericAccount },
-  type: AccountActionsTypes.SET_GENERIC_ACCOUNT
-});
-
-const setDerivedAccount = (derivedAccount: string | null) => ({
-  payload: { derivedAccount },
-  type: AccountActionsTypes.SET_DERIVED_ACCOUNT
-});
-
 const AccountActionCreators = {
-  setAccount,
-  setDerivedAccount,
-  setGenericAccount
+  setAccount
 };
 
 export { AccountActionsTypes, AccountActionCreators };

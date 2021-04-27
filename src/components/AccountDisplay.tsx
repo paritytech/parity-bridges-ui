@@ -80,7 +80,7 @@ const AccountDisplay = ({ accountName, address, balance, isDerived = false, onCl
   if (fromSender) {
     return (
       <Container onClick={onClick} className={classes.onlyBalance}>
-        <p>{balance ? balance : '-'}</p>
+        <p>{balance || '-'}</p>
       </Container>
     );
   }
@@ -94,7 +94,7 @@ const AccountDisplay = ({ accountName, address, balance, isDerived = false, onCl
         <p>{displayText()}</p>
       </div>
       <div className={classes.balances}>
-        <p>{balance ? balance : '-'}</p>
+        <p>{balance || '-'}</p>
       </div>
     </Container>
   );
