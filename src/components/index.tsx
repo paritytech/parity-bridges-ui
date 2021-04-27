@@ -18,4 +18,5 @@ export { ButtonExt } from './Buttons';
 export { BoxUI, BoxSidebar, BoxMain } from './LayoutBoxes';
 export { MenuAction, MenuActionMockData } from './MenuAction';
 export { NetworkSides, NetworkStats } from './Network';
+export { TransactionDisplay } from './TransactionDisplay';
 export { light } from './theme';

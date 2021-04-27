@@ -26,7 +26,7 @@ import { ChainDetails } from '../types/sourceTargetTypes';
 import { TransanctionStatus } from '../types/transactionTypes';
 import { Step, TransactionStatusEnum } from '../types/transactionTypes';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
-import TransactionDisplay from './TransactionDisplay';
+import { TransactionDisplay } from './TransactionDisplay';
 
 interface Props {
   transaction: TransanctionStatus;
