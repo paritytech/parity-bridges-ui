@@ -14,8 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Box, Divider } from '@material-ui/core';
+import { Box, Divider, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import KeyboardReturnIcon from '@material-ui/icons/KeyboardReturn';
 import React from 'react';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
@@ -26,9 +27,39 @@ import { ChainDetails } from '../types/sourceTargetTypes';
 // This way to inject the styles works.
 const useStyles = makeStyles((theme) => ({
   main: {
+    position: 'relative',
     ...theme.typography.h4,
     border: `1px solid ${theme.palette.divider}`,
-    borderRadius: theme.spacing(0.5)
+    borderRadius: theme.spacing(0.5),
+    '& .MuiIconButton-root': {
+      backgroundColor: theme.palette.background.paper,
+      position: 'absolute',
+      top: 0,
+      bottom: 0,
+      right: '-1rem',
+      width: '2rem',
+      height: '2rem',
+      margin: 'auto',
+      border: `1px solid ${theme.palette.divider}`,
+      transform: 'rotate(-90deg)',
+      transition: 'transform .15s',
+      '&:hover': {
+        transform: 'rotate(90deg)',
+        '& svg': {
+          transform: 'translateY(4px)',
+          transition: 'transform .1s',
+          '&.onlyHover': {
+            opacity: 1,
+            transform: 'scale(-1) translateY(4px)'
+          }
+        }
+      },
+      '& svg.onlyHover': {
+        opacity: 0,
+        position: 'absolute',
+        transform: 'scale(-1)'
+      }
+    }
   },
   statsEntry: {
     display: 'flex',
@@ -50,6 +81,10 @@ export const NetworkSides = () => {
     <Box marginY={2} className={classes.main}>
       <Box p>{sourceChainDetails.sourceChain}</Box>
       <Divider />
+      <IconButton size="small">
+        <KeyboardReturnIcon className="onlyHover" fontSize="small" />
+        <KeyboardReturnIcon fontSize="small" />
+      </IconButton>
       <Box p>{targetChainDetails.targetChain}</Box>
     </Box>
   );
@@ -61,10 +96,6 @@ export const NetworkStats = () => {
 
   return (
     <>
-      <Box className={classes.statsEntry}>
-        Block:
-        <span>real / bridged</span>
-      </Box>
       <Box className={classes.statsEntry}>
         Finalised:
         <span>real / bridged</span>

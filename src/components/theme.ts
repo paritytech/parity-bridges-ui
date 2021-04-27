@@ -164,7 +164,7 @@ export const light: ThemeOptions = {
     subtitle2: {
       fontFamily: 'SFMono-Regular, Consolas , Liberation Mono, Menlo, monospace',
       fontWeight: 400,
-      fontSize: 12,
+      fontSize: 11,
       lineHeight: '135%',
       color: grey[700],
       letterSpacing: 0.1
