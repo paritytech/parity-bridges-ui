@@ -18,3 +18,4 @@ export const SOURCE = 'sourceChain';
 export const TARGET = 'targetChain';
 
 export const INCORRECT_FORMAT = 'INCORRECT_FORMAT';
+export const GENERIC = 'GENERIC';

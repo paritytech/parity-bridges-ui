@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 import { ApiPromise } from '@polkadot/api';
-
+import { INCORRECT_FORMAT, GENERIC } from '../constants';
 import { getChainConfigs } from '../configs/substrateProviders';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import getDeriveAccount from '../util/getDeriveAccount';
@@ -36,7 +36,7 @@ const useApiBalance = (address: string | null, chain: string | undefined, isDeri
     }
   } = useSourceTarget();
 
-  if (!chain || !address || chain === 'INCORRECT_FORMAT' || chain === 'GENERIC') {
+  if (!chain || !address || chain === INCORRECT_FORMAT || chain === GENERIC) {
     return { address: '', api: {} as ApiPromise };
   }
 

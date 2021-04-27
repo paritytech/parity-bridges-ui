@@ -17,7 +17,7 @@
 import { Container, InputBase } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useCallback, useEffect, useState } from 'react';
-
+import { INCORRECT_FORMAT, GENERIC } from '../constants';
 import { TransactionActionCreators } from '../actions/transactionActions';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
@@ -96,12 +96,12 @@ function ReceiverInput() {
 
     const { formattedAccount, formatFound } = validateAccount(receiver)!;
     setFormatFound(formatFound);
-    if (formatFound === 'INCORRECT_FORMAT') {
+    if (formatFound === INCORRECT_FORMAT) {
       setError('Invalid address.');
       return;
     }
 
-    if (formatFound === 'GENERIC') {
+    if (formatFound === GENERIC) {
       dispatchTransaction(TransactionActionCreators.setGenericAccount(receiver));
       return;
     }

@@ -30,8 +30,7 @@ const useStyles = makeStyles(() => ({
   container: {
     width: '700px',
     marginLeft: '0'
-  },
-  receiver: {}
+  }
 }));
 
 const Transfer = () => {
@@ -62,14 +61,11 @@ const Transfer = () => {
     return null;
   }
 
-  // TO-DO: Remove <br /> by proper margins
-
   return (
     <Container className={classes.container}>
       <h2>Transfer</h2>
-      <div className={classes.receiver}>
-        <Receiver />
-      </div>
+
+      <Receiver />
 
       <TextField onChange={onChange} value={transferInput} label="Amount" variant="outlined" />
 

@@ -19,14 +19,14 @@ import React from 'react';
 import { Icon } from 'semantic-ui-react';
 import styled from 'styled-components';
 
-import CustomCall from '../components/CustomCall';
-import DashboardCard from '../components/DashboardCard';
-import ExtensionAccountCheck from '../components/ExtensionAccountCheck';
-import Remark from '../components/Remark';
-import Sender from '../components/Sender';
-import SnackBar from '../components/SnackBar';
-import Transactions from '../components/Transactions';
-import Transfer from '../components/Transfer';
+import CustomCall from './CustomCall';
+import DashboardCard from './DashboardCard';
+import ExtensionAccountCheck from './ExtensionAccountCheck';
+import Remark from './Remark';
+import Sender from './Sender';
+import SnackBar from './SnackBar';
+import Transactions from './Transactions';
+import Transfer from './Transfer';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { ChainDetails } from '../types/sourceTargetTypes';
 

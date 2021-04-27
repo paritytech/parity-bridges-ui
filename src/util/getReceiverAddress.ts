@@ -16,7 +16,7 @@
 import { checkAddress } from '@polkadot/util-crypto';
 
 import { getChainConfigs } from '../configs/substrateProviders';
-import { INCORRECT_FORMAT } from '../constants';
+import { INCORRECT_FORMAT, GENERIC } from '../constants';
 import getDeriveAccount from './getDeriveAccount';
 
 interface Props {
@@ -40,7 +40,7 @@ const getReceiverAddress = ({ receiverAddress, chain }: Props) => {
           formatFound = key;
         }
         if (parseInt(prefix[2]) === 42) {
-          formatFound = 'GENERIC';
+          formatFound = GENERIC;
         }
       });
 
