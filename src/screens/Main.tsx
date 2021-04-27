@@ -73,9 +73,7 @@ function Main({ className }: Props) {
   const [items, setItems] = React.useState<MenuActionItemsProps[]>([] as MenuActionItemsProps[]);
   const [index, setIndex] = React.useState<number>(0);
 
-  const searchItems = (choice: number) => {
-    items.find(x => x.idx === choice)
-  };
+  const searchItems = (choice: number) => items.find((x) => x.idx === choice);
 
   React.useEffect(() => {
     setItems(MenuContents);
