@@ -57,7 +57,7 @@ const paletteLight: PaletteOptions = {
   },
   secondary: {
     light: substrateGray[100],
-    main: substrateGray[150],
+    main: substrateGray[400],
     dark: substrateGray[500],
     contrastText: 'black'
   },

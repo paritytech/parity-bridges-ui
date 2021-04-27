@@ -56,3 +56,9 @@ export const ButtonExt = ({
     </Button>
   );
 };
+
+export const ButtonSwitchMode = ({ children, color = 'secondary', ...props }: ButtonProps) => (
+  <Button color={color} {...props}>
+    {children}
+  </Button>
+);

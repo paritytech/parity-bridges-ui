@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-export { ButtonExt } from './Buttons';
+export { ButtonExt, ButtonSwitchMode } from './Buttons';
 export { BoxUI, BoxSidebar, BoxMain } from './LayoutBoxes';
 export { MenuAction, MenuActionMockData } from './MenuAction';
 export { NetworkSides, NetworkStats } from './Network';

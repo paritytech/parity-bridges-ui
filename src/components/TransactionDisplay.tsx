@@ -18,6 +18,7 @@ import { Card, CardContent, CardHeader } from '@material-ui/core';
 import React from 'react';
 
 import { Step, TransactionStatusEnum, TransanctionStatus } from '../types/transactionTypes';
+import { ButtonSwitchMode } from './Buttons';
 
 interface Props {
   steps: Array<Step>;
@@ -31,16 +32,21 @@ export const TransactionDisplay = ({ transaction, steps }: Props) => {
 
   const status = transaction.status === TransactionStatusEnum.COMPLETED ? 'Completed' : 'In Progress';
   return (
-    <Card>
-      <CardHeader title={`Transaction: ${transaction.type}`} />
-      <CardContent>
-        <h4>Status: {status}</h4>
-        {steps.map(({ chainType, label, status }, idx) => (
-          <p key={idx}>
-            {chainType}: {label}: {status}
-          </p>
-        ))}
-      </CardContent>
-    </Card>
+    <>
+      <ButtonSwitchMode disabled> Payload</ButtonSwitchMode>
+      <ButtonSwitchMode color="primary"> Reciept</ButtonSwitchMode>
+      <ButtonSwitchMode disabled> Human</ButtonSwitchMode>
+      <Card elevation={24}>
+        <CardHeader title={`Transaction: ${transaction.type}`} />
+        <CardContent>
+          <h4>Status: {status}</h4>
+          {steps.map(({ chainType, label, status }, idx) => (
+            <p key={idx}>
+              {chainType}: {label}: {status}
+            </p>
+          ))}
+        </CardContent>
+      </Card>
+    </>
   );
 };
