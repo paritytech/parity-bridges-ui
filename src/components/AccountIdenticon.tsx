@@ -14,12 +14,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import { makeStyles } from '@material-ui/core/styles';
 import Identicon from '@polkadot/react-identicon';
 import React from 'react';
 interface Props {
-  address: string;
+  address?: string;
+  placeholder?: boolean;
 }
 
-export default function AccountIdenticon({ address }: Props) {
+const useStyles = makeStyles(() => ({
+  placeholder: {
+    opacity: '30%'
+  }
+}));
+
+export default function AccountIdenticon({ address, placeholder = false }: Props) {
+  const classes = useStyles();
+  if (placeholder) {
+    return (
+      <div className={classes.placeholder}>
+        <Identicon value={'1nUC7afqmo7zwRFWxDjrUQu9skk6fk99pafb4SiyGSRc8z3'} size={32} theme={'polkadot'} />
+      </div>
+    );
+  }
   return <Identicon value={address} size={32} theme={'polkadot'} />;
 }

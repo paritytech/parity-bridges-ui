@@ -15,7 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Container } from '@material-ui/core';
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
@@ -45,6 +45,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const Receiver = () => {
+  const [error, setError] = useState('');
   const classes = useStyles();
   const { genericReceiverAccount, derivedReceiverAccount } = useTransactionContext();
 
@@ -55,7 +56,7 @@ const Receiver = () => {
   return (
     <Container className={classes.container}>
       <div className={classes.input}>
-        <ReceiverInput />
+        <ReceiverInput setError={setError} />
       </div>
       {!genericReceiverAccount && (
         <div className={classes.derived}>
@@ -68,6 +69,9 @@ const Receiver = () => {
           <GenericAddress value={genericReceiverAccount} />
         </div>
       )}
+      <div>
+        <p>{error && error}</p>
+      </div>
     </Container>
   );
 };

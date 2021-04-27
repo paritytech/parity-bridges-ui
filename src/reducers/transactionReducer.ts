@@ -48,8 +48,6 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return { ...state, estimatedFee: action.payload.estimatedFee };
     case TransactionActionTypes.SET_RECEIVER_ADDRESS:
       return { ...state, receiverAddress: action.payload.receiverAddress };
-    case TransactionActionTypes.SET_RECEIVER_VALIDATION:
-      return { ...state, isReceiverValid: action.payload.isReceiverValid };
     case TransactionActionTypes.CREATE_TRANSACTION_STATUS:
       return createTransaction(state, action.payload.initialTransaction);
     case TransactionActionTypes.UPDATE_CURRENT_TRANSACTION_STATUS:

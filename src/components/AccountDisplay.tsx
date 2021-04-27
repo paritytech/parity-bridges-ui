@@ -38,6 +38,7 @@ const useStyles = makeStyles(() => ({
   onlyBalance: {
     display: 'flex',
     justifyContent: 'flex-end',
+    alignItems: 'center',
     width: '100%',
     padding: '0 10px'
   },
@@ -47,7 +48,8 @@ const useStyles = makeStyles(() => ({
   container: {
     display: 'flex',
     minWidth: '100%',
-    padding: '0 10px'
+    padding: '0 10px',
+    alignItems: 'center'
   },
   address: {
     marginLeft: '10px'

@@ -50,14 +50,14 @@ const getReceiverAddress = ({ receiverAddress, chain }: Props) => {
         bridgeId
       });
 
-      return { address: formattedAccount, formatFound, isReceiverValid: false };
+      return { address: formattedAccount, formatFound };
     }
-    return { address, formatFound, isReceiverValid: true };
+    return { address, formatFound };
   } catch (e) {
     if (receiverAddress) {
       throw new Error(INCORRECT_FORMAT);
     }
-    return { address: '', formatFound: null, isReceiverValid: false };
+    return { address: '', formatFound: null };
   }
 };
 

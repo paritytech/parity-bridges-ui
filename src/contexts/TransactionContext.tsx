@@ -50,7 +50,6 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     derivedReceiverAccount: null,
     estimatedFee: null,
     genericReceiverAccount: null,
-    isReceiverValid: false,
     receiverAddress: null,
     transactions: []
   });

@@ -103,12 +103,7 @@ const Sender = ({ className }: Props) => {
       </InputLabel>
       <div className="senderSelect">
         <FormControl className="formControl">
-          <Select
-            value={value}
-            name="name"
-            inputProps={{ disableUnderline: true }}
-            renderValue={(): React.ReactNode => <AccountSelected />}
-          >
+          <Select value={value} name="name" renderValue={(): React.ReactNode => <AccountSelected />}>
             {chains.map((chain) => renderAccounts(chain))}
           </Select>
         </FormControl>

@@ -29,6 +29,10 @@ import usePrevious from '../hooks/usePrevious';
 import useReceiver from '../hooks/useReceiver';
 import AccountIdenticon from './AccountIdenticon';
 
+interface Props {
+  setError: (value: string) => void;
+}
+
 const useStyles = makeStyles(() => ({
   container: {
     padding: '0',
@@ -38,12 +42,13 @@ const useStyles = makeStyles(() => ({
     border: '1px solid grey',
     borderRadius: '5px 5px 0 0',
     display: 'flex',
-    padding: '10px'
+    padding: '10px 20px',
+    alignItems: 'center'
   },
   address: {
     marginLeft: '10px'
   },
-  balances: {
+  balance: {
     marginLeft: 'auto'
   },
   input: {
@@ -52,12 +57,10 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-function ReceiverInput() {
+function ReceiverInput({ setError }: Props) {
   const classes = useStyles();
   const [addressInput, setAddresInput] = useState('');
   const [formatFound, setFormatFound] = useState('');
-  const [error, setError] = useState('');
-
   const [showBalance, setShowBalance] = useState(false);
 
   const { setReceiver, validateAccount } = useReceiver();
@@ -77,7 +80,7 @@ function ReceiverInput() {
     dispatchTransaction(TransactionActionCreators.setDerivedAccount(null));
     setShowBalance(false);
     setError('');
-  }, [dispatchTransaction]);
+  }, [dispatchTransaction, setError]);
 
   useEffect(() => {
     if (prevTargetChain !== targetChain) {
@@ -119,15 +122,13 @@ function ReceiverInput() {
   return (
     <Container className={classes.container}>
       <div className={classes.row}>
-        <AccountIdenticon address={addressInput} />
+        {addressInput ? <AccountIdenticon address={addressInput} /> : <AccountIdenticon placeholder />}
         <div className={classes.input}>
           <InputBase fullWidth onChange={onChange} value={addressInput} placeholder="address" />
         </div>
-
-        <p>{showBalance && state && state.formattedBalance}</p>
-      </div>
-      <div>
-        <p>{error && error}</p>
+        <div className={classes.balance}>
+          <p>{showBalance && state && state.formattedBalance}</p>
+        </div>
       </div>
     </Container>
   );
