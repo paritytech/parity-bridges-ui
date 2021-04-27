@@ -72,6 +72,7 @@ export const MenuAction = ({ items, changeMenu, menuIdx }: MenuActionProps) => {
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
+    setOpen(!open);
   };
 
   useEffect(() => {
@@ -89,7 +90,7 @@ export const MenuAction = ({ items, changeMenu, menuIdx }: MenuActionProps) => {
         id={id}
         open={open}
         anchorEl={anchorEl}
-        onClose={() => setAnchorEl(null)}
+        onClose={() => setOpen(false)}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'right'
@@ -107,6 +108,7 @@ export const MenuAction = ({ items, changeMenu, menuIdx }: MenuActionProps) => {
             className={`${classes.item} ${!i.isEnabled && 'disabled'}`}
             key={n}
             onClick={() => {
+              setOpen(!open);
               changeMenu(i.idx);
             }}
           >

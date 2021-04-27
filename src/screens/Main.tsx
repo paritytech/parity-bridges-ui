@@ -46,12 +46,7 @@ const MenuContents = [
     idx: 0,
     title: 'Transfer',
     isEnabled: true,
-    component: (
-      <>
-        <Transfer />
-        <ExtensionAccountCheck component={<Accounts />} />
-      </>
-    )
+    component: <Transfer />
   },
   {
     idx: 1,
@@ -119,6 +114,7 @@ function Main({ className }: Props) {
           </Grid>
           <Grid container>
             <Grid item md={12}>
+              <ExtensionAccountCheck component={<Accounts />} />
               <Transactions />
             </Grid>
           </Grid>
