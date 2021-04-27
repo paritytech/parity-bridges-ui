@@ -79,11 +79,7 @@ function Main({ className }: Props) {
   const [index, setIndex] = React.useState<number>(0);
 
   const searchItems = (choice: number) => {
-    for (let i = 0; i < items.length; i++) {
-      if (items[i].idx === choice) {
-        return items[i];
-      }
-    }
+    items.find(x => x.idx === choice)
   };
 
   React.useEffect(() => {
