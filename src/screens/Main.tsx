@@ -14,11 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Container, Grid } from '@material-ui/core';
+import { Container, Grid, Typography } from '@material-ui/core';
+import SyncAltIcon from '@material-ui/icons/SyncAlt';
 import React from 'react';
-import { Icon } from 'semantic-ui-react';
 
-import { BoxMain, BoxSidebar, BoxUI, MenuAction } from '../components';
+import { BoxMain, BoxSidebar, BoxUI, ButtonExt, MenuAction, NetworkSides, NetworkStats } from '../components';
 import Accounts from '../components/Accounts';
 import CustomCall from '../components/CustomCall';
 import DashboardCard from '../components/DashboardCard';
@@ -27,7 +27,6 @@ import Remark from '../components/Remark';
 import SnackBar from '../components/SnackBar';
 import Transactions from '../components/Transactions';
 import Transfer from '../components/Transfer';
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { ChainDetails } from '../types/sourceTargetTypes';
 
 interface Props {
@@ -69,7 +68,6 @@ const MenuContents = [
 ];
 
 function Main({ className }: Props) {
-  const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   const [items, setItems] = React.useState<MenuActionItemsProps[]>([] as MenuActionItemsProps[]);
   const [index, setIndex] = React.useState<number>(0);
 
@@ -81,7 +79,14 @@ function Main({ className }: Props) {
 
   return (
     <BoxMain>
-      <BoxSidebar>{`${sourceChainDetails.sourceChain} => ${targetChainDetails.targetChain}`}</BoxSidebar>
+      <BoxSidebar>
+        <div>
+          <Typography variant="button">Bridges UI</Typography>
+          <NetworkSides />
+          <NetworkStats />
+        </div>
+        <ButtonExt> Help & Feedback </ButtonExt>
+      </BoxSidebar>
       <BoxUI>
         <MenuAction items={items} menuIdx={index} changeMenu={setIndex} />
         <Container className={className}>
@@ -90,7 +95,7 @@ function Main({ className }: Props) {
               <DashboardCard chainDetail={ChainDetails.SOURCE} />
             </Grid>
             <Grid item>
-              <Icon fitted name="exchange" />
+              <SyncAltIcon />
             </Grid>
             <Grid item md={5}>
               <DashboardCard chainDetail={ChainDetails.TARGET} />
