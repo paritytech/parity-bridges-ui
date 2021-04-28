@@ -34,7 +34,7 @@ export default function AccountIdenticon({ address, formatFound }: Props) {
   const placeholder = !address || formatFound === INCORRECT_FORMAT;
 
   const value = !placeholder ? address : '1nUC7afqmo7zwRFWxDjrUQu9skk6fk99pafb4SiyGSRc8z3';
-  console.log('AccountIdenticon value', placeholder);
+
   const classes = useStyles();
 
   return <Identicon className={ctx(placeholder && classes.placeholder)} value={value} size={32} theme={'polkadot'} />;
