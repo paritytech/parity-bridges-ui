@@ -70,7 +70,7 @@ const Receiver = () => {
         </div>
       )}
       <div>
-        <p>{error && error}</p>
+        <p>{error}</p>
       </div>
     </Container>
   );

@@ -62,19 +62,13 @@ const useStyles = makeStyles(() => ({
 const AccountDisplay = ({ accountName, address, balance, isDerived = false, onClick, fromSender = false }: Props) => {
   const classes = useStyles();
   const displayText = () => {
-    if (isDerived && accountName) {
-      return `derived(${accountName})`;
-    }
-    if (isDerived && !accountName) {
-      return `derived(${shorterItem(address)})`;
+    if (isDerived) {
+      return `derived(${accountName || shorterItem(address)})`;
     }
     if (accountName) {
       return `${accountName} (${shorterItem(address)})`;
     }
-    if (!accountName) {
-      return shorterItem(address);
-    }
-    return accountName;
+    return shorterItem(address);
   };
 
   if (fromSender) {
