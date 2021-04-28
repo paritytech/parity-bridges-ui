@@ -16,10 +16,12 @@
 
 import { makeStyles } from '@material-ui/core/styles';
 import Identicon from '@polkadot/react-identicon';
+import { INCORRECT_FORMAT } from '../constants';
+import ctx from 'classnames';
 import React from 'react';
 interface Props {
-  address?: string;
-  placeholder?: boolean;
+  address: string;
+  formatFound?: string;
 }
 
 const useStyles = makeStyles(() => ({
@@ -28,14 +30,12 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-export default function AccountIdenticon({ address, placeholder = false }: Props) {
+export default function AccountIdenticon({ address, formatFound }: Props) {
+  const placeholder = !address || formatFound === INCORRECT_FORMAT;
+
+  const value = !placeholder ? address : '1nUC7afqmo7zwRFWxDjrUQu9skk6fk99pafb4SiyGSRc8z3';
+  console.log('AccountIdenticon value', placeholder);
   const classes = useStyles();
-  if (placeholder) {
-    return (
-      <div className={classes.placeholder}>
-        <Identicon value={'1nUC7afqmo7zwRFWxDjrUQu9skk6fk99pafb4SiyGSRc8z3'} size={32} theme={'polkadot'} />
-      </div>
-    );
-  }
-  return <Identicon value={address} size={32} theme={'polkadot'} />;
+
+  return <Identicon className={ctx(placeholder && classes.placeholder)} value={value} size={32} theme={'polkadot'} />;
 }

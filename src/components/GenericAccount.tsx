@@ -70,12 +70,12 @@ const GenericAccount = ({ value }: Props) => {
   const nativeState = useBalance(targetApi, nativeAddress, true);
 
   const sourceAddressType = encodeAddress(value, sourceSS58Format);
-  const companionAddress = getDeriveAccount({
+  const derivedAddress = getDeriveAccount({
     SS58Format: targetSS58Format,
     address: sourceAddressType,
     bridgeId
   });
-  const companionState = useBalance(targetApi, companionAddress, true);
+  const companionState = useBalance(targetApi, derivedAddress, true);
 
   const setReceiverandCleanGeneric = (address: string) => {
     dispatchTransaction(TransactionActionCreators.setGenericAccount(null));
@@ -88,8 +88,8 @@ const GenericAccount = ({ value }: Props) => {
     setReceiverandCleanGeneric(nativeAddress);
   };
 
-  const setCompanionAsTarget = () => {
-    setReceiverandCleanGeneric(companionAddress);
+  const setDerivedAsTarget = () => {
+    setReceiverandCleanGeneric(derivedAddress);
   };
 
   return (
@@ -97,8 +97,8 @@ const GenericAccount = ({ value }: Props) => {
       <div className={classes.native} onClick={setNativeAsTarget}>
         <AccountDisplay accountName="Native" address={nativeAddress} balance={nativeState.formattedBalance} />
       </div>
-      <div className={classes.companion} onClick={setCompanionAsTarget}>
-        <AccountDisplay address={companionAddress} accountName="Companion" balance={companionState.formattedBalance} />
+      <div className={classes.companion} onClick={setDerivedAsTarget}>
+        <AccountDisplay address={derivedAddress} accountName="Derived" balance={companionState.formattedBalance} />
       </div>
     </Container>
   );

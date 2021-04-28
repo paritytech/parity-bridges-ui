@@ -17,7 +17,7 @@
 import { Container, FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { encodeAddress } from '@polkadot/util-crypto';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
@@ -42,22 +42,12 @@ const useStyles = makeStyles(() => ({
 
 const Sender = ({ className }: Props) => {
   const classes = useStyles();
-  const [chains, setChains] = useState<Array<string[]>>([]);
   const { account, accounts, derivedAccount, setCurrentAccount } = useAccounts();
   const {
     sourceChainDetails: { sourceChain },
     targetChainDetails: { targetChain }
   } = useSourceTarget();
   const { setReceiver } = useReceiver();
-
-  useEffect(() => {
-    if (!chains.length) {
-      setChains([
-        [sourceChain, targetChain],
-        [targetChain, sourceChain]
-      ]);
-    }
-  }, [chains.length, sourceChain, targetChain]);
 
   const value = account ? encodeAddress(account.address, getChainSS58(sourceChain)) : '';
 
@@ -66,8 +56,7 @@ const Sender = ({ className }: Props) => {
     setReceiver(null);
   };
 
-  const renderAccounts = (chains: string[]) => {
-    const [source, target] = chains;
+  const renderAccounts = (source: string, target: string) => {
     const formatedAccounts = formatAccounts(accounts, source);
     const items = formatedAccounts.map(({ text, value, key }: any) => (
       <MenuItem
@@ -98,13 +87,12 @@ const Sender = ({ className }: Props) => {
 
   return (
     <Container className={className}>
-      <InputLabel className="label" id="demo-simple-select-label">
-        {sourceChain} Account
-      </InputLabel>
+      <InputLabel className="label">{sourceChain} Account</InputLabel>
       <div className="senderSelect">
         <FormControl className="formControl">
           <Select value={value} name="name" renderValue={(): React.ReactNode => <AccountSelected />}>
-            {chains.map((chain) => renderAccounts(chain))}
+            {renderAccounts(sourceChain, targetChain)}
+            {renderAccounts(targetChain, sourceChain)}
           </Select>
         </FormControl>
       </div>

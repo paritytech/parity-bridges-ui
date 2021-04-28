@@ -122,9 +122,9 @@ function ReceiverInput({ setError }: Props) {
   return (
     <Container className={classes.container}>
       <div className={classes.row}>
-        {addressInput ? <AccountIdenticon address={addressInput} /> : <AccountIdenticon placeholder />}
+        <AccountIdenticon address={addressInput} formatFound={formatFound} />
         <div className={classes.input}>
-          <InputBase fullWidth onChange={onChange} value={addressInput} placeholder="address" />
+          <InputBase fullWidth onChange={onChange} value={addressInput} placeholder="recipient address" />
         </div>
         <div className={classes.balance}>
           <p>{showBalance && state && state.formattedBalance}</p>
