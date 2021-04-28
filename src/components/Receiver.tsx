@@ -28,14 +28,6 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     flexDirection: 'column'
   },
-  derived: {
-    padding: '10px',
-    minHeight: '50px',
-    minWidth: '100%',
-    border: '1px solid grey',
-    borderRadius: '0 0 5px 5px',
-    borderTop: 'none'
-  },
   input: {
     minWidth: '100%'
   }
@@ -50,7 +42,7 @@ const Receiver = () => {
       <div className={classes.input}>
         <ReceiverInput setError={setError} />
       </div>
-      <ReceiverDerivedAccount />
+      <ReceiverDerivedAccount setError={setError} />
       <div>
         <p>{error}</p>
       </div>
