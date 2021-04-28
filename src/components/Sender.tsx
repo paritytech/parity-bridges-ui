@@ -85,8 +85,6 @@ const Sender = ({ className }: Props) => {
     return null;
   };
 
-  console.log('derivedAccount', derivedAccount);
-
   return (
     <Container className={className}>
       <InputLabel className="label">{sourceChain} Account</InputLabel>
@@ -100,9 +98,7 @@ const Sender = ({ className }: Props) => {
       </div>
 
       <div className="derivedAccount">
-        {derivedAccount && (
-          <Account accountName={getName(account)} value={derivedAccount} isDerived chain={targetChain} />
-        )}
+        {derivedAccount && <Account value={derivedAccount} isDerived chain={targetChain} />}
       </div>
     </Container>
   );
