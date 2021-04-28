@@ -68,10 +68,7 @@ const AccountDisplay = ({ accountName, address, balance, isDerived = false, onCl
     if (accountName) {
       return `${accountName} (${shorterItem(address)})`;
     }
-    if (!accountName) {
-      return shorterItem(address);
-    }
-    return accountName;
+    return shorterItem(address);
   };
 
   if (fromSender) {
