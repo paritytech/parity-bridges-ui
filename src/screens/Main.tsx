@@ -15,27 +15,68 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Container, Grid, Typography } from '@material-ui/core';
+import SyncAltIcon from '@material-ui/icons/SyncAlt';
 import React from 'react';
 
-import {
-  BoxMain,
-  BoxSidebar,
-  BoxUI,
-  ButtonExt,
-  MenuAction,
-  MenuActionMockData,
-  NetworkSides,
-  NetworkStats
-} from '../components';
+import { BoxMain, BoxSidebar, BoxUI, ButtonExt, MenuAction, NetworkSides, NetworkStats } from '../components';
 import Accounts from '../components/Accounts';
 import CustomCall from '../components/CustomCall';
+import DashboardCard from '../components/DashboardCard';
 import ExtensionAccountCheck from '../components/ExtensionAccountCheck';
 import Remark from '../components/Remark';
 import SnackBar from '../components/SnackBar';
 import Transactions from '../components/Transactions';
 import Transfer from '../components/Transfer';
+import { ChainDetails } from '../types/sourceTargetTypes';
 
-function Main() {
+interface Props {
+  className?: string;
+}
+
+interface MenuActionItemsProps {
+  idx: number;
+  title: string;
+  isEnabled: boolean;
+  component: React.ReactElement;
+}
+
+const MenuContents = [
+  {
+    idx: 0,
+    title: 'Transfer',
+    isEnabled: true,
+    component: <Transfer />
+  },
+  {
+    idx: 1,
+    title: 'Remark',
+    isEnabled: true,
+    component: <Remark />
+  },
+  {
+    idx: 2,
+    title: 'Custom Call',
+    isEnabled: true,
+    component: <CustomCall />
+  },
+  {
+    idx: 3,
+    title: 'Connect to a wallet',
+    isEnabled: true,
+    component: <p>Connect to a wallet</p>
+  }
+];
+
+function Main({ className }: Props) {
+  const [items, setItems] = React.useState<MenuActionItemsProps[]>([] as MenuActionItemsProps[]);
+  const [index, setIndex] = React.useState<number>(0);
+
+  const searchItems = (choice: number) => items.find((x) => x.idx === choice);
+
+  React.useEffect(() => {
+    setItems(MenuContents);
+  }, []);
+
   return (
     <BoxMain>
       <BoxSidebar>
@@ -47,8 +88,19 @@ function Main() {
         <ButtonExt> Help & Feedback </ButtonExt>
       </BoxSidebar>
       <BoxUI>
-        <MenuAction items={MenuActionMockData} />
-        <Container>
+        <MenuAction items={items} menuIdx={index} changeMenu={setIndex} />
+        <Container className={className}>
+          <Grid container alignItems="center">
+            <Grid item md={5}>
+              <DashboardCard chainDetail={ChainDetails.SOURCE} />
+            </Grid>
+            <Grid item>
+              <SyncAltIcon />
+            </Grid>
+            <Grid item md={5}>
+              <DashboardCard chainDetail={ChainDetails.TARGET} />
+            </Grid>
+          </Grid>
           <Grid container>
             <Grid item md={12}>
               <ExtensionAccountCheck component={<Accounts />} />
@@ -56,22 +108,12 @@ function Main() {
           </Grid>
           <Grid container>
             <Grid item md={12}>
-              <Remark />
+              {searchItems(index)?.component}
             </Grid>
           </Grid>
           <Grid container>
             <Grid item md={12}>
-              <Transfer />
-            </Grid>
-            <Grid container>
-              <Grid item md={12}>
-                <CustomCall />
-              </Grid>
-            </Grid>
-            <Grid container>
-              <Grid item md={12}>
-                <Transactions />
-              </Grid>
+              <Transactions />
             </Grid>
           </Grid>
         </Container>
