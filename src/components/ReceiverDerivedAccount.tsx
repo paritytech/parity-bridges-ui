@@ -14,11 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Container } from '@material-ui/core';
-import React, { useState } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import ReceiverInput from './ReceiverInput';
-import ReceiverDerivedAccount from './ReceiverDerivedAccount';
+import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
+import { useTransactionContext } from '../contexts/TransactionContext';
+import Account from './Account';
+import GenericAddress from './GenericAccount';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -41,21 +42,25 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-const Receiver = () => {
-  const [error, setError] = useState('');
+const ReceiverDerivedAccount = () => {
   const classes = useStyles();
+  const { genericReceiverAccount, derivedReceiverAccount } = useTransactionContext();
 
-  return (
-    <Container className={classes.container}>
-      <div className={classes.input}>
-        <ReceiverInput setError={setError} />
+  const {
+    targetChainDetails: { targetChain }
+  } = useSourceTarget();
+
+  if (genericReceiverAccount) {
+    return <GenericAddress value={genericReceiverAccount} />;
+  }
+  if (derivedReceiverAccount) {
+    return (
+      <div className={classes.derived}>
+        <Account value={derivedReceiverAccount} chain={targetChain} isDerived />
       </div>
-      <ReceiverDerivedAccount />
-      <div>
-        <p>{error}</p>
-      </div>
-    </Container>
-  );
+    );
+  }
+  return null;
 };
 
-export default Receiver;
+export default ReceiverDerivedAccount;
