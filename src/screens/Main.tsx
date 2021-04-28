@@ -14,46 +14,41 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Container, Grid } from '@material-ui/core';
+import { Container, Grid, Typography } from '@material-ui/core';
 import React from 'react';
-import { Icon } from 'semantic-ui-react';
 
-import { BoxMain, BoxSidebar, BoxUI, MenuAction, MenuActionMockData } from '../components';
+import {
+  BoxMain,
+  BoxSidebar,
+  BoxUI,
+  ButtonExt,
+  MenuAction,
+  MenuActionMockData,
+  NetworkSides,
+  NetworkStats
+} from '../components';
 import Accounts from '../components/Accounts';
 import CustomCall from '../components/CustomCall';
-import DashboardCard from '../components/DashboardCard';
 import ExtensionAccountCheck from '../components/ExtensionAccountCheck';
 import Remark from '../components/Remark';
 import SnackBar from '../components/SnackBar';
 import Transactions from '../components/Transactions';
 import Transfer from '../components/Transfer';
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { ChainDetails } from '../types/sourceTargetTypes';
 
-interface Props {
-  className?: string;
-}
-
-function Main({ className }: Props) {
-  const { sourceChainDetails, targetChainDetails } = useSourceTarget();
-
+function Main() {
   return (
     <BoxMain>
-      <BoxSidebar>{`${sourceChainDetails.sourceChain} => ${targetChainDetails.targetChain}`}</BoxSidebar>
+      <BoxSidebar>
+        <div>
+          <Typography variant="button">Bridges UI</Typography>
+          <NetworkSides />
+          <NetworkStats />
+        </div>
+        <ButtonExt> Help & Feedback </ButtonExt>
+      </BoxSidebar>
       <BoxUI>
         <MenuAction items={MenuActionMockData} />
-        <Container className={className}>
-          <Grid container alignItems="center">
-            <Grid item md={5}>
-              <DashboardCard chainDetail={ChainDetails.SOURCE} />
-            </Grid>
-            <Grid item>
-              <Icon fitted name="exchange" />
-            </Grid>
-            <Grid item md={5}>
-              <DashboardCard chainDetail={ChainDetails.TARGET} />
-            </Grid>
-          </Grid>
+        <Container>
           <Grid container>
             <Grid item md={12}>
               <ExtensionAccountCheck component={<Accounts />} />

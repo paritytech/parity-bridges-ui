@@ -27,6 +27,7 @@ export const bridgesBlue = {
   500: '#2E99E5'
 };
 export const substrateGray = {
+  50: '#FCFCFC',
   100: '#F5F8FA',
   150: '#F0F2F5',
   200: '#EAEEF1',
@@ -163,7 +164,7 @@ export const light: ThemeOptions = {
     subtitle2: {
       fontFamily: 'SFMono-Regular, Consolas , Liberation Mono, Menlo, monospace',
       fontWeight: 400,
-      fontSize: 12,
+      fontSize: 11,
       lineHeight: '135%',
       color: grey[700],
       letterSpacing: 0.1
