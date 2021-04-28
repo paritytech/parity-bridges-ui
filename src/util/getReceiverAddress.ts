@@ -28,7 +28,33 @@ const getReceiverAddress = ({ receiverAddress, chain }: Props) => {
   const { SS58Format, bridgeId } = chainsConfigs[chain];
 
   try {
-    const [validatedDerivedAcccount, rest] = checkAddress(receiverAddress, SS58Format);
+ const [validatedDerivedAcccount, rest] = checkAddress(receiverAddress, SS58Format);
+    const address = receiverAddress;
+    if (validatedDerivedAcccount) {
+       return { address, formatFound: chain };
+    }
+    // should be extracted as a separate component/function
+    const getFormat = (prefix: string) => {
+       const intPrefix: number = parseInt(prefix, 10);
+       if (intPrefix === GENERIC_SUBSTRATE_PREFIX /* 42 */) {
+          return GENERIC;
+       }
+       const chainsConfigs = getChainConfigs();
+       return Object.keys(chainsConfigs).find((key) => chainsConfigs[key].SS58Format === intPrefix);
+    }
+    
+    const parts = rest?.split(',');
+    const prefix = parts![2].split(' ');
+    const formatFound = getFormat(prefix);
+    
+    const address = getDeriveAccount({
+        SS58Format,
+        address,
+        bridgeId
+      });
+
+      return { address, formatFound };
+    }
     const address = receiverAddress;
     let formatFound = chain;
     if (!validatedDerivedAcccount) {
