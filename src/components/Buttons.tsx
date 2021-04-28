@@ -19,8 +19,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import ForumIcon from '@material-ui/icons/Forum';
 import React from 'react';
 
-// As this is placed as a child in the Material UI Select component, for some reason style components classes are not working.
-// This way to inject the styles works.
 const useStyles = makeStyles((theme) => ({
   contact: {
     backgroundColor: 'transparent',
