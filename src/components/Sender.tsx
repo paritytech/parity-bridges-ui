@@ -85,6 +85,8 @@ const Sender = ({ className }: Props) => {
     return null;
   };
 
+  console.log('derivedAccount', derivedAccount);
+
   return (
     <Container className={className}>
       <InputLabel className="label">{sourceChain} Account</InputLabel>

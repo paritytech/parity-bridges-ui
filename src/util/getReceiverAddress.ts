@@ -16,7 +16,7 @@
 import { checkAddress } from '@polkadot/util-crypto';
 
 import { getChainConfigs } from '../configs/substrateProviders';
-import { INCORRECT_FORMAT, GENERIC } from '../constants';
+import { INCORRECT_FORMAT, GENERIC, GENERIC_SUBSTRATE_PREFIX } from '../constants';
 import getDeriveAccount from './getDeriveAccount';
 
 interface Props {
@@ -28,56 +28,30 @@ const getReceiverAddress = ({ receiverAddress, chain }: Props) => {
   const { SS58Format, bridgeId } = chainsConfigs[chain];
 
   try {
- const [validatedDerivedAcccount, rest] = checkAddress(receiverAddress, SS58Format);
-    const address = receiverAddress;
+    const [validatedDerivedAcccount, rest] = checkAddress(receiverAddress, SS58Format);
     if (validatedDerivedAcccount) {
-       return { address, formatFound: chain };
+      return { address: receiverAddress, formatFound: chain };
     }
     // should be extracted as a separate component/function
     const getFormat = (prefix: string) => {
-       const intPrefix: number = parseInt(prefix, 10);
-       if (intPrefix === GENERIC_SUBSTRATE_PREFIX /* 42 */) {
-          return GENERIC;
-       }
-       const chainsConfigs = getChainConfigs();
-       return Object.keys(chainsConfigs).find((key) => chainsConfigs[key].SS58Format === intPrefix);
-    }
-    
+      const intPrefix: number = parseInt(prefix, 10);
+      if (intPrefix === GENERIC_SUBSTRATE_PREFIX /* 42 */) {
+        return GENERIC;
+      }
+      const chainsConfigs = getChainConfigs();
+      return Object.keys(chainsConfigs).find((key) => chainsConfigs[key].SS58Format === intPrefix);
+    };
+
     const parts = rest?.split(',');
     const prefix = parts![2].split(' ');
-    const formatFound = getFormat(prefix);
-    
+    const formatFound = getFormat(prefix[2]);
+
     const address = getDeriveAccount({
-        SS58Format,
-        address,
-        bridgeId
-      });
+      SS58Format,
+      address: receiverAddress,
+      bridgeId
+    });
 
-      return { address, formatFound };
-    }
-    const address = receiverAddress;
-    let formatFound = chain;
-    if (!validatedDerivedAcccount) {
-      const parts = rest?.split(',');
-      const prefix = parts![2].split(' ');
-
-      Object.keys(chainsConfigs).map((key) => {
-        if (chainsConfigs[key].SS58Format === parseInt(prefix[2])) {
-          formatFound = key;
-        }
-        if (parseInt(prefix[2]) === 42) {
-          formatFound = GENERIC;
-        }
-      });
-
-      const formattedAccount = getDeriveAccount({
-        SS58Format,
-        address: receiverAddress,
-        bridgeId
-      });
-
-      return { address: formattedAccount, formatFound };
-    }
     return { address, formatFound };
   } catch (e) {
     if (receiverAddress) {
