@@ -35,7 +35,7 @@ const getReceiverAddress = ({ receiverAddress, chain }: Props) => {
     // should be extracted as a separate component/function
     const getFormat = (prefix: string) => {
       const intPrefix: number = parseInt(prefix, 10);
-      if (intPrefix === GENERIC_SUBSTRATE_PREFIX /* 42 */) {
+      if (intPrefix === GENERIC_SUBSTRATE_PREFIX) {
         return GENERIC;
       }
       const chainsConfigs = getChainConfigs();

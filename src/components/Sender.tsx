@@ -80,7 +80,7 @@ const Sender = ({ className }: Props) => {
       >
         <div className={classes.row}>
           <Account accountName={text} value={value} chain={source} />
-          <Account accountName={text} value={value} isDerived fromSender chain={target} />
+          <Account accountName={text} value={value} isDerived chain={target} />
         </div>
       </MenuItem>
     ));

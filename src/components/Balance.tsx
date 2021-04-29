@@ -14,34 +14,33 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import Container from '@material-ui/core/Container';
+import { makeStyles } from '@material-ui/core/styles';
+
 import React from 'react';
 
-import useApiBalance from '../hooks/useApiBalance';
-import useBalance from '../hooks/useBalance';
-import AccountDisplay from './AccountDisplay';
-
 interface Props {
-  value: string;
-  accountName?: string;
-  className?: string;
-  chain?: string | undefined;
-  isDerived?: boolean;
+  balance?: string | null | undefined;
   onClick?: () => void;
 }
 
-const Account = ({ accountName, value, chain, isDerived = false }: Props) => {
-  const { api, address } = useApiBalance(value, chain, isDerived);
+const useStyles = makeStyles(() => ({
+  balances: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    width: '100%',
+    padding: '0 10px'
+  }
+}));
 
-  const state = useBalance(api, address, true);
-
+const Balance = ({ balance, onClick }: Props) => {
+  const classes = useStyles();
   return (
-    <AccountDisplay
-      accountName={accountName}
-      address={address}
-      balance={state.formattedBalance}
-      isDerived={isDerived}
-    />
+    <Container onClick={onClick} className={classes.balances}>
+      <p>{balance || '-'}</p>
+    </Container>
   );
 };
 
-export default Account;
+export default Balance;

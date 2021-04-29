@@ -21,7 +21,7 @@ import Container from '@material-ui/core/Container';
 import { makeStyles } from '@material-ui/core/styles';
 import ctx from 'classnames';
 import React from 'react';
-
+import Balance from './Balance';
 import shorterItem from '../util/shortenItem';
 import AccountIdenticon from './AccountIdenticon';
 
@@ -31,7 +31,6 @@ interface Props {
   isDerived?: boolean;
   onClick?: () => void;
   balance?: string | null | undefined;
-  fromSender?: boolean;
 }
 
 const useStyles = makeStyles(() => ({
@@ -59,14 +58,7 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-const AccountDisplay = ({
-  accountName,
-  address = '',
-  balance,
-  isDerived = false,
-  onClick,
-  fromSender = false
-}: Props) => {
+const AccountDisplay = ({ accountName, address = '', balance, isDerived = false, onClick }: Props) => {
   const classes = useStyles();
   const displayText = () => {
     if (!address) {
@@ -81,23 +73,13 @@ const AccountDisplay = ({
     return shorterItem(address);
   };
 
-  if (fromSender) {
-    return (
-      <Container onClick={onClick} className={classes.onlyBalance}>
-        <p>{balance || '-'}</p>
-      </Container>
-    );
-  }
-
   return (
     <Container onClick={onClick} className={classes.container}>
       <div className={classes.icon}>{(!isDerived || address) && <AccountIdenticon address={address} />}</div>
       <div className={classes.address}>
         <p>{displayText()}</p>
       </div>
-      <div className={classes.balances}>
-        <p>{balance || '-'}</p>
-      </div>
+      <Balance balance={balance} />
     </Container>
   );
 };
