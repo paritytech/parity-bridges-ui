@@ -24,7 +24,7 @@ import React, { Dispatch, SetStateAction, useEffect } from 'react';
 const useStyles = makeStyles((theme) => ({
   menu: {
     display: 'inline-block',
-    background: theme.palette.secondary.main,
+    background: theme.palette.secondary.light,
     padding: theme.spacing(),
     borderRadius: theme.spacing()
   },

@@ -28,7 +28,7 @@ export const bridgesBlue = {
 };
 export const substrateGray = {
   50: '#FCFCFC',
-  100: '#F5F8FA',
+  100: '#F1F5F7',
   150: '#F0F2F5',
   200: '#EAEEF1',
   400: '#C6D0D7',
