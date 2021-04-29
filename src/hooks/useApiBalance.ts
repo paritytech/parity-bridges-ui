@@ -51,7 +51,7 @@ const useApiBalance = (address: string | null, chain: string | undefined, isDeri
         bridgeId
       });
 
-  const processedApi = isDerived ? targetApi : sourceApi;
+  const processedApi = chain === targetChain ? targetApi : sourceApi;
 
   return { address: addressResult, api: processedApi };
 };
