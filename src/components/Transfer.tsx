@@ -17,7 +17,6 @@
 import { Button, Container, TextField } from '@material-ui/core';
 import React, { useState } from 'react';
 
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import useLoadingApi from '../hooks/useLoadingApi';
 import { makeStyles } from '@material-ui/core/styles';
@@ -41,10 +40,6 @@ const Transfer = () => {
   const areApiReady = useLoadingApi();
 
   const { estimatedFee, receiverAddress } = useTransactionContext();
-  const {
-    targetChainDetails: { targetChain },
-    sourceChainDetails: { sourceChain }
-  } = useSourceTarget();
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
     input: transferInput,
@@ -70,7 +65,7 @@ const Transfer = () => {
       <TextField onChange={onChange} value={transferInput} label="Amount" variant="outlined" />
 
       <Button variant="contained" disabled={isButtonDisabled()} onClick={sendLaneMessage}>
-        Transfer from {sourceChain} to {targetChain}
+        Send Bridge Message
       </Button>
 
       <p>{receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>

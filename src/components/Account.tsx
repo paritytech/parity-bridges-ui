@@ -26,13 +26,14 @@ interface Props {
   className?: string;
   chain?: string | undefined;
   isDerived?: boolean;
-  onClick?: any;
+  onClick?: () => void;
 
   fromSender?: boolean;
 }
 
 const Account = ({ accountName, value, chain, isDerived = false, fromSender = false }: Props) => {
   const { api, address } = useApiBalance(value, chain, isDerived);
+
   const state = useBalance(api, address, true);
 
   return (

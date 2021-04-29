@@ -19,8 +19,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import Account from './Account';
-
-//import GenericAddress from './GenericAccount';
+import AccountDisplay from './AccountDisplay';
 
 interface Props {
   setError: (value: string) => void;
@@ -39,25 +38,29 @@ const useStyles = makeStyles(() => ({
 
 const ReceiverDerivedAccount = ({ setError }: Props) => {
   const classes = useStyles();
-  const { genericReceiverAccount, derivedReceiverAccount } = useTransactionContext();
+  const { genericReceiverAccount, derivedReceiverAccount, receiverAddress } = useTransactionContext();
 
   const {
     targetChainDetails: { targetChain }
   } = useSourceTarget();
 
   if (genericReceiverAccount) {
+    // TO-DO to replace this callback with proper <GenericAccount /> component.
     setError('A generic account was provided. Please provide a source/target valid account');
-    // TO-DO to remove comment when generic address logic will be fixed
-    /*   return <GenericAddress value={genericReceiverAccount} />; */
   }
+
   if (derivedReceiverAccount) {
     return (
       <div className={classes.derived}>
-        <Account value={derivedReceiverAccount} chain={targetChain} isDerived />
+        <Account value={receiverAddress!} chain={targetChain} isDerived />
       </div>
     );
   }
-  return null;
+  return (
+    <div className={classes.derived}>
+      <AccountDisplay isDerived />
+    </div>
+  );
 };
 
 export default ReceiverDerivedAccount;

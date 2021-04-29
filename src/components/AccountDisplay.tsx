@@ -26,10 +26,10 @@ import shorterItem from '../util/shortenItem';
 import AccountIdenticon from './AccountIdenticon';
 
 interface Props {
-  address: string;
+  address?: string;
   accountName?: string | null;
   isDerived?: boolean;
-  onClick?: any;
+  onClick?: () => void;
   balance?: string | null | undefined;
   fromSender?: boolean;
 }
@@ -59,9 +59,19 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-const AccountDisplay = ({ accountName, address, balance, isDerived = false, onClick, fromSender = false }: Props) => {
+const AccountDisplay = ({
+  accountName,
+  address = '',
+  balance,
+  isDerived = false,
+  onClick,
+  fromSender = false
+}: Props) => {
   const classes = useStyles();
   const displayText = () => {
+    if (!address) {
+      return '';
+    }
     if (isDerived) {
       return `derived(${accountName || shorterItem(address)})`;
     }
@@ -81,9 +91,7 @@ const AccountDisplay = ({ accountName, address, balance, isDerived = false, onCl
 
   return (
     <Container onClick={onClick} className={classes.container}>
-      <div className={classes.icon}>
-        <AccountIdenticon address={address} />
-      </div>
+      <div className={classes.icon}>{(!isDerived || address) && <AccountIdenticon address={address} />}</div>
       <div className={classes.address}>
         <p>{displayText()}</p>
       </div>

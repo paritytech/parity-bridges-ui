@@ -26,7 +26,7 @@ interface Props {
 
 const useStyles = makeStyles(() => ({
   placeholder: {
-    opacity: '30%'
+    filter: 'grayscale(1)'
   }
 }));
 

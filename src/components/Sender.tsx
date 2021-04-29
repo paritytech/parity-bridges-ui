@@ -17,7 +17,7 @@
 import { Container, FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { encodeAddress } from '@polkadot/util-crypto';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
@@ -27,6 +27,7 @@ import { Account as AccountType } from '../types/accountTypes';
 import formatAccounts from '../util/formatAccounts';
 import getChainSS58 from '../util/getSS58';
 import Account from './Account';
+import AccountDisplay from './AccountDisplay';
 import SubHeader from './SubHeader';
 
 interface Props {
@@ -42,6 +43,7 @@ const useStyles = makeStyles(() => ({
 
 const Sender = ({ className }: Props) => {
   const classes = useStyles();
+  const [chains, setChains] = useState<Array<string[]>>([]);
   const { account, accounts, derivedAccount, setCurrentAccount } = useAccounts();
   const {
     sourceChainDetails: { sourceChain },
@@ -49,14 +51,24 @@ const Sender = ({ className }: Props) => {
   } = useSourceTarget();
   const { setReceiver } = useReceiver();
 
-  const value = account ? encodeAddress(account.address, getChainSS58(sourceChain)) : '';
+  useEffect(() => {
+    if (!chains.length) {
+      setChains([
+        [sourceChain, targetChain],
+        [targetChain, sourceChain]
+      ]);
+    }
+  }, [chains.length, sourceChain, targetChain]);
+
+  const value = account ? encodeAddress(account.address, getChainSS58(sourceChain)) : 'init';
 
   const onChange = (value: string, chain: string) => {
     setCurrentAccount(value, chain);
     setReceiver(null);
   };
 
-  const renderAccounts = (source: string, target: string) => {
+  const renderAccounts = (chains: string[]) => {
+    const [source, target] = chains;
     const formatedAccounts = formatAccounts(accounts, source);
     const items = formatedAccounts.map(({ text, value, key }: any) => (
       <MenuItem
@@ -82,7 +94,7 @@ const Sender = ({ className }: Props) => {
       const text = getName(account);
       return <Account accountName={text} value={value} chain={sourceChain} />;
     }
-    return null;
+    return <AccountDisplay accountName="sender" />;
   };
 
   return (
@@ -91,14 +103,13 @@ const Sender = ({ className }: Props) => {
       <div className="senderSelect">
         <FormControl className="formControl">
           <Select value={value} name="name" renderValue={(): React.ReactNode => <AccountSelected />}>
-            {renderAccounts(sourceChain, targetChain)}
-            {renderAccounts(targetChain, sourceChain)}
+            {chains.map((chain) => renderAccounts(chain))}
           </Select>
         </FormControl>
       </div>
 
       <div className="derivedAccount">
-        {derivedAccount && <Account value={derivedAccount} isDerived chain={targetChain} />}
+        {derivedAccount && <Account accountName={getName(account)} value={value} chain={targetChain} isDerived />}
       </div>
     </Container>
   );

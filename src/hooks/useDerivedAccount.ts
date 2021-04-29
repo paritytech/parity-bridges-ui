@@ -21,13 +21,12 @@ import getDeriveAccount from '../util/getDeriveAccount';
 
 const useDerivedAccount = () => {
   const {
-    sourceChainDetails: { sourceChain },
     targetChainDetails: { targetChain }
   } = useSourceTarget();
   const { account } = useAccountContext();
   const chainsConfigs = getChainConfigs();
   const { SS58Format } = chainsConfigs[targetChain];
-  const { bridgeId } = chainsConfigs[sourceChain];
+  const { bridgeId } = chainsConfigs[targetChain];
 
   if (!account) {
     return null;

@@ -67,11 +67,14 @@ function ReceiverInput({ setError }: Props) {
 
   const { dispatchTransaction } = useUpdateTransactionContext();
   const { receiverAddress } = useTransactionContext();
+
   const { api, address } = useApiBalance(addressInput, formatFound, false);
+
   const state = useBalance(api, address, true);
 
   const {
-    targetChainDetails: { targetChain }
+    targetChainDetails: { targetChain },
+    sourceChainDetails: { sourceChain }
   } = useSourceTarget();
   const prevTargetChain = usePrevious(targetChain);
 
@@ -111,7 +114,8 @@ function ReceiverInput({ setError }: Props) {
 
     if (formatFound === targetChain) {
       setReceiver(formattedAccount);
-    } else {
+    }
+    if (formatFound === sourceChain) {
       dispatchTransaction(TransactionActionCreators.setDerivedAccount(formattedAccount));
       setReceiver(receiver);
     }

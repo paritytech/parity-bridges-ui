@@ -42,15 +42,14 @@ const useApiBalance = (address: string | null, chain: string | undefined, isDeri
 
   const chainsConfigs = getChainConfigs();
   const { SS58Format } = chainsConfigs[chain === targetChain ? targetChain : sourceChain];
-  const { bridgeId } = chainsConfigs[chain === targetChain ? sourceChain : targetChain];
-  let addressResult = address;
-  if (isDerived) {
-    addressResult = getDeriveAccount({
-      SS58Format,
-      address,
-      bridgeId
-    });
-  }
+  const { bridgeId } = chainsConfigs[chain === targetChain ? targetChain : sourceChain];
+  const addressResult = !isDerived
+    ? address
+    : getDeriveAccount({
+        SS58Format,
+        address,
+        bridgeId
+      });
 
   const processedApi = isDerived ? targetApi : sourceApi;
 
