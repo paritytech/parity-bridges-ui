@@ -15,7 +15,8 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 export { ButtonExt, ButtonSwitchMode } from './Buttons';
-export { BoxUI, BoxSidebar, BoxMain } from './LayoutBoxes';
+export { IconTxStatus } from './Icons';
+export { BoxUI, BoxSidebar } from './LayoutBoxes';
 export { MenuAction, MenuActionMockData } from './MenuAction';
 export { NetworkSides, NetworkStats } from './Network';
 export { TransactionDisplay } from './TransactionDisplay';

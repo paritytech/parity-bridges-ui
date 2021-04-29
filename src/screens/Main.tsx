@@ -18,7 +18,6 @@ import { Container, Grid, Typography } from '@material-ui/core';
 import React from 'react';
 
 import {
-  BoxMain,
   BoxSidebar,
   BoxUI,
   ButtonExt,
@@ -37,7 +36,7 @@ import Transfer from '../components/Transfer';
 
 function Main() {
   return (
-    <BoxMain>
+    <>
       <BoxSidebar>
         <div>
           <Typography variant="button">Bridges UI</Typography>
@@ -78,7 +77,7 @@ function Main() {
         </Container>
         <SnackBar />
       </BoxUI>
-    </BoxMain>
+    </>
   );
 }
 export default Main;
