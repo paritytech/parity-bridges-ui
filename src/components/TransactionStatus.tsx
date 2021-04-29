@@ -103,18 +103,16 @@ function TransactionStatus({ transaction, onComplete }: Props) {
     }
 
     const stepEvaluator = (transactionValue: string | number | null, chainValue: string | number | null) => {
-      if (!transactionValue || !chainValue) {
-        return false;
-      }
+      if (!transactionValue || !chainValue) return false;
+
       const bnChainValue = new BN(chainValue);
       const bnTransactionValue = new BN(transactionValue);
       return bnChainValue.gt(bnTransactionValue);
     };
 
-    const completionStatus = (status: boolean) => (transaction.block && status ? 'DONE' : 'RUNNING');
-    const sourceTransactionIncluded = transaction.block
-      ? `included in block ${transaction.block}`
-      : completionStatus(false);
+    const completionStatus = (status: boolean) =>
+      transaction.block && status ? TransactionStatusEnum.COMPLETED : TransactionStatusEnum.IN_PROGRESS;
+
     const sourceTransactionFinalized = stepEvaluator(transaction.block, bestBlockFinalized);
     const blockFinalityRelayed = stepEvaluator(transaction.block, bestBridgedFinalizedBlockOnTarget);
     const messageDelivered = stepEvaluator(transaction.messageNonce, latestReceivedNonceRuntimeApi);
@@ -122,22 +120,36 @@ function TransactionStatus({ transaction, onComplete }: Props) {
     const sourceConfirmationReceived = stepEvaluator(transaction.messageNonce, latestReceivedNonceOnSource);
 
     const steps = [
-      { chainType: sourceChain, label: 'Including message in block', status: sourceTransactionIncluded },
       {
         chainType: sourceChain,
-        label: 'Waiting for block finality on source',
+        label: 'Include message in block',
+        onChain: transaction.block,
+        status: transaction.block ? TransactionStatusEnum.COMPLETED : TransactionStatusEnum.IN_PROGRESS
+      },
+      {
+        chainType: sourceChain,
+        label: 'Finilise block',
         status: completionStatus(sourceTransactionFinalized)
       },
       {
         chainType: targetChain,
-        label: 'Source Chain block finality received on target',
+        label: 'Bridge block',
         status: completionStatus(blockFinalityRelayed)
       },
-      { chainType: targetChain, label: 'Message delivered', status: completionStatus(messageDelivered) },
-      { chainType: targetChain, label: 'Message finality', status: completionStatus(messageFinalizedOnTarget) },
+      {
+        chainType: targetChain,
+        label: 'Message number',
+        onChain: transaction.messageNonce,
+        status: completionStatus(messageDelivered)
+      },
+      {
+        chainType: targetChain,
+        label: 'Finilise message in target block',
+        status: completionStatus(messageFinalizedOnTarget)
+      },
       {
         chainType: sourceChain,
-        label: 'Delivery confirmation on source',
+        label: 'Confirm delivery on source',
         status: completionStatus(sourceConfirmationReceived)
       }
     ];
