@@ -14,34 +14,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import { makeStyles } from '@material-ui/core/styles';
+import Identicon from '@polkadot/react-identicon';
+import { INCORRECT_FORMAT } from '../constants';
+import ctx from 'classnames';
 import React from 'react';
-
-import useApiBalance from '../hooks/useApiBalance';
-import useBalance from '../hooks/useBalance';
-import AccountDisplay from './AccountDisplay';
-
 interface Props {
-  value: string;
-  accountName?: string;
-  className?: string;
-  chain?: string | undefined;
-  isDerived?: boolean;
-  onClick?: () => void;
+  address: string;
+  formatFound?: string;
 }
 
-const Account = ({ accountName, value, chain, isDerived = false }: Props) => {
-  const { api, address } = useApiBalance(value, chain, isDerived);
+const useStyles = makeStyles(() => ({
+  placeholder: {
+    filter: 'grayscale(1)'
+  }
+}));
 
-  const state = useBalance(api, address, true);
+export default function AccountIdenticon({ address, formatFound }: Props) {
+  const placeholder = !address || formatFound === INCORRECT_FORMAT;
 
-  return (
-    <AccountDisplay
-      accountName={accountName}
-      address={address}
-      balance={state.formattedBalance}
-      isDerived={isDerived}
-    />
-  );
-};
+  const value = !placeholder ? address : '1nUC7afqmo7zwRFWxDjrUQu9skk6fk99pafb4SiyGSRc8z3';
 
-export default Account;
+  const classes = useStyles();
+
+  return <Identicon className={ctx(placeholder && classes.placeholder)} value={value} size={32} theme={'polkadot'} />;
+}

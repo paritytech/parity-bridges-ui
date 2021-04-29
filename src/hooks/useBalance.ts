@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
+
 import { ApiPromise } from '@polkadot/api';
 import { VoidFn } from '@polkadot/api/types';
 import { Balance } from '@polkadot/types/interfaces';
@@ -21,10 +22,7 @@ import BN from 'bn.js';
 import { useEffect, useState } from 'react';
 
 import { MessageActionsCreators } from '../actions/messageActions';
-import { getChainConfigs } from '../configs/substrateProviders';
 import { useUpdateMessageContext } from '../contexts/MessageContext';
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import getDeriveAccount from '../util/getDeriveAccount';
 import logger from '../util/logger';
 
 type State = {
@@ -41,33 +39,12 @@ const initValues = {
   free: new BN(ZERO) as Balance
 };
 
-const useBalance = (name: string, address: string, chain: string | undefined, providedSi: boolean = false): State[] => {
+const useBalance = (api: ApiPromise, address: string, providedSi: boolean = false): State => {
   const { dispatchMessage } = useUpdateMessageContext();
-  const [sourceState, setSourceState] = useState<State>(initValues);
-  const [targetState, setTargetState] = useState<State>(initValues);
-  const {
-    sourceChainDetails: {
-      sourceApiConnection: { api: sourceApi },
-      sourceChain
-    },
-    targetChainDetails: {
-      targetApiConnection: { api: targetApi },
-      targetChain
-    }
-  } = useSourceTarget();
+  const [state, setState] = useState<State>(initValues);
 
   useEffect((): (() => void) => {
-    let unsubscribeSource: Promise<VoidFn>;
-    let unsubscribeTarget: Promise<VoidFn>;
-
-    const chainsConfigs = getChainConfigs();
-    const { SS58Format } = chainsConfigs[chain === sourceChain ? targetChain : sourceChain];
-    const { bridgeId } = chainsConfigs[chain === sourceChain ? sourceChain : targetChain];
-    const derivedAddress = getDeriveAccount({
-      SS58Format,
-      address: address,
-      bridgeId
-    });
+    let unsubscribe: Promise<VoidFn>;
 
     const getBalance = async (api: ApiPromise, address: string, setState: any): Promise<VoidFn> => {
       try {
@@ -91,16 +68,14 @@ const useBalance = (name: string, address: string, chain: string | undefined, pr
     };
 
     if (address) {
-      unsubscribeSource = getBalance(sourceApi, address, setSourceState);
-      unsubscribeTarget = getBalance(targetApi, derivedAddress, setTargetState);
+      unsubscribe = getBalance(api, address, setState);
     }
     return async (): Promise<void> => {
-      unsubscribeSource && (await unsubscribeSource)();
-      unsubscribeTarget && (await unsubscribeTarget)();
+      unsubscribe && (await unsubscribe)();
     };
-  }, [name, address, chain, sourceChain, targetChain, sourceApi, targetApi, providedSi, dispatchMessage]);
+  }, [address, providedSi, dispatchMessage, api]);
 
-  return [sourceState, targetState];
+  return state;
 };
 
 export default useBalance;

@@ -19,11 +19,11 @@ import SyncAltIcon from '@material-ui/icons/SyncAlt';
 import React from 'react';
 
 import { BoxMain, BoxSidebar, BoxUI, ButtonExt, MenuAction, NetworkSides, NetworkStats } from '../components';
-import Accounts from '../components/Accounts';
 import CustomCall from '../components/CustomCall';
 import DashboardCard from '../components/DashboardCard';
 import ExtensionAccountCheck from '../components/ExtensionAccountCheck';
 import Remark from '../components/Remark';
+import Sender from '../components/Sender';
 import SnackBar from '../components/SnackBar';
 import Transactions from '../components/Transactions';
 import Transfer from '../components/Transfer';
@@ -103,7 +103,7 @@ function Main({ className }: Props) {
           </Grid>
           <Grid container>
             <Grid item md={12}>
-              <ExtensionAccountCheck component={<Accounts />} />
+              <ExtensionAccountCheck component={<Sender />} />
             </Grid>
           </Grid>
           <Grid container>

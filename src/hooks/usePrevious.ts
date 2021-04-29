@@ -14,34 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React from 'react';
+import { useRef, useEffect } from 'react';
 
-import useApiBalance from '../hooks/useApiBalance';
-import useBalance from '../hooks/useBalance';
-import AccountDisplay from './AccountDisplay';
-
-interface Props {
-  value: string;
-  accountName?: string;
-  className?: string;
-  chain?: string | undefined;
-  isDerived?: boolean;
-  onClick?: () => void;
+export default function usePrevious(value: any) {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
 }
-
-const Account = ({ accountName, value, chain, isDerived = false }: Props) => {
-  const { api, address } = useApiBalance(value, chain, isDerived);
-
-  const state = useBalance(api, address, true);
-
-  return (
-    <AccountDisplay
-      accountName={accountName}
-      address={address}
-      balance={state.formattedBalance}
-      isDerived={isDerived}
-    />
-  );
-};
-
-export default Account;

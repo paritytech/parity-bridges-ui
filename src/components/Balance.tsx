@@ -14,30 +14,33 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { getChainConfigs } from '../configs/substrateProviders';
-import { useAccountContext } from '../contexts/AccountContextProvider';
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import getDeriveAccount from '../util/getDeriveAccount';
+import Container from '@material-ui/core/Container';
+import { makeStyles } from '@material-ui/core/styles';
 
-const useDerivedAccount = () => {
-  const {
-    targetChainDetails: { targetChain }
-  } = useSourceTarget();
-  const { account } = useAccountContext();
-  const chainsConfigs = getChainConfigs();
-  const { SS58Format } = chainsConfigs[targetChain];
-  const { bridgeId } = chainsConfigs[targetChain];
+import React from 'react';
 
-  if (!account) {
-    return null;
+interface Props {
+  balance?: string | null | undefined;
+  onClick?: () => void;
+}
+
+const useStyles = makeStyles(() => ({
+  balances: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    width: '100%',
+    padding: '0 10px'
   }
+}));
 
-  const toDerive = {
-    SS58Format,
-    address: account.address,
-    bridgeId
-  };
-  return getDeriveAccount(toDerive);
+const Balance = ({ balance, onClick }: Props) => {
+  const classes = useStyles();
+  return (
+    <Container onClick={onClick} className={classes.balances}>
+      <p>{balance || '-'}</p>
+    </Container>
+  );
 };
 
-export default useDerivedAccount;
+export default Balance;

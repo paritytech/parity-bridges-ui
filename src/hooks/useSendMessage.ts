@@ -123,14 +123,14 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
                   );
                 })
                 .catch((e) => {
-                  logger.error(e);
+                  logger.error(e.message);
                   throw new Error('Issue reading block information.');
                 });
             }
           });
         }
         if (status.isFinalized) {
-          console.log(`Transaction included at blockHash ${status.asFinalized}`);
+          logger.info(`Transaction included at blockHash ${status.asFinalized}`);
           unsub();
         }
       });

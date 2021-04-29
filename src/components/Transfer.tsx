@@ -16,25 +16,28 @@
 
 import { Button, Container, TextField } from '@material-ui/core';
 import React, { useState } from 'react';
-import styled from 'styled-components';
 
 import { useTransactionContext } from '../contexts/TransactionContext';
-import useConnectedReceiver from '../hooks/useConnectedReceiver';
 import useLoadingApi from '../hooks/useLoadingApi';
+import { makeStyles } from '@material-ui/core/styles';
 import useSendMessage from '../hooks/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
 
-interface Props {
-  className?: string;
-}
+import Receiver from './Receiver';
 
-const Transfer = ({ className }: Props) => {
+const useStyles = makeStyles(() => ({
+  container: {
+    width: '700px',
+    marginLeft: '0',
+    padding: '0'
+  }
+}));
+
+const Transfer = () => {
+  const classes = useStyles();
   const [isRunning, setIsRunning] = useState(false);
   const [transferInput, setTransferInput] = useState('0');
-  const [receiverInput, setReceiverInput] = useState('');
 
-  const [receiverMessage, setReceiverMessage] = useState<string | null>();
-  const setConnectedReceiver = useConnectedReceiver();
   const areApiReady = useLoadingApi();
 
   const { estimatedFee, receiverAddress } = useTransactionContext();
@@ -50,46 +53,25 @@ const Transfer = ({ className }: Props) => {
     setTransferInput(event.target.value);
   };
 
-  const onReceiverChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const receiver = event.target.value;
-    setReceiverInput(receiver);
-    setConnectedReceiver({
-      receiver,
-      setReceiverMessage
-    });
-  };
-
   if (!areApiReady) {
     return null;
   }
 
-  // TO-DO: Remove <br /> by proper margins
-
   return (
-    <>
+    <Container className={classes.container}>
       <h2>Transfer</h2>
-      <Container className={className}>
-        <div className="receiver">
-          <TextField fullWidth onChange={onReceiverChange} value={receiverInput} label="Receiver" variant="outlined" />
-        </div>
-        <p>{receiverMessage && `${receiverMessage}`}</p>
 
-        <br />
-        <TextField onChange={onChange} value={transferInput} label="Sender" variant="outlined" />
+      <Receiver />
 
-        <br />
-        <Button variant="contained" disabled={isButtonDisabled()} onClick={sendLaneMessage}>
-          Send Transfer
-        </Button>
-        <p>{receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
-      </Container>
-    </>
+      <TextField onChange={onChange} value={transferInput} label="Amount" variant="outlined" />
+
+      <Button variant="contained" disabled={isButtonDisabled()} onClick={sendLaneMessage}>
+        Send Bridge Message
+      </Button>
+
+      <p>{receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
+    </Container>
   );
 };
 
-export default styled(Transfer)`
-  margin: 40px 0;
-  .receiver {
-    max-width: 700px;
-  }
-`;
+export default Transfer;
