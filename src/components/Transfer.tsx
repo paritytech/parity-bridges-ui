@@ -28,7 +28,8 @@ import Receiver from './Receiver';
 const useStyles = makeStyles(() => ({
   container: {
     width: '700px',
-    marginLeft: '0'
+    marginLeft: '0',
+    padding: '0'
   }
 }));
 
