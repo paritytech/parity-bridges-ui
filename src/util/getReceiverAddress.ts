@@ -16,6 +16,7 @@
 import { checkAddress } from '@polkadot/util-crypto';
 
 import { getChainConfigs } from '../configs/substrateProviders';
+import { INCORRECT_FORMAT, GENERIC, GENERIC_SUBSTRATE_PREFIX } from '../constants';
 import getDeriveAccount from './getDeriveAccount';
 
 interface Props {
@@ -25,21 +26,38 @@ interface Props {
 const getReceiverAddress = ({ receiverAddress, chain }: Props) => {
   const chainsConfigs = getChainConfigs();
   const { SS58Format, bridgeId } = chainsConfigs[chain];
-  try {
-    const [validatedDerivedAcccount] = checkAddress(receiverAddress, SS58Format);
-    let address = receiverAddress;
-    if (!validatedDerivedAcccount) {
-      const formattedAccount = getDeriveAccount({
-        SS58Format,
-        address: receiverAddress,
-        bridgeId
-      });
 
-      address = formattedAccount;
+  try {
+    const [validatedDerivedAcccount, rest] = checkAddress(receiverAddress, SS58Format);
+    if (validatedDerivedAcccount) {
+      return { address: receiverAddress, formatFound: chain };
     }
-    return address;
+    // should be extracted as a separate component/function
+    const getFormat = (prefix: string) => {
+      const intPrefix: number = parseInt(prefix, 10);
+      if (intPrefix === GENERIC_SUBSTRATE_PREFIX) {
+        return GENERIC;
+      }
+      const chainsConfigs = getChainConfigs();
+      return Object.keys(chainsConfigs).find((key) => chainsConfigs[key].SS58Format === intPrefix);
+    };
+
+    const parts = rest?.split(',');
+    const prefix = parts![2].split(' ');
+    const formatFound = getFormat(prefix[2]);
+
+    const address = getDeriveAccount({
+      SS58Format,
+      address: receiverAddress,
+      bridgeId
+    });
+
+    return { address, formatFound };
   } catch (e) {
-    throw new Error('INCORRECT-FORMAT');
+    if (receiverAddress) {
+      throw new Error(INCORRECT_FORMAT);
+    }
+    return { address: '', formatFound: null };
   }
 };
 

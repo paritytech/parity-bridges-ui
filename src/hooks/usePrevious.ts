@@ -14,10 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-export { ButtonExt, ButtonSwitchMode } from './Buttons';
-export { IconTxStatus } from './Icons';
-export { BoxUI, BoxSidebar } from './LayoutBoxes';
-export { MenuAction } from './MenuAction';
-export { NetworkSides, NetworkStats } from './Network';
-export { TransactionDisplay } from './TransactionDisplay';
-export { light } from './theme';
+import { useRef, useEffect } from 'react';
+
+export default function usePrevious(value: any) {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+}

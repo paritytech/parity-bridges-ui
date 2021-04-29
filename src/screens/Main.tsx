@@ -17,24 +17,58 @@
 import { Container, Grid, Typography } from '@material-ui/core';
 import React from 'react';
 
-import {
-  BoxSidebar,
-  BoxUI,
-  ButtonExt,
-  MenuAction,
-  MenuActionMockData,
-  NetworkSides,
-  NetworkStats
-} from '../components';
-import Accounts from '../components/Accounts';
+import { BoxSidebar, BoxUI, ButtonExt, MenuAction, NetworkSides, NetworkStats } from '../components';
 import CustomCall from '../components/CustomCall';
 import ExtensionAccountCheck from '../components/ExtensionAccountCheck';
 import Remark from '../components/Remark';
+import Sender from '../components/Sender';
 import SnackBar from '../components/SnackBar';
 import Transactions from '../components/Transactions';
 import Transfer from '../components/Transfer';
 
+interface MenuActionItemsProps {
+  idx: number;
+  title: string;
+  isEnabled: boolean;
+  component: React.ReactElement;
+}
+
+const MenuContents = [
+  {
+    idx: 0,
+    title: 'Transfer',
+    isEnabled: true,
+    component: <Transfer />
+  },
+  {
+    idx: 1,
+    title: 'Remark',
+    isEnabled: true,
+    component: <Remark />
+  },
+  {
+    idx: 2,
+    title: 'Custom Call',
+    isEnabled: true,
+    component: <CustomCall />
+  },
+  {
+    idx: 3,
+    title: 'Connect to a wallet',
+    isEnabled: true,
+    component: <p>Connect to a wallet</p>
+  }
+];
+
 function Main() {
+  const [items, setItems] = React.useState<MenuActionItemsProps[]>([] as MenuActionItemsProps[]);
+  const [index, setIndex] = React.useState<number>(0);
+
+  const searchItems = (choice: number) => items.find((x) => x.idx === choice);
+
+  React.useEffect(() => {
+    setItems(MenuContents);
+  }, []);
   return (
     <>
       <BoxSidebar>
@@ -46,32 +80,21 @@ function Main() {
         <ButtonExt> Help & Feedback </ButtonExt>
       </BoxSidebar>
       <BoxUI>
-        <MenuAction items={MenuActionMockData} />
+        <MenuAction items={items} menuIdx={index} changeMenu={setIndex} />
         <Container>
           <Grid container>
             <Grid item md={12}>
-              <Accounts />
+              <ExtensionAccountCheck component={<Sender />} />
             </Grid>
           </Grid>
           <Grid container>
             <Grid item md={12}>
-              <Remark />
+              {searchItems(index)?.component}
             </Grid>
           </Grid>
           <Grid container>
             <Grid item md={12}>
-              <Transfer />
-              <ExtensionAccountCheck component={<Accounts />} />
-            </Grid>
-            <Grid container>
-              <Grid item md={12}>
-                <CustomCall />
-              </Grid>
-            </Grid>
-            <Grid container>
-              <Grid item md={12}>
-                <Transactions />
-              </Grid>
+              <Transactions />
             </Grid>
           </Grid>
         </Container>
@@ -80,4 +103,5 @@ function Main() {
     </>
   );
 }
+
 export default Main;

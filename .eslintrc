@@ -27,8 +27,7 @@
         "header",
         "promise",
         "react",
-        "react-hooks",
-        "simple-import-sort"
+        "react-hooks"
     ],
     "settings": {
         "react": {
@@ -86,7 +85,6 @@
             2,
             "always"
         ],
-        "simple-import-sort/imports": "error",
         "switch-colon-spacing": [
             "error",
             {

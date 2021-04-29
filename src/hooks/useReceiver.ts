@@ -15,37 +15,39 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { TransactionActionCreators } from '../actions/transactionActions';
+import { INCORRECT_FORMAT } from '../constants';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import getReceiverAddress from '../util/getReceiverAddress';
 import logger from '../util/logger';
 
-interface Props {
-  setReceiverMessage: (message: string) => void;
-  receiver: string;
-}
-
-export default function useConnectedReceiver(): Function {
+export default function useReceiver() {
   const { dispatchTransaction } = useUpdateTransactionContext();
+
   const {
     targetChainDetails: { targetChain }
   } = useSourceTarget();
 
-  const setConnectedReceiver = ({ setReceiverMessage, receiver }: Props) => {
-    setReceiverMessage('');
+  const setReceiverAddress = (address: string | null) =>
+    dispatchTransaction(TransactionActionCreators.setReceiverAddress(address));
+
+  const setReceiver = (address: string | null) => setReceiverAddress(address);
+
+  const validateAccount = (receiver: string) => {
     try {
-      const receiverAddress = getReceiverAddress({ chain: targetChain, receiverAddress: receiver });
-      if (receiverAddress !== receiver) {
-        setReceiverMessage(`The format for the account is incorrect, funds will be sent to ${receiverAddress}`);
-      }
-      dispatchTransaction(TransactionActionCreators.setReceiverAddress(receiverAddress));
+      const { address, formatFound } = getReceiverAddress({
+        chain: targetChain,
+        receiverAddress: receiver
+      });
+
+      return { formatFound, formattedAccount: address };
     } catch (e) {
-      logger.error(e);
-      if (e.message === 'INCORRECT-FORMAT') {
-        setReceiverMessage('Invalid address, please provide a valid address');
+      logger.error(e.message);
+      if (e.message === INCORRECT_FORMAT) {
+        return { formatFound: e.message, formattedAccount: receiver };
       }
     }
   };
 
-  return setConnectedReceiver;
+  return { setReceiver, validateAccount };
 }

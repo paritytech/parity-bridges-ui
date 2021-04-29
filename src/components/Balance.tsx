@@ -14,10 +14,33 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-export { ButtonExt, ButtonSwitchMode } from './Buttons';
-export { IconTxStatus } from './Icons';
-export { BoxUI, BoxSidebar } from './LayoutBoxes';
-export { MenuAction } from './MenuAction';
-export { NetworkSides, NetworkStats } from './Network';
-export { TransactionDisplay } from './TransactionDisplay';
-export { light } from './theme';
+import Container from '@material-ui/core/Container';
+import { makeStyles } from '@material-ui/core/styles';
+
+import React from 'react';
+
+interface Props {
+  balance?: string | null | undefined;
+  onClick?: () => void;
+}
+
+const useStyles = makeStyles(() => ({
+  balances: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    width: '100%',
+    padding: '0 10px'
+  }
+}));
+
+const Balance = ({ balance, onClick }: Props) => {
+  const classes = useStyles();
+  return (
+    <Container onClick={onClick} className={classes.balances}>
+      <p>{balance || '-'}</p>
+    </Container>
+  );
+};
+
+export default Balance;

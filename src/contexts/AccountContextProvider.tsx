@@ -44,7 +44,9 @@ export function useUpdateAccountContext() {
 export function AccountContextProvider(props: AccountContextProviderProps): React.ReactElement {
   const { children = null } = props;
 
-  const [account, dispatchAccount] = useReducer(accountReducer, { account: null });
+  const [account, dispatchAccount] = useReducer(accountReducer, {
+    account: null
+  });
 
   return (
     <AccountContext.Provider value={account}>

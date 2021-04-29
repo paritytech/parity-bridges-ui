@@ -20,6 +20,8 @@ export interface TransactionContextType {
   estimatedFee: string | null;
   receiverAddress: string | null;
   transactions: Array<TransanctionStatus>;
+  derivedReceiverAccount: string | null;
+  genericReceiverAccount: string | null;
 }
 
 export interface Payload {
@@ -49,6 +51,8 @@ export interface TransanctionStatus extends UpdatedTransanctionStatus {
 export interface TransactionState {
   estimatedFee: string | null;
   receiverAddress: string | null;
+  derivedReceiverAccount: string | null;
+  genericReceiverAccount: string | null;
   transactions: Array<TransanctionStatus>;
 }
 
