@@ -13,8 +13,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
+import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import React from 'react';
-import styled from 'styled-components';
 
 import { useKeyringContext } from '../contexts/KeyringContextProvider';
 
@@ -22,32 +22,21 @@ interface Props {
   component: JSX.Element;
 }
 
-const ExtensionAccountCheck = ({ component }: Props): JSX.Element => {
-  const { extensionExists, accountExists } = useKeyringContext();
-  const outcomeAfterChecks: JSX.Element[] = [];
-
-  if (!extensionExists) {
-    outcomeAfterChecks.push(<p className="messageNote">Connect to a wallet. Install polkadotjs extension</p>);
-  } else {
-    if (!accountExists) {
-      outcomeAfterChecks.push(
-        <p className="messageNote">There are no accounts in the extension. Please create one. Please create one</p>
-      );
-    } else {
-      outcomeAfterChecks.push(component);
-    }
-  }
-
-  return <>{outcomeAfterChecks}</>;
+const Alert = (props: JSX.IntrinsicAttributes & AlertProps) => {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
 };
 
-export default styled(ExtensionAccountCheck)`
-  .messageNote {
-    font-size: 20px;
-    font-weight: bold;
-    text-align: center;
-    height: 50px;
-    width: 100%;
-    padding: 50px 0;
+const ExtensionAccountCheck = ({ component }: Props): JSX.Element => {
+  const { extensionExists, accountExists } = useKeyringContext();
+
+  let msg: string = '';
+  if (!extensionExists) {
+    msg = 'Connect to a wallet. Install polkadotjs extension';
+  } else if (!accountExists) {
+    msg = 'There are no accounts in the extension. Please create one. Please create one';
   }
-`;
+
+  return <>{accountExists ? component : <Alert severity="error">{msg}</Alert>}</>;
+};
+
+export default ExtensionAccountCheck;
