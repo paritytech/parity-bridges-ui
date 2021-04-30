@@ -19,12 +19,14 @@ import React from 'react';
 
 import { BoxSidebar, BoxUI, ButtonExt, MenuAction, NetworkSides, NetworkStats } from '../components';
 import CustomCall from '../components/CustomCall';
+import DashboardCard from '../components/DashboardCard';
 import ExtensionAccountCheck from '../components/ExtensionAccountCheck';
 import Remark from '../components/Remark';
 import Sender from '../components/Sender';
 import SnackBar from '../components/SnackBar';
 import Transactions from '../components/Transactions';
 import Transfer from '../components/Transfer';
+import { ChainDetails } from '../types/sourceTargetTypes';
 
 interface MenuActionItemsProps {
   idx: number;
@@ -99,6 +101,14 @@ function Main() {
           </Grid>
         </Container>
         <SnackBar />
+        <Grid container alignItems="center">
+          <Grid item md={5}>
+            <DashboardCard chainDetail={ChainDetails.SOURCE} />
+          </Grid>
+          <Grid item md={5}>
+            <DashboardCard chainDetail={ChainDetails.TARGET} />
+          </Grid>
+        </Grid>
       </BoxUI>
     </>
   );
