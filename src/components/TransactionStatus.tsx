@@ -27,7 +27,6 @@ import { TransanctionStatus } from '../types/transactionTypes';
 import { Step, TransactionStatusEnum } from '../types/transactionTypes';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
 import { TransactionDisplay } from './TransactionDisplay';
-
 interface Props {
   transaction: TransanctionStatus;
   onComplete: () => void;
@@ -146,7 +145,7 @@ function TransactionStatus({ transaction, onComplete }: Props) {
       },
       {
         chainType: targetChain,
-        label: 'Finilise message in target block',
+        label: 'Finalise message in target block',
         onChain: 'NNN',
         status: completionStatus(messageFinalizedOnTarget)
       },
