@@ -99,19 +99,19 @@ export const NetworkStats = () => {
       <Box className={classes.statsEntry}>
         Finilised blocks:
         <span>
-          {dbSource.bestBlockFinalized} / {dbSource.bestBlock}
+          {dbSource?.bestBlockFinalized} / {dbSource?.bestBlock}
         </span>
       </Box>
       <Box className={classes.statsEntry}>
         Bridged blocks:
-        <span>{dbSource.bestBridgedFinalizedBlock}</span>
+        <span>{dbSource?.bestBridgedFinalizedBlock}</span>
       </Box>
       <Box className={classes.statsEntry}>
         Crossed msgs:
-        <span>{dbSource.outboundLanes.totalMessages}</span>
+        <span>{dbSource?.outboundLanes.totalMessages}</span>
       </Box>
       <Box className={classes.statsEntry}>
-        Queue:<span>{dbSource.outboundLanes.pendingMessages}</span>
+        Queue:<span>{dbSource?.outboundLanes.pendingMessages}</span>
       </Box>
     </>
   );
