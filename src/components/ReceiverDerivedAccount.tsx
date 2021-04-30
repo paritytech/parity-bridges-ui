@@ -20,10 +20,7 @@ import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import Account from './Account';
 import AccountDisplay from './AccountDisplay';
-
-interface Props {
-  setError: (value: string) => void;
-}
+import GenericAccount from './GenericAccount';
 
 const useStyles = makeStyles(() => ({
   derived: {
@@ -36,7 +33,7 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-const ReceiverDerivedAccount = ({ setError }: Props) => {
+const ReceiverDerivedAccount = () => {
   const classes = useStyles();
   const { genericReceiverAccount, derivedReceiverAccount, receiverAddress } = useTransactionContext();
 
@@ -45,8 +42,7 @@ const ReceiverDerivedAccount = ({ setError }: Props) => {
   } = useSourceTarget();
 
   if (genericReceiverAccount) {
-    // TO-DO to replace this callback with proper <GenericAccount /> component.
-    setError('A generic account was provided. Please provide a source/target valid account');
+    return <GenericAccount value={genericReceiverAccount} />;
   }
 
   if (derivedReceiverAccount) {
@@ -56,6 +52,7 @@ const ReceiverDerivedAccount = ({ setError }: Props) => {
       </div>
     );
   }
+
   return (
     <div className={classes.derived}>
       <AccountDisplay isDerived />
