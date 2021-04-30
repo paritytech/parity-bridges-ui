@@ -19,7 +19,6 @@
 
 import Container from '@material-ui/core/Container';
 import { makeStyles } from '@material-ui/core/styles';
-import ctx from 'classnames';
 import React from 'react';
 import Balance from './Balance';
 import shorterItem from '../util/shortenItem';

@@ -49,7 +49,7 @@ export const TransactionDisplay = ({ transaction, steps }: Props) => {
   return (
     <>
       <ButtonSwitchMode disabled> Payload</ButtonSwitchMode>
-      <ButtonSwitchMode color="primary"> Reciept</ButtonSwitchMode>
+      <ButtonSwitchMode color="primary"> Receipt</ButtonSwitchMode>
       <ButtonSwitchMode disabled> Human</ButtonSwitchMode>
       <Card elevation={24} className={classes.card}>
         <Box mb className="header" component="p">

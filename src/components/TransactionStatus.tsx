@@ -119,6 +119,8 @@ function TransactionStatus({ transaction, onComplete }: Props) {
     const messageFinalizedOnTarget = stepEvaluator(transaction.messageNonce, nonceOfTargetFinalizedBlock);
     const sourceConfirmationReceived = stepEvaluator(transaction.messageNonce, latestReceivedNonceOnSource);
 
+    console.log(targetApi.rpc.chain);
+
     const steps = [
       {
         chainType: sourceChain,
@@ -128,28 +130,29 @@ function TransactionStatus({ transaction, onComplete }: Props) {
       },
       {
         chainType: sourceChain,
-        label: 'Finilise block',
+        label: 'Finalise block',
         status: completionStatus(sourceTransactionFinalized)
       },
       {
         chainType: targetChain,
-        label: 'Bridge block',
+        label: 'Relay block',
         status: completionStatus(blockFinalityRelayed)
       },
       {
         chainType: targetChain,
-        label: 'Message number',
+        label: 'Deliver message',
         onChain: transaction.messageNonce,
         status: completionStatus(messageDelivered)
       },
       {
         chainType: targetChain,
         label: 'Finilise message in target block',
+        onChain: 'NNN',
         status: completionStatus(messageFinalizedOnTarget)
       },
       {
         chainType: sourceChain,
-        label: 'Confirm delivery on source',
+        label: 'Confirm delivery',
         status: completionStatus(sourceConfirmationReceived)
       }
     ];
