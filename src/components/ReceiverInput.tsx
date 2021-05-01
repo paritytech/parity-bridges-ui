@@ -81,6 +81,7 @@ function ReceiverInput({ setError }: Props) {
   const reset = useCallback(() => {
     dispatchTransaction(TransactionActionCreators.setGenericAccount(null));
     dispatchTransaction(TransactionActionCreators.setDerivedAccount(null));
+    dispatchTransaction(TransactionActionCreators.setReceiverAddress(null));
     setShowBalance(false);
     setError('');
   }, [dispatchTransaction, setError]);
@@ -114,13 +115,18 @@ function ReceiverInput({ setError }: Props) {
 
     if (formatFound === targetChain) {
       setReceiver(formattedAccount);
+      setShowBalance(true);
+      return;
     }
+
     if (formatFound === sourceChain) {
       dispatchTransaction(TransactionActionCreators.setDerivedAccount(formattedAccount));
       setReceiver(receiver);
+      setShowBalance(true);
+      return;
     }
 
-    setShowBalance(true);
+    setError(`Unsupported address SS58 prefix: ${formatFound}`);
   };
 
   return (

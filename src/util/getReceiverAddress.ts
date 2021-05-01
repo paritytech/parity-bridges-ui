@@ -44,7 +44,7 @@ const getReceiverAddress = ({ receiverAddress, chain }: Props) => {
 
     const parts = rest?.split(',');
     const prefix = parts![2].split(' ');
-    const formatFound = getFormat(prefix[2]);
+    const formatFound = getFormat(prefix[2]) || prefix[2];
 
     const address = getDeriveAccount({
       SS58Format,
