@@ -42,7 +42,7 @@ const Receiver = () => {
       <div className={classes.input}>
         <ReceiverInput setError={setError} />
       </div>
-      <ReceiverDerivedAccount setError={setError} />
+      <ReceiverDerivedAccount />
       <div>
         <p>{error}</p>
       </div>

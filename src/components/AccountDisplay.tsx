@@ -50,7 +50,8 @@ const useStyles = makeStyles(() => ({
     alignItems: 'center'
   },
   address: {
-    marginLeft: '10px'
+    marginLeft: '10px',
+    width: '100%'
   },
   balances: {
     marginLeft: 'auto'
@@ -64,7 +65,7 @@ const AccountDisplay = ({ accountName, address = '', balance, isDerived = false,
       return '';
     }
     if (isDerived) {
-      return `derived(${accountName || shorterItem(address)})`;
+      return `Derived (${accountName || shorterItem(address)})`;
     }
     if (accountName) {
       return `${accountName} (${shorterItem(address)})`;
