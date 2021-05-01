@@ -79,7 +79,7 @@ export const NetworkSides = () => {
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   return (
     <Box marginY={2} className={classes.main}>
-      <Box p>{sourceChainDetails.sourceChain}</Box>
+      <Box>{sourceChainDetails.sourceChain}</Box>
       <Divider />
       <IconButton size="small">
         <KeyboardReturnIcon className="onlyHover" fontSize="small" />

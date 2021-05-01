@@ -52,15 +52,15 @@ export const TransactionDisplay = ({ transaction, steps }: Props) => {
       <ButtonSwitchMode color="primary"> Receipt</ButtonSwitchMode>
       <ButtonSwitchMode disabled> Human</ButtonSwitchMode>
       <Card elevation={24} className={classes.card}>
-        <Box mb className="header" component="p">
+        <Box className="header" component="p">
           <IconTxStatus status={transaction.status} /> {transaction.type} {transaction.sourceChain} {'->'}{' '}
           {transaction.targetChain}
         </Box>
         {steps.map(({ chainType, label, onChain, status }, idx) => (
           <p key={idx}>
-            <IconTxStatus status={status} /> {chainType}: {label}
+            <IconTxStatus status={status} /> {chainType}: {label}&nbsp;
             {onChain && (
-              <Box ml pt={0.25} pb={0.25} pl={0.5} pr={0.5} component="span" border={1} borderRadius={6}>
+              <Box pt={0.25} pb={0.25} pl={0.5} pr={0.5} component="span" border={1} borderRadius={6}>
                 <Typography component="span" variant="subtitle2">
                   {onChain}
                 </Typography>

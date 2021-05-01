@@ -101,6 +101,8 @@ function Main() {
           </Grid>
         </Container>
         <SnackBar />
+        <br />
+        <br />
         <Grid container alignItems="center">
           <Grid item md={5}>
             <DashboardCard chainDetail={ChainDetails.SOURCE} />

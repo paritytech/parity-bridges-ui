@@ -144,7 +144,9 @@ function TransactionStatus({ transaction, onComplete }: Props) {
       {
         chainType: targetChain,
         label: 'Finalise message in target block',
-        onChain: 'NNN',
+        // TODO [ToDr] We should remember the first block that caused the evaluator to go brrr.
+        onChain:
+          completionStatus(messageFinalizedOnTarget) === TransactionStatusEnum.COMPLETED && bestBlockFinalizedOnTarget,
         status: completionStatus(messageFinalizedOnTarget)
       },
       {
@@ -162,15 +164,16 @@ function TransactionStatus({ transaction, onComplete }: Props) {
   }, [
     areApiLoading,
     bestBlockFinalized,
-    transaction,
+    bestBlockFinalizedOnTarget,
     bestBridgedFinalizedBlockOnTarget,
+    completed,
     latestReceivedNonceOnSource,
     latestReceivedNonceRuntimeApi,
     nonceOfTargetFinalizedBlock,
-    targetChain,
-    sourceChain,
-    completed,
     onComplete
+    sourceChain,
+    targetChain,
+    transaction,
   ]);
 
   return <TransactionDisplay steps={steps} transaction={transaction} />;
