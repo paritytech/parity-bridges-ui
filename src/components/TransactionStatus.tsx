@@ -170,10 +170,10 @@ function TransactionStatus({ transaction, onComplete }: Props) {
     latestReceivedNonceOnSource,
     latestReceivedNonceRuntimeApi,
     nonceOfTargetFinalizedBlock,
-    onComplete
+    onComplete,
     sourceChain,
     targetChain,
-    transaction,
+    transaction
   ]);
 
   return <TransactionDisplay steps={steps} transaction={transaction} />;
