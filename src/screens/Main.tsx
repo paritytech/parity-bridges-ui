@@ -15,10 +15,9 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Container, Grid, Typography } from '@material-ui/core';
-import SyncAltIcon from '@material-ui/icons/SyncAlt';
 import React from 'react';
 
-import { BoxMain, BoxSidebar, BoxUI, ButtonExt, MenuAction, NetworkSides, NetworkStats } from '../components';
+import { BoxSidebar, BoxUI, ButtonExt, MenuAction, NetworkSides, NetworkStats } from '../components';
 import CustomCall from '../components/CustomCall';
 import DashboardCard from '../components/DashboardCard';
 import ExtensionAccountCheck from '../components/ExtensionAccountCheck';
@@ -28,10 +27,6 @@ import SnackBar from '../components/SnackBar';
 import Transactions from '../components/Transactions';
 import Transfer from '../components/Transfer';
 import { ChainDetails } from '../types/sourceTargetTypes';
-
-interface Props {
-  className?: string;
-}
 
 interface MenuActionItemsProps {
   idx: number;
@@ -67,7 +62,7 @@ const MenuContents = [
   }
 ];
 
-function Main({ className }: Props) {
+function Main() {
   const [items, setItems] = React.useState<MenuActionItemsProps[]>([] as MenuActionItemsProps[]);
   const [index, setIndex] = React.useState<number>(0);
 
@@ -76,9 +71,8 @@ function Main({ className }: Props) {
   React.useEffect(() => {
     setItems(MenuContents);
   }, []);
-
   return (
-    <BoxMain>
+    <>
       <BoxSidebar>
         <div>
           <Typography variant="button">Bridges UI</Typography>
@@ -89,18 +83,7 @@ function Main({ className }: Props) {
       </BoxSidebar>
       <BoxUI>
         <MenuAction items={items} menuIdx={index} changeMenu={setIndex} />
-        <Container className={className}>
-          <Grid container alignItems="center">
-            <Grid item md={5}>
-              <DashboardCard chainDetail={ChainDetails.SOURCE} />
-            </Grid>
-            <Grid item>
-              <SyncAltIcon />
-            </Grid>
-            <Grid item md={5}>
-              <DashboardCard chainDetail={ChainDetails.TARGET} />
-            </Grid>
-          </Grid>
+        <Container>
           <Grid container>
             <Grid item md={12}>
               <ExtensionAccountCheck component={<Sender />} />
@@ -118,8 +101,19 @@ function Main({ className }: Props) {
           </Grid>
         </Container>
         <SnackBar />
+        <br />
+        <br />
+        <Grid container alignItems="center">
+          <Grid item md={5}>
+            <DashboardCard chainDetail={ChainDetails.SOURCE} />
+          </Grid>
+          <Grid item md={5}>
+            <DashboardCard chainDetail={ChainDetails.TARGET} />
+          </Grid>
+        </Grid>
       </BoxUI>
-    </BoxMain>
+    </>
   );
 }
+
 export default Main;

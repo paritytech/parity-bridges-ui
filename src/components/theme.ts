@@ -28,7 +28,7 @@ export const bridgesBlue = {
 };
 export const substrateGray = {
   50: '#FCFCFC',
-  100: '#F5F8FA',
+  100: '#F1F5F7',
   150: '#F0F2F5',
   200: '#EAEEF1',
   400: '#C6D0D7',
@@ -57,7 +57,7 @@ const paletteLight: PaletteOptions = {
   },
   secondary: {
     light: substrateGray[100],
-    main: substrateGray[150],
+    main: substrateGray[400],
     dark: substrateGray[500],
     contrastText: 'black'
   },
@@ -145,8 +145,7 @@ export const light: ThemeOptions = {
     body2: {
       fontWeight: 400,
       fontSize: 12,
-      lineHeight: '135%',
-      letterSpacing: 0.25
+      lineHeight: '140%'
     },
     button: {
       fontWeight: 500,

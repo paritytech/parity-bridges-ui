@@ -14,47 +14,61 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Card, CardContent, CardHeader, Container } from '@material-ui/core';
+import { Box, Card, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
-import styled from 'styled-components';
 
-import { Step, TransactionStatusEnum, TransanctionStatus } from '../types/transactionTypes';
+import { Step, TransanctionStatus } from '../types/transactionTypes';
+import { ButtonSwitchMode } from './Buttons';
+import { IconTxStatus } from './Icons';
 
 interface Props {
-  className?: string;
   steps: Array<Step>;
   transaction: TransanctionStatus;
 }
 
-const TransactionDisplay = ({ transaction, steps, className }: Props) => {
-  if (!steps.length) {
-    return null;
+const useStyles = makeStyles((theme) => ({
+  card: {
+    '& p': {
+      ...theme.typography.body2
+    },
+    '& svg': {
+      marginBottom: '-0.2em',
+      fontSize: '1.2em',
+      marginRight: theme.spacing()
+    },
+    '& .header': {
+      fontWeight: 500
+    }
   }
+}));
 
-  const status = transaction.status === TransactionStatusEnum.COMPLETED ? 'Completed' : 'In Progress';
+export const TransactionDisplay = ({ transaction, steps }: Props) => {
+  const classes = useStyles();
+  if (!steps.length) return null;
+
   return (
-    <Container className={className}>
-      <Card className="card">
-        <CardHeader className="description" title={`Transaction: ${transaction.type}`} />
-        <CardContent>
-          <h4>Status: {status}</h4>
-          {steps.map(({ chainType, label, status }, idx) => (
-            <p key={idx}>
-              {chainType}: {label}: {status}
-            </p>
-          ))}
-        </CardContent>
+    <>
+      <ButtonSwitchMode disabled> Payload</ButtonSwitchMode>
+      <ButtonSwitchMode color="primary"> Receipt</ButtonSwitchMode>
+      <ButtonSwitchMode disabled> Human</ButtonSwitchMode>
+      <Card elevation={24} className={classes.card}>
+        <Box className="header" component="p">
+          <IconTxStatus status={transaction.status} /> {transaction.type} {transaction.sourceChain} {'->'}{' '}
+          {transaction.targetChain}
+        </Box>
+        {steps.map(({ chainType, label, onChain, status }, idx) => (
+          <p key={idx}>
+            <IconTxStatus status={status} /> {chainType}: {label}&nbsp;
+            {onChain && (
+              <Box pt={0.25} pb={0.25} pl={0.5} pr={0.5} component="span" border={1} borderRadius={6}>
+                <Typography component="span" variant="subtitle2">
+                  {onChain}
+                </Typography>
+              </Box>
+            )}
+          </p>
+        ))}
       </Card>
-    </Container>
+    </>
   );
 };
-
-export default styled(TransactionDisplay)`
-  word-wrap: break-word;
-  .card {
-    min-width: 80%;
-  }
-  .description {
-    margin: 10px;
-  }
-`;

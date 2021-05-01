@@ -67,5 +67,6 @@ export enum TransactionTypes {
 export interface Step {
   chainType: string;
   label: string;
-  status: string;
+  onChain?: string;
+  status: keyof typeof TransactionStatusEnum;
 }

@@ -26,8 +26,7 @@ import { ChainDetails } from '../types/sourceTargetTypes';
 import { TransanctionStatus } from '../types/transactionTypes';
 import { Step, TransactionStatusEnum } from '../types/transactionTypes';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
-import TransactionDisplay from './TransactionDisplay';
-
+import { TransactionDisplay } from './TransactionDisplay';
 interface Props {
   transaction: TransanctionStatus;
   onComplete: () => void;
@@ -103,18 +102,16 @@ function TransactionStatus({ transaction, onComplete }: Props) {
     }
 
     const stepEvaluator = (transactionValue: string | number | null, chainValue: string | number | null) => {
-      if (!transactionValue || !chainValue) {
-        return false;
-      }
+      if (!transactionValue || !chainValue) return false;
+
       const bnChainValue = new BN(chainValue);
       const bnTransactionValue = new BN(transactionValue);
       return bnChainValue.gt(bnTransactionValue);
     };
 
-    const completionStatus = (status: boolean) => (transaction.block && status ? 'DONE' : 'RUNNING');
-    const sourceTransactionIncluded = transaction.block
-      ? `included in block ${transaction.block}`
-      : completionStatus(false);
+    const completionStatus = (status: boolean) =>
+      transaction.block && status ? TransactionStatusEnum.COMPLETED : TransactionStatusEnum.IN_PROGRESS;
+
     const sourceTransactionFinalized = stepEvaluator(transaction.block, bestBlockFinalized);
     const blockFinalityRelayed = stepEvaluator(transaction.block, bestBridgedFinalizedBlockOnTarget);
     const messageDelivered = stepEvaluator(transaction.messageNonce, latestReceivedNonceRuntimeApi);
@@ -122,22 +119,39 @@ function TransactionStatus({ transaction, onComplete }: Props) {
     const sourceConfirmationReceived = stepEvaluator(transaction.messageNonce, latestReceivedNonceOnSource);
 
     const steps = [
-      { chainType: sourceChain, label: 'Including message in block', status: sourceTransactionIncluded },
       {
         chainType: sourceChain,
-        label: 'Waiting for block finality on source',
+        label: 'Include message in block',
+        onChain: transaction.block,
+        status: transaction.block ? TransactionStatusEnum.COMPLETED : TransactionStatusEnum.IN_PROGRESS
+      },
+      {
+        chainType: sourceChain,
+        label: 'Finalise block',
         status: completionStatus(sourceTransactionFinalized)
       },
       {
         chainType: targetChain,
-        label: 'Source Chain block finality received on target',
+        label: 'Relay block',
         status: completionStatus(blockFinalityRelayed)
       },
-      { chainType: targetChain, label: 'Message delivered', status: completionStatus(messageDelivered) },
-      { chainType: targetChain, label: 'Message finality', status: completionStatus(messageFinalizedOnTarget) },
+      {
+        chainType: targetChain,
+        label: 'Deliver message',
+        onChain: transaction.messageNonce,
+        status: completionStatus(messageDelivered)
+      },
+      {
+        chainType: targetChain,
+        label: 'Finalise message in target block',
+        // TODO [#113] We should remember the first block that caused the evaluator to go brrr.
+        onChain:
+          completionStatus(messageFinalizedOnTarget) === TransactionStatusEnum.COMPLETED && bestBlockFinalizedOnTarget,
+        status: completionStatus(messageFinalizedOnTarget)
+      },
       {
         chainType: sourceChain,
-        label: 'Delivery confirmation on source',
+        label: 'Confirm delivery',
         status: completionStatus(sourceConfirmationReceived)
       }
     ];
@@ -150,15 +164,16 @@ function TransactionStatus({ transaction, onComplete }: Props) {
   }, [
     areApiLoading,
     bestBlockFinalized,
-    transaction,
+    bestBlockFinalizedOnTarget,
     bestBridgedFinalizedBlockOnTarget,
+    completed,
     latestReceivedNonceOnSource,
     latestReceivedNonceRuntimeApi,
     nonceOfTargetFinalizedBlock,
-    targetChain,
+    onComplete,
     sourceChain,
-    completed,
-    onComplete
+    targetChain,
+    transaction
   ]);
 
   return <TransactionDisplay steps={steps} transaction={transaction} />;
