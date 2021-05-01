@@ -25,6 +25,9 @@ const useStyles = makeStyles((theme) => ({
     '&:hover': {
       backgroundColor: theme.palette.secondary.light
     }
+  },
+  switchMode: {
+    fontSize: theme.typography.body2.fontSize
   }
 }));
 
@@ -50,6 +53,15 @@ export const ButtonExt = ({
       onClick={() => openInNewTab(href)}
       {...props}
     >
+      {children}
+    </Button>
+  );
+};
+
+export const ButtonSwitchMode = ({ children, color = 'secondary', ...props }: ButtonProps) => {
+  const classes = useStyles();
+  return (
+    <Button className={classes.switchMode} color={color} {...props}>
       {children}
     </Button>
   );

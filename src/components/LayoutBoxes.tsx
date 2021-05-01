@@ -23,16 +23,11 @@ import { substrateGray } from './theme';
 // As this is placed as a child in the Material UI Select component, for some reason style components classes are not working.
 // This way to inject the styles works.
 const useStyles = makeStyles((theme) => ({
-  main: {
-    display: 'flex',
-    [theme.breakpoints.down('md')]: {
-      flexDirection: 'column'
-    }
-  },
   ui: {
     display: 'flex',
     justifyContent: 'center',
     padding: theme.spacing(3),
+    paddingLeft: 240 + theme.spacing(3),
     '& .MuiPaper-root': {
       maxWidth: '100%',
       padding: theme.spacing(2),
@@ -40,33 +35,22 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   sidebar: {
-    width: 240 + theme.spacing(6),
-    '& .inner': {
-      position: 'fixed',
-      display: 'flex',
-      justifyContent: 'space-between',
-      flexDirection: 'column',
-      top: 0,
-      width: 240,
-      padding: theme.spacing(3),
-      height: '100vh',
-      backgroundColor: substrateGray[50],
-      borderRight: `1px solid ${fade(theme.palette.divider, 0.5)}`
-    },
-    [theme.breakpoints.down('md')]: {
-      width: '100%'
-    }
+    position: 'fixed',
+    display: 'flex',
+    justifyContent: 'space-between',
+    flexDirection: 'column',
+    top: 0,
+    width: 240,
+    padding: theme.spacing(3),
+    height: '100vh',
+    backgroundColor: substrateGray[50],
+    borderRight: `1px solid ${fade(theme.palette.divider, 0.5)}`
   }
 }));
 
 interface BoxUIProps {
   children: React.ReactElement[] | React.ReactElement | string;
 }
-
-export const BoxMain = ({ children }: BoxUIProps) => {
-  const classes = useStyles();
-  return <Box className={classes.main}>{children}</Box>;
-};
 
 export const BoxUI = ({ children }: BoxUIProps) => {
   const classes = useStyles();
@@ -79,9 +63,5 @@ export const BoxUI = ({ children }: BoxUIProps) => {
 
 export const BoxSidebar = ({ children }: BoxUIProps) => {
   const classes = useStyles();
-  return (
-    <Box className={classes.sidebar}>
-      <div className="inner">{children}</div>
-    </Box>
-  );
+  return <Box className={classes.sidebar}>{children}</Box>;
 };

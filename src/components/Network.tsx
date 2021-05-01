@@ -79,7 +79,7 @@ export const NetworkSides = () => {
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   return (
     <Box marginY={2} className={classes.main}>
-      <Box p>{sourceChainDetails.sourceChain}</Box>
+      <Box>{sourceChainDetails.sourceChain}</Box>
       <Divider />
       <IconButton size="small">
         <KeyboardReturnIcon className="onlyHover" fontSize="small" />
@@ -97,16 +97,21 @@ export const NetworkStats = () => {
   return (
     <>
       <Box className={classes.statsEntry}>
-        Bridged blocks:
+        Finilised blocks:
         <span>
-          {dbSource.bestBridgedFinalizedBlock} / {dbSource.bestBlockFinalized}
+          {dbSource?.bestBlockFinalized} / {dbSource?.bestBlock}
         </span>
       </Box>
       <Box className={classes.statsEntry}>
-        Outbound messages:<span>{dbSource.outboundLanes.totalMessages}</span>
+        Bridged blocks:
+        <span>{dbSource?.bestBridgedFinalizedBlock}</span>
       </Box>
       <Box className={classes.statsEntry}>
-        Pending:<span>{dbSource.outboundLanes.pendingMessages}</span>
+        Crossed msgs:
+        <span>{dbSource?.outboundLanes.totalMessages}</span>
+      </Box>
+      <Box className={classes.statsEntry}>
+        Queue:<span>{dbSource?.outboundLanes.pendingMessages}</span>
       </Box>
     </>
   );

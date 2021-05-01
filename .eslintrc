@@ -44,6 +44,7 @@
                 "after": true
             }
         ],
+        "no-debugger": "warn",
         "comma-dangle": [
             "error",
             "never"

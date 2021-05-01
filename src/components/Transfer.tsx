@@ -65,9 +65,11 @@ const Transfer = () => {
 
       <TextField onChange={onChange} value={transferInput} label="Amount" variant="outlined" />
 
-      <Button variant="contained" disabled={isButtonDisabled()} onClick={sendLaneMessage}>
-        Send Bridge Message
-      </Button>
+      <div>
+        <Button variant="contained" disabled={isButtonDisabled()} onClick={sendLaneMessage}>
+          Send Bridge Message
+        </Button>
+      </div>
 
       <p>{receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
     </Container>
