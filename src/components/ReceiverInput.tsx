@@ -59,16 +59,15 @@ const useStyles = makeStyles(() => ({
 
 function ReceiverInput({ setError }: Props) {
   const classes = useStyles();
-  const [addressInput, setAddresInput] = useState('');
   const [formatFound, setFormatFound] = useState('');
   const [showBalance, setShowBalance] = useState(false);
 
-  const { setReceiver, validateAccount } = useReceiver();
+  const { setReceiver, setUnformattedReceiver, validateAccount } = useReceiver();
 
   const { dispatchTransaction } = useUpdateTransactionContext();
-  const { receiverAddress } = useTransactionContext();
+  const { receiverAddress, unformattedReceiverAddress } = useTransactionContext();
 
-  const { api, address } = useApiBalance(addressInput, formatFound, false);
+  const { api, address } = useApiBalance(unformattedReceiverAddress, formatFound, false);
 
   const state = useBalance(api, address, true);
 
@@ -89,14 +88,14 @@ function ReceiverInput({ setError }: Props) {
   useEffect(() => {
     if (prevTargetChain !== targetChain) {
       reset();
-      setAddresInput('');
+      setUnformattedReceiver('');
     }
-  }, [addressInput, prevTargetChain, receiverAddress, reset, targetChain]);
+  }, [unformattedReceiverAddress, setUnformattedReceiver, prevTargetChain, receiverAddress, reset, targetChain]);
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const receiver = event.target.value;
     reset();
-    setAddresInput(receiver);
+    setUnformattedReceiver(receiver);
     if (!receiver) {
       return;
     }
@@ -122,13 +121,13 @@ function ReceiverInput({ setError }: Props) {
     if (formatFound === sourceChain) {
       dispatchTransaction(TransactionActionCreators.setDerivedAccount(formattedAccount));
       setReceiver(receiver);
-      setShowBalance(true);
       return;
     }
 
     setError(`Unsupported address SS58 prefix: ${formatFound}`);
   };
 
+  const addressInput = unformattedReceiverAddress || '';
   return (
     <Container className={classes.container}>
       <div className={classes.row}>

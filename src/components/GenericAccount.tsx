@@ -24,6 +24,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useBalance from '../hooks/useBalance';
 import getDeriveAccount from '../util/getDeriveAccount';
+import shorterItem from '../util/shortenItem';
 import AccountDisplay from './AccountDisplay';
 
 interface Props {
@@ -59,13 +60,12 @@ const GenericAccount = ({ value }: Props) => {
     targetChainDetails: {
       targetApiConnection: { api: targetApi },
       targetChain
-    },
-    sourceChainDetails: { sourceChain }
+    }
   } = useSourceTarget();
 
   const { dispatchTransaction } = useUpdateTransactionContext();
   const chainsConfigs = getChainConfigs();
-  const { bridgeId } = chainsConfigs[sourceChain];
+  const { bridgeId } = chainsConfigs[targetChain];
   const { SS58Format: targetSS58Format } = chainsConfigs[targetChain];
 
   const nativeAddress = encodeAddress(value, targetSS58Format);
@@ -88,16 +88,29 @@ const GenericAccount = ({ value }: Props) => {
     dispatchTransaction(TransactionActionCreators.setReceiverAddress(derivedAddress));
   };
 
+  const shortGenericAddress = shorterItem(value);
   return (
     <Container className={classes.container}>
       {(!selected || selected === NATIVE) && (
         <div className={classes.native} onClick={setNativeAsTarget}>
-          <AccountDisplay accountName="Native" address={nativeAddress} balance={nativeState.formattedBalance} />
+          <AccountDisplay
+            address={nativeAddress}
+            addressKind="native"
+            balance={nativeState.formattedBalance}
+            friendlyName={shortGenericAddress}
+            hideAddress
+          />
         </div>
       )}
       {(!selected || selected === DERIVED) && (
         <div className={classes.companion} onClick={setCompanionAsTarget}>
-          <AccountDisplay address={derivedAddress} isDerived balance={derivedState.formattedBalance} />
+          <AccountDisplay
+            address={derivedAddress}
+            addressKind="companion"
+            balance={derivedState.formattedBalance}
+            friendlyName={shortGenericAddress}
+            hideAddress
+          />
         </div>
       )}
     </Container>

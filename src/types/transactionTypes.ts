@@ -19,6 +19,7 @@ import { TransactionActionTypes } from '../actions/transactionActions';
 export interface TransactionContextType {
   estimatedFee: string | null;
   receiverAddress: string | null;
+  unformattedReceiverAddress: string | null;
   transactions: Array<TransanctionStatus>;
   derivedReceiverAccount: string | null;
   genericReceiverAccount: string | null;
@@ -51,6 +52,7 @@ export interface TransanctionStatus extends UpdatedTransanctionStatus {
 export interface TransactionState {
   estimatedFee: string | null;
   receiverAddress: string | null;
+  unformattedReceiverAddress: string | null;
   derivedReceiverAccount: string | null;
   genericReceiverAccount: string | null;
   transactions: Array<TransanctionStatus>;

@@ -21,6 +21,7 @@ import { useTransactionContext } from '../contexts/TransactionContext';
 import Account from './Account';
 import AccountDisplay from './AccountDisplay';
 import GenericAccount from './GenericAccount';
+import shortenItem from '../util/shortenItem';
 
 const useStyles = makeStyles(() => ({
   derived: {
@@ -35,7 +36,12 @@ const useStyles = makeStyles(() => ({
 
 const ReceiverDerivedAccount = () => {
   const classes = useStyles();
-  const { genericReceiverAccount, derivedReceiverAccount, receiverAddress } = useTransactionContext();
+  const {
+    genericReceiverAccount,
+    derivedReceiverAccount,
+    receiverAddress,
+    unformattedReceiverAddress
+  } = useTransactionContext();
 
   const {
     targetChainDetails: { targetChain }
@@ -46,16 +52,23 @@ const ReceiverDerivedAccount = () => {
   }
 
   if (derivedReceiverAccount) {
+    const shortUnformattedReceiver = shortenItem(unformattedReceiverAddress || '');
     return (
       <div className={classes.derived}>
-        <Account value={receiverAddress!} chain={targetChain} isDerived />
+        <Account
+          accountName={shortUnformattedReceiver}
+          value={receiverAddress!}
+          chain={targetChain}
+          isDerived
+          hideAddress
+        />
       </div>
     );
   }
 
   return (
     <div className={classes.derived}>
-      <AccountDisplay isDerived />
+      <AccountDisplay addressKind="companion" />
     </div>
   );
 };
