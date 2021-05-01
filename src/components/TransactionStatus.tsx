@@ -144,7 +144,7 @@ function TransactionStatus({ transaction, onComplete }: Props) {
       {
         chainType: targetChain,
         label: 'Finalise message in target block',
-        // TODO [ToDr] We should remember the first block that caused the evaluator to go brrr.
+        // TODO [#113] We should remember the first block that caused the evaluator to go brrr.
         onChain:
           completionStatus(messageFinalizedOnTarget) === TransactionStatusEnum.COMPLETED && bestBlockFinalizedOnTarget,
         status: completionStatus(messageFinalizedOnTarget)
