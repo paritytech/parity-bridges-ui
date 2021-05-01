@@ -118,8 +118,6 @@ function TransactionStatus({ transaction, onComplete }: Props) {
     const messageFinalizedOnTarget = stepEvaluator(transaction.messageNonce, nonceOfTargetFinalizedBlock);
     const sourceConfirmationReceived = stepEvaluator(transaction.messageNonce, latestReceivedNonceOnSource);
 
-    console.log(targetApi.rpc.chain);
-
     const steps = [
       {
         chainType: sourceChain,
