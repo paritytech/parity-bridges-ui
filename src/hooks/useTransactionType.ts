@@ -66,7 +66,7 @@ export default function useTransactionType({ input, type, weightInput }: Props):
             paymentInfo = await apiPromise.paymentInfo(account);
             apiCall = await apiPromise;
             logger.info(`system::remark: ${apiCall.toHex()}`);
-            // TODO [ToDr] Figure out what the extra bytes are about
+            // TODO [#121] Figure out what the extra bytes are about
             call = apiCall.toU8a().slice(2);
             weight = paymentInfo.weight.toNumber();
             break;
@@ -76,7 +76,7 @@ export default function useTransactionType({ input, type, weightInput }: Props):
               paymentInfo = await apiPromise.paymentInfo(account);
               apiCall = await apiPromise;
               logger.info(`balances::transfer: ${apiCall.toHex()}`);
-              // TODO [ToDr] Figure out what the extra bytes are about
+              // TODO [#121] Figure out what the extra bytes are about
               call = apiCall.toU8a().slice(2);
               weight = paymentInfo.weight.toNumber();
             }

@@ -102,7 +102,7 @@ export default function useTransactionPreparation({
           origin: {
             SourceAccount: account.addressRaw
           },
-          // TODO [ToDr] This must not be hardcoded.
+          // TODO [#122] This must not be hardcoded.
           spec_version: 1,
           weight
         };
