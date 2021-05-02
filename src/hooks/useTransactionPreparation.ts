@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 import { Codec } from '@polkadot/types/types';
-import { u8aToHex } from '@polkadot/util';
+import { compactAddLength } from '@polkadot/util';
 import { useEffect, useState } from 'react';
 
 import { TransactionActionCreators } from '../actions/transactionActions';
@@ -25,6 +25,7 @@ import useLaneId from '../hooks/useLaneId';
 import useLoadingApi from '../hooks/useLoadingApi';
 import useTransactionType from '../hooks/useTransactionType';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
+import logger from '../util/logger';
 
 interface Props {
   input: string;
@@ -68,13 +69,10 @@ export default function useTransactionPreparation({
       // @ts-ignore
       const messageFeeType = sourceApi.registry.createType('MessageFeeData', {
         lane_id: laneId,
-        payload: u8aToHex(payloadType.toU8a())
+        payload: payloadType.toHex()
       });
 
-      const estimatedFeeCall = await sourceApi.rpc.state.call<Codec>(
-        estimatedFeeMethodName,
-        u8aToHex(messageFeeType.toU8a())
-      );
+      const estimatedFeeCall = await sourceApi.rpc.state.call<Codec>(estimatedFeeMethodName, messageFeeType.toHex());
 
       // @ts-ignore
       const estimatedFeeType = sourceApi.registry.createType('Option<Balance>', estimatedFeeCall);
@@ -100,13 +98,18 @@ export default function useTransactionPreparation({
     const getPayload = async () => {
       if (account && call && weight) {
         const payload = {
-          call,
+          call: compactAddLength(call),
           origin: {
             SourceAccount: account.addressRaw
           },
+          // TODO [ToDr] This must not be hardcoded.
           spec_version: 1,
           weight
         };
+        // @ts-ignore
+        const payloadType = sourceApi.registry.createType('OutboundPayload', payload);
+        logger.info(`OutboundPayload: ${JSON.stringify(payload)}`);
+        logger.info(`OutboundPayload.toHex(): ${payloadType.toHex()}`);
         setPayload(payload);
       }
     };
