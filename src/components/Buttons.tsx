@@ -36,7 +36,7 @@ export const ButtonExt = ({
   startIcon = <ForumIcon />,
   variant = 'contained',
   disableElevation = true,
-  href = 'https://github.com/paritytech/substrate-connect/issues',
+  href = 'https://github.com/paritytech/parity-bridges-ui/issues',
   ...props
 }: ButtonProps) => {
   const classes = useStyles();

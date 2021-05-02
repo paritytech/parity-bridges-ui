@@ -97,21 +97,22 @@ export const NetworkStats = () => {
   return (
     <>
       <Box className={classes.statsEntry}>
-        Finilised blocks:
+        Finalized blocks:
         <span>
           {dbSource?.bestBlockFinalized} / {dbSource?.bestBlock}
         </span>
       </Box>
       <Box className={classes.statsEntry}>
-        Bridged blocks:
+        Relayed blocks:
         <span>{dbSource?.bestBridgedFinalizedBlock}</span>
       </Box>
       <Box className={classes.statsEntry}>
-        Crossed msgs:
+        Delivered messages:
         <span>{dbSource?.outboundLanes.totalMessages}</span>
       </Box>
       <Box className={classes.statsEntry}>
-        Queue:<span>{dbSource?.outboundLanes.pendingMessages}</span>
+        Awaiting messages:
+        <span>{dbSource?.outboundLanes.pendingMessages}</span>
       </Box>
     </>
   );
