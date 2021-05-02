@@ -60,12 +60,13 @@ const GenericAccount = ({ value }: Props) => {
     targetChainDetails: {
       targetApiConnection: { api: targetApi },
       targetChain
-    }
+    },
+    sourceChainDetails: { sourceChain }
   } = useSourceTarget();
 
   const { dispatchTransaction } = useUpdateTransactionContext();
   const chainsConfigs = getChainConfigs();
-  const { bridgeId } = chainsConfigs[targetChain];
+  const { bridgeId } = chainsConfigs[sourceChain];
   const { SS58Format: targetSS58Format } = chainsConfigs[targetChain];
 
   const nativeAddress = encodeAddress(value, targetSS58Format);
