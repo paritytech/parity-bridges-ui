@@ -95,28 +95,25 @@ export default function useTransactionPreparation({
   ]);
 
   useEffect(() => {
-    const getPayload = async () => {
-      if (account && call && weight) {
-        const payload = {
-          call: compactAddLength(call),
-          origin: {
-            SourceAccount: account.addressRaw
-          },
-          // TODO [#122] This must not be hardcoded.
-          spec_version: 1,
-          weight
-        };
-        // @ts-ignore
-        const payloadType = sourceApi.registry.createType('OutboundPayload', payload);
-        logger.info(`OutboundPayload: ${JSON.stringify(payload)}`);
-        logger.info(`OutboundPayload.toHex(): ${payloadType.toHex()}`);
-        setPayload(payload);
-      }
-    };
-    if (isValidCall) {
-      getPayload();
+    if (!(isValidCall && account && call && weight)) {
+      return;
     }
-  }, [account, call, isValidCall, type, weight]);
+
+    const payload = {
+      call: compactAddLength(call),
+      origin: {
+        SourceAccount: account.addressRaw
+      },
+      // TODO [#122] This must not be hardcoded.
+      spec_version: 1,
+      weight
+    };
+    // @ts-ignore
+    const payloadType = sourceApi.registry.createType('OutboundPayload', payload);
+    logger.info(`OutboundPayload: ${JSON.stringify(payload)}`);
+    logger.info(`OutboundPayload.toHex(): ${payloadType.toHex()}`);
+    setPayload(payload);
+  }, [account, call, isValidCall, type, weight, sourceApi.registry]);
 
   return {
     payload
