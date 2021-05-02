@@ -60,7 +60,10 @@ const GenericAccount = ({ value }: Props) => {
       targetApiConnection: { api: targetApi },
       targetChain
     },
-    sourceChainDetails: { sourceChain }
+    sourceChainDetails: {
+      sourceApiConnection: { api: sourceApi },
+      sourceChain
+    }
   } = useSourceTarget();
 
   const { dispatchTransaction } = useUpdateTransactionContext();
@@ -69,7 +72,7 @@ const GenericAccount = ({ value }: Props) => {
   const { SS58Format: targetSS58Format } = chainsConfigs[targetChain];
 
   const nativeAddress = encodeAddress(value, targetSS58Format);
-  const nativeState = useBalance(targetApi, nativeAddress, true);
+  const nativeState = useBalance(sourceApi, nativeAddress, true);
 
   const derivedAddress = getDeriveAccount({
     SS58Format: targetSS58Format,

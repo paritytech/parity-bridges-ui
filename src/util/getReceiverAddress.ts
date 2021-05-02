@@ -32,7 +32,7 @@ const getReceiverAddress = ({ receiverAddress, targetChain, sourceChain }: Props
   try {
     const [validatedDerivedAcccount, rest] = checkAddress(receiverAddress, SS58Format);
     if (validatedDerivedAcccount) {
-      return { address: receiverAddress, formatFound: chain };
+      return { address: receiverAddress, formatFound: targetChain };
     }
     // should be extracted as a separate component/function
     const getFormat = (prefix: string) => {
