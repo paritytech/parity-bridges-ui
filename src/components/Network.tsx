@@ -67,7 +67,7 @@ export const NetworkSides = () => {
       <IconButton size="small">
         <KeyboardReturnIcon fontSize="small" />
       </IconButton>
-      <Box p>{targetChainDetails.targetChain}</Box>
+      <Box p={1}>{targetChainDetails.targetChain}</Box>
     </Box>
   );
 };

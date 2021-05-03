@@ -27,7 +27,7 @@ import { ButtonSubmit } from '../components';
 
 const Transfer = () => {
   const [isRunning, setIsRunning] = useState(false);
-  const [transferInput, setTransferInput] = useState('0');
+  const [transferInput, setTransferInput] = useState('');
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
   const areApiReady = useLoadingApi();
@@ -45,14 +45,19 @@ const Transfer = () => {
     setTransferInput(event.target.value);
   };
 
-  if (!areApiReady) {
-    return null;
-  }
+  if (!areApiReady) return null;
 
   return (
     <>
       <Receiver />
-      <TextField onChange={onChange} value={transferInput} label="Amount" variant="outlined" fullWidth />
+      <TextField
+        onChange={onChange}
+        value={transferInput && transferInput}
+        label="Amount"
+        variant="outlined"
+        fullWidth
+        placeholder={'0'}
+      />
       <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
         Send bridge transfer from {sourceChainDetails.sourceChain} to {targetChainDetails.targetChain}
       </ButtonSubmit>
