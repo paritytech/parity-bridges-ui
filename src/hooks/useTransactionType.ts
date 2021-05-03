@@ -55,16 +55,15 @@ export default function useTransactionType({ input, type, weightInput }: Props):
 
   useEffect(() => {
     async function getValues() {
-      let apiPromise, paymentInfo, apiCall;
+      let paymentInfo, apiCall;
       let weight = null;
       let call = null;
 
       if (account) {
         switch (type) {
           case TransactionTypes.REMARK:
-            apiPromise = targetApi.tx.system.remark(input);
-            paymentInfo = await apiPromise.paymentInfo(account);
-            apiCall = await apiPromise;
+            paymentInfo = await targetApi.tx.system.remark(input).paymentInfo(account);
+            apiCall = await targetApi.tx.system.remark(input);
             logger.info(`system::remark: ${apiCall.toHex()}`);
             // TODO [#121] Figure out what the extra bytes are about
             call = apiCall.toU8a().slice(2);
@@ -72,9 +71,8 @@ export default function useTransactionType({ input, type, weightInput }: Props):
             break;
           case TransactionTypes.TRANSFER:
             if (receiverAddress) {
-              apiPromise = targetApi.tx.balances.transfer(receiverAddress, input);
-              paymentInfo = await apiPromise.paymentInfo(account);
-              apiCall = await apiPromise;
+              apiCall = await targetApi.tx.balances.transfer(receiverAddress, input);
+              paymentInfo = await targetApi.tx.balances.transfer(receiverAddress, input).paymentInfo(account);
               logger.info(`balances::transfer: ${apiCall.toHex()}`);
               // TODO [#121] Figure out what the extra bytes are about
               call = apiCall.toU8a().slice(2);
