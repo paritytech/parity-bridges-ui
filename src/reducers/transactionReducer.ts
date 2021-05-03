@@ -38,7 +38,7 @@ const updateTransaction = (state: TransactionState, payload: Payload): Transacti
 
 const createTransaction = (state: TransactionState, initialTransaction: TransanctionStatus): TransactionState => {
   const newState = { ...state };
-  newState.transactions.push(initialTransaction);
+  newState.transactions.unshift(initialTransaction);
   return newState;
 };
 
