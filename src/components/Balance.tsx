@@ -35,6 +35,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const Balance = ({ balance, onClick }: Props) => {
+  console.log(balance);
   const classes = useStyles();
   return (
     <Container onClick={onClick} className={classes.balances}>

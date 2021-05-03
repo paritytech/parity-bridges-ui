@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Box, TextField } from '@material-ui/core';
+import { Box, InputAdornment, makeStyles, TextField } from '@material-ui/core';
 import React, { useState } from 'react';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
@@ -25,7 +25,25 @@ import { TransactionTypes } from '../types/transactionTypes';
 import Receiver from './Receiver';
 import { ButtonSubmit } from '../components';
 
+const useStyles = makeStyles((theme) => ({
+  inputAmount: {
+    '& .MuiInputBase-root': {
+      '& .MuiInputAdornment-root': {
+        position: 'absolute',
+        right: 0
+      },
+      '& input': {
+        textAlign: 'center',
+        ...theme.typography.subtitle2,
+        fontSize: theme.typography.h1.fontSize,
+        color: theme.palette.primary.main
+      }
+    }
+  }
+}));
+
 const Transfer = () => {
+  const classes = useStyles();
   const [isRunning, setIsRunning] = useState(false);
   const [transferInput, setTransferInput] = useState('');
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
@@ -53,10 +71,17 @@ const Transfer = () => {
         <TextField
           onChange={onChange}
           value={transferInput && transferInput}
-          label="Amount"
-          variant="outlined"
-          fullWidth
           placeholder={'0'}
+          className={classes.inputAmount}
+          fullWidth
+          variant="outlined"
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="start">
+                {targetChainDetails.targetApiConnection.api.registry.chainTokens}
+              </InputAdornment>
+            )
+          }}
         />
       </Box>
       <Receiver />
