@@ -25,7 +25,7 @@ import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useBalance from '../hooks/useBalance';
 import getDeriveAccount from '../util/getDeriveAccount';
 import shorterItem from '../util/shortenItem';
-import AccountDisplay from './AccountDisplay';
+import AccountDisplay, { AddressKind } from './AccountDisplay';
 
 interface Props {
   value: string;
@@ -96,7 +96,7 @@ const GenericAccount = ({ value }: Props) => {
         <div className={classes.native} onClick={setNativeAsTarget}>
           <AccountDisplay
             address={nativeAddress}
-            addressKind="native"
+            addressKind={AddressKind.NATIVE}
             balance={nativeState.formattedBalance}
             friendlyName={shortGenericAddress}
             hideAddress
@@ -107,7 +107,7 @@ const GenericAccount = ({ value }: Props) => {
         <div className={classes.companion} onClick={setCompanionAsTarget}>
           <AccountDisplay
             address={derivedAddress}
-            addressKind="companion"
+            addressKind={AddressKind.COMPANION}
             balance={derivedState.formattedBalance}
             friendlyName={shortGenericAddress}
             hideAddress

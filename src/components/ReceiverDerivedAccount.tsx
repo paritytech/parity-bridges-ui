@@ -19,7 +19,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import Account from './Account';
-import AccountDisplay from './AccountDisplay';
+import AccountDisplay, { AddressKind } from './AccountDisplay';
 import GenericAccount from './GenericAccount';
 import shortenItem from '../util/shortenItem';
 
@@ -68,7 +68,7 @@ const ReceiverDerivedAccount = () => {
 
   return (
     <div className={classes.derived}>
-      <AccountDisplay addressKind="companion" />
+      <AccountDisplay addressKind={AddressKind.COMPANION} />
     </div>
   );
 };

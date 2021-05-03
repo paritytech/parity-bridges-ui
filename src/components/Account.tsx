@@ -18,7 +18,7 @@ import React from 'react';
 
 import useApiBalance from '../hooks/useApiBalance';
 import useBalance from '../hooks/useBalance';
-import AccountDisplay from './AccountDisplay';
+import AccountDisplay, { AddressKind } from './AccountDisplay';
 
 interface Props {
   accountName?: string;
@@ -40,7 +40,7 @@ const Account = ({ accountName, value, chain, hideAddress = false, isDerived = f
       friendlyName={accountName}
       address={address}
       balance={state.formattedBalance}
-      addressKind={isDerived ? 'companion' : undefined}
+      addressKind={isDerived ? AddressKind.COMPANION : undefined}
       hideAddress={hideAddress}
     />
   );

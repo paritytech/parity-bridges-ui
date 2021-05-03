@@ -25,7 +25,7 @@ import shorterItem from '../util/shortenItem';
 import AccountIdenticon from './AccountIdenticon';
 
 interface Props {
-  addressKind?: 'companion' | 'native' | string;
+  addressKind?: AddressKind | string;
   address?: string;
   friendlyName?: string | null;
   hideAddress?: boolean;
@@ -87,5 +87,10 @@ const AccountDisplay = ({ address = '', addressKind, balance, friendlyName, hide
     </Container>
   );
 };
+
+export enum AddressKind {
+  NATIVE = 'native',
+  COMPANION = 'companion'
+}
 
 export default AccountDisplay;
