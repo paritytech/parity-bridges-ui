@@ -41,24 +41,7 @@ const useStyles = makeStyles((theme) => ({
       height: '2rem',
       margin: 'auto',
       border: `1px solid ${theme.palette.divider}`,
-      transform: 'rotate(-90deg)',
-      transition: 'transform .15s',
-      '&:hover': {
-        transform: 'rotate(90deg)',
-        '& svg': {
-          transform: 'translateY(4px)',
-          transition: 'transform .1s',
-          '&.onlyHover': {
-            opacity: 1,
-            transform: 'scale(-1) translateY(4px)'
-          }
-        }
-      },
-      '& svg.onlyHover': {
-        opacity: 0,
-        position: 'absolute',
-        transform: 'scale(-1)'
-      }
+      transform: 'rotate(-90deg)'
     }
   },
   statsEntry: {
@@ -82,7 +65,6 @@ export const NetworkSides = () => {
       <Box>{sourceChainDetails.sourceChain}</Box>
       <Divider />
       <IconButton size="small">
-        <KeyboardReturnIcon className="onlyHover" fontSize="small" />
         <KeyboardReturnIcon fontSize="small" />
       </IconButton>
       <Box p>{targetChainDetails.targetChain}</Box>
