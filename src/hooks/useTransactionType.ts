@@ -22,6 +22,7 @@ import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import useLoadingApi from '../hooks/useLoadingApi';
 import { TransactionTypes } from '../types/transactionTypes';
+import logger from '../util/logger';
 interface TransactionFunction {
   call: Uint8Array | null;
   weight: number | null;
@@ -54,21 +55,30 @@ export default function useTransactionType({ input, type, weightInput }: Props):
 
   useEffect(() => {
     async function getValues() {
+      let apiPromise, paymentInfo, apiCall;
       let weight = null;
       let call = null;
 
       if (account) {
         switch (type) {
           case TransactionTypes.REMARK:
-            call = (await targetApi.tx.system.remark(input)).toU8a();
-            weight = (await sourceApi.tx.system.remark(input).paymentInfo(account!)).weight.toNumber();
+            apiPromise = targetApi.tx.system.remark(input);
+            paymentInfo = await apiPromise.paymentInfo(account);
+            apiCall = await apiPromise;
+            logger.info(`system::remark: ${apiCall.toHex()}`);
+            // TODO [#121] Figure out what the extra bytes are about
+            call = apiCall.toU8a().slice(2);
+            weight = paymentInfo.weight.toNumber();
             break;
           case TransactionTypes.TRANSFER:
             if (receiverAddress) {
-              call = (await targetApi.tx.balances.transfer(receiverAddress, input)).toU8a();
-              weight = (
-                await sourceApi.tx.balances.transfer(receiverAddress, input).paymentInfo(account)
-              ).weight.toNumber();
+              apiPromise = targetApi.tx.balances.transfer(receiverAddress, input);
+              paymentInfo = await apiPromise.paymentInfo(account);
+              apiCall = await apiPromise;
+              logger.info(`balances::transfer: ${apiCall.toHex()}`);
+              // TODO [#121] Figure out what the extra bytes are about
+              call = apiCall.toU8a().slice(2);
+              weight = paymentInfo.weight.toNumber();
             }
             break;
           case TransactionTypes.CUSTOM:
