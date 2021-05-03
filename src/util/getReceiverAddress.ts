@@ -21,16 +21,18 @@ import getDeriveAccount from './getDeriveAccount';
 
 interface Props {
   receiverAddress: string;
-  chain: string;
+  targetChain: string;
+  sourceChain: string;
 }
-const getReceiverAddress = ({ receiverAddress, chain }: Props) => {
+const getReceiverAddress = ({ receiverAddress, targetChain, sourceChain }: Props) => {
   const chainsConfigs = getChainConfigs();
-  const { SS58Format, bridgeId } = chainsConfigs[chain];
+  const { SS58Format } = chainsConfigs[targetChain];
+  const { bridgeId } = chainsConfigs[sourceChain];
 
   try {
     const [validatedDerivedAcccount, rest] = checkAddress(receiverAddress, SS58Format);
     if (validatedDerivedAcccount) {
-      return { address: receiverAddress, formatFound: chain };
+      return { address: receiverAddress, formatFound: targetChain };
     }
     // should be extracted as a separate component/function
     const getFormat = (prefix: string) => {
