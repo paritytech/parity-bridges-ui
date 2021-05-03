@@ -15,20 +15,11 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import { ApiOptions } from '@polkadot/api/types';
-import { ProviderInterface } from '@polkadot/rpc-provider/types';
 import { TypeRegistry } from '@polkadot/types';
 import React, { useEffect, useState } from 'react';
-
-import { ApiPromiseConnectionType } from '../types/sourceTargetTypes';
+import { getConnectionChainInformation } from '../configs/connectionChainInformation';
+import { ApiPromiseConnectionType, Configs } from '../types/sourceTargetTypes';
 import logger from '../util/logger';
-
-export interface ApiRxProviderProps {
-  chain: string;
-  hasher?: (data: Uint8Array) => Uint8Array;
-  provider: ProviderInterface;
-  types?: ApiOptions['types'];
-}
 
 export const ApiPromiseContext: React.Context<ApiPromiseConnectionType> = React.createContext(
   {} as ApiPromiseConnectionType
@@ -36,20 +27,32 @@ export const ApiPromiseContext: React.Context<ApiPromiseConnectionType> = React.
 
 const registry = new TypeRegistry();
 
-export function useApiConnection({ chain, hasher, provider, types }: ApiRxProviderProps): ApiPromiseConnectionType {
+type ConfigsType = {
+  configs: Configs;
+};
+
+type PolkadotJsURL = {
+  polkadotjsUrl: string;
+};
+
+type ConnectionType = ApiPromiseConnectionType & ConfigsType & PolkadotJsURL;
+
+export function useApiConnection(chainNumber: string): ConnectionType {
   const [apiPromise, setApiPromise] = useState<ApiPromise>({} as ApiPromise);
   const [isReady, setIsReady] = useState(false);
+  const [configs, setConfigs] = useState<Configs>({ bridgeId: null, chainName: null, ss58Format: null });
+  const { hasher, provider, types, polkadotjsUrl } = getConnectionChainInformation(chainNumber);
 
   useEffect(() => {
     ApiPromise.create({ hasher, provider, types })
       .then((api): void => {
-        logger.info(`${chain}: connection created.`);
+        logger.info(`Chain ${chainNumber}: connection created.`);
         setApiPromise(api);
       })
       .catch((err): void => {
-        logger.error(`${chain}: Error creating connection. Details: ${err}`);
+        logger.error(`Chain ${chainNumber}: Error creating connection. Details: ${err}`);
       });
-  }, [chain, hasher, provider, types]);
+  }, [chainNumber, hasher, provider, types]);
 
   useEffect(() => {
     !isReady &&
@@ -60,13 +63,31 @@ export function useApiConnection({ chain, hasher, provider, types }: ApiRxProvid
           if (types) {
             registry.register(types);
           }
-          logger.info(`${chain}: types registration ready`);
+          logger.info(`Chain ${chainNumber}: types registration ready`);
           setIsReady(true);
         })
         .catch((err): void => {
-          logger.error(`${chain}: Error registering types. Details: ${err}`);
+          logger.error(`Chain ${chainNumber}: Error registering types. Details: ${err}`);
         });
-  }, [apiPromise, chain, isReady, types]);
+  }, [apiPromise, chainNumber, isReady, types]);
 
-  return { api: apiPromise, isApiReady: isReady };
+  useEffect(() => {
+    const getConfigs = async () => {
+      const properties = await apiPromise.registry.getChainProperties();
+      //TO-DO to investigate how to map bridgeId type on properties
+      // @ts-ignore
+      const { bridgeId, ss58Format } = properties!;
+      const systemChain = await apiPromise.rpc.system.name();
+      const chainName = systemChain.split(' ')[0];
+      setConfigs({ bridgeId, chainName, ss58Format: ss58Format.toString() });
+    };
+
+    if (isReady) {
+      getConfigs();
+    }
+  }, [apiPromise, isReady]);
+
+  console.log(apiPromise);
+
+  return { api: apiPromise, isApiReady: isReady, configs, polkadotjsUrl };
 }

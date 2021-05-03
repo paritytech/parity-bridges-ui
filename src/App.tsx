@@ -20,26 +20,16 @@ import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import { light } from './components';
-import { CHAIN_1, CHAIN_2, getChainProviders } from './configs/substrateProviders';
 import { AccountContextProvider } from './contexts/AccountContextProvider';
 import { KeyringContextProvider } from './contexts/KeyringContextProvider';
 import { MessageContextProvider } from './contexts/MessageContext';
 import { SourceTargetContextProvider } from './contexts/SourceTargetContextProvider';
 import { TransactionContextProvider } from './contexts/TransactionContext';
-import { useApiConnection } from './hooks/useApiConnection';
+import { useConnections } from './hooks/useConnections';
 import Main from './screens/Main';
 
-const providers = getChainProviders();
-
 function App() {
-  const apiChain1 = useApiConnection({ ...providers[CHAIN_1], chain: CHAIN_1 });
-  const apiChain2 = useApiConnection({ ...providers[CHAIN_2], chain: CHAIN_2 });
-  const connections = [
-    { apiConnection: apiChain1, chainName: CHAIN_1, polkadotjsUrl: providers[CHAIN_1].polkadotjsUrl },
-    { apiConnection: apiChain2, chainName: CHAIN_2, polkadotjsUrl: providers[CHAIN_2].polkadotjsUrl }
-  ];
-
-  const apiReady = apiChain1.isApiReady && apiChain2.isApiReady;
+  const { connections, apiReady } = useConnections();
 
   if (!apiReady) {
     return (

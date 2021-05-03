@@ -23,6 +23,18 @@ export interface ApiPromiseConnectionType {
   isApiReady: boolean;
 }
 
+export interface Configs {
+  bridgeId: string | null;
+  chainName: string | null;
+  ss58Format: string | null;
+}
+
+export type Connection = {
+  chainName: string;
+  apiConnection: ApiPromiseConnectionType;
+  polkadotjsUrl: string;
+  configs: Configs;
+};
 interface Payload {
   [propName: string]: string;
 }
@@ -32,6 +44,7 @@ export interface ApiPromiseContextType {
   api: ApiPromise; // From @polkadot/api\
   isApiReady: boolean;
   polkadotjsUrl: string;
+  configs: Configs;
 }
 
 export enum ChainDetails {
@@ -41,11 +54,13 @@ export enum ChainDetails {
 
 export interface SourceTargetState {
   [ChainDetails.SOURCE]: {
+    sourceConfigs: Configs;
     sourceApiConnection: ApiPromiseConnectionType;
     sourceChain: string;
     sourcePolkadotjsUrl: string;
   };
   [ChainDetails.TARGET]: {
+    targetConfigs: Configs;
     targetApiConnection: ApiPromiseConnectionType;
     targetChain: string;
     targetPolkadotjsUrl: string;

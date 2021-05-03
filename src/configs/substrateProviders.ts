@@ -75,10 +75,7 @@ const createProviderObject = (chainNumber: string) => {
   const providerUrl = checkEnvVariable(`REACT_APP_SUBSTRATE_PROVIDER_CHAIN_${chainNumber}`);
   const { types, hasher, polkadotjsUrl } = getTypeAndHasher(chainNumber, providerUrl);
   return {
-    hasher,
-    polkadotjsUrl,
-    provider: getProvider(providerUrl),
-    types
+    polkadotjsUrl
   };
 };
 

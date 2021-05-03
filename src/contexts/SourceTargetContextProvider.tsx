@@ -15,23 +15,15 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React, { useContext, useReducer } from 'react';
-
 import sourceTargetReducer from '../reducers/sourceTargetReducer';
-import { ChainDetails, SourceTargetAction, SourceTargetState } from '../types/sourceTargetTypes';
-import { ApiPromiseConnectionType } from '../types/sourceTargetTypes';
+import { ChainDetails, SourceTargetAction, SourceTargetState, Connection } from '../types/sourceTargetTypes';
 
 export interface UpdateSourceTargetContext {
   dispatchChangeSourceTarget: React.Dispatch<SourceTargetAction>;
 }
 
-type Connections = {
-  chainName: string;
-  apiConnection: ApiPromiseConnectionType;
-  polkadotjsUrl: string;
-};
-
 export interface SourceTargetContextProps {
-  connections: Array<Connections>;
+  connections: Array<Connection>;
   children: React.ReactElement;
 }
 
@@ -49,24 +41,28 @@ export function useUpdateSourceTarget() {
   return useContext(UpdateSourceTargetContext);
 }
 
-const initState = (connections: Array<Connections>) => {
+const initState = (connections: Array<Connection>) => {
   const {
     apiConnection: sourceApiConnection,
     chainName: sourceChain,
-    polkadotjsUrl: sourcePolkadotjsUrl
+    polkadotjsUrl: sourcePolkadotjsUrl,
+    configs: sourceConfigs
   } = connections[0];
   const {
     apiConnection: targetApiConnection,
     chainName: targetChain,
+    configs: targetConfigs,
     polkadotjsUrl: targetPolkadotjsUrl
   } = connections[1];
   return {
     [ChainDetails.SOURCE]: {
+      sourceConfigs,
       sourceApiConnection,
       sourceChain,
       sourcePolkadotjsUrl
     },
     [ChainDetails.TARGET]: {
+      targetConfigs,
       targetApiConnection,
       targetChain,
       targetPolkadotjsUrl

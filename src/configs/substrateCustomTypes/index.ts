@@ -15,29 +15,36 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { u8aConcat } from '@polkadot/util';
+import { ApiOptions } from '@polkadot/api/types';
 import { blake2AsU8a, keccakAsU8a } from '@polkadot/util-crypto';
-
-import createPolkadotJsUrl from '../../util/createPolkadotJsUrl';
+import { checkEnvVariable } from '../../util/envVariablesValidations';
 import customTypesMillau from './customTypesMillau.json';
 import customTypesRialto from './customTypesRialto.json';
+
+export interface HasherTypes {
+  hasher?: (data: Uint8Array) => Uint8Array;
+  types: ApiOptions['types'];
+}
 
 function hasherH512(data: any) {
   return u8aConcat(blake2AsU8a(data), keccakAsU8a(data));
 }
 
-const getConnectionChainInformation = (chain: string, providerUrl: string) => {
-  switch (chain) {
-    case 'Millau':
-      return {
-        hasher: hasherH512,
-        polkadotjsUrl: createPolkadotJsUrl(customTypesMillau, providerUrl),
-        types: customTypesMillau
-      };
-    case 'Rialto':
-      return { polkadotjsUrl: createPolkadotJsUrl(customTypesRialto, providerUrl), types: customTypesRialto };
+export const getSubstrateConfigs = (): HasherTypes[] => {
+  const pair = checkEnvVariable('REACT_APP_PAIR');
+  switch (pair) {
+    case 'RialtoMillau':
+      return [
+        {
+          types: customTypesRialto
+        },
+        {
+          hasher: hasherH512,
+          types: customTypesMillau
+        }
+      ];
+
     default:
-      throw new Error(`Unknown chain: ${chain}`);
+      throw new Error(`Unknown chain: ${pair}`);
   }
 };
-
-export { getConnectionChainInformation };
