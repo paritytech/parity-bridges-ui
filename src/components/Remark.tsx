@@ -17,7 +17,7 @@
 import { TextField } from '@material-ui/core';
 import React, { useState } from 'react';
 import { ButtonSubmit } from '../components';
-
+import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import useLoadingApi from '../hooks/useLoadingApi';
 import useSendMessage from '../hooks/useSendMessage';
@@ -26,6 +26,8 @@ import { TransactionTypes } from '../types/transactionTypes';
 const Remark = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [remarkInput, setRemarkInput] = useState('0x');
+  const { sourceChainDetails, targetChainDetails } = useSourceTarget();
+
   const areApiReady = useLoadingApi();
   const { estimatedFee } = useTransactionContext();
 
@@ -47,7 +49,7 @@ const Remark = () => {
     <>
       <TextField onChange={onChange} value={remarkInput} variant="outlined" fullWidth />
       <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
-        Send Remark
+        Send bridge remark from {sourceChainDetails.sourceChain} to {targetChainDetails.targetChain}
       </ButtonSubmit>
       <p>{estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
     </>

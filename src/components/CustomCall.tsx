@@ -18,7 +18,6 @@ import { Box, TextField } from '@material-ui/core';
 import React, { useState } from 'react';
 import { Message } from 'semantic-ui-react';
 import { ButtonSubmit } from '../components';
-
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import useLoadingApi from '../hooks/useLoadingApi';
@@ -32,6 +31,7 @@ const CustomCall = () => {
   const [customCallInput, setCustomCallInput] = useState('0x');
   const [weightInput, setWeightInput] = useState<string>();
   const [error, setError] = useState<string | null>();
+  const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
   const areApiReady = useLoadingApi();
   const { estimatedFee } = useTransactionContext();
@@ -87,7 +87,7 @@ const CustomCall = () => {
       </Box>
       <TextField onChange={onWeightChange} value={weightInput} label="Weight" variant="outlined" fullWidth />
       <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
-        Send Custom Call
+        Send custom call from {sourceChainDetails.sourceChain} to {targetChainDetails.targetChain}
       </ButtonSubmit>
       <p>{estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
       <div>

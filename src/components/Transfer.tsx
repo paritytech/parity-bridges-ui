@@ -16,26 +16,19 @@
 
 import { TextField } from '@material-ui/core';
 import React, { useState } from 'react';
-
+import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import useLoadingApi from '../hooks/useLoadingApi';
-import { makeStyles } from '@material-ui/core/styles';
 import useSendMessage from '../hooks/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
 
 import Receiver from './Receiver';
 import { ButtonSubmit } from '../components';
 
-const useStyles = makeStyles(() => ({
-  container: {}
-}));
-
 const Transfer = () => {
-  const classes = useStyles();
-  console.log(classes);
-
   const [isRunning, setIsRunning] = useState(false);
   const [transferInput, setTransferInput] = useState('0');
+  const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
   const areApiReady = useLoadingApi();
 
@@ -61,7 +54,7 @@ const Transfer = () => {
       <Receiver />
       <TextField onChange={onChange} value={transferInput} label="Amount" variant="outlined" fullWidth />
       <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
-        Send Bridge Message
+        Send bridge transfer from {sourceChainDetails.sourceChain} to {targetChainDetails.targetChain}
       </ButtonSubmit>
       <p>{receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
     </>
