@@ -131,11 +131,11 @@ const TransactionStatus = ({ transaction, onComplete }: Props) => {
     const completionStatus = (status: boolean = false): TransactionStatusEnum => {
       if (transaction.id === 0) {
         return TransactionStatusEnum.NOT_STARTED;
-      } else if (!status) {
-        return transaction.block ? TransactionStatusEnum.COMPLETED : TransactionStatusEnum.IN_PROGRESS;
-      } else {
-        return transaction.block && status ? TransactionStatusEnum.COMPLETED : TransactionStatusEnum.IN_PROGRESS;
       }
+      if (!status) {
+        return transaction.block ? TransactionStatusEnum.COMPLETED : TransactionStatusEnum.IN_PROGRESS;
+      }
+      return transaction.block && status ? TransactionStatusEnum.COMPLETED : TransactionStatusEnum.IN_PROGRESS;
     };
 
     const sourceTransactionFinalized = stepEvaluator(transaction.block, bestBlockFinalized);
