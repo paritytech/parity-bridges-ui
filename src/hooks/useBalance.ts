@@ -45,8 +45,6 @@ const useBalance = (api: ApiPromise, address: string, providedSi: boolean = fals
   const mountedRef = useRef(true);
 
   useEffect((): (() => void) => {
-    let unsubscribe: Promise<VoidFn>;
-
     const getBalance = async (api: ApiPromise, address: string, setState: any): Promise<VoidFn> => {
       try {
         const u = await api.query.system.account(address, ({ data }): void => {
@@ -68,6 +66,8 @@ const useBalance = (api: ApiPromise, address: string, providedSi: boolean = fals
         return Promise.reject();
       }
     };
+
+    let unsubscribe: Promise<VoidFn>;
 
     if (address) {
       unsubscribe = getBalance(api, address, setState);
