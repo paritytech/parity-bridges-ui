@@ -28,7 +28,7 @@ import formatAccounts from '../util/formatAccounts';
 import getChainSS58 from '../util/getSS58';
 import Account from './Account';
 import AccountDisplay from './AccountDisplay';
-import SubHeader from './SubHeader';
+import { Star } from '@material-ui/icons';
 
 interface Props {
   className?: string;
@@ -38,6 +38,10 @@ const useStyles = makeStyles(() => ({
   row: {
     minWidth: '100%',
     margin: '10px 0'
+  },
+  root: {
+    alignItems: 'center',
+    display: 'flex'
   }
 }));
 
@@ -84,7 +88,13 @@ const Sender = ({ className }: Props) => {
         </div>
       </MenuItem>
     ));
-    return [<SubHeader key={source} chain={source} />, items];
+    return [
+      <Container key={source} className={classes.root}>
+        <Star />
+        {source}
+      </Container>,
+      items
+    ];
   };
 
   const getName = (account: AccountType) => (account!.meta.name as string).toLocaleUpperCase();
