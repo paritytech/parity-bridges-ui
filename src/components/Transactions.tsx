@@ -24,34 +24,40 @@ import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import { TransactionStatusEnum, TransanctionStatus } from '../types/transactionTypes';
 import shortenItem from '../util/shortenItem';
 import TransactionStatus from './TransactionStatus';
+import TransactionStatusMock from './TransactionStatusMock';
 
-const Transactions = () => {
+interface Props {
+  type?: string;
+}
+
+const Transactions = ({ type }: Props) => {
   const { transactions } = useTransactionContext();
   const { dispatchTransaction } = useUpdateTransactionContext();
   const { dispatchMessage } = useUpdateMessageContext();
-  if (!transactions) {
-    return null;
-  }
 
   return (
     <>
-      <h2>{`${transactions.length ? 'Transactions' : ''}`}</h2>
-      {transactions.map((transaction: TransanctionStatus) => {
-        const onComplete = () => {
-          dispatchTransaction(
-            TransactionActionCreators.updateTransactionStatus(
-              { status: TransactionStatusEnum.COMPLETED },
-              transaction.id
-            )
-          );
-          dispatchMessage(
-            MessageActionsCreators.triggerSuccessMessage({
-              message: `Transaction: ${shortenItem(transaction.blockHash)} is completed`
-            })
-          );
-        };
-        return <TransactionStatus key={transaction.id} transaction={transaction} onComplete={onComplete} />;
-      })}
+      <h2>Transactions</h2>
+      {transactions.length ? (
+        transactions.map((transaction: TransanctionStatus) => {
+          const onComplete = () => {
+            dispatchTransaction(
+              TransactionActionCreators.updateTransactionStatus(
+                { status: TransactionStatusEnum.COMPLETED },
+                transaction.id
+              )
+            );
+            dispatchMessage(
+              MessageActionsCreators.triggerSuccessMessage({
+                message: `Transaction: ${shortenItem(transaction.blockHash)} is completed`
+              })
+            );
+          };
+          return <TransactionStatus key={transaction.id} transaction={transaction} onComplete={onComplete} />;
+        })
+      ) : (
+        <TransactionStatusMock type={type} />
+      )}
     </>
   );
 };

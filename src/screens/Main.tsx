@@ -94,11 +94,13 @@ function Main() {
               {searchItems(index)?.component}
             </Grid>
           </Grid>
-          <Grid container>
-            <Grid item md={12}>
-              <Transactions />
+          {index !== 3 && (
+            <Grid container>
+              <Grid item md={12}>
+                <Transactions type={searchItems(index)?.title} />
+              </Grid>
             </Grid>
-          </Grid>
+          )}
         </Container>
         <SnackBar />
         <br />

@@ -14,16 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Box, Card, makeStyles, Typography } from '@material-ui/core';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { Step, TransanctionStatus } from '../types/transactionTypes';
+import { Box, Card, makeStyles, Typography } from '@material-ui/core';
 import { ButtonSwitchMode } from './Buttons';
 import { IconTxStatus } from './Icons';
 
+import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
+import { Step, TransactionStatusEnum } from '../types/transactionTypes';
+
 interface Props {
-  steps: Array<Step>;
-  transaction: TransanctionStatus;
+  type?: string;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -42,8 +43,52 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export const TransactionDisplay = ({ transaction, steps }: Props) => {
+const TransactionStatusMock = ({ type }: Props) => {
   const classes = useStyles();
+  const [steps, setSteps] = useState<Array<Step>>([]);
+
+  const {
+    sourceChainDetails: { sourceChain },
+    targetChainDetails: { targetChain }
+  } = useSourceTarget();
+
+  useEffect(() => {
+    setSteps([
+      {
+        chainType: sourceChain,
+        label: 'Include message in block',
+        onChain: '',
+        status: TransactionStatusEnum.NOT_STARTED
+      },
+      {
+        chainType: sourceChain,
+        label: 'Finalise block',
+        status: TransactionStatusEnum.NOT_STARTED
+      },
+      {
+        chainType: targetChain,
+        label: 'Relay block',
+        status: TransactionStatusEnum.NOT_STARTED
+      },
+      {
+        chainType: targetChain,
+        label: 'Deliver message',
+        onChain: '',
+        status: TransactionStatusEnum.NOT_STARTED
+      },
+      {
+        chainType: targetChain,
+        label: 'Finalise message in target block',
+        onChain: '',
+        status: TransactionStatusEnum.NOT_STARTED
+      },
+      {
+        chainType: sourceChain,
+        label: 'Confirm delivery',
+        status: TransactionStatusEnum.NOT_STARTED
+      }
+    ]);
+  }, [sourceChain, targetChain]);
 
   return (
     <>
@@ -52,8 +97,7 @@ export const TransactionDisplay = ({ transaction, steps }: Props) => {
       <ButtonSwitchMode disabled> Human</ButtonSwitchMode>
       <Card elevation={24} className={classes.card}>
         <Box className="header" component="p">
-          <IconTxStatus status={transaction.status} /> {transaction.type} {transaction.sourceChain} {'->'}{' '}
-          {transaction.targetChain}
+          <IconTxStatus status={TransactionStatusEnum.NOT_STARTED} /> {type} {sourceChain} {'->'} {targetChain}
         </Box>
         {steps.map(({ chainType, label, onChain, status }, idx) => (
           <p key={idx}>
@@ -71,3 +115,5 @@ export const TransactionDisplay = ({ transaction, steps }: Props) => {
     </>
   );
 };
+
+export default TransactionStatusMock;

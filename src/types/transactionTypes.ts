@@ -33,6 +33,7 @@ export interface UpdatedTransanctionStatus {
 }
 
 export enum TransactionStatusEnum {
+  NOT_STARTED = 'NOT_STARTED',
   CREATED = 'CREATED',
   IN_PROGRESS = 'IN_PROGRESS',
   COMPLETED = 'COMPLETED',
