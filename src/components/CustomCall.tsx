@@ -14,21 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Button, Container, TextField } from '@material-ui/core';
+import { Box, TextField } from '@material-ui/core';
 import React, { useState } from 'react';
 import { Message } from 'semantic-ui-react';
-import styled from 'styled-components';
+import { ButtonSubmit } from '../components';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import useLoadingApi from '../hooks/useLoadingApi';
 import useSendMessage from '../hooks/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
-interface Props {
-  className?: string;
-}
 
-const CustomCall = ({ className }: Props) => {
+const CustomCall = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [decoded, setDecoded] = useState<string | null>();
 
@@ -71,28 +68,27 @@ const CustomCall = ({ className }: Props) => {
       const call = targetApi.createType('Call', input);
       setDecoded(JSON.stringify(call, null, 4));
     } catch (e) {
-      setError('Wrong call provided.');
+      setError('Wrong call provided');
       setDecoded(null);
     }
   }
 
   return (
     <>
-      <h2>Custom Call</h2>
-      <Container className={className}>
-        <div>
-          <TextField onChange={onChange} value={customCallInput} label="Call" variant="outlined" />
-          <p>{error && `${error}`}</p>
-        </div>
-        <br />
-        <div>
-          <TextField onChange={onWeightChange} value={weightInput} label="Weight" variant="outlined" />
-
-          <Button variant="contained" disabled={isButtonDisabled()} onClick={sendLaneMessage}>
-            Send Custom Call
-          </Button>
-        </div>
-      </Container>
+      <Box mb={2}>
+        <TextField
+          onChange={onChange}
+          value={customCallInput}
+          label="Call"
+          variant="outlined"
+          fullWidth
+          helperText={error && `${error}`}
+        />
+      </Box>
+      <TextField onChange={onWeightChange} value={weightInput} label="Weight" variant="outlined" fullWidth />
+      <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
+        Send Custom Call
+      </ButtonSubmit>
       <p>{estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
       <div>
         {decoded && (
@@ -108,7 +104,4 @@ const CustomCall = ({ className }: Props) => {
   );
 };
 
-export default styled(CustomCall)`
-  display: flex !important;
-  justify-content: start !important;
-`;
+export default CustomCall;

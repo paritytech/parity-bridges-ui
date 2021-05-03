@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Button, Container, TextField } from '@material-ui/core';
+import { TextField } from '@material-ui/core';
 import React, { useState } from 'react';
 
 import { useTransactionContext } from '../contexts/TransactionContext';
@@ -24,17 +24,16 @@ import useSendMessage from '../hooks/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
 
 import Receiver from './Receiver';
+import { ButtonSubmit } from '../components';
 
 const useStyles = makeStyles(() => ({
-  container: {
-    width: '700px',
-    marginLeft: '0',
-    padding: '0'
-  }
+  container: {}
 }));
 
 const Transfer = () => {
   const classes = useStyles();
+  console.log(classes);
+
   const [isRunning, setIsRunning] = useState(false);
   const [transferInput, setTransferInput] = useState('0');
 
@@ -58,21 +57,14 @@ const Transfer = () => {
   }
 
   return (
-    <Container className={classes.container}>
-      <h2>Transfer</h2>
-
+    <>
       <Receiver />
-
-      <TextField onChange={onChange} value={transferInput} label="Amount" variant="outlined" />
-
-      <div>
-        <Button variant="contained" disabled={isButtonDisabled()} onClick={sendLaneMessage}>
-          Send Bridge Message
-        </Button>
-      </div>
-
+      <TextField onChange={onChange} value={transferInput} label="Amount" variant="outlined" fullWidth />
+      <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
+        Send Bridge Message
+      </ButtonSubmit>
       <p>{receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
-    </Container>
+    </>
   );
 };
 

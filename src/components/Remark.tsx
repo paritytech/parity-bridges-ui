@@ -14,19 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Button, Container, TextField } from '@material-ui/core';
+import { TextField } from '@material-ui/core';
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import { ButtonSubmit } from '../components';
 
 import { useTransactionContext } from '../contexts/TransactionContext';
 import useLoadingApi from '../hooks/useLoadingApi';
 import useSendMessage from '../hooks/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
-interface Props {
-  className?: string;
-}
 
-const Remark = ({ className }: Props) => {
+const Remark = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [remarkInput, setRemarkInput] = useState('0x');
   const areApiReady = useLoadingApi();
@@ -46,23 +43,15 @@ const Remark = ({ className }: Props) => {
     return null;
   }
 
-  // TO-DO: Remove <br /> by proper margins
   return (
     <>
-      <h2>Remark</h2>
-      <Container className={className}>
-        <TextField onChange={onChange} value={remarkInput} variant="outlined" />
-        <Button variant="contained" disabled={isButtonDisabled()} onClick={sendLaneMessage}>
-          Send Remark
-        </Button>
-        <p>{estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
-      </Container>
+      <TextField onChange={onChange} value={remarkInput} variant="outlined" fullWidth />
+      <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
+        Send Remark
+      </ButtonSubmit>
+      <p>{estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
     </>
   );
 };
 
-export default styled(Remark)`
-  margin: 40px 0;
-  display: flex !important;
-  justify-content: start !important;
-`;
+export default Remark;
