@@ -48,6 +48,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return { ...state, estimatedFee: action.payload.estimatedFee };
     case TransactionActionTypes.SET_RECEIVER_ADDRESS:
       return { ...state, receiverAddress: action.payload.receiverAddress };
+    case TransactionActionTypes.SET_UNFORMATTED_RECEIVER_ADDRESS:
+      return { ...state, unformattedReceiverAddress: action.payload.unformattedReceiverAddress };
     case TransactionActionTypes.CREATE_TRANSACTION_STATUS:
       return createTransaction(state, action.payload.initialTransaction);
     case TransactionActionTypes.UPDATE_CURRENT_TRANSACTION_STATUS:

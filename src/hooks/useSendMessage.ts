@@ -149,7 +149,6 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
         return isRunning || !account;
         break;
       case TransactionTypes.TRANSFER:
-        console.log('asdf', receiverAddress, account);
         return isRunning || !receiverAddress || !account;
         break;
       case TransactionTypes.CUSTOM:

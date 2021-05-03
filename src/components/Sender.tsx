@@ -80,7 +80,7 @@ const Sender = ({ className }: Props) => {
       >
         <div className={classes.row}>
           <Account accountName={text} value={value} chain={source} />
-          <Account accountName={text} value={value} isDerived chain={target} />
+          <Account accountName={text} value={value} isDerived hideAddress chain={target} />
         </div>
       </MenuItem>
     ));
@@ -94,7 +94,7 @@ const Sender = ({ className }: Props) => {
       const text = getName(account);
       return <Account accountName={text} value={value} chain={sourceChain} />;
     }
-    return <AccountDisplay accountName="sender" />;
+    return <AccountDisplay friendlyName="Select sender account" hideAddress />;
   };
 
   return (
@@ -109,7 +109,9 @@ const Sender = ({ className }: Props) => {
       </div>
 
       <div className="derivedAccount">
-        {derivedAccount && <Account accountName={getName(account)} value={value} chain={targetChain} isDerived />}
+        {derivedAccount && (
+          <Account accountName={getName(account)} value={value} chain={targetChain} isDerived hideAddress />
+        )}
       </div>
     </Container>
   );

@@ -24,7 +24,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useBalance from '../hooks/useBalance';
 import getDeriveAccount from '../util/getDeriveAccount';
-import AccountDisplay from './AccountDisplay';
+import shorterItem from '../util/shortenItem';
+import AccountDisplay, { AddressKind } from './AccountDisplay';
 
 interface Props {
   value: string;
@@ -91,16 +92,29 @@ const GenericAccount = ({ value }: Props) => {
     dispatchTransaction(TransactionActionCreators.setReceiverAddress(derivedAddress));
   };
 
+  const shortGenericAddress = shorterItem(value);
   return (
     <Container className={classes.container}>
       {(!selected || selected === NATIVE) && (
         <div className={classes.native} onClick={setNativeAsTarget}>
-          <AccountDisplay accountName="Native" address={nativeAddress} balance={nativeState.formattedBalance} />
+          <AccountDisplay
+            address={nativeAddress}
+            addressKind={AddressKind.NATIVE}
+            balance={nativeState.formattedBalance}
+            friendlyName={shortGenericAddress}
+            hideAddress
+          />
         </div>
       )}
       {(!selected || selected === DERIVED) && (
         <div className={classes.companion} onClick={setCompanionAsTarget}>
-          <AccountDisplay address={derivedAddress} isDerived balance={derivedState.formattedBalance} />
+          <AccountDisplay
+            address={derivedAddress}
+            addressKind={AddressKind.COMPANION}
+            balance={derivedState.formattedBalance}
+            friendlyName={shortGenericAddress}
+            hideAddress
+          />
         </div>
       )}
     </Container>

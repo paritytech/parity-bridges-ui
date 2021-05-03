@@ -29,10 +29,11 @@ export default function useReceiver() {
     sourceChainDetails: { sourceChain }
   } = useSourceTarget();
 
-  const setReceiverAddress = (address: string | null) =>
+  const setReceiver = (address: string | null) =>
     dispatchTransaction(TransactionActionCreators.setReceiverAddress(address));
 
-  const setReceiver = (address: string | null) => setReceiverAddress(address);
+  const setUnformattedReceiver = (address: string | null) =>
+    dispatchTransaction(TransactionActionCreators.setUnformattedReceiverAddress(address));
 
   const validateAccount = (receiver: string) => {
     try {
@@ -51,5 +52,5 @@ export default function useReceiver() {
     }
   };
 
-  return { setReceiver, validateAccount };
+  return { setReceiver, setUnformattedReceiver, validateAccount };
 }
