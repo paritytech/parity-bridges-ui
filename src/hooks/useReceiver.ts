@@ -18,6 +18,7 @@ import { TransactionActionCreators } from '../actions/transactionActions';
 import { INCORRECT_FORMAT } from '../constants';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useUpdateTransactionContext } from '../contexts/TransactionContext';
+import useSS58Format from '../hooks/useSS58Format';
 import getReceiverAddress from '../util/getReceiverAddress';
 import logger from '../util/logger';
 
@@ -25,6 +26,7 @@ export default function useReceiver() {
   const { dispatchTransaction } = useUpdateTransactionContext();
 
   const { targetChainDetails, sourceChainDetails } = useSourceTarget();
+  const { getChainBySS58Prefix } = useSS58Format();
 
   const setReceiver = (address: string | null) =>
     dispatchTransaction(TransactionActionCreators.setReceiverAddress(address));
@@ -35,6 +37,7 @@ export default function useReceiver() {
   const validateAccount = (receiver: string) => {
     try {
       const { address, formatFound } = getReceiverAddress({
+        getChainBySS58Prefix,
         targetChainDetails,
         sourceChainDetails,
         receiverAddress: receiver

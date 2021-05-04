@@ -19,6 +19,7 @@ import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 
 type State = {
   getSS58ByChain: (chain: string) => number;
+  getChainBySS58Prefix: (prefix: string) => string;
 };
 
 const useSS58Format = (): State => {
@@ -46,7 +47,21 @@ const useSS58Format = (): State => {
     }
   };
 
-  return { getSS58ByChain };
+  const getChainBySS58Prefix = (prefix: string) => {
+    const intPrefix: number = parseInt(prefix, 10);
+    switch (intPrefix) {
+      case GENERIC_SUBSTRATE_PREFIX:
+        return GENERIC;
+      case targetSS58Format:
+        return targetChain;
+      case sourceSS58Format:
+        return sourceChain;
+      default:
+        return '';
+    }
+  };
+
+  return { getSS58ByChain, getChainBySS58Prefix };
 };
 
 export default useSS58Format;

@@ -15,20 +15,25 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 import { checkAddress } from '@polkadot/util-crypto';
 import { SourceState, TargetState } from '../types/sourceTargetTypes';
-import { INCORRECT_FORMAT, GENERIC, GENERIC_SUBSTRATE_PREFIX } from '../constants';
+import { INCORRECT_FORMAT } from '../constants';
 import getDeriveAccount from './getDeriveAccount';
 
 interface Props {
+  getChainBySS58Prefix: (prefix: string) => string;
   receiverAddress: string;
   targetChainDetails: TargetState;
   sourceChainDetails: SourceState;
 }
-const getReceiverAddress = ({ targetChainDetails, sourceChainDetails, receiverAddress }: Props) => {
-  const { sourceChain, sourceConfigs } = sourceChainDetails;
+const getReceiverAddress = ({
+  getChainBySS58Prefix,
+  targetChainDetails,
+  sourceChainDetails,
+  receiverAddress
+}: Props) => {
+  const { sourceConfigs } = sourceChainDetails;
   const { targetChain, targetConfigs } = targetChainDetails;
 
   const targetSS58Format = targetConfigs.ss58Format;
-  const sourceSS58Format = sourceConfigs.ss58Format;
 
   const bridgeId = sourceConfigs.bridgeId;
 
@@ -38,23 +43,10 @@ const getReceiverAddress = ({ targetChainDetails, sourceChainDetails, receiverAd
       return { address: receiverAddress, formatFound: targetChain };
     }
     // should be extracted as a separate component/function
-    const getFormat = (prefix: string) => {
-      const intPrefix: number = parseInt(prefix, 10);
-      if (intPrefix === GENERIC_SUBSTRATE_PREFIX) {
-        return GENERIC;
-      }
-
-      if (targetSS58Format === intPrefix) {
-        return targetChain;
-      }
-      if (sourceSS58Format === intPrefix) {
-        return sourceChain;
-      }
-    };
 
     const parts = rest?.split(',');
     const prefix = parts![2].split(' ');
-    const formatFound = getFormat(prefix[2]) || prefix[2];
+    const formatFound = getChainBySS58Prefix(prefix[2]) || prefix[2];
 
     const address = getDeriveAccount({
       ss58Format: targetSS58Format,
