@@ -14,29 +14,39 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Button, Container, TextField } from '@material-ui/core';
+import { Box, InputAdornment, makeStyles, TextField } from '@material-ui/core';
 import React, { useState } from 'react';
-
+import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import useLoadingApi from '../hooks/useLoadingApi';
-import { makeStyles } from '@material-ui/core/styles';
 import useSendMessage from '../hooks/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
 
 import Receiver from './Receiver';
+import { ButtonSubmit } from '../components';
 
-const useStyles = makeStyles(() => ({
-  container: {
-    width: '700px',
-    marginLeft: '0',
-    padding: '0'
+const useStyles = makeStyles((theme) => ({
+  inputAmount: {
+    '& .MuiInputBase-root': {
+      '& .MuiInputAdornment-root': {
+        position: 'absolute',
+        right: 0
+      },
+      '& input': {
+        textAlign: 'center',
+        ...theme.typography.subtitle2,
+        fontSize: theme.typography.h1.fontSize,
+        color: theme.palette.primary.main
+      }
+    }
   }
 }));
 
 const Transfer = () => {
   const classes = useStyles();
   const [isRunning, setIsRunning] = useState(false);
-  const [transferInput, setTransferInput] = useState('0');
+  const [transferInput, setTransferInput] = useState<string>('');
+  const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
   const areApiReady = useLoadingApi();
 
@@ -53,26 +63,33 @@ const Transfer = () => {
     setTransferInput(event.target.value);
   };
 
-  if (!areApiReady) {
-    return null;
-  }
+  if (!areApiReady) return null;
 
   return (
-    <Container className={classes.container}>
-      <h2>Transfer</h2>
-
+    <>
+      <Box mb={2}>
+        <TextField
+          onChange={onChange}
+          value={transferInput && transferInput}
+          placeholder={'0'}
+          className={classes.inputAmount}
+          fullWidth
+          variant="outlined"
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="start">
+                {targetChainDetails.targetApiConnection.api.registry.chainTokens}
+              </InputAdornment>
+            )
+          }}
+        />
+      </Box>
       <Receiver />
-
-      <TextField onChange={onChange} value={transferInput} label="Amount" variant="outlined" />
-
-      <div>
-        <Button variant="contained" disabled={isButtonDisabled()} onClick={sendLaneMessage}>
-          Send Bridge Message
-        </Button>
-      </div>
-
-      <p>{receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
-    </Container>
+      <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
+        Send bridge transfer from {sourceChainDetails.sourceChain} to {targetChainDetails.targetChain}
+      </ButtonSubmit>
+      {receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}
+    </>
   );
 };
 

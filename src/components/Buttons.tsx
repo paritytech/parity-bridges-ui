@@ -14,12 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Button, ButtonProps } from '@material-ui/core';
+import { Box, Button, ButtonProps } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ForumIcon from '@material-ui/icons/Forum';
 import React from 'react';
 
 const useStyles = makeStyles((theme) => ({
+  submit: {
+    padding: theme.spacing(2),
+    borderRadius: theme.spacing(1.75)
+  },
   contact: {
     backgroundColor: 'transparent',
     '&:hover': {
@@ -64,5 +68,22 @@ export const ButtonSwitchMode = ({ children, color = 'secondary', ...props }: Bu
     <Button className={classes.switchMode} color={color} {...props}>
       {children}
     </Button>
+  );
+};
+
+export const ButtonSubmit = ({
+  children,
+  color = 'primary',
+  variant = 'contained',
+  fullWidth = true,
+  ...props
+}: ButtonProps) => {
+  const classes = useStyles();
+  return (
+    <Box mt={2} mb={2}>
+      <Button className={classes.submit} color={color} variant={variant} fullWidth={fullWidth} {...props}>
+        {children}
+      </Button>
+    </Box>
   );
 };

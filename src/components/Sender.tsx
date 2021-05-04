@@ -118,21 +118,20 @@ const Sender = ({ className }: Props) => {
 };
 
 export default styled(Sender)`
-  margin: 40px 0;
   border: 1px solid;
   border-radius: 5px;
-  width: 700px;
+  width: 100%;
   padding-left: 0;
   .label {
     padding: 5px;
   }
   .senderSelect {
     min-height: 40px;
-    width: 700px;
+    width: 100%;
   }
   .formControl {
     min-height: 40px;
-    width: 700px;
+    width: 100%;
   }
   .derivedAccount {
     min-height: 40px;
