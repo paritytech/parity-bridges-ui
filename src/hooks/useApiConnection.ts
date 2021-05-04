@@ -20,6 +20,7 @@ import isEmpty from 'lodash/isEmpty';
 import React, { useEffect, useState } from 'react';
 import { ApiPromiseConnectionType, Configs, ConnectionChainInformation } from '../types/sourceTargetTypes';
 import logger from '../util/logger';
+import { getConfigs } from '../util/getConfig';
 
 export const ApiPromiseContext: React.Context<ApiPromiseConnectionType> = React.createContext(
   {} as ApiPromiseConnectionType
@@ -72,20 +73,13 @@ export function useApiConnection(connectionDetails: ConnectionChainInformation):
   }, [apiPromise, chainNumber, isReady, types]);
 
   useEffect(() => {
-    const getConfigs = async () => {
-      const properties = await apiPromise.registry.getChainProperties();
-      const { ss58Format } = properties!;
-
-      const systemChain = await apiPromise.rpc.system.name();
-      const prop = await apiPromise.rpc.system.properties();
-      const chainName = systemChain.split(' ')[0];
-      const bridgeIds = prop.get('bridgeIds');
-
-      setConfigs({ bridgeId: [], bridgeIds, chainName, ss58Format: parseInt(ss58Format.toString()) });
+    const getChainConfigs = async () => {
+      const values = await getConfigs(apiPromise);
+      setConfigs(values);
     };
 
     if (isReady && isEmpty(configs)) {
-      getConfigs();
+      getChainConfigs();
     }
   }, [apiPromise, configs, configs.bridgeId, isReady]);
 
