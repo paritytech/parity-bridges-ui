@@ -52,9 +52,10 @@ const useBalance = (api: ApiPromise, address: string, providedSi: boolean = fals
         const u = await api.query.system.account(address, ({ data }): void => {
           isMounted() &&
             setState({
-              chainTokens: data.free.registry.chainTokens[0],
+              chainTokens: data.registry.chainTokens[0],
               formattedBalance: formatBalance(data.free, {
                 decimals: api.registry.chainDecimals[0],
+                withUnit: api.registry.chainTokens[0],
                 forceUnit: '-',
                 withSi: providedSi
               }),
