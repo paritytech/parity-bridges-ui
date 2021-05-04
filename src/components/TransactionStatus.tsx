@@ -150,7 +150,7 @@ const TransactionStatus = ({ transaction, onComplete }: Props) => {
         chainType: sourceChain,
         label: 'Include message in block',
         onChain: transaction.block,
-        status: completionStatus(true)
+        status: completionStatus(!!transaction.block)
       },
       {
         chainType: sourceChain,
