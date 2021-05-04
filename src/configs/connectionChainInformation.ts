@@ -18,7 +18,7 @@ import { WsProvider } from '@polkadot/api';
 
 import { checkEnvVariable } from '../util/envVariablesValidations';
 import { createPolkadotJsUrl } from '../util/createPolkadotJsUrl';
-import { getSubstrateConfigs } from './substrateConfigs';
+import { getSubstratePairConfigs } from './substrateConfigs';
 import { ConnectionChainInformation } from '../types/sourceTargetTypes';
 
 const getProvider = (provider: string) => new WsProvider(provider);
@@ -26,7 +26,7 @@ const getProvider = (provider: string) => new WsProvider(provider);
 const getConnectionChainInformation = (chainNumber: string): ConnectionChainInformation => {
   const providerUrl = checkEnvVariable(`REACT_APP_SUBSTRATE_PROVIDER_CHAIN_${chainNumber}`);
   const provider = getProvider(providerUrl);
-  const [chain1, chain2] = getSubstrateConfigs();
+  const [chain1, chain2] = getSubstratePairConfigs();
   switch (chainNumber) {
     case '1':
       return {

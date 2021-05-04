@@ -30,7 +30,7 @@ function hasherH512(data: any) {
   return u8aConcat(blake2AsU8a(data), keccakAsU8a(data));
 }
 
-export const getSubstrateConfigs = (): HasherTypes[] => {
+export const getSubstratePairConfigs = (): HasherTypes[] => {
   const pair = checkEnvVariable('REACT_APP_PAIR');
   switch (pair) {
     case 'RialtoMillau':
