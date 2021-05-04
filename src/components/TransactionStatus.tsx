@@ -128,11 +128,11 @@ const TransactionStatus = ({ transaction, onComplete }: Props) => {
       return bnChainValue.gt(bnTransactionValue);
     };
 
-    const completionStatus = (status: boolean = false): TransactionStatusEnum => {
+    const completionStatus = (isCompleted: boolean): TransactionStatusEnum => {
       if (transaction.id === 0) {
         return TransactionStatusEnum.NOT_STARTED;
       }
-      return transaction.block && status ? TransactionStatusEnum.COMPLETED : TransactionStatusEnum.IN_PROGRESS;
+      return isCompleted ? TransactionStatusEnum.COMPLETED : TransactionStatusEnum.IN_PROGRESS;
     };
 
     const sourceTransactionFinalized = stepEvaluator(transaction.block, bestBlockFinalized);
