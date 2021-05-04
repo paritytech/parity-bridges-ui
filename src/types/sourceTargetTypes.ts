@@ -62,6 +62,11 @@ export enum ChainDetails {
   TARGET = 'targetChainDetails'
 }
 
+// Pairs need to match with the .env value REACT_APP_PAIR
+export enum Pairs {
+  RIALTO_MILLAU = 'RIALTO_MILLAU'
+}
+
 export interface SourceState {
   sourceConfigs: Configs;
   sourceApiConnection: ApiPromiseConnectionType;

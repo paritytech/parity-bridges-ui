@@ -18,6 +18,7 @@ import { u8aConcat } from '@polkadot/util';
 import { ApiOptions } from '@polkadot/api/types';
 import { blake2AsU8a, keccakAsU8a } from '@polkadot/util-crypto';
 import { checkEnvVariable } from '../../util/envVariablesValidations';
+import { Pairs } from '../../types/sourceTargetTypes';
 import customTypesMillau from './customTypesMillau.json';
 import customTypesRialto from './customTypesRialto.json';
 
@@ -33,7 +34,7 @@ function hasherH512(data: any) {
 export const getSubstratePairConfigs = (): HasherTypes[] => {
   const pair = checkEnvVariable('REACT_APP_PAIR');
   switch (pair) {
-    case 'RialtoMillau':
+    case Pairs.RIALTO_MILLAU:
       return [
         {
           types: customTypesRialto

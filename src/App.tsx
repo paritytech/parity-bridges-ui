@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import React from 'react';
 import { Backdrop, CircularProgress, createMuiTheme, ThemeProvider } from '@material-ui/core';
 import { SnackbarProvider } from 'notistack';
-import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { getConnectionChainInformation } from './configs/connectionChainInformation';
 import { light } from './components';
@@ -26,10 +26,11 @@ import { MessageContextProvider } from './contexts/MessageContext';
 import { SourceTargetContextProvider } from './contexts/SourceTargetContextProvider';
 import { TransactionContextProvider } from './contexts/TransactionContext';
 import { useConnections } from './hooks/useConnections';
+import { CHAIN_1, CHAIN_2 } from './constants';
 import Main from './screens/Main';
 
-const connectionDetailsOne = getConnectionChainInformation('1');
-const connectionDetailsTwo = getConnectionChainInformation('2');
+const connectionDetailsOne = getConnectionChainInformation(CHAIN_1);
+const connectionDetailsTwo = getConnectionChainInformation(CHAIN_2);
 
 function App() {
   const { connections, apiReady } = useConnections({ connectionDetailsOne, connectionDetailsTwo });
