@@ -17,6 +17,20 @@
 import { useState } from 'react';
 import { useIsMounted } from './useIsMounted';
 
+/**
+ * Like React's [useState](https://reactjs.org/docs/hooks-reference.html#usestate)
+ * but it makes sure the component that uses this state hook is mounted before updating state
+ *
+ * @see https://reactjs.org/docs/hooks-reference.html#usestate
+ * @export
+ * @param {D} initialValue
+ * @returns {[D, Diapatch<D>]} an array of 2 items
+ * the first is the current state, the second is a function that enables
+ * updating the state if the component is not mounted
+ *
+ * D is the type passed when then useMountedState is used
+ * e.g. const [pass, setPass] = useMountedState<string>('someString');
+ */
 export const useMountedState = <D>(initialValue: D) => {
   const isMounted = useIsMounted();
 
