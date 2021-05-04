@@ -14,32 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Container } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Star } from '@material-ui/icons';
-import React from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 
-// As this is placed as a child in the Material UI Select component, for some reason style components classes are not working.
-// This way to inject the styles works.
-const useStyles = makeStyles(() =>
-  createStyles({
-    root: {
-      alignItems: 'center',
-      display: 'flex'
-    }
-  })
-);
+export const useIsMounted = () => {
+  const mountedRef = useRef(false);
+  const isMounted = useCallback(() => mountedRef.current, []);
 
-const SubHeader = ({ chain }: any) => {
-  const classes = useStyles();
+  useEffect(() => {
+    mountedRef.current = true;
 
-  // TO-DO: replace Start icon with real chain icon.
-  return (
-    <Container key={chain} className={classes.root}>
-      <Star />
-      {chain}
-    </Container>
-  );
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  return isMounted;
 };
-
-export default SubHeader;
