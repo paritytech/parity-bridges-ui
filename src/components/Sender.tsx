@@ -64,7 +64,7 @@ const Sender = ({ className }: Props) => {
     }
   }, [chains.length, sourceChain, targetChain]);
 
-  const value = account ? encodeAddress(account.address, getChainSS58(sourceChain)) : 'init';
+  const value = account ? encodeAddress(account.address, getChainSS58(sourceChain)) : '';
 
   const onChange = (value: string, chain: string) => {
     setCurrentAccount(value, chain);
@@ -112,7 +112,7 @@ const Sender = ({ className }: Props) => {
       <InputLabel className="label">{sourceChain} Account</InputLabel>
       <div className="senderSelect">
         <FormControl className="formControl">
-          <Select value={value} name="name" renderValue={(): React.ReactNode => <AccountSelected />}>
+          <Select value={value} renderValue={(): React.ReactNode => <AccountSelected />}>
             {chains.map((chain) => renderAccounts(chain))}
           </Select>
         </FormControl>
