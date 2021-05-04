@@ -15,18 +15,27 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-
+import { ApiOptions } from '@polkadot/api/types';
 import { SourceTargetActionsTypes } from '../actions/sourceTargetActions';
+import { ProviderInterface } from '@polkadot/rpc-provider/types';
 
 export interface ApiPromiseConnectionType {
   api: ApiPromise; // From @polkadot/api\
   isApiReady: boolean;
 }
 
+export interface ConnectionChainInformation {
+  chainNumber: string;
+  hasher?: (data: Uint8Array) => Uint8Array;
+  provider: ProviderInterface;
+  types?: ApiOptions['types'];
+  polkadotjsUrl: string;
+}
+
 export interface Configs {
-  bridgeId: string | null;
-  chainName: string | null;
-  ss58Format: string | null;
+  bridgeId: Array<number>;
+  chainName: string;
+  ss58Format: number;
 }
 
 export type Connection = {
@@ -50,6 +59,21 @@ export interface ApiPromiseContextType {
 export enum ChainDetails {
   SOURCE = 'sourceChainDetails',
   TARGET = 'targetChainDetails'
+}
+
+export interface SourceTargetState {
+  [ChainDetails.SOURCE]: {
+    sourceConfigs: Configs;
+    sourceApiConnection: ApiPromiseConnectionType;
+    sourceChain: string;
+    sourcePolkadotjsUrl: string;
+  };
+  [ChainDetails.TARGET]: {
+    targetConfigs: Configs;
+    targetApiConnection: ApiPromiseConnectionType;
+    targetChain: string;
+    targetPolkadotjsUrl: string;
+  };
 }
 
 export interface SourceTargetState {

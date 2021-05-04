@@ -25,7 +25,6 @@ import useAccounts from '../hooks/useAccounts';
 import useReceiver from '../hooks/useReceiver';
 import { Account as AccountType } from '../types/accountTypes';
 import formatAccounts from '../util/formatAccounts';
-import getChainSS58 from '../util/getSS58';
 import Account from './Account';
 import AccountDisplay from './AccountDisplay';
 import { Star } from '@material-ui/icons';
@@ -50,7 +49,10 @@ const Sender = ({ className }: Props) => {
   const [chains, setChains] = useState<Array<string[]>>([]);
   const { account, accounts, derivedAccount, setCurrentAccount } = useAccounts();
   const {
-    sourceChainDetails: { sourceChain },
+    sourceChainDetails: {
+      sourceChain,
+      sourceConfigs: { ss58Format }
+    },
     targetChainDetails: { targetChain }
   } = useSourceTarget();
   const { setReceiver } = useReceiver();
@@ -64,7 +66,7 @@ const Sender = ({ className }: Props) => {
     }
   }, [chains.length, sourceChain, targetChain]);
 
-  const value = account ? encodeAddress(account.address, getChainSS58(sourceChain)) : 'init';
+  const value = account ? encodeAddress(account.address, ss58Format) : 'init';
 
   const onChange = (value: string, chain: string) => {
     setCurrentAccount(value, chain);
@@ -73,7 +75,7 @@ const Sender = ({ className }: Props) => {
 
   const renderAccounts = (chains: string[]) => {
     const [source, target] = chains;
-    const formatedAccounts = formatAccounts(accounts, source);
+    const formatedAccounts = formatAccounts(accounts, ss58Format);
     const items = formatedAccounts.map(({ text, value, key }: any) => (
       <MenuItem
         key={key}

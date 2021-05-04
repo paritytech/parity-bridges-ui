@@ -15,22 +15,26 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 import { checkAddress } from '@polkadot/util-crypto';
 
-import { getChainConfigs } from '../configs/substrateProviders';
 import { INCORRECT_FORMAT, GENERIC, GENERIC_SUBSTRATE_PREFIX } from '../constants';
 import getDeriveAccount from './getDeriveAccount';
 
 interface Props {
   receiverAddress: string;
-  targetChain: string;
-  sourceChain: string;
+  // TODO proper type
+  targetChainDetails: any;
+  sourceChainDetails: any;
 }
-const getReceiverAddress = ({ receiverAddress, targetChain, sourceChain }: Props) => {
-  const chainsConfigs = getChainConfigs();
-  const { SS58Format } = chainsConfigs[targetChain];
-  const { bridgeId } = chainsConfigs[sourceChain];
+const getReceiverAddress = ({ targetChainDetails, sourceChainDetails, receiverAddress }: Props) => {
+  const { sourceChain, sourceConfigs } = sourceChainDetails;
+  const { targetChain, targetConfigs } = targetChainDetails;
+
+  const targetSS58Format = targetConfigs.ss58Format;
+  const sourceSS58Format = sourceConfigs.ss58Format;
+
+  const bridgeId = sourceConfigs.bridgeId;
 
   try {
-    const [validatedDerivedAcccount, rest] = checkAddress(receiverAddress, SS58Format);
+    const [validatedDerivedAcccount, rest] = checkAddress(receiverAddress, targetSS58Format);
     if (validatedDerivedAcccount) {
       return { address: receiverAddress, formatFound: targetChain };
     }
@@ -40,8 +44,13 @@ const getReceiverAddress = ({ receiverAddress, targetChain, sourceChain }: Props
       if (intPrefix === GENERIC_SUBSTRATE_PREFIX) {
         return GENERIC;
       }
-      const chainsConfigs = getChainConfigs();
-      return Object.keys(chainsConfigs).find((key) => chainsConfigs[key].SS58Format === intPrefix);
+
+      if (targetSS58Format === intPrefix) {
+        return targetChain;
+      }
+      if (sourceSS58Format === intPrefix) {
+        return sourceChain;
+      }
     };
 
     const parts = rest?.split(',');
@@ -49,7 +58,7 @@ const getReceiverAddress = ({ receiverAddress, targetChain, sourceChain }: Props
     const formatFound = getFormat(prefix[2]) || prefix[2];
 
     const address = getDeriveAccount({
-      SS58Format,
+      ss58Format: targetSS58Format,
       address: receiverAddress,
       bridgeId
     });

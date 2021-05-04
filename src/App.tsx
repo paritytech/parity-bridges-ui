@@ -18,7 +18,7 @@ import { Backdrop, CircularProgress, createMuiTheme, ThemeProvider } from '@mate
 import { SnackbarProvider } from 'notistack';
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-
+import { getConnectionChainInformation } from './configs/connectionChainInformation';
 import { light } from './components';
 import { AccountContextProvider } from './contexts/AccountContextProvider';
 import { KeyringContextProvider } from './contexts/KeyringContextProvider';
@@ -28,8 +28,11 @@ import { TransactionContextProvider } from './contexts/TransactionContext';
 import { useConnections } from './hooks/useConnections';
 import Main from './screens/Main';
 
+const connectionDetailsOne = getConnectionChainInformation('1');
+const connectionDetailsTwo = getConnectionChainInformation('2');
+
 function App() {
-  const { connections, apiReady } = useConnections();
+  const { connections, apiReady } = useConnections({ connectionDetailsOne, connectionDetailsTwo });
 
   if (!apiReady) {
     return (

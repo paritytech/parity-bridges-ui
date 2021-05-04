@@ -24,10 +24,7 @@ import logger from '../util/logger';
 export default function useReceiver() {
   const { dispatchTransaction } = useUpdateTransactionContext();
 
-  const {
-    targetChainDetails: { targetChain },
-    sourceChainDetails: { sourceChain }
-  } = useSourceTarget();
+  const { targetChainDetails, sourceChainDetails } = useSourceTarget();
 
   const setReceiver = (address: string | null) =>
     dispatchTransaction(TransactionActionCreators.setReceiverAddress(address));
@@ -38,8 +35,8 @@ export default function useReceiver() {
   const validateAccount = (receiver: string) => {
     try {
       const { address, formatFound } = getReceiverAddress({
-        targetChain,
-        sourceChain,
+        targetChainDetails,
+        sourceChainDetails,
         receiverAddress: receiver
       });
 

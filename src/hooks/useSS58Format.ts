@@ -14,31 +14,39 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { useAccountContext } from '../contexts/AccountContextProvider';
+import { GENERIC, GENERIC_SUBSTRATE_PREFIX } from '../constants';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import getDeriveAccount from '../util/getDeriveAccount';
 
-const useDerivedAccount = () => {
-  const {
-    targetChainDetails: {
-      targetConfigs: { ss58Format }
-    },
-    sourceChainDetails: {
-      sourceConfigs: { bridgeId }
-    }
-  } = useSourceTarget();
-  const { account } = useAccountContext();
-
-  if (!account) {
-    return null;
-  }
-
-  const toDerive = {
-    ss58Format,
-    address: account.address,
-    bridgeId
-  };
-  return getDeriveAccount(toDerive);
+type State = {
+  getSS58ByChain: (chain: string) => number;
 };
 
-export default useDerivedAccount;
+const useSS58Format = (): State => {
+  const {
+    sourceChainDetails: {
+      sourceChain,
+      sourceConfigs: { ss58Format: sourceSS58Format }
+    },
+    targetChainDetails: {
+      targetChain,
+      targetConfigs: { ss58Format: targetSS58Format }
+    }
+  } = useSourceTarget();
+
+  const getSS58ByChain = (chain: string) => {
+    switch (chain) {
+      case sourceChain:
+        return sourceSS58Format;
+      case targetChain:
+        return targetSS58Format;
+      case GENERIC:
+        return GENERIC_SUBSTRATE_PREFIX;
+      default:
+        throw new Error(`Unknown type: ${chain}`);
+    }
+  };
+
+  return { getSS58ByChain };
+};
+
+export default useSS58Format;

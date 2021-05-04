@@ -16,19 +16,12 @@
 
 import { WsProvider } from '@polkadot/api';
 import { u8aConcat } from '@polkadot/util';
-import { ApiOptions } from '@polkadot/api/types';
-import { ProviderInterface } from '@polkadot/rpc-provider/types';
+
 import { blake2AsU8a, keccakAsU8a } from '@polkadot/util-crypto';
 import { checkEnvVariable } from '../util/envVariablesValidations';
 import { createPolkadotJsUrl } from '../util/createPolkadotJsUrl';
 import { getSubstrateConfigs } from './substrateCustomTypes';
-
-export interface ConnectionChainInformation {
-  hasher?: (data: Uint8Array) => Uint8Array;
-  provider: ProviderInterface;
-  types?: ApiOptions['types'];
-  polkadotjsUrl: string;
-}
+import { ConnectionChainInformation } from '../types/sourceTargetTypes';
 
 function hasherH512(data: any) {
   return u8aConcat(blake2AsU8a(data), keccakAsU8a(data));
@@ -43,12 +36,14 @@ const getConnectionChainInformation = (chainNumber: string): ConnectionChainInfo
   switch (chainNumber) {
     case '1':
       return {
+        chainNumber,
         polkadotjsUrl: createPolkadotJsUrl(chain1.types!, providerUrl),
         provider,
         types: chain1.types
       };
     case '2':
       return {
+        chainNumber,
         hasher: hasherH512,
         polkadotjsUrl: createPolkadotJsUrl(chain2.types!, providerUrl),
         provider,

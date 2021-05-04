@@ -19,7 +19,6 @@ import { encodeAddress } from '@polkadot/util-crypto';
 import React, { useState } from 'react';
 import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import { TransactionActionCreators } from '../actions/transactionActions';
-import { getChainConfigs } from '../configs/substrateProviders';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useBalance from '../hooks/useBalance';
@@ -56,27 +55,24 @@ const DERIVED = 'DERIVED';
 const GenericAccount = ({ value }: Props) => {
   const [selected, setSelected] = useState('');
   const classes = useStyles();
+
+  const { dispatchTransaction } = useUpdateTransactionContext();
   const {
+    sourceChainDetails: {
+      sourceConfigs: { bridgeId },
+      sourceApiConnection: { api: sourceApi }
+    },
     targetChainDetails: {
       targetApiConnection: { api: targetApi },
-      targetChain
-    },
-    sourceChainDetails: {
-      sourceApiConnection: { api: sourceApi },
-      sourceChain
+      targetConfigs: { ss58Format }
     }
   } = useSourceTarget();
 
-  const { dispatchTransaction } = useUpdateTransactionContext();
-  const chainsConfigs = getChainConfigs();
-  const { bridgeId } = chainsConfigs[sourceChain];
-  const { SS58Format: targetSS58Format } = chainsConfigs[targetChain];
-
-  const nativeAddress = encodeAddress(value, targetSS58Format);
+  const nativeAddress = encodeAddress(value, ss58Format);
   const nativeState = useBalance(sourceApi, nativeAddress, true);
 
   const derivedAddress = getDeriveAccount({
-    SS58Format: targetSS58Format,
+    ss58Format,
     address: value,
     bridgeId
   });

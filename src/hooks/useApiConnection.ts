@@ -16,9 +16,9 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { TypeRegistry } from '@polkadot/types';
+import isEmpty from 'lodash/isEmpty';
 import React, { useEffect, useState } from 'react';
-import { getConnectionChainInformation } from '../configs/connectionChainInformation';
-import { ApiPromiseConnectionType, Configs } from '../types/sourceTargetTypes';
+import { ApiPromiseConnectionType, Configs, ConnectionChainInformation } from '../types/sourceTargetTypes';
 import logger from '../util/logger';
 
 export const ApiPromiseContext: React.Context<ApiPromiseConnectionType> = React.createContext(
@@ -37,11 +37,11 @@ type PolkadotJsURL = {
 
 type ConnectionType = ApiPromiseConnectionType & ConfigsType & PolkadotJsURL;
 
-export function useApiConnection(chainNumber: string): ConnectionType {
+export function useApiConnection(connectionDetails: ConnectionChainInformation): ConnectionType {
   const [apiPromise, setApiPromise] = useState<ApiPromise>({} as ApiPromise);
   const [isReady, setIsReady] = useState(false);
-  const [configs, setConfigs] = useState<Configs>({ bridgeId: null, chainName: null, ss58Format: null });
-  const { hasher, provider, types, polkadotjsUrl } = getConnectionChainInformation(chainNumber);
+  const [configs, setConfigs] = useState<Configs>({} as Configs);
+  const { chainNumber, hasher, provider, types, polkadotjsUrl } = connectionDetails;
 
   useEffect(() => {
     ApiPromise.create({ hasher, provider, types })
@@ -74,20 +74,23 @@ export function useApiConnection(chainNumber: string): ConnectionType {
   useEffect(() => {
     const getConfigs = async () => {
       const properties = await apiPromise.registry.getChainProperties();
-      //TO-DO to investigate how to map bridgeId type on properties
-      // @ts-ignore
-      const { bridgeId, ss58Format } = properties!;
+      const { ss58Format } = properties!;
+
       const systemChain = await apiPromise.rpc.system.name();
+      const prop = await apiPromise.rpc.system.properties();
+      console.log('props', prop);
       const chainName = systemChain.split(' ')[0];
-      setConfigs({ bridgeId, chainName, ss58Format: ss58Format.toString() });
+      const bridgeIds = prop.get('bridgeIds');
+      let bridgeId: number[] = [];
+      Object.keys(bridgeIds).find((key) => (bridgeId = bridgeIds[key]));
+
+      setConfigs({ bridgeId, chainName, ss58Format: parseInt(ss58Format.toString()) });
     };
 
-    if (isReady) {
+    if (isReady && isEmpty(configs)) {
       getConfigs();
     }
-  }, [apiPromise, isReady]);
-
-  console.log(apiPromise);
+  }, [apiPromise, configs, configs.bridgeId, isReady]);
 
   return { api: apiPromise, isApiReady: isReady, configs, polkadotjsUrl };
 }

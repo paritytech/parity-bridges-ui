@@ -15,7 +15,6 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 import { ApiPromise } from '@polkadot/api';
 import { INCORRECT_FORMAT, GENERIC } from '../constants';
-import { getChainConfigs } from '../configs/substrateProviders';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import getDeriveAccount from '../util/getDeriveAccount';
 
@@ -28,11 +27,12 @@ const useApiBalance = (address: string | null, chain: string | undefined, isDeri
   const {
     sourceChainDetails: {
       sourceApiConnection: { api: sourceApi },
-      sourceChain
+      sourceConfigs
     },
     targetChainDetails: {
       targetApiConnection: { api: targetApi },
-      targetChain
+      targetChain,
+      targetConfigs
     }
   } = useSourceTarget();
 
@@ -40,13 +40,13 @@ const useApiBalance = (address: string | null, chain: string | undefined, isDeri
     return { address: '', api: {} as ApiPromise };
   }
 
-  const chainsConfigs = getChainConfigs();
-  const { SS58Format } = chainsConfigs[chain === targetChain ? targetChain : sourceChain];
-  const { bridgeId } = chainsConfigs[chain === targetChain ? sourceChain : targetChain];
+  const ss58Format = chain === targetChain ? targetConfigs.ss58Format : sourceConfigs.ss58Format;
+  const bridgeId = chain === targetChain ? sourceConfigs.bridgeId : targetConfigs.bridgeId;
+
   const addressResult = !isDerived
     ? address
     : getDeriveAccount({
-        SS58Format,
+        ss58Format,
         address,
         bridgeId
       });

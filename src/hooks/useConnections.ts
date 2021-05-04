@@ -16,42 +16,53 @@
 
 import { useState, useEffect } from 'react';
 import { useApiConnection } from './useApiConnection';
-import { Connection } from '../types/sourceTargetTypes';
+import isEmpty from 'lodash/isEmpty';
+import { SourceTargetState, ChainDetails, ConnectionChainInformation } from '../types/sourceTargetTypes';
 
-export function useConnection() {
-  const { configs: chain1Configs, polkadotjsUrl: polkadotjsUrl1, ...apiConnection1 } = useApiConnection('1');
-  const { configs: chain2Configs, polkadotjsUrl: polkadotjsUrl2, ...apiConnection2 } = useApiConnection('2');
-  const [connections, setConnections] = useState<Connection[] | []>([]);
+interface Props {
+  connectionDetailsOne: ConnectionChainInformation;
+  connectionDetailsTwo: ConnectionChainInformation;
+}
+
+export function useConnections({ connectionDetailsOne, connectionDetailsTwo }: Props) {
+  const { configs: chain1Configs, polkadotjsUrl: polkadotjsUrl1, ...apiConnection1 } = useApiConnection(
+    connectionDetailsOne
+  );
+  const { configs: chain2Configs, polkadotjsUrl: polkadotjsUrl2, ...apiConnection2 } = useApiConnection(
+    connectionDetailsTwo
+  );
+  const [connections, setConnections] = useState<SourceTargetState>({} as SourceTargetState);
   const [apiReady, setApiReady] = useState(false);
 
   useEffect(() => {
     if (chain1Configs && chain2Configs && apiConnection1 && apiConnection2) {
       const chainName1 = chain1Configs.chainName;
       const chainName2 = chain2Configs.chainName;
+      const apiReady = apiConnection1.isApiReady && apiConnection2.isApiReady;
 
-      if (chainName1 && chainName2) {
-        const connections = [
-          {
-            apiConnection: apiConnection1,
-            configs: chain1Configs,
-            chainName: chainName1,
-            polkadotjsUrl: polkadotjsUrl1
+      if (chainName1 && chainName2 && apiReady && isEmpty(connections)) {
+        const connections = {
+          [ChainDetails.SOURCE]: {
+            sourceConfigs: chain1Configs,
+            sourceApiConnection: apiConnection1,
+            sourceChain: chainName1,
+            sourcePolkadotjsUrl: polkadotjsUrl1
           },
-          {
-            apiConnection: apiConnection2,
-            configs: chain2Configs,
-            chainName: chainName2,
-            polkadotjsUrl: polkadotjsUrl2
+          [ChainDetails.TARGET]: {
+            targetConfigs: chain2Configs,
+            targetApiConnection: apiConnection2,
+            targetChain: chainName2,
+            targetPolkadotjsUrl: polkadotjsUrl2
           }
-        ];
+        };
         setConnections(connections);
+        setApiReady(apiReady);
       }
     }
-  }, [apiConnection1, apiConnection2, chain1Configs, chain2Configs, polkadotjsUrl1, polkadotjsUrl2]);
+  }, [apiConnection1, apiConnection2, chain1Configs, chain2Configs, connections, polkadotjsUrl1, polkadotjsUrl2]);
 
-  useEffect(() => {
-    setApiReady(apiConnection1.isApiReady && apiConnection2.isApiReady);
-  }, [apiConnection1, apiConnection2]);
+  console.log('connections', connections);
+  console.log('apiReady', apiReady);
 
   return { connections, apiReady };
 }
