@@ -24,8 +24,8 @@ import { CHAIN_1, CHAIN_2 } from '../constants';
 import { createPolkadotJsUrl } from '../util/createPolkadotJsUrl';
 import { ProviderInterface } from '@polkadot/rpc-provider/types';
 import { ConnectionChainInformation } from '../types/sourceTargetTypes';
-import customTypesMillau from './substrateCustomTypes/customTypesMillau.json';
-import customTypesRialto from './substrateCustomTypes/customTypesRialto.json';
+import customTypesMillau from './customTypesMillau.json';
+import customTypesRialto from './customTypesRialto.json';
 
 export interface HasherTypes {
   hasher?: (data: Uint8Array) => Uint8Array;
