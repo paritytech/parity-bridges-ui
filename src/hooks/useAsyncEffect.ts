@@ -14,18 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-// import { useCallback } from 'react';
-import { useCallback } from 'react';
+import { useEffect } from 'react';
 import { useIsMounted } from './useIsMounted';
 
-export const useAsyncEffect = () => {
+/**
+ * Exactly like React's `useEffect`, but makes sure that component/fucntion
+ * that calls it is having the respective component mounted.
+ * It should be used when "func" is a state update on an async/await function
+ * that will be done only if respective component that uses the state is mounted.
+ */
+export const useAsyncEffect = (func: () => void, deps: unknown[]) => {
   const isMounted = useIsMounted();
-  const asyncEffect = useCallback(
-    (func: () => void) => {
-      isMounted() && func;
-    },
-    [isMounted]
-  );
 
-  return asyncEffect;
+  useEffect(() => {
+    isMounted() && func;
+  }, [isMounted, func, deps]);
 };
