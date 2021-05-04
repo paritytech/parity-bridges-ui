@@ -41,24 +41,7 @@ const useStyles = makeStyles((theme) => ({
       height: '2rem',
       margin: 'auto',
       border: `1px solid ${theme.palette.divider}`,
-      transform: 'rotate(-90deg)',
-      transition: 'transform .15s',
-      '&:hover': {
-        transform: 'rotate(90deg)',
-        '& svg': {
-          transform: 'translateY(4px)',
-          transition: 'transform .1s',
-          '&.onlyHover': {
-            opacity: 1,
-            transform: 'scale(-1) translateY(4px)'
-          }
-        }
-      },
-      '& svg.onlyHover': {
-        opacity: 0,
-        position: 'absolute',
-        transform: 'scale(-1)'
-      }
+      transform: 'rotate(-90deg)'
     }
   },
   statsEntry: {
@@ -79,13 +62,12 @@ export const NetworkSides = () => {
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   return (
     <Box marginY={2} className={classes.main}>
-      <Box>{sourceChainDetails.sourceChain}</Box>
+      <Box p={1}>{sourceChainDetails.sourceChain}</Box>
       <Divider />
       <IconButton size="small">
-        <KeyboardReturnIcon className="onlyHover" fontSize="small" />
         <KeyboardReturnIcon fontSize="small" />
       </IconButton>
-      <Box p>{targetChainDetails.targetChain}</Box>
+      <Box p={1}>{targetChainDetails.targetChain}</Box>
     </Box>
   );
 };
@@ -97,21 +79,22 @@ export const NetworkStats = () => {
   return (
     <>
       <Box className={classes.statsEntry}>
-        Finilised blocks:
+        Finalized blocks:
         <span>
           {dbSource?.bestBlockFinalized} / {dbSource?.bestBlock}
         </span>
       </Box>
       <Box className={classes.statsEntry}>
-        Bridged blocks:
+        Relayed blocks:
         <span>{dbSource?.bestBridgedFinalizedBlock}</span>
       </Box>
       <Box className={classes.statsEntry}>
-        Crossed msgs:
+        Delivered messages:
         <span>{dbSource?.outboundLanes.totalMessages}</span>
       </Box>
       <Box className={classes.statsEntry}>
-        Queue:<span>{dbSource?.outboundLanes.pendingMessages}</span>
+        Awaiting messages:
+        <span>{dbSource?.outboundLanes.pendingMessages}</span>
       </Box>
     </>
   );

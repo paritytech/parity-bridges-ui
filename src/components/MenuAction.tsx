@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
       background: theme.palette.primary.main
     },
     '&.current': {
+      marginBottom: theme.spacing(2),
       color: theme.palette.text.hint,
       '&:hover': {
         color: theme.palette.secondary.contrastText,

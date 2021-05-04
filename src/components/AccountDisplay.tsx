@@ -25,9 +25,10 @@ import shorterItem from '../util/shortenItem';
 import AccountIdenticon from './AccountIdenticon';
 
 interface Props {
+  addressKind?: AddressKind | string;
   address?: string;
-  accountName?: string | null;
-  isDerived?: boolean;
+  friendlyName?: string | null;
+  hideAddress?: boolean;
   onClick?: () => void;
   balance?: string | null | undefined;
 }
@@ -58,24 +59,27 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-const AccountDisplay = ({ accountName, address = '', balance, isDerived = false, onClick }: Props) => {
+const AccountDisplay = ({ address = '', addressKind, balance, friendlyName, hideAddress = false, onClick }: Props) => {
   const classes = useStyles();
   const displayText = () => {
     if (!address) {
       return '';
     }
-    if (isDerived) {
-      return `Derived (${accountName || shorterItem(address)})`;
+    const shortAddress = shorterItem(address);
+    const name = friendlyName ? `${friendlyName} [${shortAddress}]` : shortAddress;
+    const justFriendlyName = friendlyName || shortAddress;
+    const displayName = hideAddress ? justFriendlyName : name;
+
+    if (addressKind) {
+      return `${addressKind}(${displayName})`;
     }
-    if (accountName) {
-      return `${accountName} (${shorterItem(address)})`;
-    }
-    return shorterItem(address);
+
+    return name;
   };
 
   return (
     <Container onClick={onClick} className={classes.container}>
-      <div className={classes.icon}>{(!isDerived || address) && <AccountIdenticon address={address} />}</div>
+      <div className={classes.icon}>{address && <AccountIdenticon address={address} />}</div>
       <div className={classes.address}>
         <p>{displayText()}</p>
       </div>
@@ -83,5 +87,10 @@ const AccountDisplay = ({ accountName, address = '', balance, isDerived = false,
     </Container>
   );
 };
+
+export enum AddressKind {
+  NATIVE = 'native',
+  COMPANION = 'companion'
+}
 
 export default AccountDisplay;

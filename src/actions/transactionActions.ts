@@ -19,6 +19,7 @@ import { TransanctionStatus, UpdatedTransanctionStatus } from '../types/transact
 enum TransactionActionTypes {
   SET_ESTIMATED_FEE = 'SET_ESTIMATED_FEE',
   SET_RECEIVER_ADDRESS = 'SET_RECEIVER_ADDRESS',
+  SET_UNFORMATTED_RECEIVER_ADDRESS = 'SET_UNFORMATTED_RECEIVER_ADDRESS',
   CREATE_TRANSACTION_STATUS = 'CREATE_TRANSACTION_STATUS',
   UPDATE_CURRENT_TRANSACTION_STATUS = 'UPDATE_CURRENT_TRANSACTION_STATUS',
   SET_TRANSACTION_COMPLETED = 'SET_TRANSACTION_COMPLETED',
@@ -35,6 +36,11 @@ const estimateFee = (estimatedFee: string) => ({
 const setReceiverAddress = (receiverAddress: string | null) => ({
   payload: { receiverAddress },
   type: TransactionActionTypes.SET_RECEIVER_ADDRESS
+});
+
+const setUnformattedReceiverAddress = (unformattedReceiverAddress: string | null) => ({
+  payload: { unformattedReceiverAddress },
+  type: TransactionActionTypes.SET_UNFORMATTED_RECEIVER_ADDRESS
 });
 
 const createTransactionStatus = (initialTransaction: TransanctionStatus) => {
@@ -65,6 +71,7 @@ const TransactionActionCreators = {
   createTransactionStatus,
   estimateFee,
   setReceiverAddress,
+  setUnformattedReceiverAddress,
   updateTransactionStatus,
   setGenericAccount,
   setDerivedAccount

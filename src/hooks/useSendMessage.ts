@@ -72,6 +72,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
 
       const { bridgedMessages } = getSubstrateDynamicNames(targetChain);
       const bridgeMessage = sourceApi.tx[bridgedMessages].sendMessage(laneId, payload, estimatedFee);
+      logger.info(`bridge::sendMessage ${bridgeMessage.toHex()}`);
       const options: Partial<SignerOptions> = {
         nonce: -1
       };
@@ -148,7 +149,6 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
         return isRunning || !account;
         break;
       case TransactionTypes.TRANSFER:
-        console.log('asdf', receiverAddress, account);
         return isRunning || !receiverAddress || !account;
         break;
       case TransactionTypes.CUSTOM:
