@@ -78,13 +78,10 @@ export function useApiConnection(connectionDetails: ConnectionChainInformation):
 
       const systemChain = await apiPromise.rpc.system.name();
       const prop = await apiPromise.rpc.system.properties();
-      console.log('props', prop);
       const chainName = systemChain.split(' ')[0];
       const bridgeIds = prop.get('bridgeIds');
-      let bridgeId: number[] = [];
-      Object.keys(bridgeIds).find((key) => (bridgeId = bridgeIds[key]));
 
-      setConfigs({ bridgeId, chainName, ss58Format: parseInt(ss58Format.toString()) });
+      setConfigs({ bridgeId: [], bridgeIds, chainName, ss58Format: parseInt(ss58Format.toString()) });
     };
 
     if (isReady && isEmpty(configs)) {

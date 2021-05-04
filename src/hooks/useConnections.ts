@@ -17,7 +17,7 @@
 import { useState, useEffect } from 'react';
 import { useApiConnection } from './useApiConnection';
 import isEmpty from 'lodash/isEmpty';
-import { SourceTargetState, ChainDetails, ConnectionChainInformation } from '../types/sourceTargetTypes';
+import { SourceTargetState, ChainDetails, ConnectionChainInformation, Configs } from '../types/sourceTargetTypes';
 
 interface Props {
   connectionDetailsOne: ConnectionChainInformation;
@@ -40,29 +40,35 @@ export function useConnections({ connectionDetailsOne, connectionDetailsTwo }: P
       const chainName2 = chain2Configs.chainName;
       const apiReady = apiConnection1.isApiReady && apiConnection2.isApiReady;
 
+      const getBridgedSS58Format = (chainConfig: Configs, bridgedChain: string): Configs => {
+        const bridgeId: number[] = chainConfig!.bridgeIds![bridgedChain];
+        chainConfig.bridgeId = bridgeId;
+        return chainConfig;
+      };
+
       if (chainName1 && chainName2 && apiReady && isEmpty(connections)) {
         const connections = {
           [ChainDetails.SOURCE]: {
-            sourceConfigs: chain1Configs,
+            // We look for the bridged chain property in the bridgeIds object.
+            sourceConfigs: getBridgedSS58Format(chain1Configs, chainName2),
             sourceApiConnection: apiConnection1,
             sourceChain: chainName1,
             sourcePolkadotjsUrl: polkadotjsUrl1
           },
           [ChainDetails.TARGET]: {
-            targetConfigs: chain2Configs,
+            // We look for the bridged chain property in the bridgeIds object.
+            targetConfigs: getBridgedSS58Format(chain2Configs, chainName1),
             targetApiConnection: apiConnection2,
             targetChain: chainName2,
             targetPolkadotjsUrl: polkadotjsUrl2
           }
         };
+        console.log('connections', connections);
         setConnections(connections);
         setApiReady(apiReady);
       }
     }
   }, [apiConnection1, apiConnection2, chain1Configs, chain2Configs, connections, polkadotjsUrl1, polkadotjsUrl2]);
-
-  console.log('connections', connections);
-  console.log('apiReady', apiReady);
 
   return { connections, apiReady };
 }
