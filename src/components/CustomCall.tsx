@@ -89,7 +89,7 @@ const CustomCall = () => {
       <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
         Send custom call from {sourceChainDetails.sourceChain} to {targetChainDetails.targetChain}
       </ButtonSubmit>
-      <p>{estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
+      {estimatedFee && `Estimated source Fee: ${estimatedFee}`}
       <div>
         {decoded && (
           <Message>

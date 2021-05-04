@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
 const Transfer = () => {
   const classes = useStyles();
   const [isRunning, setIsRunning] = useState(false);
-  const [transferInput, setTransferInput] = useState('');
+  const [transferInput, setTransferInput] = useState<string>('');
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
   const areApiReady = useLoadingApi();
@@ -88,7 +88,7 @@ const Transfer = () => {
       <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
         Send bridge transfer from {sourceChainDetails.sourceChain} to {targetChainDetails.targetChain}
       </ButtonSubmit>
-      <p>{receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}</p>
+      {receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}
     </>
   );
 };
