@@ -18,6 +18,7 @@ import AutorenewIcon from '@material-ui/icons/Autorenew';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
+import FiberManualRecordTwoToneIcon from '@material-ui/icons/FiberManualRecordTwoTone';
 import React from 'react';
 
 import { TransactionStatusEnum } from '../types/transactionTypes';
@@ -26,12 +27,16 @@ interface IconTxStatusProps {
   status: keyof typeof TransactionStatusEnum;
 }
 export const IconTxStatus = ({ status }: IconTxStatusProps) => {
-  if (status === TransactionStatusEnum.COMPLETED) {
-    return <CheckCircleOutlineIcon />;
-  } else if (status === TransactionStatusEnum.IN_PROGRESS) {
-    return <AutorenewIcon />;
-  } else if (status === TransactionStatusEnum.FAILED) {
-    return <ErrorOutlineIcon />;
+  switch (status) {
+    case TransactionStatusEnum.COMPLETED:
+      return <CheckCircleOutlineIcon />;
+    case TransactionStatusEnum.IN_PROGRESS:
+      return <AutorenewIcon />;
+    case TransactionStatusEnum.FAILED:
+      return <ErrorOutlineIcon />;
+    case TransactionStatusEnum.NOT_STARTED:
+      return <FiberManualRecordTwoToneIcon />;
+    default:
+      return <FiberManualRecordIcon />;
   }
-  return <FiberManualRecordIcon />;
 };

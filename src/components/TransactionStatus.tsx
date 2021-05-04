@@ -18,21 +18,40 @@ import { Codec } from '@polkadot/types/types';
 import BN from 'bn.js';
 import React, { useEffect, useState } from 'react';
 
+import { Box, Card, makeStyles, Typography } from '@material-ui/core';
+import { ButtonSwitchMode } from './Buttons';
+import { IconTxStatus } from './Icons';
+
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useDashboard from '../hooks/useDashboard';
 import useLaneId from '../hooks/useLaneId';
 import useLoadingApi from '../hooks/useLoadingApi';
 import { ChainDetails } from '../types/sourceTargetTypes';
-import { TransanctionStatus } from '../types/transactionTypes';
-import { Step, TransactionStatusEnum } from '../types/transactionTypes';
+import { Step, TransactionStatusEnum, TransanctionStatus } from '../types/transactionTypes';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
-import { TransactionDisplay } from './TransactionDisplay';
 interface Props {
   transaction: TransanctionStatus;
   onComplete: () => void;
 }
 
-function TransactionStatus({ transaction, onComplete }: Props) {
+const useStyles = makeStyles((theme) => ({
+  card: {
+    '& p': {
+      ...theme.typography.body2
+    },
+    '& svg': {
+      marginBottom: '-0.2em',
+      fontSize: '1.2em',
+      marginRight: theme.spacing()
+    },
+    '& .header': {
+      fontWeight: 500
+    }
+  }
+}));
+
+const TransactionStatus = ({ transaction, onComplete }: Props) => {
+  const classes = useStyles();
   const [nonceOfTargetFinalizedBlock, setNonceOfTargetFinalizedBlock] = useState<null | number>(null);
   const [latestReceivedNonceRuntimeApi, setLatestReceivedNonceRuntimeApi] = useState(0);
   const [steps, setSteps] = useState<Array<Step>>([]);
@@ -101,7 +120,7 @@ function TransactionStatus({ transaction, onComplete }: Props) {
       return;
     }
 
-    const stepEvaluator = (transactionValue: string | number | null, chainValue: string | number | null) => {
+    const stepEvaluator = (transactionValue: string | number | null, chainValue: string | number | null): boolean => {
       if (!transactionValue || !chainValue) return false;
 
       const bnChainValue = new BN(chainValue);
@@ -109,8 +128,12 @@ function TransactionStatus({ transaction, onComplete }: Props) {
       return bnChainValue.gt(bnTransactionValue);
     };
 
-    const completionStatus = (status: boolean) =>
-      transaction.block && status ? TransactionStatusEnum.COMPLETED : TransactionStatusEnum.IN_PROGRESS;
+    const completionStatus = (isCompleted: boolean): TransactionStatusEnum => {
+      if (transaction.id === 0) {
+        return TransactionStatusEnum.NOT_STARTED;
+      }
+      return isCompleted ? TransactionStatusEnum.COMPLETED : TransactionStatusEnum.IN_PROGRESS;
+    };
 
     const sourceTransactionFinalized = stepEvaluator(transaction.block, bestBlockFinalized);
     const blockFinalityRelayed = stepEvaluator(transaction.block, bestBridgedFinalizedBlockOnTarget);
@@ -118,12 +141,16 @@ function TransactionStatus({ transaction, onComplete }: Props) {
     const messageFinalizedOnTarget = stepEvaluator(transaction.messageNonce, nonceOfTargetFinalizedBlock);
     const sourceConfirmationReceived = stepEvaluator(transaction.messageNonce, latestReceivedNonceOnSource);
 
-    const steps = [
+    if (sourceConfirmationReceived) {
+      onComplete();
+    }
+
+    setSteps([
       {
         chainType: sourceChain,
         label: 'Include message in block',
         onChain: transaction.block,
-        status: transaction.block ? TransactionStatusEnum.COMPLETED : TransactionStatusEnum.IN_PROGRESS
+        status: completionStatus(!!transaction.block)
       },
       {
         chainType: sourceChain,
@@ -154,13 +181,7 @@ function TransactionStatus({ transaction, onComplete }: Props) {
         label: 'Confirm delivery',
         status: completionStatus(sourceConfirmationReceived)
       }
-    ];
-
-    if (sourceConfirmationReceived) {
-      onComplete();
-    }
-
-    setSteps(steps);
+    ]);
   }, [
     areApiLoading,
     bestBlockFinalized,
@@ -176,7 +197,31 @@ function TransactionStatus({ transaction, onComplete }: Props) {
     transaction
   ]);
 
-  return <TransactionDisplay steps={steps} transaction={transaction} />;
-}
+  return (
+    <>
+      <ButtonSwitchMode disabled> Payload</ButtonSwitchMode>
+      <ButtonSwitchMode color="primary"> Receipt</ButtonSwitchMode>
+      <ButtonSwitchMode disabled> Human</ButtonSwitchMode>
+      <Card elevation={24} className={classes.card}>
+        <Box className="header" component="p">
+          <IconTxStatus status={transaction.status} /> {transaction.type} {transaction.sourceChain} {'->'}{' '}
+          {transaction.targetChain}
+        </Box>
+        {steps.map(({ chainType, label, onChain, status }, idx) => (
+          <p key={idx}>
+            <IconTxStatus status={status} /> {chainType}: {label}&nbsp;
+            {onChain && (
+              <Box pt={0.25} pb={0.25} pl={0.5} pr={0.5} component="span" border={1} borderRadius={6}>
+                <Typography component="span" variant="subtitle2">
+                  {onChain}
+                </Typography>
+              </Box>
+            )}
+          </p>
+        ))}
+      </Card>
+    </>
+  );
+};
 
 export default TransactionStatus;

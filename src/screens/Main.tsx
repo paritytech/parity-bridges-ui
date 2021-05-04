@@ -15,7 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Box, Container, Grid, Typography } from '@material-ui/core';
-import React from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 
 import { BoxSidebar, BoxUI, ButtonExt, MenuAction, NetworkSides, NetworkStats } from '../components';
 import CustomCall from '../components/CustomCall';
@@ -58,14 +58,17 @@ const MenuContents = [
 ];
 
 function Main() {
-  const [items, setItems] = React.useState<MenuActionItemsProps[]>([] as MenuActionItemsProps[]);
-  const [index, setIndex] = React.useState<number>(0);
+  const [items, setItems] = useState<MenuActionItemsProps[]>([] as MenuActionItemsProps[]);
+  const [index, setIndex] = useState<number>(0);
 
   const searchItems = (choice: number) => items.find((x) => x.idx === choice);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setItems(MenuContents);
   }, []);
+
+  const isConnectedToWallet = useCallback(() => index !== 3, [index]);
+
   return (
     <>
       <BoxSidebar>
@@ -92,11 +95,13 @@ function Main() {
               {searchItems(index)?.component}
             </Grid>
           </Grid>
-          <Grid container>
-            <Grid item md={12}>
-              <Transactions />
+          {isConnectedToWallet() && (
+            <Grid container>
+              <Grid item md={12}>
+                <Transactions type={searchItems(index)?.title} />
+              </Grid>
             </Grid>
-          </Grid>
+          )}
         </Container>
         <SnackBar />
         <br />

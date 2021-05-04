@@ -44,7 +44,6 @@ const useStyles = makeStyles((theme) => ({
 
 export const TransactionDisplay = ({ transaction, steps }: Props) => {
   const classes = useStyles();
-  if (!steps.length) return null;
 
   return (
     <>
