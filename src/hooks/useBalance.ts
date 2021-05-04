@@ -19,12 +19,12 @@ import { VoidFn } from '@polkadot/api/types';
 import { Balance } from '@polkadot/types/interfaces';
 import { formatBalance } from '@polkadot/util';
 import BN from 'bn.js';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { MessageActionsCreators } from '../actions/messageActions';
 import { useUpdateMessageContext } from '../contexts/MessageContext';
 import logger from '../util/logger';
-import { useAsyncEffect } from './useAsyncEffect';
+import { useIsMounted } from './useIsMounted';
 
 type State = {
   chainTokens: string;
@@ -44,19 +44,22 @@ const useBalance = (api: ApiPromise, address: string, providedSi: boolean = fals
   const { dispatchMessage } = useUpdateMessageContext();
   const [state, setState] = useState<State>(initValues);
 
-  useAsyncEffect((): (() => void) => {
+  const isMounted = useIsMounted();
+
+  useEffect((): (() => void) => {
     const getBalance = async (api: ApiPromise, address: string, setState: any): Promise<VoidFn> => {
       try {
         const u = await api.query.system.account(address, ({ data }): void => {
-          setState({
-            chainTokens: data.free.registry.chainTokens[0],
-            formattedBalance: formatBalance(data.free, {
-              decimals: api.registry.chainDecimals[0],
-              forceUnit: '-',
-              withSi: providedSi
-            }),
-            free: data.free
-          });
+          isMounted() &&
+            setState({
+              chainTokens: data.free.registry.chainTokens[0],
+              formattedBalance: formatBalance(data.free, {
+                decimals: api.registry.chainDecimals[0],
+                forceUnit: '-',
+                withSi: providedSi
+              }),
+              free: data.free
+            });
         });
         return Promise.resolve(u);
       } catch (e) {
@@ -74,7 +77,7 @@ const useBalance = (api: ApiPromise, address: string, providedSi: boolean = fals
     return async (): Promise<void> => {
       unsubscribe && (await unsubscribe)();
     };
-  }, [address, providedSi, dispatchMessage, api]);
+  }, [address, providedSi, dispatchMessage, api, isMounted]);
 
   return state;
 };
