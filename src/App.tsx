@@ -26,11 +26,7 @@ import { MessageContextProvider } from './contexts/MessageContext';
 import { SourceTargetContextProvider } from './contexts/SourceTargetContextProvider';
 import { TransactionContextProvider } from './contexts/TransactionContext';
 import { useConnections } from './hooks/useConnections';
-//import { CHAIN_1, CHAIN_2 } from './constants';
 import Main from './screens/Main';
-
-/* const connectionDetailsOne = getConnectionChainInformation(CHAIN_1);
-const connectionDetailsTwo = getConnectionChainInformation(CHAIN_2); */
 
 const [connectionDetailsOne, connectionDetailsTwo] = substrateProviders();
 
