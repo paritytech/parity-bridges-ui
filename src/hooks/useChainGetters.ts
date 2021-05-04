@@ -14,21 +14,25 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import { ApiPromise } from '@polkadot/api';
 import { GENERIC, GENERIC_SUBSTRATE_PREFIX } from '../constants';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 
 type State = {
   getSS58ByChain: (chain: string) => number;
   getChainBySS58Prefix: (prefix: string) => string;
+  getApiByChain: (chain: string) => ApiPromise;
 };
 
-const useSS58Format = (): State => {
+const useChainGetters = (): State => {
   const {
     sourceChainDetails: {
+      sourceApiConnection: { api: sourceApi },
       sourceChain,
       sourceConfigs: { ss58Format: sourceSS58Format }
     },
     targetChainDetails: {
+      targetApiConnection: { api: targetApi },
       targetChain,
       targetConfigs: { ss58Format: targetSS58Format }
     }
@@ -61,7 +65,18 @@ const useSS58Format = (): State => {
     }
   };
 
-  return { getSS58ByChain, getChainBySS58Prefix };
+  const getApiByChain = (chain: string): ApiPromise => {
+    switch (chain) {
+      case targetChain:
+        return targetApi;
+      case sourceChain:
+        return sourceApi;
+      default:
+        return {} as ApiPromise;
+    }
+  };
+
+  return { getApiByChain, getSS58ByChain, getChainBySS58Prefix };
 };
 
-export default useSS58Format;
+export default useChainGetters;

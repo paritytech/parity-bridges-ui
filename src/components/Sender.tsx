@@ -28,7 +28,7 @@ import formatAccounts from '../util/formatAccounts';
 import Account from './Account';
 import AccountDisplay from './AccountDisplay';
 import { Star } from '@material-ui/icons';
-import useSS58Format from '../hooks/useSS58Format';
+import useChainGetters from '../hooks/useChainGetters';
 
 interface Props {
   className?: string;
@@ -57,7 +57,7 @@ const Sender = ({ className }: Props) => {
     targetChainDetails: { targetChain }
   } = useSourceTarget();
   const { setReceiver } = useReceiver();
-  const { getSS58ByChain } = useSS58Format();
+  const { getSS58ByChain } = useChainGetters();
 
   useEffect(() => {
     if (!chains.length) {

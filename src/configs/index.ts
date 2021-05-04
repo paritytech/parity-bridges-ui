@@ -34,7 +34,7 @@ export interface HasherTypes {
   provider: ProviderInterface;
 }
 
-function blake2_keccak256_concat(data: any) {
+function blake2Keccak256Concat(data: any) {
   return u8aConcat(blake2AsU8a(data), keccakAsU8a(data));
 }
 
@@ -48,7 +48,6 @@ const getProviderInfo = (chainNumber: string, types: ApiOptions['types']) => {
   };
 };
 
-//TODO: Make this file completely generic. Issue [139]
 export const substrateProviders = (): ConnectionChainInformation[] => {
   const pair = checkEnvVariable('REACT_APP_PAIR');
   switch (pair) {
@@ -66,7 +65,7 @@ export const substrateProviders = (): ConnectionChainInformation[] => {
         },
         {
           chainNumber: CHAIN_2,
-          hasher: blake2_keccak256_concat,
+          hasher: blake2Keccak256Concat,
           polkadotjsUrl: chain2.polkadotjsUrl,
           types: chain2.types,
           provider: chain2.provider

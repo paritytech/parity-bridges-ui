@@ -11,8 +11,8 @@ The project includes a `.env` file at root project directory that contains all t
 
 ```
 REACT_APP_PAIR=RialtoMillau
-REACT_APP_SUBSTRATE_PROVIDER_CHAIN_1=wss://wss.rialto.brucke.link
-REACT_APP_SUBSTRATE_PROVIDER_CHAIN_2=wss://wss.millau.brucke.link
+REACT_APP_SUBSTRATE_PROVIDER_CHAIN_1=ws://127.0.0.1:9944
+REACT_APP_SUBSTRATE_PROVIDER_CHAIN_2=ws://127.0.0.1:9945
 REACT_APP_LANE_ID=0x00000000
 REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS=false
 ```
