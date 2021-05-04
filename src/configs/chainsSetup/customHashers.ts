@@ -14,30 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-const expectedVariables = [
-  'REACT_APP_SUBSTRATE_PROVIDER_CHAIN_1',
-  'REACT_APP_SUBSTRATE_PROVIDER_CHAIN_2',
-  'REACT_APP_CUSTOM_TYPES_URL_CHAIN_1',
-  'REACT_APP_CUSTOM_TYPES_URL_CHAIN_2',
-  'REACT_APP_LANE_ID',
-  'REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS'
-];
+import { u8aConcat } from '@polkadot/util';
+import { blake2AsU8a, keccakAsU8a } from '@polkadot/util-crypto';
 
-const checkExpectedVariables = () => {
-  for (const v of expectedVariables) {
-    if (!process.env[v]) {
-      throw new Error(`Missing ${v} variable`);
-    }
-  }
-  return true;
+type Hasher = { [index: string]: (data: Uint8Array) => Uint8Array } | undefined;
+
+function blake2Keccak256Concat(data: Uint8Array) {
+  return u8aConcat(blake2AsU8a(data), keccakAsU8a(data));
+}
+
+const hashers: Hasher = {
+  blake2Keccak256Concat
 };
 
-const checkEnvVariable = (variable: string) => {
-  const envVariable = process.env[variable];
-  if (!envVariable) {
-    throw new Error(`Env Variable ${variable} was not defined`);
-  }
-  return envVariable;
-};
-
-export { checkEnvVariable, checkExpectedVariables };
+export default hashers;

@@ -21,9 +21,8 @@ export const getConfigs = async (apiPromise: ApiPromise): Promise<Configs> => {
   const properties = apiPromise.registry.getChainProperties();
   const { ss58Format } = properties!;
 
-  const systemChain = await apiPromise.rpc.system.name();
+  const chainName = (await apiPromise.rpc.system.name()).toString();
   const prop = await apiPromise.rpc.system.properties();
-  const chainName = systemChain.split(' ')[0];
   const bridgeIds = prop.get('bridgeIds');
 
   return { bridgeIds, chainName, ss58Format: parseInt(ss58Format.toString()) };
@@ -39,4 +38,11 @@ export const getBridgeId = (targetConfigs: Configs, chainName: string): number[]
   }
 
   return bridgeId;
+};
+
+export const getChainName = async (apiPromise: ApiPromise) => {
+  const systemChain = await apiPromise.rpc.system.name();
+  const chainName = systemChain.split(' ')[0];
+
+  return chainName;
 };

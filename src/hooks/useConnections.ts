@@ -22,14 +22,23 @@ import { SourceTargetState, ChainDetails, ConnectionChainInformation } from '../
 interface Props {
   connectionDetailsOne: ConnectionChainInformation;
   connectionDetailsTwo: ConnectionChainInformation;
+  initConnectionDetailsOne: ConnectionChainInformation;
+  initConnectionDetailsTwo: ConnectionChainInformation;
 }
 
-export function useConnections({ connectionDetailsOne, connectionDetailsTwo }: Props) {
+export function useConnections({
+  connectionDetailsOne,
+  connectionDetailsTwo,
+  initConnectionDetailsOne,
+  initConnectionDetailsTwo
+}: Props) {
   const { configs: chain1Configs, polkadotjsUrl: polkadotjsUrl1, ...apiConnection1 } = useApiConnection(
-    connectionDetailsOne
+    connectionDetailsOne,
+    initConnectionDetailsOne
   );
   const { configs: chain2Configs, polkadotjsUrl: polkadotjsUrl2, ...apiConnection2 } = useApiConnection(
-    connectionDetailsTwo
+    connectionDetailsTwo,
+    initConnectionDetailsTwo
   );
   const [connections, setConnections] = useState<SourceTargetState>({} as SourceTargetState);
   const [apiReady, setApiReady] = useState(false);

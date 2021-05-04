@@ -23,3 +23,15 @@ export const CHAIN_2 = '2';
 export const INCORRECT_FORMAT = 'INCORRECT_FORMAT';
 export const GENERIC = 'GENERIC';
 export const GENERIC_SUBSTRATE_PREFIX = 42;
+
+export const BASE_CUSTOM_TYPES = {
+  Id: '[u8; 4]',
+  InstanceId: 'Id',
+  LaneId: 'Id',
+  MessageKey: {
+    lane_id: 'LaneId',
+    nonce: 'MessageNonce'
+  },
+  MessageNonce: 'u64',
+  BridgedBlockHash: 'u64'
+};

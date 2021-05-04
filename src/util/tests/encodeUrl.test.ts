@@ -18,7 +18,7 @@ import { stringToU8a } from '@polkadot/util';
 import { base64Encode } from '@polkadot/util-crypto';
 import { zlibSync } from 'fflate';
 
-import customTypesRialto from '../../configs/customTypesRialto.json';
+import customTypesRialto from '../../configs/substrateCustomTypes/customTypesChain1.json';
 import { createPolkadotJsUrl } from '../createPolkadotJsUrl';
 
 describe('createPolkadotJsUrl', () => {

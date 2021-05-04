@@ -28,10 +28,16 @@ import { TransactionContextProvider } from './contexts/TransactionContext';
 import { useConnections } from './hooks/useConnections';
 import Main from './screens/Main';
 
+const [initConnectionDetailsOne, initConnectionDetailsTwo] = substrateProviders();
 const [connectionDetailsOne, connectionDetailsTwo] = substrateProviders();
 
 function App() {
-  const { connections, apiReady } = useConnections({ connectionDetailsOne, connectionDetailsTwo });
+  const { connections, apiReady } = useConnections({
+    connectionDetailsOne,
+    connectionDetailsTwo,
+    initConnectionDetailsOne,
+    initConnectionDetailsTwo
+  });
 
   if (!apiReady) {
     return (

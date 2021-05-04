@@ -14,30 +14,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-const expectedVariables = [
-  'REACT_APP_SUBSTRATE_PROVIDER_CHAIN_1',
-  'REACT_APP_SUBSTRATE_PROVIDER_CHAIN_2',
-  'REACT_APP_CUSTOM_TYPES_URL_CHAIN_1',
-  'REACT_APP_CUSTOM_TYPES_URL_CHAIN_2',
-  'REACT_APP_LANE_ID',
-  'REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS'
-];
+const dotenv = require('dotenv');
+const result = dotenv.config();
 
-const checkExpectedVariables = () => {
-  for (const v of expectedVariables) {
-    if (!process.env[v]) {
-      throw new Error(`Missing ${v} variable`);
-    }
-  }
-  return true;
-};
+const customTypesDir = './src/configs/substrateCustomTypes';
 
-const checkEnvVariable = (variable: string) => {
-  const envVariable = process.env[variable];
-  if (!envVariable) {
-    throw new Error(`Env Variable ${variable} was not defined`);
-  }
-  return envVariable;
-};
+if (result.error) {
+  throw result.error;
+}
 
-export { checkEnvVariable, checkExpectedVariables };
+const customTypes = [];
+
+if (result.parsed.REACT_APP_CUSTOM_TYPES_URL_CHAIN_1) {
+  customTypes.push({
+    path: `${customTypesDir}/customTypesChain1.json`,
+    url: result.parsed.REACT_APP_CUSTOM_TYPES_URL_CHAIN_1
+  });
+}
+
+if (result.parsed.REACT_APP_CUSTOM_TYPES_URL_CHAIN_2) {
+  customTypes.push({
+    path: `${customTypesDir}/customTypesChain2.json`,
+    url: result.parsed.REACT_APP_CUSTOM_TYPES_URL_CHAIN_2
+  });
+}
+
+module.exports = customTypes;
