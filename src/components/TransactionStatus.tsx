@@ -132,9 +132,6 @@ const TransactionStatus = ({ transaction, onComplete }: Props) => {
       if (transaction.id === 0) {
         return TransactionStatusEnum.NOT_STARTED;
       }
-      if (!status) {
-        return transaction.block ? TransactionStatusEnum.COMPLETED : TransactionStatusEnum.IN_PROGRESS;
-      }
       return transaction.block && status ? TransactionStatusEnum.COMPLETED : TransactionStatusEnum.IN_PROGRESS;
     };
 
@@ -153,7 +150,7 @@ const TransactionStatus = ({ transaction, onComplete }: Props) => {
         chainType: sourceChain,
         label: 'Include message in block',
         onChain: transaction.block,
-        status: completionStatus()
+        status: transaction.block ? TransactionStatusEnum.COMPLETED : TransactionStatusEnum.IN_PROGRESS
       },
       {
         chainType: sourceChain,
