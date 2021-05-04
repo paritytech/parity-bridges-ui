@@ -14,15 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 import { checkAddress } from '@polkadot/util-crypto';
-
+import { SourceState, TargetState } from '../types/sourceTargetTypes';
 import { INCORRECT_FORMAT, GENERIC, GENERIC_SUBSTRATE_PREFIX } from '../constants';
 import getDeriveAccount from './getDeriveAccount';
 
 interface Props {
   receiverAddress: string;
-  // TODO proper type
-  targetChainDetails: any;
-  sourceChainDetails: any;
+  targetChainDetails: TargetState;
+  sourceChainDetails: SourceState;
 }
 const getReceiverAddress = ({ targetChainDetails, sourceChainDetails, receiverAddress }: Props) => {
   const { sourceChain, sourceConfigs } = sourceChainDetails;

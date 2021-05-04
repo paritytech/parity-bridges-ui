@@ -62,28 +62,22 @@ export enum ChainDetails {
   TARGET = 'targetChainDetails'
 }
 
-export interface SourceTargetState {
-  [ChainDetails.SOURCE]: {
-    sourceConfigs: Configs;
-    sourceApiConnection: ApiPromiseConnectionType;
-    sourceChain: string;
-    sourcePolkadotjsUrl: string;
-  };
-  [ChainDetails.TARGET]: {
-    targetConfigs: Configs;
-    targetApiConnection: ApiPromiseConnectionType;
-    targetChain: string;
-    targetPolkadotjsUrl: string;
-  };
+export interface SourceState {
+  sourceConfigs: Configs;
+  sourceApiConnection: ApiPromiseConnectionType;
+  sourceChain: string;
+  sourcePolkadotjsUrl: string;
+}
+
+export interface TargetState {
+  targetConfigs: Configs;
+  targetApiConnection: ApiPromiseConnectionType;
+  targetChain: string;
+  targetPolkadotjsUrl: string;
 }
 
 export interface SourceTargetState {
-  [ChainDetails.SOURCE]: {
-    sourceConfigs: Configs;
-    sourceApiConnection: ApiPromiseConnectionType;
-    sourceChain: string;
-    sourcePolkadotjsUrl: string;
-  };
+  [ChainDetails.SOURCE]: SourceState;
   [ChainDetails.TARGET]: {
     targetConfigs: Configs;
     targetApiConnection: ApiPromiseConnectionType;

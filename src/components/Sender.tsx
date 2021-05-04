@@ -124,10 +124,7 @@ const Sender = ({ className }: Props) => {
 
       <div className="derivedAccount">
         {derivedAccount && (
-          <>
-            <Account accountName={getName(account)} value={value} chain={targetChain} isDerived hideAddress />
-            <p>{derivedAccount}</p>
-          </>
+          <Account accountName={getName(account)} value={value} chain={targetChain} isDerived hideAddress />
         )}
       </div>
     </Container>

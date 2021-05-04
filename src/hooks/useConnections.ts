@@ -40,8 +40,12 @@ export function useConnections({ connectionDetailsOne, connectionDetailsTwo }: P
       const chainName2 = chain2Configs.chainName;
       const apiReady = apiConnection1.isApiReady && apiConnection2.isApiReady;
 
-      const getBridgedSS58Format = (chainConfig: Configs, bridgedChain: string): Configs => {
-        const bridgeId: number[] = chainConfig!.bridgeIds![bridgedChain];
+      const getBridgedSS58Format = (
+        chainConfig: Configs,
+        bridgedChainConfig: Configs,
+        bridgedChain: string
+      ): Configs => {
+        const bridgeId: number[] = bridgedChainConfig!.bridgeIds![bridgedChain];
         chainConfig.bridgeId = bridgeId;
         return chainConfig;
       };
@@ -50,20 +54,19 @@ export function useConnections({ connectionDetailsOne, connectionDetailsTwo }: P
         const connections = {
           [ChainDetails.SOURCE]: {
             // We look for the bridged chain property in the bridgeIds object.
-            sourceConfigs: getBridgedSS58Format(chain1Configs, chainName2),
+            sourceConfigs: getBridgedSS58Format(chain1Configs, chain2Configs, chainName1),
             sourceApiConnection: apiConnection1,
             sourceChain: chainName1,
             sourcePolkadotjsUrl: polkadotjsUrl1
           },
           [ChainDetails.TARGET]: {
             // We look for the bridged chain property in the bridgeIds object.
-            targetConfigs: getBridgedSS58Format(chain2Configs, chainName1),
+            targetConfigs: getBridgedSS58Format(chain2Configs, chain1Configs, chainName2),
             targetApiConnection: apiConnection2,
             targetChain: chainName2,
             targetPolkadotjsUrl: polkadotjsUrl2
           }
         };
-        console.log('connections', connections);
         setConnections(connections);
         setApiReady(apiReady);
       }
