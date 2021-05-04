@@ -18,7 +18,7 @@ import React from 'react';
 import { Backdrop, CircularProgress, createMuiTheme, ThemeProvider } from '@material-ui/core';
 import { SnackbarProvider } from 'notistack';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import { getConnectionChainInformation } from './configs/connectionChainInformation';
+import { substrateProviders } from './configs';
 import { light } from './components';
 import { AccountContextProvider } from './contexts/AccountContextProvider';
 import { KeyringContextProvider } from './contexts/KeyringContextProvider';
@@ -26,11 +26,13 @@ import { MessageContextProvider } from './contexts/MessageContext';
 import { SourceTargetContextProvider } from './contexts/SourceTargetContextProvider';
 import { TransactionContextProvider } from './contexts/TransactionContext';
 import { useConnections } from './hooks/useConnections';
-import { CHAIN_1, CHAIN_2 } from './constants';
+//import { CHAIN_1, CHAIN_2 } from './constants';
 import Main from './screens/Main';
 
-const connectionDetailsOne = getConnectionChainInformation(CHAIN_1);
-const connectionDetailsTwo = getConnectionChainInformation(CHAIN_2);
+/* const connectionDetailsOne = getConnectionChainInformation(CHAIN_1);
+const connectionDetailsTwo = getConnectionChainInformation(CHAIN_2); */
+
+const [connectionDetailsOne, connectionDetailsTwo] = substrateProviders();
 
 function App() {
   const { connections, apiReady } = useConnections({ connectionDetailsOne, connectionDetailsTwo });

@@ -18,7 +18,7 @@ const http = require('https'); // or 'https' for https:// URLs
 const fs = require('fs');
 
 const commonBridgesRepo = 'https://raw.githubusercontent.com/paritytech/parity-bridges-common/master/deployments';
-const customTypesDir = 'src/configs/substrateConfigs';
+const customTypesDir = 'src/configs/substrateCustomTypes';
 
 const filesConfig = [
   {
