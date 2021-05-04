@@ -78,10 +78,5 @@ export interface TargetState {
 
 export interface SourceTargetState {
   [ChainDetails.SOURCE]: SourceState;
-  [ChainDetails.TARGET]: {
-    targetConfigs: Configs;
-    targetApiConnection: ApiPromiseConnectionType;
-    targetChain: string;
-    targetPolkadotjsUrl: string;
-  };
+  [ChainDetails.TARGET]: TargetState;
 }

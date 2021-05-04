@@ -18,24 +18,24 @@ import getDeriveAccount from '../getDeriveAccount';
 
 describe('getDeriveAccount', () => {
   const rialtoAccount = {
-    SS58Format: 48,
-    address: '5sauUXUfPjmwxSgmb3tZ5d6yx24eZX4wWJ2JtVUBaQqFbvEU',
-    bridgeId: 'rlto',
-    derivedAccount: '74GNQjmkcfstRftSQPJgMREchqHM56EvAUXRc266cZ1NYVW5'
+    ss58Format: 48,
+    address: '5szh47tfXQVZSkJWgbudkRxRottJDTY24L8PvfU1WDhgAUwX',
+    bridgeId: [114, 108, 116, 111],
+    derivedAccount: '75ZD2wKFpfuR8xzH5NDG8V1BwE3rHyqHWo7Vqek4VGqSDHdi'
   };
   const millauAccount = {
-    SS58Format: 60,
-    address: '752paRyW1EGfq9YLTSSqcSJ5hqnBDidBmaftGhBo8fy6ypW9',
-    bridgeId: 'mlau',
-    derivedAccount: '5rERgaT1Z8nM3et2epA5i1VtEBfp5wkhwHtVE8HK7BRbjAH2'
+    ss58Format: 60,
+    address: '71L3SiUNQXD5bqJWomVCA8kqaJ6A5Yhd8ZwrbnDyF9kAXQCo',
+    bridgeId: [109, 108, 97, 117],
+    derivedAccount: '5tHfBsKTzBZ8SsJzZihDpEVcGbTDQQ9e4vFpTr5urjw1hqTo'
   };
 
   describe('Rialto', () => {
     it('should retrieve expected Millau derived account ', async () => {
       const { address, bridgeId, derivedAccount } = rialtoAccount;
-      const { SS58Format } = millauAccount;
+      const { ss58Format } = millauAccount;
 
-      const result = getDeriveAccount({ SS58Format, address, bridgeId });
+      const result = getDeriveAccount({ ss58Format, address, bridgeId });
       expect(result).toEqual(derivedAccount);
     });
   });
@@ -43,8 +43,8 @@ describe('getDeriveAccount', () => {
   describe('Millau', () => {
     it('should retrieve expected Rialto derived account ', async () => {
       const { address, bridgeId, derivedAccount } = millauAccount;
-      const { SS58Format } = rialtoAccount;
-      const result = getDeriveAccount({ SS58Format, address, bridgeId });
+      const { ss58Format } = rialtoAccount;
+      const result = getDeriveAccount({ ss58Format, address, bridgeId });
       expect(result).toEqual(derivedAccount);
     });
   });

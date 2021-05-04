@@ -15,17 +15,11 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { WsProvider } from '@polkadot/api';
-import { u8aConcat } from '@polkadot/util';
 
-import { blake2AsU8a, keccakAsU8a } from '@polkadot/util-crypto';
 import { checkEnvVariable } from '../util/envVariablesValidations';
 import { createPolkadotJsUrl } from '../util/createPolkadotJsUrl';
-import { getSubstrateConfigs } from './substrateCustomTypes';
+import { getSubstrateConfigs } from './substrateConfigs';
 import { ConnectionChainInformation } from '../types/sourceTargetTypes';
-
-function hasherH512(data: any) {
-  return u8aConcat(blake2AsU8a(data), keccakAsU8a(data));
-}
 
 const getProvider = (provider: string) => new WsProvider(provider);
 
@@ -37,6 +31,7 @@ const getConnectionChainInformation = (chainNumber: string): ConnectionChainInfo
     case '1':
       return {
         chainNumber,
+        hasher: chain1.hasher,
         polkadotjsUrl: createPolkadotJsUrl(chain1.types!, providerUrl),
         provider,
         types: chain1.types
@@ -44,7 +39,7 @@ const getConnectionChainInformation = (chainNumber: string): ConnectionChainInfo
     case '2':
       return {
         chainNumber,
-        hasher: hasherH512,
+        hasher: chain2.hasher,
         polkadotjsUrl: createPolkadotJsUrl(chain2.types!, providerUrl),
         provider,
         types: chain2.types
