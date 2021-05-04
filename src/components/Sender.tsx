@@ -28,6 +28,7 @@ import formatAccounts from '../util/formatAccounts';
 import Account from './Account';
 import AccountDisplay from './AccountDisplay';
 import { Star } from '@material-ui/icons';
+import useSS58Format from '../hooks/useSS58Format';
 
 interface Props {
   className?: string;
@@ -56,6 +57,7 @@ const Sender = ({ className }: Props) => {
     targetChainDetails: { targetChain }
   } = useSourceTarget();
   const { setReceiver } = useReceiver();
+  const { getSS58ByChain } = useSS58Format();
 
   useEffect(() => {
     if (!chains.length) {
@@ -75,7 +77,7 @@ const Sender = ({ className }: Props) => {
 
   const renderAccounts = (chains: string[]) => {
     const [source, target] = chains;
-    const formatedAccounts = formatAccounts(accounts, ss58Format);
+    const formatedAccounts = formatAccounts(accounts, getSS58ByChain(source));
     const items = formatedAccounts.map(({ text, value, key }: any) => (
       <MenuItem
         key={key}
@@ -122,7 +124,10 @@ const Sender = ({ className }: Props) => {
 
       <div className="derivedAccount">
         {derivedAccount && (
-          <Account accountName={getName(account)} value={value} chain={targetChain} isDerived hideAddress />
+          <>
+            <Account accountName={getName(account)} value={value} chain={targetChain} isDerived hideAddress />
+            <p>{derivedAccount}</p>
+          </>
         )}
       </div>
     </Container>
