@@ -50,9 +50,10 @@ const useBalance = (api: ApiPromise, address: string, providedSi: boolean = fals
       try {
         const u = await api.query.system.account(address, ({ data }): void => {
           setState({
-            chainTokens: data.free.registry.chainTokens[0],
+            chainTokens: data.registry.chainTokens[0],
             formattedBalance: formatBalance(data.free, {
               decimals: api.registry.chainDecimals[0],
+              withUnit: data.registry.chainTokens[0],
               forceUnit: '-',
               withSi: providedSi
             }),

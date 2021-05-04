@@ -51,6 +51,7 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     estimatedFee: null,
     genericReceiverAccount: null,
     receiverAddress: null,
+    unformattedReceiverAddress: null,
     transactions: []
   });
 

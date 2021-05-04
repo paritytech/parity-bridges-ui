@@ -154,7 +154,7 @@ const TransactionStatus = ({ transaction, onComplete }: Props) => {
       },
       {
         chainType: sourceChain,
-        label: 'Finalise block',
+        label: 'Finalize block',
         status: completionStatus(sourceTransactionFinalized)
       },
       {
@@ -170,7 +170,7 @@ const TransactionStatus = ({ transaction, onComplete }: Props) => {
       },
       {
         chainType: targetChain,
-        label: 'Finalise message in target block',
+        label: 'Finalize message in target block',
         // TODO [#113] We should remember the first block that caused the evaluator to go brrr.
         onChain:
           completionStatus(messageFinalizedOnTarget) === TransactionStatusEnum.COMPLETED && bestBlockFinalizedOnTarget,

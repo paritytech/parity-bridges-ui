@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Container, Grid, Typography } from '@material-ui/core';
+import { Box, Container, Grid, Typography } from '@material-ui/core';
 import React, { useEffect, useState, useCallback } from 'react';
 
 import { BoxSidebar, BoxUI, ButtonExt, MenuAction, NetworkSides, NetworkStats } from '../components';
@@ -27,6 +27,7 @@ import SnackBar from '../components/SnackBar';
 import Transactions from '../components/Transactions';
 import Transfer from '../components/Transfer';
 import { ChainDetails } from '../types/sourceTargetTypes';
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 
 interface MenuActionItemsProps {
   idx: number;
@@ -53,12 +54,6 @@ const MenuContents = [
     title: 'Custom Call',
     isEnabled: true,
     component: <CustomCall />
-  },
-  {
-    idx: 3,
-    title: 'Connect to a wallet',
-    isEnabled: true,
-    component: <p>Connect to a wallet</p>
   }
 ];
 
@@ -91,6 +86,9 @@ function Main() {
             <Grid item md={12}>
               <ExtensionAccountCheck component={<Sender />} />
             </Grid>
+            <Box marginY={2} textAlign="center" width="100%">
+              <ArrowDownwardIcon fontSize="large" color="primary" />
+            </Box>
           </Grid>
           <Grid container>
             <Grid item md={12}>
