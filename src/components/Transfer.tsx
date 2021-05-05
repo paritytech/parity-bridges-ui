@@ -78,7 +78,7 @@ const Transfer = () => {
           InputProps={{
             endAdornment: (
               <InputAdornment position="start">
-                {targetChainDetails.targetApiConnection.api.registry.chainTokens}
+                n{targetChainDetails.targetApiConnection.api.registry.chainTokens}
               </InputAdornment>
             )
           }}
