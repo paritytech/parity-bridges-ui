@@ -68,7 +68,7 @@ const ReceiverDerivedAccount = () => {
 
   return (
     <div className={classes.derived}>
-      <AccountDisplay addressKind={AddressKind.COMPANION} />
+      <AccountDisplay addressKind={AddressKind.COMPANION} derived />
     </div>
   );
 };

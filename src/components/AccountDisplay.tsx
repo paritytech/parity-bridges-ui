@@ -30,6 +30,7 @@ interface Props {
   friendlyName?: string | null;
   hideAddress?: boolean;
   onClick?: () => void;
+  derived?: boolean;
   balance?: string | null | undefined;
 }
 
@@ -64,7 +65,15 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-const AccountDisplay = ({ address = '', addressKind, balance, friendlyName, hideAddress = false, onClick }: Props) => {
+const AccountDisplay = ({
+  address = '',
+  addressKind,
+  balance,
+  friendlyName,
+  hideAddress = false,
+  onClick,
+  derived = false
+}: Props) => {
   const classes = useStyles();
   const displayText = () => {
     const shortAddress = shorterItem(address);
@@ -83,7 +92,7 @@ const AccountDisplay = ({ address = '', addressKind, balance, friendlyName, hide
     <Container onClick={onClick} className={classes.container}>
       <div className={classes.icon}>{<AccountIdenticon address={address} />}</div>
       <div className={!address ? classes.missingAddress : classes.address}>
-        <p>{!address ? 'sender address' : displayText()}</p>
+        <p>{!address ? !derived && 'sender address' : displayText()}</p>
       </div>
       <Balance balance={balance} />
     </Container>
