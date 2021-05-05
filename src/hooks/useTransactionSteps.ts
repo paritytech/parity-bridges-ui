@@ -22,7 +22,7 @@ import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useDashboard from '../hooks/useDashboard';
 
 import useLoadingApi from '../hooks/useLoadingApi';
-import { getTransactionSourceTarget } from '../util/transactionUtils';
+import { getTransactionSourceTarget, isTransactionCompleted } from '../util/transactionUtils';
 import { Step, TransactionStatusEnum, TransanctionStatus } from '../types/transactionTypes';
 
 interface Props {
@@ -51,10 +51,8 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
     bestBlockFinalized: bestBlockFinalizedOnTarget
   } = useDashboard(targetTransaction);
 
-  const completed = transaction.status === TransactionStatusEnum.COMPLETED;
-
   useEffect(() => {
-    if (!areApiLoading || !transaction || completed) {
+    if (!areApiLoading || !transaction || isTransactionCompleted(transaction)) {
       return;
     }
 
@@ -125,7 +123,6 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
     bestBlockFinalized,
     bestBlockFinalizedOnTarget,
     bestBridgedFinalizedBlockOnTarget,
-    completed,
     latestReceivedNonceOnSource,
     latestReceivedNonceRuntimeApi,
     nonceOfTargetFinalizedBlock,

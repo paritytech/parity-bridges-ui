@@ -23,7 +23,7 @@ import useDashboard from './useDashboard';
 import useLaneId from './useLaneId';
 import useLoadingApi from './useLoadingApi';
 import useChainGetters from './useChainGetters';
-import { getTransactionSourceTarget } from '../util/transactionUtils';
+import { getTransactionSourceTarget, isTransactionCompleted } from '../util/transactionUtils';
 import { TransanctionStatus } from '../types/transactionTypes';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
 interface Props {
@@ -49,7 +49,7 @@ const useTransactionNonces = ({ transaction }: Props) => {
   const targetApi = getApiByChain(targetChain);
 
   useEffect(() => {
-    if (!areApiLoading || !transaction || !transaction) {
+    if (!areApiLoading || !transaction || !transaction || isTransactionCompleted(transaction)) {
       return;
     }
     const getNonceByHash = async () => {

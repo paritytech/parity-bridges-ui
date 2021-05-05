@@ -15,7 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ChainDetails } from '../types/sourceTargetTypes';
-import { TransanctionStatus } from '../types/transactionTypes';
+import { TransanctionStatus, TransactionStatusEnum } from '../types/transactionTypes';
 import { SourceTargetState } from '../types/sourceTargetTypes';
 
 interface Input {
@@ -36,4 +36,8 @@ export function getTransactionSourceTarget({ useSourceTarget, transaction }: Inp
   const targetTransaction = sourceChainsMatch ? ChainDetails.TARGET : ChainDetails.SOURCE;
 
   return { sourceTransaction, targetTransaction, sourceChain, targetChain };
+}
+
+export function isTransactionCompleted(transaction: TransanctionStatus): boolean {
+  return transaction.status === TransactionStatusEnum.COMPLETED;
 }
