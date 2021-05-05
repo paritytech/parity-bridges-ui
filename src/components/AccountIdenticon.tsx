@@ -20,7 +20,7 @@ import { INCORRECT_FORMAT } from '../constants';
 import ctx from 'classnames';
 import React from 'react';
 interface Props {
-  address: string;
+  address?: string;
   formatFound?: string;
 }
 
