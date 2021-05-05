@@ -26,6 +26,7 @@ import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useDashboard from '../hooks/useDashboard';
 import useLaneId from '../hooks/useLaneId';
 import useLoadingApi from '../hooks/useLoadingApi';
+import useChainGetters from '../hooks/useChainGetters';
 import { ChainDetails } from '../types/sourceTargetTypes';
 import { Step, TransactionStatusEnum, TransanctionStatus } from '../types/transactionTypes';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
@@ -55,30 +56,47 @@ const TransactionStatus = ({ transaction, onComplete }: Props) => {
   const [nonceOfTargetFinalizedBlock, setNonceOfTargetFinalizedBlock] = useState<null | number>(null);
   const [latestReceivedNonceRuntimeApi, setLatestReceivedNonceRuntimeApi] = useState(0);
   const [steps, setSteps] = useState<Array<Step>>([]);
+  const { getApiByChain } = useChainGetters();
 
   const {
-    sourceChainDetails: { sourceChain },
-    targetChainDetails: {
-      targetApiConnection: { api: targetApi },
-      targetChain
-    }
+    sourceChainDetails: { sourceChain: currentSourceChain }
   } = useSourceTarget();
+
   const laneId = useLaneId();
   const areApiLoading = useLoadingApi();
+
+  const { targetChain, sourceChain } = transaction;
+  const targetApi = getApiByChain(targetChain);
+
+  const sourceChainsMatch = sourceChain === currentSourceChain;
+
+  const transactionSourceDirection = sourceChainsMatch ? ChainDetails.SOURCE : ChainDetails.TARGET;
+  const transactionTargetDirection = sourceChainsMatch ? ChainDetails.TARGET : ChainDetails.SOURCE;
 
   const {
     bestBlockFinalized,
     outboundLanes: { latestReceivedNonce: latestReceivedNonceOnSource }
-  } = useDashboard(ChainDetails.SOURCE);
+  } = useDashboard(transactionSourceDirection);
   const {
     bestBridgedFinalizedBlock: bestBridgedFinalizedBlockOnTarget,
     bestBlockFinalized: bestBlockFinalizedOnTarget
-  } = useDashboard(ChainDetails.TARGET);
+  } = useDashboard(transactionTargetDirection);
+
+  console.log('----------------');
+
+  console.log('transactionSourceDirection', transactionSourceDirection);
+  console.log('transactionTargetDirection', transactionTargetDirection);
+  console.log('latestReceivedNonceOnSource', latestReceivedNonceOnSource);
+  console.log('bestBridgedFinalizedBlockOnTarget', bestBridgedFinalizedBlockOnTarget);
+  console.log('bestBlockFinalizedOnTarget', bestBlockFinalizedOnTarget);
+  console.log('nonceOfTargetFinalizedBlock', nonceOfTargetFinalizedBlock);
+  console.log('latestReceivedNonceRuntimeApi', latestReceivedNonceRuntimeApi);
+
   const { latestReceivedNonceMethodName } = getSubstrateDynamicNames(sourceChain);
   const completed = transaction.status === TransactionStatusEnum.COMPLETED;
 
   useEffect(() => {
-    if (!areApiLoading || !transaction) {
+    if (!areApiLoading || !transaction || !transaction) {
       return;
     }
     const getNonceByHash = async () => {
@@ -116,7 +134,7 @@ const TransactionStatus = ({ transaction, onComplete }: Props) => {
   ]);
 
   useEffect(() => {
-    if (!areApiLoading || !transaction || completed) {
+    if (!areApiLoading || !transaction || transaction.status === TransactionStatusEnum.COMPLETED) {
       return;
     }
 
