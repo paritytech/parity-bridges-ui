@@ -7,18 +7,20 @@ The goal of the UI is to provide the users a convenient way of interacting with 
 
 ## Configuring custom Substrate providers / chains
 
-In the `.env` file at root project directory, you have to define the following env variables:
+The project includes a `.env` file at root project directory that contains all the variables for running the bridge UI:
 
 ```
 REACT_APP_PAIR=RialtoMillau
-REACT_APP_SUBSTRATE_PROVIDER_CHAIN_1=ws://127.0.0.1:9944
-REACT_APP_SUBSTRATE_PROVIDER_CHAIN_2=ws://127.0.0.1:9945
+REACT_APP_SUBSTRATE_PROVIDER_CHAIN_1=wss://wss.rialto.brucke.link
+REACT_APP_SUBSTRATE_PROVIDER_CHAIN_2=wss://wss.millau.brucke.link
 REACT_APP_LANE_ID=0x00000000
-REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS=true
+REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS=false
 ```
 
-| ℹ️  | In case these values are not provided the default chains will be Rialto and Millau chains. |
-| --- | :----------------------------------------------------------------------------------------- |
+| ℹ️  | In case you need to overwrite any of the variables defined, please do so creating a new `.env.local`. |
+| --- | :---------------------------------------------------------------------------------------------------- |
+
+In case of questions about `.env` management please refer to this link: [create-react-app env files](https://create-react-app.dev/docs/adding-custom-environment-variables/#what-other-env-files-can-be-used)
 
 ## Running the bridge
 
