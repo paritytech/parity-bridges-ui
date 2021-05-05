@@ -48,6 +48,7 @@ const getProviderInfo = (chainNumber: string, types: ApiOptions['types']) => {
   };
 };
 
+//TODO: Make this file completely generic. Issue [139]
 export const substrateProviders = (): ConnectionChainInformation[] => {
   const pair = checkEnvVariable('REACT_APP_PAIR');
   switch (pair) {
