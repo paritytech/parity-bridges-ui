@@ -60,9 +60,7 @@ const Transfer = () => {
   });
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.value.length <= 12) {
-      setTransferInput(event.target.value);
-    }
+    event.target.value.length <= 12 && setTransferInput(event.target.value);
   };
 
   if (!areApiReady) return null;
