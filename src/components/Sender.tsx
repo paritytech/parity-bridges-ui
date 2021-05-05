@@ -64,7 +64,7 @@ const Sender = ({ className }: Props) => {
     }
   }, [chains.length, sourceChain, targetChain]);
 
-  const value = account ? encodeAddress(account.address, getChainSS58(sourceChain)) : '';
+  const value = account ? encodeAddress(account.address, getChainSS58(sourceChain)) : 'init';
 
   const onChange = (value: string, chain: string) => {
     setCurrentAccount(value, chain);
