@@ -60,7 +60,9 @@ const Transfer = () => {
   });
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTransferInput(event.target.value);
+    if (event.target.value.length <= 12) {
+      setTransferInput(event.target.value);
+    }
   };
 
   if (!areApiReady) return null;
@@ -72,6 +74,7 @@ const Transfer = () => {
           onChange={onChange}
           value={transferInput && transferInput}
           placeholder={'0'}
+          type="number"
           className={classes.inputAmount}
           fullWidth
           variant="outlined"
