@@ -15,16 +15,13 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import { VoidFn } from '@polkadot/api/types';
 import { Balance } from '@polkadot/types/interfaces';
 import { formatBalance } from '@polkadot/util';
 import BN from 'bn.js';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useIsMounted } from './useIsMounted';
 
-import { MessageActionsCreators } from '../actions/messageActions';
 import { useUpdateMessageContext } from '../contexts/MessageContext';
-import logger from '../util/logger';
-import { useMountedState } from './useMountedState';
 
 type State = {
   chainTokens: string;
@@ -42,12 +39,17 @@ const initValues = {
 
 const useBalance = (api: ApiPromise, address: string, providedSi: boolean = false): State => {
   const { dispatchMessage } = useUpdateMessageContext();
-  const [state, setState] = useMountedState<State>(initValues);
+  const [state, setState] = useState<State>(initValues);
+
+  const isMounted = useIsMounted();
+
+  console.log('leak?');
 
   useEffect((): (() => void) => {
-    const getBalance = async (api: ApiPromise, address: string, setState: any): Promise<VoidFn> => {
-      try {
-        const u = await api.query.system.account(address, ({ data }): void => {
+    let unsubscribe: null | (() => void) = null;
+    api?.query?.system
+      .account(address, ({ data }): void => {
+        isMounted() &&
           setState({
             chainTokens: data.free.registry.chainTokens[0],
             formattedBalance: formatBalance(data.free, {
@@ -57,24 +59,16 @@ const useBalance = (api: ApiPromise, address: string, providedSi: boolean = fals
             }),
             free: data.free
           });
-        });
-        return Promise.resolve(u);
-      } catch (e) {
-        dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e.message }));
-        logger.error(e.message);
-        return Promise.reject();
-      }
-    };
+      })
+      .then((u): void => {
+        unsubscribe = u;
+      })
+      .catch(console.error);
 
-    let unsubscribe: Promise<VoidFn>;
-
-    if (address) {
-      unsubscribe = getBalance(api, address, setState);
-    }
-    return async (): Promise<void> => {
-      unsubscribe && (await unsubscribe)();
+    return (): void => {
+      unsubscribe && unsubscribe();
     };
-  }, [address, providedSi, dispatchMessage, api, setState]);
+  }, [address, providedSi, dispatchMessage, api, setState, isMounted]);
 
   return state as State;
 };
