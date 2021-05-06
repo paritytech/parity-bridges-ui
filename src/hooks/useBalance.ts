@@ -19,7 +19,6 @@ import { Balance } from '@polkadot/types/interfaces';
 import { formatBalance } from '@polkadot/util';
 import BN from 'bn.js';
 import { useEffect } from 'react';
-import { useIsMounted } from './useIsMounted';
 
 import { useMountedState } from './useMountedState';
 
@@ -44,8 +43,6 @@ const initValues = {
 const useBalance = (api: ApiPromise, address: string, providedSi: boolean = false): State => {
   const { dispatchMessage } = useUpdateMessageContext();
   const [state, setState] = useMountedState<State>(initValues);
-
-  const isMounted = useIsMounted();
 
   useEffect((): (() => void) => {
     let unsubscribe: null | (() => void) = null;
@@ -72,7 +69,7 @@ const useBalance = (api: ApiPromise, address: string, providedSi: boolean = fals
     return (): void => {
       unsubscribe && unsubscribe();
     };
-  }, [address, providedSi, dispatchMessage, api, setState, isMounted]);
+  }, [address, providedSi, dispatchMessage, api, setState]);
 
   return state as State;
 };
