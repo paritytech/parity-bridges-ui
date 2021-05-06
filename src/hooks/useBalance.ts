@@ -15,16 +15,16 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
+import { VoidFn } from '@polkadot/api/types';
 import { Balance } from '@polkadot/types/interfaces';
 import { formatBalance } from '@polkadot/util';
 import BN from 'bn.js';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-import { useMountedState } from './useMountedState';
-
-import { useUpdateMessageContext } from '../contexts/MessageContext';
 import { MessageActionsCreators } from '../actions/messageActions';
+import { useUpdateMessageContext } from '../contexts/MessageContext';
 import logger from '../util/logger';
+import { useIsMounted } from './useIsMounted';
 
 type State = {
   chainTokens: string;
@@ -42,34 +42,42 @@ const initValues = {
 
 const useBalance = (api: ApiPromise, address: string, providedSi: boolean = false): State => {
   const { dispatchMessage } = useUpdateMessageContext();
-  const [state, setState] = useMountedState<State>(initValues);
+  const [state, setState] = useState<State>(initValues);
+
+  const isMounted = useIsMounted();
 
   useEffect((): (() => void) => {
-    let unsubscribe: null | (() => void) = null;
-    api?.query?.system
-      .account(address, ({ data }): void => {
-        setState({
-          chainTokens: data.free.registry.chainTokens[0],
-          formattedBalance: formatBalance(data.free, {
-            decimals: api.registry.chainDecimals[0],
-            forceUnit: '-',
-            withSi: providedSi
-          }),
-          free: data.free
+    const getBalance = async (api: ApiPromise, address: string, setState: any): Promise<VoidFn> => {
+      try {
+        const u = await api.query.system.account(address, ({ data }): void => {
+          isMounted() &&
+            setState({
+              chainTokens: data.free.registry.chainTokens[0],
+              formattedBalance: formatBalance(data.free, {
+                decimals: api.registry.chainDecimals[0],
+                forceUnit: '-',
+                withSi: providedSi
+              }),
+              free: data.free
+            });
         });
-      })
-      .then((u): void => {
-        unsubscribe = u;
-      })
-      .catch((e) => {
+        return Promise.resolve(u);
+      } catch (e) {
         dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e.message }));
         logger.error(e.message);
-      });
-
-    return (): void => {
-      unsubscribe && unsubscribe();
+        return Promise.reject();
+      }
     };
-  }, [address, providedSi, dispatchMessage, api, setState]);
+
+    let unsubscribe: Promise<VoidFn>;
+
+    if (address) {
+      unsubscribe = getBalance(api, address, setState);
+    }
+    return async (): Promise<void> => {
+      unsubscribe && (await unsubscribe)();
+    };
+  }, [address, providedSi, dispatchMessage, api, setState, isMounted]);
 
   return state as State;
 };
