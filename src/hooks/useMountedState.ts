@@ -31,10 +31,10 @@ import { useIsMounted } from './useIsMounted';
  * D is the type passed when then useMountedState is used
  * e.g. const [pass, setPass] = useMountedState<string>('someString');
  */
-export const useMountedState = <D>(initialValue: D) => {
+export const useMountedState = <D>(initialState: D | (() => D)) => {
   const isMounted = useIsMounted();
 
-  const [state, setState] = useState<D>(initialValue);
+  const [state, setState] = useState<D>(initialState);
 
   const setMountedState = (value: D) => {
     if (isMounted()) {
@@ -42,5 +42,5 @@ export const useMountedState = <D>(initialValue: D) => {
     }
   };
 
-  return [state, setMountedState];
+  return [state, setMountedState] as const;
 };
