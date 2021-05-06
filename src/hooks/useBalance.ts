@@ -24,6 +24,8 @@ import { useIsMounted } from './useIsMounted';
 import { useMountedState } from './useMountedState';
 
 import { useUpdateMessageContext } from '../contexts/MessageContext';
+import { MessageActionsCreators } from '../actions/messageActions';
+import logger from '../util/logger';
 
 type State = {
   chainTokens: string;
@@ -62,7 +64,10 @@ const useBalance = (api: ApiPromise, address: string, providedSi: boolean = fals
       .then((u): void => {
         unsubscribe = u;
       })
-      .catch(console.error);
+      .catch((e) => {
+        dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e.message }));
+        logger.error(e.message);
+      });
 
     return (): void => {
       unsubscribe && unsubscribe();
