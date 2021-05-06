@@ -18,8 +18,10 @@ import { ApiPromise } from '@polkadot/api';
 import { Balance } from '@polkadot/types/interfaces';
 import { formatBalance } from '@polkadot/util';
 import BN from 'bn.js';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useIsMounted } from './useIsMounted';
+
+import { useMountedState } from './useMountedState';
 
 import { useUpdateMessageContext } from '../contexts/MessageContext';
 
@@ -39,26 +41,23 @@ const initValues = {
 
 const useBalance = (api: ApiPromise, address: string, providedSi: boolean = false): State => {
   const { dispatchMessage } = useUpdateMessageContext();
-  const [state, setState] = useState<State>(initValues);
+  const [state, setState] = useMountedState<State>(initValues);
 
   const isMounted = useIsMounted();
-
-  console.log('leak?');
 
   useEffect((): (() => void) => {
     let unsubscribe: null | (() => void) = null;
     api?.query?.system
       .account(address, ({ data }): void => {
-        isMounted() &&
-          setState({
-            chainTokens: data.free.registry.chainTokens[0],
-            formattedBalance: formatBalance(data.free, {
-              decimals: api.registry.chainDecimals[0],
-              forceUnit: '-',
-              withSi: providedSi
-            }),
-            free: data.free
-          });
+        setState({
+          chainTokens: data.free.registry.chainTokens[0],
+          formattedBalance: formatBalance(data.free, {
+            decimals: api.registry.chainDecimals[0],
+            forceUnit: '-',
+            withSi: providedSi
+          }),
+          free: data.free
+        });
       })
       .then((u): void => {
         unsubscribe = u;

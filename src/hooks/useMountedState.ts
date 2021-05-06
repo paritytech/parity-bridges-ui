@@ -42,5 +42,5 @@ export const useMountedState = <D>(initialState: D | (() => D)) => {
     }
   };
 
-  return [state, setMountedState];
+  return [state, setMountedState] as const;
 };
