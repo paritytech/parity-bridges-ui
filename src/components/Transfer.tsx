@@ -14,14 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Box, InputAdornment, makeStyles, TextField } from '@material-ui/core';
+import { Box, makeStyles, TextField } from '@material-ui/core';
 import React, { useState } from 'react';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import useLoadingApi from '../hooks/useLoadingApi';
 import useSendMessage from '../hooks/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
-
+import { TokenSymbol } from './TokenSymbol';
 import Receiver from './Receiver';
 import { ButtonSubmit } from '../components';
 
@@ -60,7 +60,7 @@ const Transfer = () => {
   });
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    event.target.value.length <= 12 && setTransferInput(event.target.value);
+    setTransferInput(event.target.value);
   };
 
   if (!areApiReady) return null;
@@ -72,16 +72,11 @@ const Transfer = () => {
           onChange={onChange}
           value={transferInput && transferInput}
           placeholder={'0'}
-          type="number"
           className={classes.inputAmount}
           fullWidth
           variant="outlined"
           InputProps={{
-            endAdornment: (
-              <InputAdornment position="start">
-                n{targetChainDetails.targetApiConnection.api.registry.chainTokens}
-              </InputAdornment>
-            )
+            endAdornment: <TokenSymbol position="start" />
           }}
         />
       </Box>
