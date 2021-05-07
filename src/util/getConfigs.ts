@@ -16,7 +16,7 @@
 
 import { ApiPromise } from '@polkadot/api';
 
-export const getConfig = async (apiPromise: ApiPromise) => {
+export const getConfigs = async (apiPromise: ApiPromise) => {
   const properties = await apiPromise.registry.getChainProperties();
   const { ss58Format } = properties!;
 
