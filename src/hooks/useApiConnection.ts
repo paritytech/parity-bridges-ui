@@ -20,7 +20,7 @@ import isEmpty from 'lodash/isEmpty';
 import React, { useEffect, useState } from 'react';
 import { ApiPromiseConnectionType, Configs, ConnectionChainInformation } from '../types/sourceTargetTypes';
 import logger from '../util/logger';
-import { getConfigs } from '../util/getConfig';
+import { getConfigs } from '../util/getConfigs';
 
 export const ApiPromiseContext: React.Context<ApiPromiseConnectionType> = React.createContext(
   {} as ApiPromiseConnectionType
