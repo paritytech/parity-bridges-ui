@@ -14,29 +14,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { getChainConfigs } from '../configs/substrateProviders';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
+import { getBridgeId } from '../util/getConfigs';
 import getDeriveAccount from '../util/getDeriveAccount';
 
 const useDerivedAccount = () => {
   const {
-    targetChainDetails: { targetChain },
-    sourceChainDetails: { sourceChain }
+    targetChainDetails: { targetConfigs },
+    sourceChainDetails: {
+      sourceConfigs: { chainName }
+    }
   } = useSourceTarget();
   const { account } = useAccountContext();
-  const chainsConfigs = getChainConfigs();
-  const { SS58Format } = chainsConfigs[targetChain];
-  const { bridgeId } = chainsConfigs[sourceChain];
 
   if (!account) {
     return null;
   }
 
   const toDerive = {
-    SS58Format,
+    ss58Format: targetConfigs.ss58Format,
     address: account.address,
-    bridgeId
+    bridgeId: getBridgeId(targetConfigs, chainName)
   };
   return getDeriveAccount(toDerive);
 };

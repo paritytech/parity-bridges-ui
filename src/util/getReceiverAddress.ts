@@ -14,42 +14,42 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 import { checkAddress } from '@polkadot/util-crypto';
-
-import { getChainConfigs } from '../configs/substrateProviders';
-import { INCORRECT_FORMAT, GENERIC, GENERIC_SUBSTRATE_PREFIX } from '../constants';
+import { SourceState, TargetState } from '../types/sourceTargetTypes';
+import { INCORRECT_FORMAT } from '../constants';
 import getDeriveAccount from './getDeriveAccount';
+import { getBridgeId } from './getConfigs';
 
 interface Props {
+  getChainBySS58Prefix: (prefix: string) => string;
   receiverAddress: string;
-  targetChain: string;
-  sourceChain: string;
+  targetChainDetails: TargetState;
+  sourceChainDetails: SourceState;
 }
-const getReceiverAddress = ({ receiverAddress, targetChain, sourceChain }: Props) => {
-  const chainsConfigs = getChainConfigs();
-  const { SS58Format } = chainsConfigs[targetChain];
-  const { bridgeId } = chainsConfigs[sourceChain];
+const getReceiverAddress = ({
+  getChainBySS58Prefix,
+  targetChainDetails,
+  sourceChainDetails,
+  receiverAddress
+}: Props) => {
+  const { sourceConfigs } = sourceChainDetails;
+  const { targetChain, targetConfigs } = targetChainDetails;
+
+  const targetSS58Format = targetConfigs.ss58Format;
+  const bridgeId = getBridgeId(targetConfigs, sourceConfigs.chainName);
 
   try {
-    const [validatedDerivedAcccount, rest] = checkAddress(receiverAddress, SS58Format);
+    const [validatedDerivedAcccount, rest] = checkAddress(receiverAddress, targetSS58Format);
     if (validatedDerivedAcccount) {
       return { address: receiverAddress, formatFound: targetChain };
     }
     // should be extracted as a separate component/function
-    const getFormat = (prefix: string) => {
-      const intPrefix: number = parseInt(prefix, 10);
-      if (intPrefix === GENERIC_SUBSTRATE_PREFIX) {
-        return GENERIC;
-      }
-      const chainsConfigs = getChainConfigs();
-      return Object.keys(chainsConfigs).find((key) => chainsConfigs[key].SS58Format === intPrefix);
-    };
 
     const parts = rest?.split(',');
     const prefix = parts![2].split(' ');
-    const formatFound = getFormat(prefix[2]) || prefix[2];
+    const formatFound = getChainBySS58Prefix(prefix[2]) || prefix[2];
 
     const address = getDeriveAccount({
-      SS58Format,
+      ss58Format: targetSS58Format,
       address: receiverAddress,
       bridgeId
     });

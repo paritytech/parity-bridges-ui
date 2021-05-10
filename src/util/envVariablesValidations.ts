@@ -15,16 +15,11 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 const expectedVariables = [
-  'REACT_APP_CHAIN_1',
-  'REACT_APP_CHAIN_2',
+  'REACT_APP_PAIR',
   'REACT_APP_SUBSTRATE_PROVIDER_CHAIN_1',
   'REACT_APP_SUBSTRATE_PROVIDER_CHAIN_2',
   'REACT_APP_LANE_ID',
-  'REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS',
-  'REACT_APP_SS58_PREFIX_CHAIN_1',
-  'REACT_APP_SS58_PREFIX_CHAIN_2',
-  'REACT_APP_BRIDGE_ID_CHAIN_1',
-  'REACT_APP_BRIDGE_ID_CHAIN_2'
+  'REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS'
 ];
 
 const checkExpectedVariables = () => {
