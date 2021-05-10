@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Box, Container, Grid, Typography } from '@material-ui/core';
-import React, { useEffect, useState, useCallback } from 'react';
+import { Box, Grid, Typography } from '@material-ui/core';
+import React, { useState } from 'react';
 
 import { BoxSidebar, BoxUI, ButtonExt, StorageDrawer, MenuAction, NetworkSides, NetworkStats } from '../components';
 import CustomCall from '../components/CustomCall';
@@ -58,16 +58,10 @@ const MenuContents = [
 ];
 
 function Main() {
-  const [items, setItems] = useState<MenuActionItemsProps[]>([] as MenuActionItemsProps[]);
+  const [items] = useState<MenuActionItemsProps[]>(MenuContents as MenuActionItemsProps[]);
   const [index, setIndex] = useState<number>(0);
 
   const searchItems = (choice: number) => items.find((x) => x.idx === choice);
-
-  useEffect(() => {
-    setItems(MenuContents);
-  }, []);
-
-  const isConnectedToWallet = useCallback(() => index !== 3, [index]);
 
   return (
     <>
@@ -77,35 +71,17 @@ function Main() {
           <NetworkSides />
           <NetworkStats />
         </div>
-        <div>
-          <StorageDrawer />
-        </div>
+        <StorageDrawer />
         <ButtonExt> Help & Feedback </ButtonExt>
       </BoxSidebar>
       <BoxUI>
         <MenuAction items={items} menuIdx={index} changeMenu={setIndex} />
-        <Container>
-          <Grid container>
-            <Grid item md={12}>
-              <ExtensionAccountCheck component={<Sender />} />
-            </Grid>
-            <Box marginY={2} textAlign="center" width="100%">
-              <ArrowDownwardIcon fontSize="large" color="primary" />
-            </Box>
-          </Grid>
-          <Grid container>
-            <Grid item md={12}>
-              {searchItems(index)?.component}
-            </Grid>
-          </Grid>
-          {isConnectedToWallet() && (
-            <Grid container>
-              <Grid item md={12}>
-                <Transactions type={searchItems(index)?.title} />
-              </Grid>
-            </Grid>
-          )}
-        </Container>
+        <ExtensionAccountCheck component={<Sender />} />
+        <Box marginY={2} textAlign="center" width="100%">
+          <ArrowDownwardIcon fontSize="large" color="primary" />
+        </Box>
+        <>{searchItems(index)?.component}</>
+        <Transactions type={searchItems(index)?.title} />
         <SnackBar />
         <br />
         <br />

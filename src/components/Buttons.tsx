@@ -32,6 +32,9 @@ const useStyles = makeStyles((theme) => ({
   },
   switchMode: {
     fontSize: theme.typography.body2.fontSize
+  },
+  drawerMenu: {
+    justifyContent: 'end'
   }
 }));
 
@@ -62,9 +65,10 @@ export const ButtonExt = ({
   );
 };
 
-export const ButtonDrawerMenu = ({ children, color = 'secondary', ...props }: ButtonProps) => {
+export const ButtonDrawerMenu = ({ children, color = 'secondary', fullWidth = true, ...props }: ButtonProps) => {
+  const classes = useStyles();
   return (
-    <Button color={color} {...props}>
+    <Button className={classes.drawerMenu} color={color} fullWidth={fullWidth} {...props}>
       {children}
     </Button>
   );
