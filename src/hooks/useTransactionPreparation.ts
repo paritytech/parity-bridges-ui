@@ -16,12 +16,13 @@
 import { Codec } from '@polkadot/types/types';
 import { compactAddLength } from '@polkadot/util';
 import { useEffect, useState } from 'react';
-
+import BN from 'bn.js';
 import { TransactionActionCreators } from '../actions/transactionActions';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import useLaneId from '../hooks/useLaneId';
+import useBalance from '../hooks/useBalance';
 import useLoadingApi from '../hooks/useLoadingApi';
 import useTransactionType from '../hooks/useTransactionType';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
@@ -59,6 +60,8 @@ export default function useTransactionPreparation({
 
   const { dispatchTransaction } = useUpdateTransactionContext();
   const { estimatedFeeMethodName } = getSubstrateDynamicNames(targetChain);
+  const address = account?.address || '';
+  const balance = useBalance(sourceApi, address, true);
 
   useEffect(() => {
     const calculateFee = async () => {
@@ -77,6 +80,12 @@ export default function useTransactionPreparation({
       // @ts-ignore
       const estimatedFeeType = sourceApi.registry.createType('Option<Balance>', estimatedFeeCall);
       const estimatedFee = estimatedFeeType.toString();
+
+      console.log(
+        'estimatedFee',
+        estimatedFee,
+        new BN(balance.free).sub(new BN(input).add(new BN(estimatedFee))).toNumber() > 0
+      );
       dispatchTransaction(TransactionActionCreators.estimateFee(estimatedFee));
     };
 
@@ -84,6 +93,8 @@ export default function useTransactionPreparation({
       calculateFee();
     }
   }, [
+    balance,
+    input,
     areApiReady,
     dispatchTransaction,
     estimatedFeeMethodName,

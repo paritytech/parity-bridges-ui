@@ -69,8 +69,6 @@ const Transfer = () => {
 
   if (!areApiReady) return null;
 
-  console.log('isButtonDisabled() || !!transferInput', isButtonDisabled(), '!!transferInput', !transferInput);
-
   return (
     <>
       <Box mb={2}>
