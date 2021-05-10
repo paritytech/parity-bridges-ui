@@ -47,12 +47,10 @@ export default function useApiChainName(connectionDetails: ConnectionChainInform
 
   useEffect(() => {
     const disconnect = async () => {
-      try {
-        await apiPromise.disconnect();
-        logger.info(`Chain ${chainNumber} disconnected`);
-      } catch (err) {
-        logger.error(`Chain ${chainNumber}: Error disconnecting. Details: ${err.message}`);
-      }
+      await apiPromise
+        .disconnect()
+        .catch((err) => logger.error(`Chain ${chainNumber}: Error disconnecting. Details: ${err.message}`));
+      logger.info(`Chain ${chainNumber} disconnected`);
     };
 
     if (apiPromise.isConnected && chainName) {
