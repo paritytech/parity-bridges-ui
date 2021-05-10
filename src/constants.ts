@@ -17,6 +17,9 @@
 export const SOURCE = 'sourceChain';
 export const TARGET = 'targetChain';
 
+export const CHAIN_1 = '1';
+export const CHAIN_2 = '2';
+
 export const INCORRECT_FORMAT = 'INCORRECT_FORMAT';
 export const GENERIC = 'GENERIC';
 export const GENERIC_SUBSTRATE_PREFIX = 42;

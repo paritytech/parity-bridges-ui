@@ -17,12 +17,9 @@
 import type { KeyringPair } from '@polkadot/keyring/types';
 import { encodeAddress } from '@polkadot/util-crypto';
 
-import getChainSS58 from '../util/getSS58';
-
-export default function formatAccounts(accounts: Array<KeyringPair>, chain: string) {
+export default function formatAccounts(accounts: Array<KeyringPair>, ss58Format: number) {
   // TO-DO: This function lacks the  capabillity to filter accounts that exist only on specific chains.
   return accounts.map(({ meta, address }) => {
-    const ss58Format = getChainSS58(chain);
     const formatedAddress = encodeAddress(address, ss58Format);
     return {
       icon: 'user',

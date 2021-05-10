@@ -19,12 +19,12 @@ import { encodeAddress } from '@polkadot/util-crypto';
 import React, { useState } from 'react';
 import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import { TransactionActionCreators } from '../actions/transactionActions';
-import { getChainConfigs } from '../configs/substrateProviders';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useBalance from '../hooks/useBalance';
 import getDeriveAccount from '../util/getDeriveAccount';
 import shorterItem from '../util/shortenItem';
+import { getBridgeId } from '../util/getConfigs';
 import AccountDisplay, { AddressKind } from './AccountDisplay';
 
 interface Props {
@@ -56,29 +56,26 @@ const DERIVED = 'DERIVED';
 const GenericAccount = ({ value }: Props) => {
   const [selected, setSelected] = useState('');
   const classes = useStyles();
+
+  const { dispatchTransaction } = useUpdateTransactionContext();
   const {
-    targetChainDetails: {
-      targetApiConnection: { api: targetApi },
-      targetChain
-    },
     sourceChainDetails: {
-      sourceApiConnection: { api: sourceApi },
-      sourceChain
+      sourceConfigs,
+      sourceApiConnection: { api: sourceApi }
+    },
+    targetChainDetails: {
+      targetConfigs,
+      targetApiConnection: { api: targetApi }
     }
   } = useSourceTarget();
 
-  const { dispatchTransaction } = useUpdateTransactionContext();
-  const chainsConfigs = getChainConfigs();
-  const { bridgeId } = chainsConfigs[sourceChain];
-  const { SS58Format: targetSS58Format } = chainsConfigs[targetChain];
-
-  const nativeAddress = encodeAddress(value, targetSS58Format);
+  const nativeAddress = encodeAddress(value, sourceConfigs.ss58Format);
   const nativeState = useBalance(sourceApi, nativeAddress, true);
 
   const derivedAddress = getDeriveAccount({
-    SS58Format: targetSS58Format,
+    ss58Format: targetConfigs.ss58Format,
     address: value,
-    bridgeId
+    bridgeId: getBridgeId(targetConfigs, sourceConfigs.chainName)
   });
   const derivedState = useBalance(targetApi, derivedAddress, true);
 
