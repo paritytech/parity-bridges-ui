@@ -21,18 +21,10 @@ import { ApiOptions } from '@polkadot/api/types';
 import { checkEnvVariable } from '../util/envVariablesValidations';
 import { CHAIN_1, CHAIN_2 } from '../constants';
 import { createPolkadotJsUrl } from '../util/createPolkadotJsUrl';
-import { ProviderInterface } from '@polkadot/rpc-provider/types';
 import { ConnectionChainInformation } from '../types/sourceTargetTypes';
 import customTypesChain1 from './substrateCustomTypes/customTypesChain1.json';
 import customTypesChain2 from './substrateCustomTypes/customTypesChain2.json';
 import hashers from './chainsSetup/customHashers';
-
-export interface HasherTypes {
-  hasher: ((data: Uint8Array) => Uint8Array) | null;
-  types: ApiOptions['types'];
-  polkadotjsUrl: string;
-  provider: ProviderInterface;
-}
 
 const getProviderInfo = (chainNumber: string, types: ApiOptions['types']) => {
   const providedHasher = process.env[`REACT_APP_CUSTOM_HASHER_CHAIN_${chainNumber}`];

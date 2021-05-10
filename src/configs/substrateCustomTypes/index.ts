@@ -14,24 +14,4 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-export const SOURCE = 'sourceChain';
-export const TARGET = 'targetChain';
-
-export const CHAIN_1 = '1';
-export const CHAIN_2 = '2';
-
-export const INCORRECT_FORMAT = 'INCORRECT_FORMAT';
-export const GENERIC = 'GENERIC';
-export const GENERIC_SUBSTRATE_PREFIX = 42;
-
-export const BASE_CUSTOM_TYPES = {
-  Id: '[u8; 4]',
-  InstanceId: 'Id',
-  LaneId: 'Id',
-  MessageKey: {
-    lane_id: 'LaneId',
-    nonce: 'MessageNonce'
-  },
-  MessageNonce: 'u64',
-  BridgedBlockHash: 'u64'
-};
+// Empty file for adding substrateCustomTypes folder to git
