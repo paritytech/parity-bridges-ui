@@ -66,11 +66,8 @@ const useBalance = (api: ApiPromise, address: string, providedSi: boolean = fals
       }
     };
 
-    let unsubscribe: Promise<VoidFn>;
+    const unsubscribe: Promise<VoidFn> | null = address ? getBalance(api, address, setState) : null;
 
-    if (address) {
-      unsubscribe = getBalance(api, address, setState);
-    }
     return async (): Promise<void> => {
       unsubscribe && (await unsubscribe)();
     };

@@ -15,6 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
+import { VoidFn } from '@polkadot/api/types';
 import { Hash } from '@polkadot/types/interfaces';
 import { Codec } from '@polkadot/types/types';
 import BN from 'bn.js';
@@ -27,7 +28,6 @@ interface HeaderId {
 }
 
 type CodecHeaderId = Codec & HeaderId;
-// type CodecBestBloc = Codec & [HeaderId, any]
 
 interface Props {
   chain: string;
@@ -39,34 +39,26 @@ const useBridgedBlocks = ({ isApiReady, api, chain }: Props) => {
   const [bestBridgedFinalizedBlock, setBestBridgedFinalizedBlock] = useState('');
 
   const { bridgedGrandpaChain } = getSubstrateDynamicNames(chain);
-  useEffect(() => {
-    if (!api || !isApiReady || !chain) {
-      return;
-    }
+  useEffect((): (() => void) => {
+    const shouldProceed: boolean = !!(api && isApiReady && chain);
 
-    let unsubBestFinalized: () => void;
-    let unsubImportedHeaders: () => void;
+    let unsubImportedHeaders: Promise<VoidFn> | null;
+    const unsubBestFinalized: Promise<VoidFn> | null = shouldProceed
+      ? api.query[bridgedGrandpaChain].bestFinalized((res: CodecHeaderId) => {
+          const bestBridgedFinalizedBlock = res.toString();
+          unsubImportedHeaders = shouldProceed
+            ? api.query[bridgedGrandpaChain].importedHeaders(bestBridgedFinalizedBlock, (res: any) => {
+                if (res.toJSON()) {
+                  setBestBridgedFinalizedBlock(res.toJSON().number);
+                }
+              })
+            : null;
+        })
+      : null;
 
-    api.query[bridgedGrandpaChain]
-      .bestFinalized((res: CodecHeaderId) => {
-        const bestBridgedFinalizedBlock = res.toString();
-        api.query[bridgedGrandpaChain]
-          .importedHeaders(bestBridgedFinalizedBlock, (res: any) => {
-            if (res.toJSON()) {
-              setBestBridgedFinalizedBlock(res.toJSON().number);
-            }
-          })
-          .then((unsub) => {
-            unsubImportedHeaders = unsub;
-          });
-      })
-      .then((unsub) => {
-        unsubBestFinalized = unsub;
-      });
-
-    return function cleanup() {
-      unsubImportedHeaders && unsubImportedHeaders();
-      unsubBestFinalized && unsubBestFinalized();
+    return async (): Promise<void> => {
+      unsubImportedHeaders && (await unsubImportedHeaders)();
+      unsubBestFinalized && (await unsubBestFinalized)();
     };
   }, [isApiReady, chain, api, bridgedGrandpaChain]);
 
