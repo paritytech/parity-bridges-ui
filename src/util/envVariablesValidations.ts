@@ -15,9 +15,10 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 const expectedVariables = [
-  'REACT_APP_PAIR',
   'REACT_APP_SUBSTRATE_PROVIDER_CHAIN_1',
   'REACT_APP_SUBSTRATE_PROVIDER_CHAIN_2',
+  'REACT_APP_CUSTOM_TYPES_URL_CHAIN_1',
+  'REACT_APP_CUSTOM_TYPES_URL_CHAIN_2',
   'REACT_APP_LANE_ID',
   'REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS'
 ];
@@ -31,15 +32,6 @@ const checkExpectedVariables = () => {
   return true;
 };
 
-const checkUnexpectedVariables = () => {
-  for (const v of Object.keys(process.env)) {
-    if (!expectedVariables.includes(v)) {
-      throw new Error(`Unexpected ${v} variable found.`);
-    }
-  }
-  return true;
-};
-
 const checkEnvVariable = (variable: string) => {
   const envVariable = process.env[variable];
   if (!envVariable) {
@@ -48,4 +40,4 @@ const checkEnvVariable = (variable: string) => {
   return envVariable;
 };
 
-export { checkEnvVariable, checkExpectedVariables, checkUnexpectedVariables };
+export { checkEnvVariable, checkExpectedVariables };
