@@ -30,7 +30,7 @@ const getProviderInfo = (chainNumber: string, types: ApiOptions['types']) => {
   const providedHasher = process.env[`REACT_APP_CUSTOM_HASHER_CHAIN_${chainNumber}`];
   const providerUrl = checkEnvVariable(`REACT_APP_SUBSTRATE_PROVIDER_CHAIN_${chainNumber}`);
 
-  const hasher = (providedHasher && hashers && hashers[providedHasher]) || undefined;
+  const hasher = (providedHasher && hashers && hashers[providedHasher]) || undefined; // undefined is required because the hasher parameter in the api expects this in case there is no hasher.
 
   const polkadotjsUrl = createPolkadotJsUrl(types!, providerUrl);
   return {
