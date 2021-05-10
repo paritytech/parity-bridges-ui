@@ -14,13 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Drawer, IconButton, Button } from '@material-ui/core';
+import { Drawer, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useContext } from 'react';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import HistoryIcon from '@material-ui/icons/History';
 import Transactions from './Transactions';
 import { DrawerContext } from '../contexts/GUIContextProvider';
+import { ButtonDrawerMenu } from './Buttons';
 
 const useStyles = makeStyles((theme) => ({
   drawer: {
@@ -52,9 +53,13 @@ export const StorageDrawer = () => {
 
   return (
     <>
-      <Button variant="contained" color="secondary" startIcon={<HistoryIcon />} onClick={handleDrawerOpen}>
+      <ButtonDrawerMenu
+        startIcon={<HistoryIcon />}
+        onClick={handleDrawerOpen}
+        color={drawer === 'open' ? 'primary' : 'secondary'}
+      >
         History
-      </Button>
+      </ButtonDrawerMenu>
 
       <div className={`${classes.drawerWrap} ${drawer}`}>
         <Drawer open={drawer === 'open'} variant="persistent" className={classes.drawer}>

@@ -62,6 +62,14 @@ export const ButtonExt = ({
   );
 };
 
+export const ButtonDrawerMenu = ({ children, color = 'secondary', ...props }: ButtonProps) => {
+  return (
+    <Button color={color} {...props}>
+      {children}
+    </Button>
+  );
+};
+
 export const ButtonSwitchMode = ({ children, color = 'secondary', ...props }: ButtonProps) => {
   const classes = useStyles();
   return (
