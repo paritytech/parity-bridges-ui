@@ -15,7 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Box, InputAdornment, makeStyles, TextField } from '@material-ui/core';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import useLoadingApi from '../hooks/useLoadingApi';
@@ -63,14 +63,20 @@ const Transfer = () => {
     setTransferInput(event.target.value);
   };
 
+  useEffect((): void => {
+    isRunning && setTransferInput('');
+  }, [isRunning]);
+
   if (!areApiReady) return null;
+
+  console.log('isButtonDisabled() || !!transferInput', isButtonDisabled(), '!!transferInput', !transferInput);
 
   return (
     <>
       <Box mb={2}>
         <TextField
           onChange={onChange}
-          value={transferInput && transferInput}
+          value={transferInput}
           placeholder={'0'}
           className={classes.inputAmount}
           fullWidth
@@ -85,7 +91,7 @@ const Transfer = () => {
         />
       </Box>
       <Receiver />
-      <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
+      <ButtonSubmit disabled={isButtonDisabled() || !transferInput} onClick={sendLaneMessage}>
         Send bridge transfer from {sourceChainDetails.sourceChain} to {targetChainDetails.targetChain}
       </ButtonSubmit>
       {receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}
