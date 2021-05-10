@@ -34,7 +34,7 @@ export interface HasherTypes {
   provider: ProviderInterface;
 }
 
-function hasherH512(data: any) {
+function blake2_keccak256_concat(data: any) {
   return u8aConcat(blake2AsU8a(data), keccakAsU8a(data));
 }
 
@@ -66,7 +66,7 @@ export const substrateProviders = (): ConnectionChainInformation[] => {
         },
         {
           chainNumber: CHAIN_2,
-          hasher: hasherH512,
+          hasher: blake2_keccak256_concat,
           polkadotjsUrl: chain2.polkadotjsUrl,
           types: chain2.types,
           provider: chain2.provider
