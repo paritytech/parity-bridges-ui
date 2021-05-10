@@ -74,7 +74,6 @@ const Sender = ({ className }: Props) => {
     setCurrentAccount(value, chain);
     setReceiver(null);
   };
-
   const renderAccounts = (chains: string[]) => {
     const [source, target] = chains;
     const formatedAccounts = formatAccounts(accounts, getSS58ByChain(source));
@@ -116,7 +115,7 @@ const Sender = ({ className }: Props) => {
       <InputLabel className="label">{sourceChain} Account</InputLabel>
       <div className="senderSelect">
         <FormControl className="formControl">
-          <Select value={value} renderValue={(): React.ReactNode => <AccountSelected />}>
+          <Select value={value} renderValue={(): React.ReactNode => <AccountSelected />} displayEmpty={true}>
             {chains.map((chain) => renderAccounts(chain))}
           </Select>
         </FormControl>

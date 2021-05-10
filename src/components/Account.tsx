@@ -26,7 +26,6 @@ interface Props {
   className?: string;
   hideAddress?: boolean;
   isDerived?: boolean;
-  onClick?: () => void;
   value: string;
 }
 
