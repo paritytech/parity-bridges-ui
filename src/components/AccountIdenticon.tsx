@@ -17,37 +17,26 @@
 import { makeStyles } from '@material-ui/core/styles';
 import Identicon from '@polkadot/react-identicon';
 import { INCORRECT_FORMAT } from '../constants';
-import ctx from 'classnames';
-import React, { useEffect, useState } from 'react';
-
 import { useUpdateMessageContext } from '../contexts/MessageContext';
 import { MessageActionsCreators } from '../actions/messageActions';
+
+import ctx from 'classnames';
+import React from 'react';
 interface Props {
   address?: string;
   formatFound?: string;
 }
-
 const useStyles = makeStyles(() => ({
   placeholder: {
     filter: 'grayscale(1)'
   }
 }));
-
 const emptyAddress: string = '1nUC7afqmo7zwRFWxDjrUQu9skk6fk99pafb4SiyGSRc8z3';
 
 export default function AccountIdenticon({ address, formatFound }: Props) {
   const { dispatchMessage } = useUpdateMessageContext();
-  const [value, setValue] = useState<string | undefined>(emptyAddress);
-  const [placeholder, setPlaceholder] = useState<boolean>(false);
-
-  useEffect((): void => {
-    setPlaceholder(!address || formatFound === INCORRECT_FORMAT);
-  }, [address, formatFound]);
-
-  useEffect((): void => {
-    setValue(!placeholder ? address : emptyAddress);
-  }, [address, placeholder]);
-
+  const placeholder = !address || formatFound === INCORRECT_FORMAT;
+  const value = !placeholder ? address : emptyAddress;
   const classes = useStyles();
   return (
     <Identicon
