@@ -16,6 +16,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { INCORRECT_FORMAT, GENERIC } from '../constants';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
+import { getBridgeId } from '../util/getConfigs';
 import getDeriveAccount from '../util/getDeriveAccount';
 
 type State = {
@@ -41,7 +42,10 @@ const useApiBalance = (address: string | null, chain: string | undefined, isDeri
   }
 
   const ss58Format = chain === targetChain ? targetConfigs.ss58Format : sourceConfigs.ss58Format;
-  const bridgeId = chain === targetChain ? sourceConfigs.bridgeId : targetConfigs.bridgeId;
+  const bridgeId =
+    chain === targetChain
+      ? getBridgeId(targetConfigs, sourceConfigs.chainName)
+      : getBridgeId(sourceConfigs, targetConfigs.chainName);
 
   const addressResult = !isDerived
     ? address

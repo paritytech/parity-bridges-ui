@@ -16,15 +16,14 @@
 
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
+import { getBridgeId } from '../util/getConfigs';
 import getDeriveAccount from '../util/getDeriveAccount';
 
 const useDerivedAccount = () => {
   const {
-    targetChainDetails: {
-      targetConfigs: { ss58Format }
-    },
+    targetChainDetails: { targetConfigs },
     sourceChainDetails: {
-      sourceConfigs: { bridgeId }
+      sourceConfigs: { chainName }
     }
   } = useSourceTarget();
   const { account } = useAccountContext();
@@ -34,9 +33,9 @@ const useDerivedAccount = () => {
   }
 
   const toDerive = {
-    ss58Format,
+    ss58Format: targetConfigs.ss58Format,
     address: account.address,
-    bridgeId
+    bridgeId: getBridgeId(targetConfigs, chainName)
   };
   return getDeriveAccount(toDerive);
 };

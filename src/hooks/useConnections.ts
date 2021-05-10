@@ -17,7 +17,7 @@
 import { useState, useEffect } from 'react';
 import { useApiConnection } from './useApiConnection';
 import isEmpty from 'lodash/isEmpty';
-import { SourceTargetState, ChainDetails, ConnectionChainInformation, Configs } from '../types/sourceTargetTypes';
+import { SourceTargetState, ChainDetails, ConnectionChainInformation } from '../types/sourceTargetTypes';
 
 interface Props {
   connectionDetailsOne: ConnectionChainInformation;
@@ -40,28 +40,16 @@ export function useConnections({ connectionDetailsOne, connectionDetailsTwo }: P
       const chainName2 = chain2Configs.chainName;
       const apiReady = apiConnection1.isApiReady && apiConnection2.isApiReady;
 
-      const getBridgedSS58Format = (
-        chainConfig: Configs,
-        bridgedChainConfig: Configs,
-        bridgedChain: string
-      ): Configs => {
-        const bridgeId: number[] = bridgedChainConfig!.bridgeIds![bridgedChain];
-        chainConfig.bridgeId = bridgeId;
-        return chainConfig;
-      };
-
       if (chainName1 && chainName2 && apiReady && isEmpty(connections)) {
         const connections = {
           [ChainDetails.SOURCE]: {
-            // We look for the bridged chain property in the bridgeIds object.
-            sourceConfigs: getBridgedSS58Format(chain1Configs, chain2Configs, chainName1),
+            sourceConfigs: chain1Configs,
             sourceApiConnection: apiConnection1,
             sourceChain: chainName1,
             sourcePolkadotjsUrl: polkadotjsUrl1
           },
           [ChainDetails.TARGET]: {
-            // We look for the bridged chain property in the bridgeIds object.
-            targetConfigs: getBridgedSS58Format(chain2Configs, chain1Configs, chainName2),
+            targetConfigs: chain2Configs,
             targetApiConnection: apiConnection2,
             targetChain: chainName2,
             targetPolkadotjsUrl: polkadotjsUrl2

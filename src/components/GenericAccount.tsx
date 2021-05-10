@@ -24,6 +24,7 @@ import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useBalance from '../hooks/useBalance';
 import getDeriveAccount from '../util/getDeriveAccount';
 import shorterItem from '../util/shortenItem';
+import { getBridgeId } from '../util/getConfigs';
 import AccountDisplay, { AddressKind } from './AccountDisplay';
 
 interface Props {
@@ -59,22 +60,22 @@ const GenericAccount = ({ value }: Props) => {
   const { dispatchTransaction } = useUpdateTransactionContext();
   const {
     sourceChainDetails: {
-      sourceConfigs: { bridgeId, ss58Format: sourceSS58Format },
+      sourceConfigs,
       sourceApiConnection: { api: sourceApi }
     },
     targetChainDetails: {
-      targetApiConnection: { api: targetApi },
-      targetConfigs: { ss58Format }
+      targetConfigs,
+      targetApiConnection: { api: targetApi }
     }
   } = useSourceTarget();
 
-  const nativeAddress = encodeAddress(value, sourceSS58Format);
+  const nativeAddress = encodeAddress(value, sourceConfigs.ss58Format);
   const nativeState = useBalance(sourceApi, nativeAddress, true);
 
   const derivedAddress = getDeriveAccount({
-    ss58Format,
+    ss58Format: targetConfigs.ss58Format,
     address: value,
-    bridgeId
+    bridgeId: getBridgeId(targetConfigs, sourceConfigs.chainName)
   });
   const derivedState = useBalance(targetApi, derivedAddress, true);
 

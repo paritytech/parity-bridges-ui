@@ -17,6 +17,7 @@ import { checkAddress } from '@polkadot/util-crypto';
 import { SourceState, TargetState } from '../types/sourceTargetTypes';
 import { INCORRECT_FORMAT } from '../constants';
 import getDeriveAccount from './getDeriveAccount';
+import { getBridgeId } from './getConfigs';
 
 interface Props {
   getChainBySS58Prefix: (prefix: string) => string;
@@ -34,8 +35,7 @@ const getReceiverAddress = ({
   const { targetChain, targetConfigs } = targetChainDetails;
 
   const targetSS58Format = targetConfigs.ss58Format;
-
-  const bridgeId = sourceConfigs.bridgeId;
+  const bridgeId = getBridgeId(targetConfigs, sourceConfigs.chainName);
 
   try {
     const [validatedDerivedAcccount, rest] = checkAddress(receiverAddress, targetSS58Format);

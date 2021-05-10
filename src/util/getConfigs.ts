@@ -15,9 +15,10 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
+import { Configs } from '../types/sourceTargetTypes';
 
-export const getConfigs = async (apiPromise: ApiPromise) => {
-  const properties = await apiPromise.registry.getChainProperties();
+export const getConfigs = async (apiPromise: ApiPromise): Promise<Configs> => {
+  const properties = apiPromise.registry.getChainProperties();
   const { ss58Format } = properties!;
 
   const systemChain = await apiPromise.rpc.system.name();
@@ -25,5 +26,17 @@ export const getConfigs = async (apiPromise: ApiPromise) => {
   const chainName = systemChain.split(' ')[0];
   const bridgeIds = prop.get('bridgeIds');
 
-  return { bridgeId: [], bridgeIds, chainName, ss58Format: parseInt(ss58Format.toString()) };
+  return { bridgeIds, chainName, ss58Format: parseInt(ss58Format.toString()) };
+};
+
+export const getBridgeId = (targetConfigs: Configs, chainName: string): number[] => {
+  const bridgeId = targetConfigs?.bridgeIds[chainName];
+
+  if (!bridgeId) {
+    throw new Error(
+      `Missing bridgeId for ${chainName} in bridge configuration of ${targetConfigs.chainName}. Add 'bridgeIds' to the chain spec.`
+    );
+  }
+
+  return bridgeId;
 };
