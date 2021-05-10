@@ -13,12 +13,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
+import React from 'react';
+import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 
-export { ButtonExt, ButtonSwitchMode, ButtonSubmit } from './Buttons';
-export { IconTxStatus } from './Icons';
-export { BoxUI, BoxSidebar } from './LayoutBoxes';
-export { MenuAction } from './MenuAction';
-export { NetworkSides, NetworkStats } from './Network';
-export { TransactionDisplay } from './TransactionDisplay';
-export { Alert } from './Alert';
-export { light } from './theme';
+export function Alert(props: JSX.IntrinsicAttributes & AlertProps) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}

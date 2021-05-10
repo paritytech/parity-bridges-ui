@@ -13,18 +13,13 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
-import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import React from 'react';
-
+import { Alert } from '.';
 import { useKeyringContext } from '../contexts/KeyringContextProvider';
 
 interface Props {
   component: JSX.Element;
 }
-
-const Alert = (props: JSX.IntrinsicAttributes & AlertProps) => {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-};
 
 const ExtensionAccountCheck = ({ component }: Props): JSX.Element => {
   const { extensionExists, accountExists } = useKeyringContext();

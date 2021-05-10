@@ -16,14 +16,17 @@
 
 import { Box, InputAdornment, makeStyles, TextField } from '@material-ui/core';
 import React, { useState, useEffect } from 'react';
+import BN from 'bn.js';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
+import useAccounts from '../hooks/useAccounts';
+import useBalance from '../hooks/useBalance';
 import useLoadingApi from '../hooks/useLoadingApi';
 import useSendMessage from '../hooks/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
 
 import Receiver from './Receiver';
-import { ButtonSubmit } from '../components';
+import { Alert, ButtonSubmit } from '../components';
 
 const useStyles = makeStyles((theme) => ({
   inputAmount: {
@@ -46,11 +49,15 @@ const Transfer = () => {
   const classes = useStyles();
   const [isRunning, setIsRunning] = useState(false);
   const [transferInput, setTransferInput] = useState<string>('');
+  const [amountNotCorrect, setAmountNotCorrect] = useState<boolean>(false);
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
+  const { account } = useAccounts();
 
   const areApiReady = useLoadingApi();
 
   const { estimatedFee, receiverAddress } = useTransactionContext();
+  const { api, isApiReady } = sourceChainDetails.sourceApiConnection;
+  const balance = useBalance(api, account?.address || '', true);
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
     input: transferInput,
@@ -66,6 +73,13 @@ const Transfer = () => {
   useEffect((): void => {
     isRunning && setTransferInput('');
   }, [isRunning]);
+
+  useEffect((): void => {
+    estimatedFee &&
+      console.log('Total', new BN(balance.free).sub(new BN(transferInput).add(new BN(estimatedFee))).toNumber());
+    estimatedFee &&
+      setAmountNotCorrect(new BN(balance.free).sub(new BN(transferInput).add(new BN(estimatedFee))).toNumber() < 0);
+  }, [transferInput, estimatedFee, balance, isApiReady]);
 
   if (!areApiReady) return null;
 
@@ -89,10 +103,16 @@ const Transfer = () => {
         />
       </Box>
       <Receiver />
-      <ButtonSubmit disabled={isButtonDisabled() || !transferInput} onClick={sendLaneMessage}>
+      <ButtonSubmit disabled={isButtonDisabled() || !transferInput || amountNotCorrect} onClick={sendLaneMessage}>
         Send bridge transfer from {sourceChainDetails.sourceChain} to {targetChainDetails.targetChain}
       </ButtonSubmit>
-      {receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}
+      {amountNotCorrect ? (
+        <Alert severity="error">
+          Account&apos;s amount (including fees: {estimatedFee}) is not enough for this transaction.
+        </Alert>
+      ) : (
+        receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`
+      )}
     </>
   );
 };
