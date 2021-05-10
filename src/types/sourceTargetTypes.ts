@@ -26,7 +26,7 @@ export interface ApiPromiseConnectionType {
 
 export interface ConnectionChainInformation {
   chainNumber: string;
-  hasher?: (data: Uint8Array) => Uint8Array;
+  hasher: ((data: Uint8Array) => Uint8Array) | undefined;
   provider: ProviderInterface;
   types?: ApiOptions['types'];
   polkadotjsUrl: string;
@@ -60,11 +60,6 @@ export interface ApiPromiseContextType {
 export enum ChainDetails {
   SOURCE = 'sourceChainDetails',
   TARGET = 'targetChainDetails'
-}
-
-// Pairs need to match with the .env value REACT_APP_PAIR
-export enum Pairs {
-  RIALTO_MILLAU = 'RIALTO_MILLAU'
 }
 
 export interface SourceState {

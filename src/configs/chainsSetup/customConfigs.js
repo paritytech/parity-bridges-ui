@@ -14,21 +14,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
+const dotenv = require('dotenv');
+const result = dotenv.config();
 
-export const getConfigs = async (apiPromise: ApiPromise) => {
-  const properties = await apiPromise.registry.getChainProperties();
-  const { ss58Format } = properties!;
+const customTypesDir = './src/configs/substrateCustomTypes';
 
-  const prop = await apiPromise.rpc.system.properties();
-  const bridgeIds = prop.get('bridgeIds');
+if (result.error) {
+  throw result.error;
+}
 
-  return { bridgeId: [], bridgeIds, ss58Format: parseInt(ss58Format.toString()) };
-};
+const customTypes = [];
 
-export const getChainName = async (apiPromise: ApiPromise) => {
-  const systemChain = await apiPromise.rpc.system.name();
-  const chainName = systemChain.split(' ')[0];
+if (result.parsed.REACT_APP_CUSTOM_TYPES_URL_CHAIN_1) {
+  customTypes.push({
+    path: `${customTypesDir}/customTypesChain1.json`,
+    url: result.parsed.REACT_APP_CUSTOM_TYPES_URL_CHAIN_1
+  });
+}
 
-  return chainName;
-};
+if (result.parsed.REACT_APP_CUSTOM_TYPES_URL_CHAIN_2) {
+  customTypes.push({
+    path: `${customTypesDir}/customTypesChain2.json`,
+    url: result.parsed.REACT_APP_CUSTOM_TYPES_URL_CHAIN_2
+  });
+}
+
+module.exports = customTypes;

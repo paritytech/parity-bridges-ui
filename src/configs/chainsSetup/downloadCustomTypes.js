@@ -16,22 +16,9 @@
 
 const http = require('https'); // or 'https' for https:// URLs
 const fs = require('fs');
+const customTypes = require('./customConfigs');
 
-const commonBridgesRepo = 'https://raw.githubusercontent.com/paritytech/parity-bridges-common/master/deployments';
-const customTypesDir = 'src/configs';
-
-const filesConfig = [
-  {
-    path: `${customTypesDir}/customTypesMillau.json`,
-    url: `${commonBridgesRepo}/types-millau.json`
-  },
-  {
-    path: `${customTypesDir}/customTypesRialto.json`,
-    url: `${commonBridgesRepo}/types-rialto.json`
-  }
-];
-
-filesConfig.map(({ path, url }) => {
+customTypes.map(({ path, url }) => {
   console.log('Start downloading file: ', url);
   const file = fs.createWriteStream(path, { flags: 'w' });
   http.get(url, function (response) {

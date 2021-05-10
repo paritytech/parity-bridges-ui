@@ -14,21 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
+import { u8aConcat } from '@polkadot/util';
+import { blake2AsU8a, keccakAsU8a } from '@polkadot/util-crypto';
 
-export const getConfigs = async (apiPromise: ApiPromise) => {
-  const properties = await apiPromise.registry.getChainProperties();
-  const { ss58Format } = properties!;
+type Hasher = { [index: string]: (data: Uint8Array) => Uint8Array } | undefined;
 
-  const prop = await apiPromise.rpc.system.properties();
-  const bridgeIds = prop.get('bridgeIds');
+function hasherH512(data: Uint8Array) {
+  return u8aConcat(blake2AsU8a(data), keccakAsU8a(data));
+}
 
-  return { bridgeId: [], bridgeIds, ss58Format: parseInt(ss58Format.toString()) };
+const hashers: Hasher = {
+  hasherH512
 };
 
-export const getChainName = async (apiPromise: ApiPromise) => {
-  const systemChain = await apiPromise.rpc.system.name();
-  const chainName = systemChain.split(' ')[0];
-
-  return chainName;
-};
+export default hashers;
