@@ -29,7 +29,7 @@ In case of questions about `.env` management please refer to this link: [create-
 
 ## Custom Hashers for building connections
 
-If any of the chains ( or both ) need to use a custom hasher function this one can be built and exported from the file: `src/configs/chainsSetup/customHashers.ts`. Then it is just a matter of refering the function name on variable `REACT_APP_CUSTOM_HASHER_CHAIN_<Chain number>` from `.env` file.
+If any of the chains (or both) need to use a custom hasher function this one can be built and exported from the file: `src/configs/chainsSetup/customHashers.ts`. Then it is just a matter of referring the function name using variable `REACT_APP_CUSTOM_HASHER_CHAIN_<Chain number>` from `.env` file.
 >>>>>>> 22dd2e0... Fixing some values and updating docs
 
 ## Running the bridge
