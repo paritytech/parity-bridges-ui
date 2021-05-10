@@ -14,20 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Box, Container, Paper } from '@material-ui/core';
+import { Container, Paper } from '@material-ui/core';
 import { fade, makeStyles } from '@material-ui/core/styles';
-import React from 'react';
+import React, { useContext } from 'react';
+import { DrawerContext } from '../contexts/GUIContextProvider';
 
 import { substrateGray } from './theme';
 
-// As this is placed as a child in the Material UI Select component, for some reason style components classes are not working.
-// This way to inject the styles works.
+// TODO: transitions
 const useStyles = makeStyles((theme) => ({
   ui: {
     display: 'flex',
     justifyContent: 'center',
     padding: theme.spacing(3),
     paddingLeft: 240 + theme.spacing(3),
+    '&.open': {
+      paddingLeft: 480 + theme.spacing(3)
+    },
     '& .MuiPaper-root': {
       maxWidth: '100%',
       padding: theme.spacing(2),
@@ -41,8 +44,8 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     top: 0,
     width: 240,
-    padding: theme.spacing(3),
     height: '100vh',
+    padding: theme.spacing(3),
     backgroundColor: substrateGray[50],
     borderRight: `1px solid ${fade(theme.palette.divider, 0.5)}`
   }
@@ -54,8 +57,10 @@ interface BoxUIProps {
 
 export const BoxUI = ({ children }: BoxUIProps) => {
   const classes = useStyles();
+  const { drawer } = useContext(DrawerContext);
+
   return (
-    <Container className={classes.ui}>
+    <Container className={`${classes.ui} ${drawer}`}>
       <Paper elevation={24}>{children}</Paper>
     </Container>
   );
@@ -63,5 +68,5 @@ export const BoxUI = ({ children }: BoxUIProps) => {
 
 export const BoxSidebar = ({ children }: BoxUIProps) => {
   const classes = useStyles();
-  return <Box className={classes.sidebar}>{children}</Box>;
+  return <div className={classes.sidebar}>{children}</div>;
 };

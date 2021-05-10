@@ -15,6 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 export { ButtonExt, ButtonSwitchMode, ButtonSubmit } from './Buttons';
+export { StorageDrawer } from './StorageDrawer';
 export { IconTxStatus } from './Icons';
 export { BoxUI, BoxSidebar } from './LayoutBoxes';
 export { MenuAction } from './MenuAction';

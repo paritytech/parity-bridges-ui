@@ -17,7 +17,7 @@
 import { Box, Container, Grid, Typography } from '@material-ui/core';
 import React, { useEffect, useState, useCallback } from 'react';
 
-import { BoxSidebar, BoxUI, ButtonExt, MenuAction, NetworkSides, NetworkStats } from '../components';
+import { BoxSidebar, BoxUI, ButtonExt, StorageDrawer, MenuAction, NetworkSides, NetworkStats } from '../components';
 import CustomCall from '../components/CustomCall';
 import DashboardCard from '../components/DashboardCard';
 import ExtensionAccountCheck from '../components/ExtensionAccountCheck';
@@ -76,6 +76,9 @@ function Main() {
           <Typography variant="button">Bridges UI</Typography>
           <NetworkSides />
           <NetworkStats />
+        </div>
+        <div>
+          <StorageDrawer />
         </div>
         <ButtonExt> Help & Feedback </ButtonExt>
       </BoxSidebar>

@@ -37,7 +37,6 @@ const Transactions = ({ type }: Props) => {
 
   return (
     <>
-      <h2>Transactions</h2>
       {transactions.length ? (
         transactions.map((transaction: TransanctionStatus) => {
           const onComplete = () => {
