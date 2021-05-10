@@ -84,7 +84,6 @@ export default function useTransactionPreparation({
       calculateFee();
     }
   }, [
-    input,
     areApiReady,
     dispatchTransaction,
     estimatedFeeMethodName,
