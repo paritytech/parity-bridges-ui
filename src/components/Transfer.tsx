@@ -57,7 +57,7 @@ const Transfer = () => {
 
   const { estimatedFee, receiverAddress } = useTransactionContext();
   const { api, isApiReady } = sourceChainDetails.sourceApiConnection;
-  const balance = useBalance(api, account?.address || '', true);
+  const balance = useBalance(api, account?.address || '');
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
     input: transferInput,
@@ -75,8 +75,6 @@ const Transfer = () => {
   }, [isRunning]);
 
   useEffect((): void => {
-    estimatedFee &&
-      console.log('Total', new BN(balance.free).sub(new BN(transferInput).add(new BN(estimatedFee))).toNumber());
     estimatedFee &&
       setAmountNotCorrect(new BN(balance.free).sub(new BN(transferInput).add(new BN(estimatedFee))).toNumber() < 0);
   }, [transferInput, estimatedFee, balance, isApiReady]);
