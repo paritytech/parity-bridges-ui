@@ -23,7 +23,8 @@ import useDashboard from './useDashboard';
 import useLaneId from './useLaneId';
 import useLoadingApi from './useLoadingApi';
 import useChainGetters from './useChainGetters';
-import { getTransactionSourceTarget, isTransactionCompleted } from '../util/transactionUtils';
+import { isTransactionCompleted } from '../util/transactionUtils';
+import { getSourceTargetRole } from '../util/chainsUtils';
 import { TransactionStatusType } from '../types/transactionTypes';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
 interface Props {
@@ -37,13 +38,13 @@ const useTransactionNonces = ({ transaction }: Props) => {
 
   const laneId = useLaneId();
   const areApiLoading = useLoadingApi();
-
-  const { targetTransaction, sourceChain, targetChain } = getTransactionSourceTarget({
+  const { sourceChain, targetChain } = transaction;
+  const { targetRole } = getSourceTargetRole({
     useSourceTarget,
-    transaction
+    sourceChain
   });
 
-  const { bestBlockFinalized: bestBlockFinalizedOnTarget } = useDashboard(targetTransaction);
+  const { bestBlockFinalized: bestBlockFinalizedOnTarget } = useDashboard(targetRole);
 
   const { latestReceivedNonceMethodName } = getSubstrateDynamicNames(sourceChain);
   const { api: targetApi } = getValuesByChain(targetChain);

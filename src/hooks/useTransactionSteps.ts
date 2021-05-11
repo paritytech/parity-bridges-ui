@@ -22,7 +22,8 @@ import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useDashboard from '../hooks/useDashboard';
 
 import useLoadingApi from '../hooks/useLoadingApi';
-import { getTransactionSourceTarget, isTransactionCompleted } from '../util/transactionUtils';
+import { isTransactionCompleted } from '../util/transactionUtils';
+import { getSourceTargetRole } from '../util/chainsUtils';
 import { Step, TransactionStatusEnum, TransactionStatusType } from '../types/transactionTypes';
 
 interface Props {
@@ -37,19 +38,20 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
 
   const areApiLoading = useLoadingApi();
 
-  const { sourceTransaction, targetTransaction, sourceChain, targetChain } = getTransactionSourceTarget({
+  const { sourceChain, targetChain } = transaction;
+  const { sourceRole, targetRole } = getSourceTargetRole({
     useSourceTarget,
-    transaction
+    sourceChain
   });
 
   const {
     bestBlockFinalized,
     outboundLanes: { latestReceivedNonce: latestReceivedNonceOnSource }
-  } = useDashboard(sourceTransaction);
+  } = useDashboard(sourceRole);
   const {
     bestBridgedFinalizedBlock: bestBridgedFinalizedBlockOnTarget,
     bestBlockFinalized: bestBlockFinalizedOnTarget
-  } = useDashboard(targetTransaction);
+  } = useDashboard(targetRole);
 
   useEffect(() => {
     if (!areApiLoading || !transaction || isTransactionCompleted(transaction)) {

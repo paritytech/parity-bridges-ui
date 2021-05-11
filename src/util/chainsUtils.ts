@@ -14,8 +14,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { TransactionStatusType, TransactionStatusEnum } from '../types/transactionTypes';
+import { ChainDetails } from '../types/sourceTargetTypes';
+import { SourceTargetState } from '../types/sourceTargetTypes';
 
-export function isTransactionCompleted(transaction: TransactionStatusType): boolean {
-  return transaction.status === TransactionStatusEnum.COMPLETED;
+interface Input {
+  useSourceTarget: () => SourceTargetState;
+  sourceChain: string;
+}
+
+export function getSourceTargetRole({ useSourceTarget, sourceChain }: Input) {
+  const {
+    sourceChainDetails: { sourceChain: currentSourceChain }
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+  } = useSourceTarget();
+
+  const sourceChainsMatch = sourceChain === currentSourceChain;
+
+  const sourceRole = sourceChainsMatch ? ChainDetails.SOURCE : ChainDetails.TARGET;
+  const targetRole = sourceChainsMatch ? ChainDetails.TARGET : ChainDetails.SOURCE;
+
+  return { sourceRole, targetRole, sourceChainsMatch };
 }
