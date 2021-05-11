@@ -40,7 +40,7 @@ const alphaInts = /^[0-9]*[a-zA-Z]{1}$/;
 
 export function evalUnits(input: string): [number | null, string] {
   if (!floats.test(input) && !ints.test(input) && !alphaInts.test(input) && !alphaFloats.test(input)) {
-    return [null, 'Input is not correct. Either use numbers with dot as decimal symbol or expression (e.g. 1k, 1.3m).'];
+    return [null, 'Input is not correct. Use numbers (dot as decimal symbol) or expression (e.g. 1k, 1.3m)'];
   }
 
   if (floats.test(input) || ints.test(input)) {
@@ -55,6 +55,6 @@ export function evalUnits(input: string): [number | null, string] {
       return [null, 'Provided symbol is not correct'];
     }
   } else {
-    return [null, 'Sonmething went wrong'];
+    return [null, 'Check your input. Something went wrong'];
   }
 }
