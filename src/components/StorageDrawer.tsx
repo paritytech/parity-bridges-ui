@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
   closeDrawerIcon: {
     position: 'fixed',
     backgroundColor: theme.palette.background.paper,
-    marginLeft: 300,
+    marginLeft: 296,
     marginTop: theme.spacing(-4)
   }
 }));
@@ -69,16 +69,14 @@ export const StorageDrawer = () => {
       >
         History
       </ButtonDrawerMenu>
-      {drawer === 'open' && (
-        <Fade in={drawer === 'open'} timeout={300}>
-          <div className={classes.drawer}>
-            <IconButton onClick={handleDrawerClose} color="secondary" className={classes.closeDrawerIcon}>
-              <CloseIcon />
-            </IconButton>
-            <Transactions />
-          </div>
-        </Fade>
-      )}
+      <Fade in={drawer === 'open'} timeout={300}>
+        <div className={classes.drawer}>
+          <IconButton onClick={handleDrawerClose} color="secondary" className={classes.closeDrawerIcon}>
+            <CloseIcon />
+          </IconButton>
+          <Transactions />
+        </div>
+      </Fade>
     </>
   );
 };

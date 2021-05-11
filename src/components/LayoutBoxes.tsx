@@ -29,7 +29,10 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: 240 + theme.spacing(3),
     transition: 'padding-left .1s',
     '&.open': {
-      paddingLeft: 600 + theme.spacing(3)
+      paddingLeft: 600 + theme.spacing(3),
+      [theme.breakpoints.down('md')]: {
+        paddingLeft: 240 + theme.spacing(3)
+      }
     },
     '& .MuiPaper-root': {
       width: 480,
@@ -40,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
   },
   sidebar: {
     position: 'fixed',
+    zIndex: 1,
     display: 'flex',
     justifyContent: 'space-between',
     flexDirection: 'column',
