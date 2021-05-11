@@ -46,7 +46,7 @@ export enum EvalMessages {
 }
 
 /**
- * A function that identifes integer/float/expressions (such as 1k)
+ * A function that identifes integer/float(comma or dot)/expressions (such as 1k)
  * and converts to actual value (or reports an error).
  * @param {string} input
  * @returns {[number | null, string]} an array of 2 items
