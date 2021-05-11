@@ -20,16 +20,12 @@ import { blake2AsHex, decodeAddress, encodeAddress } from '@polkadot/util-crypto
 const accountDerivation = 'pallet-bridge/account-derivation/account';
 
 interface Data {
-  SS58Format: number;
-  bridgeId: string;
+  ss58Format: number;
+  bridgeId: number[];
   address: string;
 }
 
-export default function getDeriveAccount({ SS58Format = 42, bridgeId, address }: Data): string {
-  const input = [
-    ...compactAddLength(stringToU8a(accountDerivation)),
-    ...stringToU8a(bridgeId),
-    ...decodeAddress(address)
-  ];
-  return encodeAddress(blake2AsHex(Uint8Array.from(input)), SS58Format);
+export default function getDeriveAccount({ ss58Format = 42, bridgeId, address }: Data): string {
+  const input = [...compactAddLength(stringToU8a(accountDerivation)), ...bridgeId, ...decodeAddress(address)];
+  return encodeAddress(blake2AsHex(Uint8Array.from(input)), ss58Format);
 }

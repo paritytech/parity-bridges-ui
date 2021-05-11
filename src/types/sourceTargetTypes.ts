@@ -15,14 +15,35 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-
+import { ApiOptions } from '@polkadot/api/types';
 import { SourceTargetActionsTypes } from '../actions/sourceTargetActions';
+import { ProviderInterface } from '@polkadot/rpc-provider/types';
 
 export interface ApiPromiseConnectionType {
   api: ApiPromise; // From @polkadot/api\
   isApiReady: boolean;
 }
 
+export interface ConnectionChainInformation {
+  chainNumber: string;
+  hasher?: (data: Uint8Array) => Uint8Array;
+  provider: ProviderInterface;
+  types?: ApiOptions['types'];
+  polkadotjsUrl: string;
+}
+
+export interface Configs {
+  bridgeIds: { [propName: string]: Array<number> };
+  chainName: string;
+  ss58Format: number;
+}
+
+export type Connection = {
+  chainName: string;
+  apiConnection: ApiPromiseConnectionType;
+  polkadotjsUrl: string;
+  configs: Configs;
+};
 interface Payload {
   [propName: string]: string;
 }
@@ -32,6 +53,7 @@ export interface ApiPromiseContextType {
   api: ApiPromise; // From @polkadot/api\
   isApiReady: boolean;
   polkadotjsUrl: string;
+  configs: Configs;
 }
 
 export enum ChainDetails {
@@ -39,15 +61,26 @@ export enum ChainDetails {
   TARGET = 'targetChainDetails'
 }
 
+// Pairs need to match with the .env value REACT_APP_PAIR
+export enum Pairs {
+  RIALTO_MILLAU = 'RIALTO_MILLAU'
+}
+
+export interface SourceState {
+  sourceConfigs: Configs;
+  sourceApiConnection: ApiPromiseConnectionType;
+  sourceChain: string;
+  sourcePolkadotjsUrl: string;
+}
+
+export interface TargetState {
+  targetConfigs: Configs;
+  targetApiConnection: ApiPromiseConnectionType;
+  targetChain: string;
+  targetPolkadotjsUrl: string;
+}
+
 export interface SourceTargetState {
-  [ChainDetails.SOURCE]: {
-    sourceApiConnection: ApiPromiseConnectionType;
-    sourceChain: string;
-    sourcePolkadotjsUrl: string;
-  };
-  [ChainDetails.TARGET]: {
-    targetApiConnection: ApiPromiseConnectionType;
-    targetChain: string;
-    targetPolkadotjsUrl: string;
-  };
+  [ChainDetails.SOURCE]: SourceState;
+  [ChainDetails.TARGET]: TargetState;
 }
