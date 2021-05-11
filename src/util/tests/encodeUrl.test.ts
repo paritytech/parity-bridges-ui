@@ -17,12 +17,14 @@
 import { stringToU8a } from '@polkadot/util';
 import { base64Encode } from '@polkadot/util-crypto';
 import { zlibSync } from 'fflate';
-
-import customTypesChain1 from '../../configs/substrateCustomTypes/chain1.json';
 import { createPolkadotJsUrl } from '../createPolkadotJsUrl';
 
+const types = {
+  Hasher: 'H256'
+};
+
 describe('createPolkadotJsUrl', () => {
-  const jsonU8a = stringToU8a(JSON.stringify(customTypesChain1));
+  const jsonU8a = stringToU8a(JSON.stringify(types));
   const compressed = zlibSync(jsonU8a, { level: 9 });
   const encoded = base64Encode(compressed);
   const providerUrl = 'wss://wss.rialto.brucke.link';
@@ -32,7 +34,7 @@ describe('createPolkadotJsUrl', () => {
 
   describe('Test chain', () => {
     it('should retrieve the expected URL for provided types', async () => {
-      const result = createPolkadotJsUrl(customTypesChain1, providerUrl);
+      const result = createPolkadotJsUrl(types, providerUrl);
       expect(result).toEqual(expectedUrl);
     });
   });
