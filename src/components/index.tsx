@@ -20,5 +20,4 @@ export { IconTxStatus } from './Icons';
 export { BoxUI, BoxSidebar } from './LayoutBoxes';
 export { MenuAction } from './MenuAction';
 export { NetworkSides, NetworkStats } from './Network';
-export { TransactionDisplay } from './TransactionDisplay';
 export { light } from './theme';
