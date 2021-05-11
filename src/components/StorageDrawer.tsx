@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Box, Fade, IconButton } from '@material-ui/core';
+import { Fade, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useContext } from 'react';
 import CloseIcon from '@material-ui/icons/Close';
@@ -26,11 +26,25 @@ import { ButtonDrawerMenu } from './Buttons';
 const useStyles = makeStyles((theme) => ({
   drawer: {
     position: 'absolute',
-    width: 360,
-    height: '100vh',
-    left: 240,
     top: 0,
-    padding: theme.spacing(2)
+    left: 200,
+    width: 400,
+    height: '100vh',
+    padding: theme.spacing(2),
+    paddingLeft: theme.spacing(5),
+    paddingTop: theme.spacing(5),
+    overflow: 'auto',
+    '-ms-overflow-style': 'none',
+    'scrollbar-width': 'none',
+    '&::-webkit-scrollbar': {
+      display: 'none'
+    }
+  },
+  closeDrawerIcon: {
+    position: 'fixed',
+    backgroundColor: theme.palette.background.paper,
+    marginLeft: 300,
+    marginTop: theme.spacing(-4)
   }
 }));
 
@@ -39,11 +53,11 @@ export const StorageDrawer = () => {
   const { drawer, setDrawer } = useContext(DrawerContext);
 
   const handleDrawerOpen = () => {
-    setDrawer(`${drawer === 'open' ? 'closed' : 'open'}`);
+    setDrawer(`${drawer === 'open' ? '' : 'open'}`);
   };
 
   const handleDrawerClose = () => {
-    setDrawer('closed');
+    setDrawer('');
   };
 
   return (
@@ -56,13 +70,11 @@ export const StorageDrawer = () => {
         History
       </ButtonDrawerMenu>
       {drawer === 'open' && (
-        <Fade in={true} timeout={300}>
+        <Fade in={drawer === 'open'} timeout={300}>
           <div className={classes.drawer}>
-            <Box width="100%" textAlign="right">
-              <IconButton onClick={handleDrawerClose} color="secondary">
-                <CloseIcon />
-              </IconButton>
-            </Box>
+            <IconButton onClick={handleDrawerClose} color="secondary" className={classes.closeDrawerIcon}>
+              <CloseIcon />
+            </IconButton>
             <Transactions />
           </div>
         </Fade>
