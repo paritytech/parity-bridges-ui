@@ -25,6 +25,7 @@ import Sender from '../components/Sender';
 import SnackBar from '../components/SnackBar';
 import Transfer from '../components/Transfer';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+import Transactions from '../components/Transactions';
 
 interface MenuActionItemsProps {
   idx: number;
@@ -78,6 +79,7 @@ function Main() {
           <ArrowDownwardIcon fontSize="large" color="primary" />
         </Box>
         <>{searchItems(index)?.component}</>
+        <Transactions type={searchItems(index)?.title} />
         <SnackBar />
       </BoxUI>
     </>
