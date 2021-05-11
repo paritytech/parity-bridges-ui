@@ -101,7 +101,7 @@ const Transfer = () => {
         />
       </Box>
       <Receiver />
-      <ButtonSubmit disabled={isButtonDisabled() || !transferInput || amountNotCorrect} onClick={sendLaneMessage}>
+      <ButtonSubmit disabled={isButtonDisabled() || amountNotCorrect} onClick={sendLaneMessage}>
         Send bridge transfer from {sourceChainDetails.sourceChain} to {targetChainDetails.targetChain}
       </ButtonSubmit>
       {amountNotCorrect ? (
