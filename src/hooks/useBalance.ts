@@ -52,7 +52,6 @@ const useBalance = (api: ApiPromise, address: string, providedSi: boolean = fals
             chainTokens: data.registry.chainTokens[0],
             formattedBalance: formatBalance(data.free, {
               decimals: api.registry.chainDecimals[0],
-              forceUnit: '-',
               withUnit: api.registry.chainTokens[0],
               withSi: providedSi
             }),
