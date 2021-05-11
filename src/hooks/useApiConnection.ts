@@ -19,7 +19,6 @@ import { TypeRegistry } from '@polkadot/types';
 import isEmpty from 'lodash/isEmpty';
 import React, { useEffect, useState } from 'react';
 import { ApiPromiseConnectionType, Configs, ConnectionChainInformation } from '../types/sourceTargetTypes';
-import useApiChainName from './useApiChainName';
 import logger from '../util/logger';
 import { getConfigs } from '../util/getConfigs';
 
@@ -39,28 +38,22 @@ type PolkadotJsURL = {
 
 type ConnectionType = ApiPromiseConnectionType & ConfigsType & PolkadotJsURL;
 
-export function useApiConnection(
-  connectionDetails: ConnectionChainInformation,
-  initConnectionDetails: ConnectionChainInformation
-): ConnectionType {
-  const chainName = useApiChainName(initConnectionDetails);
+export function useApiConnection(connectionDetails: ConnectionChainInformation): ConnectionType {
   const [apiPromise, setApiPromise] = useState<ApiPromise>({} as ApiPromise);
   const [isReady, setIsReady] = useState(false);
   const [configs, setConfigs] = useState<Configs>({} as Configs);
-  const { hasher, provider, types, polkadotjsUrl } = connectionDetails;
+  const { chainNumber, hasher, provider, types, polkadotjsUrl } = connectionDetails;
 
   useEffect(() => {
-    if (chainName) {
-      ApiPromise.create({ hasher, provider, types })
-        .then((api): void => {
-          logger.info(`Chain ${chainName}: connection created.`);
-          setApiPromise(api);
-        })
-        .catch((err): void => {
-          logger.error(`Chain ${chainName}: Error creating connection. Details: ${err}`);
-        });
-    }
-  }, [chainName, hasher, provider, types]);
+    ApiPromise.create({ hasher, provider, types })
+      .then((api): void => {
+        logger.info(`Chain ${chainNumber}: connection created.`);
+        setApiPromise(api);
+      })
+      .catch((err): void => {
+        logger.error(`Chain ${chainNumber}: Error creating connection. Details: ${err}`);
+      });
+  }, [chainNumber, hasher, provider, types]);
 
   useEffect(() => {
     !isReady &&
@@ -71,24 +64,24 @@ export function useApiConnection(
           if (types) {
             registry.register(types);
           }
-          logger.info(`Chain ${chainName}: types registration ready`);
+          logger.info(`Chain ${chainNumber}: types registration ready`);
           setIsReady(true);
         })
         .catch((err): void => {
-          logger.error(`Chain ${chainName}: Error registering types. Details: ${err}`);
+          logger.error(`Chain ${chainNumber}: Error registering types. Details: ${err}`);
         });
-  }, [apiPromise, chainName, isReady, types]);
+  }, [apiPromise, chainNumber, isReady, types]);
 
   useEffect(() => {
     const getChainConfigs = async () => {
       const values = await getConfigs(apiPromise);
-      setConfigs({ chainName, ...values });
+      setConfigs(values);
     };
 
     if (isReady && isEmpty(configs)) {
       getChainConfigs();
     }
-  }, [apiPromise, chainName, configs, isReady]);
+  }, [apiPromise, chainNumber, configs, isReady]);
 
   return { api: apiPromise, isApiReady: isReady, configs, polkadotjsUrl };
 }

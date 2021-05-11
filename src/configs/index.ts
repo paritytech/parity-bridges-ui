@@ -21,8 +21,8 @@ import { checkEnvVariable } from '../util/envVariablesValidations';
 import { CHAIN_1, CHAIN_2 } from '../constants';
 import { createPolkadotJsUrl } from '../util/createPolkadotJsUrl';
 import { ConnectionChainInformation } from '../types/sourceTargetTypes';
-import customTypesChain1 from './substrateCustomTypes/customTypesChain1.json';
-import customTypesChain2 from './substrateCustomTypes/customTypesChain2.json';
+import customTypesChain1 from './substrateCustomTypes/chain1.json';
+import customTypesChain2 from './substrateCustomTypes/chain2.json';
 import hashers from './chainsSetup/customHashers';
 
 const getProviderInfo = (chainNumber: string, types: ApiOptions['types']) => {

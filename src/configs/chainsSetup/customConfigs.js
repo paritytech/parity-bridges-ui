@@ -19,24 +19,28 @@ const result = dotenv.config();
 
 const customTypesDir = './src/configs/substrateCustomTypes';
 
+const rialtoUrl =
+  'https://raw.githubusercontent.com/paritytech/parity-bridges-common/master/deployments/types-rialto.json';
+const millauUrl =
+  'https://raw.githubusercontent.com/paritytech/parity-bridges-common/master/deployments/types-millau.json';
+
+const chain1Url = result.parsed.REACT_APP_CUSTOM_TYPES_URL_CHAIN_1 || rialtoUrl;
+const chain2Url = result.parsed.REACT_APP_CUSTOM_TYPES_URL_CHAIN_2 || millauUrl;
+
 if (result.error) {
   throw result.error;
 }
 
 const customTypes = [];
 
-if (result.parsed.REACT_APP_CUSTOM_TYPES_URL_CHAIN_1) {
-  customTypes.push({
-    path: `${customTypesDir}/customTypesChain1.json`,
-    url: result.parsed.REACT_APP_CUSTOM_TYPES_URL_CHAIN_1
-  });
-}
+customTypes.push({
+  path: `${customTypesDir}/customTypesChain1.json`,
+  url: chain1Url
+});
 
-if (result.parsed.REACT_APP_CUSTOM_TYPES_URL_CHAIN_2) {
-  customTypes.push({
-    path: `${customTypesDir}/customTypesChain2.json`,
-    url: result.parsed.REACT_APP_CUSTOM_TYPES_URL_CHAIN_2
-  });
-}
+customTypes.push({
+  path: `${customTypesDir}/customTypesChain2.json`,
+  url: chain2Url
+});
 
 module.exports = customTypes;

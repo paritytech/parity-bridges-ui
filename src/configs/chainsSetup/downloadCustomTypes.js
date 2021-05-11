@@ -1,4 +1,4 @@
-// Copyright 2021 Parity Technologies (UK) Ltd.D
+// Copyright 2021 Parity Technologies (UK) Ltd.
 // This file is part of Parity Bridges UI.
 //
 // Parity Bridges UI is free software: you can redistribute it and/or modify
