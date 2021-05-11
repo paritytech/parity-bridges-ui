@@ -52,26 +52,18 @@ export const StorageDrawer = () => {
   const classes = useStyles();
   const { drawer, setDrawer } = useContext(DrawerContext);
 
-  const handleDrawerOpen = () => {
-    setDrawer(`${drawer === 'open' ? '' : 'open'}`);
-  };
-
-  const handleDrawerClose = () => {
-    setDrawer('');
-  };
-
   return (
     <>
       <ButtonDrawerMenu
         startIcon={<HistoryIcon />}
-        onClick={handleDrawerOpen}
+        onClick={() => setDrawer(`${drawer === 'open' ? '' : 'open'}`)}
         color={drawer === 'open' ? 'primary' : 'secondary'}
       >
         History
       </ButtonDrawerMenu>
       <Fade in={drawer === 'open'} timeout={300}>
         <div className={classes.drawer}>
-          <IconButton onClick={handleDrawerClose} color="secondary" className={classes.closeDrawerIcon}>
+          <IconButton onClick={() => setDrawer('')} color="secondary" className={classes.closeDrawerIcon}>
             <CloseIcon />
           </IconButton>
           <Transactions />
