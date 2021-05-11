@@ -14,19 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Box, Grid, Typography } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import React, { useState } from 'react';
 
 import { BoxSidebar, BoxUI, ButtonExt, StorageDrawer, MenuAction, NetworkSides, NetworkStats } from '../components';
 import CustomCall from '../components/CustomCall';
-import DashboardCard from '../components/DashboardCard';
 import ExtensionAccountCheck from '../components/ExtensionAccountCheck';
 import Remark from '../components/Remark';
 import Sender from '../components/Sender';
 import SnackBar from '../components/SnackBar';
-import Transactions from '../components/Transactions';
 import Transfer from '../components/Transfer';
-import { ChainDetails } from '../types/sourceTargetTypes';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 
 interface MenuActionItemsProps {
@@ -81,18 +78,7 @@ function Main() {
           <ArrowDownwardIcon fontSize="large" color="primary" />
         </Box>
         <>{searchItems(index)?.component}</>
-        <Transactions type={searchItems(index)?.title} />
         <SnackBar />
-        <br />
-        <br />
-        <Grid container alignItems="center">
-          <Grid item md={5}>
-            <DashboardCard chainDetail={ChainDetails.SOURCE} />
-          </Grid>
-          <Grid item md={5}>
-            <DashboardCard chainDetail={ChainDetails.TARGET} />
-          </Grid>
-        </Grid>
       </BoxUI>
     </>
   );

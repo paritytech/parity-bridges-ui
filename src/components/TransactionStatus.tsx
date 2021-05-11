@@ -204,7 +204,7 @@ const TransactionStatus = ({ transaction, onComplete }: Props) => {
 
   return (
     <>
-      <Box mt={3}>
+      <Box mt={2}>
         <ButtonSwitchMode disabled> Payload!</ButtonSwitchMode>
         <ButtonSwitchMode color="primary"> Receipt</ButtonSwitchMode>
         <ButtonSwitchMode disabled> Human</ButtonSwitchMode>
