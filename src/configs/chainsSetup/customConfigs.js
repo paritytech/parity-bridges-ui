@@ -34,12 +34,12 @@ if (result.error) {
 const customTypes = [];
 
 customTypes.push({
-  path: `${customTypesDir}/customTypesChain1.json`,
+  path: `${customTypesDir}/chain1.json`,
   url: chain1Url
 });
 
 customTypes.push({
-  path: `${customTypesDir}/customTypesChain2.json`,
+  path: `${customTypesDir}/chain2.json`,
   url: chain2Url
 });
 
