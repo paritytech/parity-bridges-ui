@@ -24,6 +24,7 @@ import { TransactionTypes } from '../types/transactionTypes';
 import { TokenSymbol } from './TokenSymbol';
 import Receiver from './Receiver';
 import { ButtonSubmit } from '../components';
+import { evalUnits } from '../util/evalUnits';
 
 const useStyles = makeStyles((theme) => ({
   inputAmount: {
@@ -42,10 +43,12 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const Transfer = () => {
+function Transfer() {
   const classes = useStyles();
   const [isRunning, setIsRunning] = useState(false);
+  const [helperText, setHelperText] = useState('');
   const [transferInput, setTransferInput] = useState<string>('');
+  const [actualInput, setActualInput] = useState<number | null>();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
   const areApiReady = useLoadingApi();
@@ -53,13 +56,19 @@ const Transfer = () => {
   const { estimatedFee, receiverAddress } = useTransactionContext();
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
-    input: transferInput,
+    input: actualInput?.toString() ?? '',
     isRunning,
     setIsRunning,
     type: TransactionTypes.TRANSFER
   });
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.value) {
+      const [actualValue, message] = evalUnits(event.target.value);
+      setHelperText(message);
+      setActualInput(actualValue);
+      console.log('actualValue', actualValue);
+    }
     setTransferInput(event.target.value);
   };
 
@@ -75,6 +84,7 @@ const Transfer = () => {
           className={classes.inputAmount}
           fullWidth
           variant="outlined"
+          helperText={helperText}
           InputProps={{
             endAdornment: <TokenSymbol position="start" />
           }}
@@ -87,6 +97,6 @@ const Transfer = () => {
       {receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}
     </>
   );
-};
+}
 
 export default Transfer;
