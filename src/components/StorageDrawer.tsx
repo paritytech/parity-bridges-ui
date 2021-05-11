@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Box, Drawer, IconButton } from '@material-ui/core';
+import { Box, Fade, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useContext } from 'react';
 import CloseIcon from '@material-ui/icons/Close';
@@ -25,12 +25,12 @@ import { ButtonDrawerMenu } from './Buttons';
 
 const useStyles = makeStyles((theme) => ({
   drawer: {
-    width: 240,
-    flexShrink: 0,
-    '& .MuiPaper-root': {
-      padding: theme.spacing(2),
-      left: 240 - 1
-    }
+    position: 'absolute',
+    width: 360,
+    height: '100vh',
+    left: 240,
+    top: 0,
+    padding: theme.spacing(2)
   }
 }));
 
@@ -55,14 +55,18 @@ export const StorageDrawer = () => {
       >
         History
       </ButtonDrawerMenu>
-      <Drawer open={drawer === 'open'} variant="persistent" className={classes.drawer}>
-        <Box width="100%" textAlign="right">
-          <IconButton onClick={handleDrawerClose} color="secondary">
-            <CloseIcon />
-          </IconButton>
-        </Box>
-        <Transactions />
-      </Drawer>
+      {drawer === 'open' && (
+        <Fade in={true} timeout={300}>
+          <div className={classes.drawer}>
+            <Box width="100%" textAlign="right">
+              <IconButton onClick={handleDrawerClose} color="secondary">
+                <CloseIcon />
+              </IconButton>
+            </Box>
+            <Transactions />
+          </div>
+        </Fade>
+      )}
     </>
   );
 };

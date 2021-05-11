@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: 240 + theme.spacing(3),
     transition: 'padding-left .1s',
     '&.open': {
-      paddingLeft: 616 + theme.spacing(3)
+      paddingLeft: 600 + theme.spacing(3)
     },
     '& .MuiPaper-root': {
       width: 480,
@@ -48,7 +48,12 @@ const useStyles = makeStyles((theme) => ({
     height: '100vh',
     padding: theme.spacing(3),
     backgroundColor: substrateGray[50],
-    borderRight: `1px solid ${fade(theme.palette.divider, 0.5)}`
+    borderRight: `1px solid ${fade(theme.palette.divider, 0.5)}`,
+    transition: 'width .1s, padding-right .1s',
+    '&.open': {
+      width: 600,
+      paddingRight: 360 + theme.spacing(3)
+    }
   }
 }));
 
@@ -69,5 +74,6 @@ export const BoxUI = ({ children }: BoxUIProps) => {
 
 export const BoxSidebar = ({ children }: BoxUIProps) => {
   const classes = useStyles();
-  return <div className={classes.sidebar}>{children}</div>;
+  const { drawer } = useContext(DrawerContext);
+  return <div className={`${classes.sidebar} ${drawer}`}>{children}</div>;
 };

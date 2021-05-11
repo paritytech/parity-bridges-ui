@@ -34,7 +34,10 @@ const useStyles = makeStyles((theme) => ({
     fontSize: theme.typography.body2.fontSize
   },
   drawerMenu: {
-    justifyContent: 'end'
+    justifyContent: 'end',
+    '&.MuiButton-textPrimary': {
+      backgroundColor: theme.palette.secondary.light
+    }
   }
 }));
 
