@@ -18,8 +18,8 @@ import { stringToU8a } from '@polkadot/util';
 import { base64Encode } from '@polkadot/util-crypto';
 import { zlibSync } from 'fflate';
 
-import customTypesRialto from '../../configs/substrateCustomTypes/customTypesRialto.json';
-import createPolkadotJsUrl from '../createPolkadotJsUrl';
+import customTypesRialto from '../../configs/customTypesRialto.json';
+import { createPolkadotJsUrl } from '../createPolkadotJsUrl';
 
 describe('createPolkadotJsUrl', () => {
   const jsonU8a = stringToU8a(JSON.stringify(customTypesRialto));

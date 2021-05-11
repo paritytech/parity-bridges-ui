@@ -25,7 +25,8 @@ import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useKeyringContext } from '../contexts/KeyringContextProvider';
 import { useUpdateSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useDerivedAccount from '../hooks/useDerivedAccount';
-import getChainSS58 from '../util/getSS58';
+import useSS58Format from '../hooks/useSS58Format';
+
 interface Accounts {
   account: KeyringPair | null;
   accounts: Array<KeyringPair> | [];
@@ -40,6 +41,7 @@ const useAccounts = (): Accounts => {
   const { dispatchChangeSourceTarget } = useUpdateSourceTarget();
   const derivedAccount = useDerivedAccount();
   const { account } = useAccountContext();
+  const { getSS58ByChain } = useSS58Format();
 
   useEffect(() => {
     if (keyringPairsReady && keyringPairs.length) {
@@ -48,7 +50,7 @@ const useAccounts = (): Accounts => {
   }, [keyringPairsReady, keyringPairs, setAccounts]);
 
   const setCurrentAccount = (value: string, chain: string) => {
-    const ss58Format = getChainSS58(chain);
+    const ss58Format = getSS58ByChain(chain);
 
     const account = accounts.find(({ address }) => encodeAddress(address, ss58Format) === value);
     if (account) {

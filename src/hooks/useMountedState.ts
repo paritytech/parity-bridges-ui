@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useIsMounted } from './useIsMounted';
 
 /**
@@ -36,11 +36,14 @@ export const useMountedState = <D>(initialState: D | (() => D)) => {
 
   const [state, setState] = useState<D>(initialState);
 
-  const setMountedState = (value: D) => {
-    if (isMounted()) {
-      setState(value);
-    }
-  };
+  const setMountedState = useCallback(
+    (value: D) => {
+      if (isMounted()) {
+        setState(value);
+      }
+    },
+    [isMounted]
+  );
 
   return [state, setMountedState] as const;
 };
