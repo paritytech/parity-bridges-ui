@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Drawer, IconButton } from '@material-ui/core';
+import { Box, Drawer, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useContext } from 'react';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import CloseIcon from '@material-ui/icons/Close';
 import HistoryIcon from '@material-ui/icons/History';
 import Transactions from './Transactions';
 import { DrawerContext } from '../contexts/GUIContextProvider';
@@ -28,13 +28,8 @@ const useStyles = makeStyles((theme) => ({
     width: 240,
     flexShrink: 0,
     '& .MuiPaper-root': {
+      padding: theme.spacing(2),
       left: 240 - 1
-    }
-  },
-  drawerWrap: {
-    '&.open': {
-      width: 480,
-      background: theme.palette.primary.dark
     }
   }
 }));
@@ -60,15 +55,14 @@ export const StorageDrawer = () => {
       >
         History
       </ButtonDrawerMenu>
-
-      <div className={`${classes.drawerWrap} ${drawer}`}>
-        <Drawer open={drawer === 'open'} variant="persistent" className={classes.drawer}>
-          <IconButton onClick={handleDrawerClose}>
-            <ChevronLeftIcon />
+      <Drawer open={drawer === 'open'} variant="persistent" className={classes.drawer}>
+        <Box width="100%" textAlign="right">
+          <IconButton onClick={handleDrawerClose} color="secondary">
+            <CloseIcon />
           </IconButton>
-          <Transactions />
-        </Drawer>
-      </div>
+        </Box>
+        <Transactions />
+      </Drawer>
     </>
   );
 };

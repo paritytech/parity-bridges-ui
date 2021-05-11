@@ -46,6 +46,11 @@ const useStyles = makeStyles((theme) => ({
     },
     '& .header': {
       fontWeight: 500
+    },
+    '&.MuiPaper-root': {
+      maxWidth: '100%',
+      padding: theme.spacing(2),
+      borderRadius: theme.spacing(1.5)
     }
   }
 }));
@@ -199,9 +204,11 @@ const TransactionStatus = ({ transaction, onComplete }: Props) => {
 
   return (
     <>
-      <ButtonSwitchMode disabled> Payload</ButtonSwitchMode>
-      <ButtonSwitchMode color="primary"> Receipt</ButtonSwitchMode>
-      <ButtonSwitchMode disabled> Human</ButtonSwitchMode>
+      <Box mt={3}>
+        <ButtonSwitchMode disabled> Payload!</ButtonSwitchMode>
+        <ButtonSwitchMode color="primary"> Receipt</ButtonSwitchMode>
+        <ButtonSwitchMode disabled> Human</ButtonSwitchMode>
+      </Box>
       <Card elevation={24} className={classes.card}>
         <Box className="header" component="p">
           <IconTxStatus status={transaction.status} /> {transaction.type} {transaction.sourceChain} {'->'}{' '}
