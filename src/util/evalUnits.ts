@@ -38,23 +38,34 @@ const ints = /^[0-9]+$/;
 const alphaFloats = /^[0-9]*[.]{1}[0-9]*[a-zA-Z]{1}$/;
 const alphaInts = /^[0-9]*[a-zA-Z]{1}$/;
 
+export enum EvalMessages {
+  GIBBERISH = 'Input is not correct. Use numbers (dot as decimal symbol) or expression (e.g. 1k, 1.3m)',
+  SUCCESS = '',
+  SYMBOL_ERROR = 'Provided symbol is not correct',
+  GENERAL_ERROR = 'Check your input. Something went wrong'
+}
+
+/**
+ * A function that identifes integer/float/expressions (such as 1k)
+ * and converts to actual value (or reports an error).
+ * @param {string} input
+ * @returns {[number | null, string]} an array of 2 items
+ * the first is the actual calculated number (or null if none) while
+ * the second is the message that should appear in case of error
+ */
 export function evalUnits(input: string): [number | null, string] {
   if (!floats.test(input) && !ints.test(input) && !alphaInts.test(input) && !alphaFloats.test(input)) {
-    return [null, 'Input is not correct. Use numbers (dot as decimal symbol) or expression (e.g. 1k, 1.3m)'];
+    return [null, EvalMessages.GIBBERISH];
   }
 
   if (floats.test(input) || ints.test(input)) {
-    return [parseFloat(input), ''];
+    return [parseFloat(input), EvalMessages.SUCCESS];
   } else if (alphaInts.test(input) || alphaFloats.test(input)) {
     const numericPart = parseFloat(input);
     const charPart = input.replace(/[0-9.]/g, '');
     const siVal = si.find((s) => s.symbol === charPart);
-    if (siVal) {
-      return [numericPart * siVal.value, ''];
-    } else {
-      return [null, 'Provided symbol is not correct'];
-    }
+    return siVal ? [numericPart * siVal.value, EvalMessages.SUCCESS] : [null, EvalMessages.SYMBOL_ERROR];
   } else {
-    return [null, 'Check your input. Something went wrong'];
+    return [null, EvalMessages.GENERAL_ERROR];
   }
 }
