@@ -57,8 +57,8 @@ const useBridgedBlocks = ({ isApiReady, api, chain }: Props) => {
       : null;
 
     return async (): Promise<void> => {
-      unsubImportedHeaders && (await unsubImportedHeaders)();
       unsubBestFinalized && (await unsubBestFinalized)();
+      unsubImportedHeaders && (await unsubImportedHeaders)();
     };
   }, [isApiReady, chain, api, bridgedGrandpaChain]);
 
