@@ -21,17 +21,18 @@ import { DrawerContext } from '../contexts/GUIContextProvider';
 
 import { substrateGray } from './theme';
 
-// TODO: transitions
 const useStyles = makeStyles((theme) => ({
   ui: {
     display: 'flex',
     justifyContent: 'center',
     padding: theme.spacing(3),
     paddingLeft: 240 + theme.spacing(3),
+    transition: 'padding-left .1s',
     '&.open': {
-      paddingLeft: 480 + theme.spacing(3)
+      paddingLeft: 616 + theme.spacing(3)
     },
     '& .MuiPaper-root': {
+      width: 480,
       maxWidth: '100%',
       padding: theme.spacing(2),
       borderRadius: theme.spacing(1.5)
