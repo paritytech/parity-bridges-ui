@@ -19,12 +19,12 @@ import { blake2AsU8a, keccakAsU8a } from '@polkadot/util-crypto';
 
 type Hasher = { [index: string]: (data: Uint8Array) => Uint8Array } | undefined;
 
-function blake2Keccak256Concat(data: Uint8Array) {
+function blake2Keccak256Hasher(data: Uint8Array) {
   return u8aConcat(blake2AsU8a(data), keccakAsU8a(data));
 }
 
 const hashers: Hasher = {
-  blake2Keccak256Concat
+  blake2Keccak256Hasher
 };
 
 export default hashers;
