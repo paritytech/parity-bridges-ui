@@ -21,7 +21,7 @@ import { TransactionActionCreators } from '../actions/transactionActions';
 import { useUpdateMessageContext } from '../contexts/MessageContext';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import { useUpdateTransactionContext } from '../contexts/TransactionContext';
-import { TransactionStatusEnum, TransanctionStatus } from '../types/transactionTypes';
+import { TransactionStatusEnum, TransactionStatusType } from '../types/transactionTypes';
 import shortenItem from '../util/shortenItem';
 import TransactionStatus from './TransactionStatus';
 import TransactionStatusMock from './TransactionStatusMock';
@@ -39,7 +39,7 @@ const Transactions = ({ type }: Props) => {
     <>
       <h2>Transactions</h2>
       {transactions.length ? (
-        transactions.map((transaction: TransanctionStatus) => {
+        transactions.map((transaction: TransactionStatusType) => {
           const onComplete = () => {
             dispatchTransaction(
               TransactionActionCreators.updateTransactionStatus(

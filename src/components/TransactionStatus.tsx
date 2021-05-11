@@ -19,10 +19,10 @@ import { Box, Card, makeStyles, Typography } from '@material-ui/core';
 import { ButtonSwitchMode } from './Buttons';
 import { IconTxStatus } from './Icons';
 import useTransactionSteps from '../hooks/useTransactionSteps';
-import { TransanctionStatus } from '../types/transactionTypes';
+import { TransactionStatusType } from '../types/transactionTypes';
 
 interface Props {
-  transaction: TransanctionStatus;
+  transaction: TransactionStatusType;
   onComplete: () => void;
 }
 

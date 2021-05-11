@@ -24,16 +24,16 @@ import useLaneId from './useLaneId';
 import useLoadingApi from './useLoadingApi';
 import useChainGetters from './useChainGetters';
 import { getTransactionSourceTarget, isTransactionCompleted } from '../util/transactionUtils';
-import { TransanctionStatus } from '../types/transactionTypes';
+import { TransactionStatusType } from '../types/transactionTypes';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
 interface Props {
-  transaction: TransanctionStatus;
+  transaction: TransactionStatusType;
 }
 
 const useTransactionNonces = ({ transaction }: Props) => {
   const [nonceOfTargetFinalizedBlock, setNonceOfTargetFinalizedBlock] = useState<null | number>(null);
   const [latestReceivedNonceRuntimeApi, setLatestReceivedNonceRuntimeApi] = useState(0);
-  const { getApiByChain } = useChainGetters();
+  const { getValuesByChain } = useChainGetters();
 
   const laneId = useLaneId();
   const areApiLoading = useLoadingApi();
@@ -46,7 +46,7 @@ const useTransactionNonces = ({ transaction }: Props) => {
   const { bestBlockFinalized: bestBlockFinalizedOnTarget } = useDashboard(targetTransaction);
 
   const { latestReceivedNonceMethodName } = getSubstrateDynamicNames(sourceChain);
-  const targetApi = getApiByChain(targetChain);
+  const { api: targetApi } = getValuesByChain(targetChain);
 
   useEffect(() => {
     if (!areApiLoading || !transaction || !transaction || isTransactionCompleted(transaction)) {

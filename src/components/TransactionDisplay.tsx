@@ -17,13 +17,13 @@
 import { Box, Card, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
 
-import { Step, TransanctionStatus } from '../types/transactionTypes';
+import { Step, TransactionStatusType } from '../types/transactionTypes';
 import { ButtonSwitchMode } from './Buttons';
 import { IconTxStatus } from './Icons';
 
 interface Props {
   steps: Array<Step>;
-  transaction: TransanctionStatus;
+  transaction: TransactionStatusType;
 }
 
 const useStyles = makeStyles((theme) => ({

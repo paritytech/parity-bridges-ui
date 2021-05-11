@@ -57,7 +57,7 @@ const Sender = ({ className }: Props) => {
     targetChainDetails: { targetChain }
   } = useSourceTarget();
   const { setReceiver } = useReceiver();
-  const { getSS58ByChain } = useChainGetters();
+  const { getValuesByChain } = useChainGetters();
 
   useEffect(() => {
     if (!chains.length) {
@@ -77,7 +77,8 @@ const Sender = ({ className }: Props) => {
 
   const renderAccounts = (chains: string[]) => {
     const [source, target] = chains;
-    const formatedAccounts = formatAccounts(accounts, getSS58ByChain(source));
+    const { ss58Format } = getValuesByChain(source);
+    const formatedAccounts = formatAccounts(accounts, ss58Format);
     const items = formatedAccounts.map(({ text, value, key }: any) => (
       <MenuItem
         key={key}

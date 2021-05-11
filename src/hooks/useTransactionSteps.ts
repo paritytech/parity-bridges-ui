@@ -23,10 +23,10 @@ import useDashboard from '../hooks/useDashboard';
 
 import useLoadingApi from '../hooks/useLoadingApi';
 import { getTransactionSourceTarget, isTransactionCompleted } from '../util/transactionUtils';
-import { Step, TransactionStatusEnum, TransanctionStatus } from '../types/transactionTypes';
+import { Step, TransactionStatusEnum, TransactionStatusType } from '../types/transactionTypes';
 
 interface Props {
-  transaction: TransanctionStatus;
+  transaction: TransactionStatusType;
   onComplete: () => void;
 }
 

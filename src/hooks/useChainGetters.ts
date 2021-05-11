@@ -18,13 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { GENERIC, GENERIC_SUBSTRATE_PREFIX } from '../constants';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 
-type State = {
-  getSS58ByChain: (chain: string) => number;
-  getChainBySS58Prefix: (prefix: string) => string;
-  getApiByChain: (chain: string) => ApiPromise;
-};
-
-const useChainGetters = (): State => {
+const useChainGetters = () => {
   const {
     sourceChainDetails: {
       sourceApiConnection: { api: sourceApi },
@@ -38,14 +32,14 @@ const useChainGetters = (): State => {
     }
   } = useSourceTarget();
 
-  const getSS58ByChain = (chain: string) => {
+  const getValuesByChain = (chain: string) => {
     switch (chain) {
       case sourceChain:
-        return sourceSS58Format;
+        return { ss58Format: sourceSS58Format, api: sourceApi };
       case targetChain:
-        return targetSS58Format;
+        return { ss58Format: targetSS58Format, api: targetApi };
       case GENERIC:
-        return GENERIC_SUBSTRATE_PREFIX;
+        return { ss58Format: GENERIC_SUBSTRATE_PREFIX, api: {} as ApiPromise };
       default:
         throw new Error(`Unknown type: ${chain}`);
     }
@@ -65,18 +59,7 @@ const useChainGetters = (): State => {
     }
   };
 
-  const getApiByChain = (chain: string): ApiPromise => {
-    switch (chain) {
-      case targetChain:
-        return targetApi;
-      case sourceChain:
-        return sourceApi;
-      default:
-        return {} as ApiPromise;
-    }
-  };
-
-  return { getApiByChain, getSS58ByChain, getChainBySS58Prefix };
+  return { getValuesByChain, getChainBySS58Prefix };
 };
 
 export default useChainGetters;
