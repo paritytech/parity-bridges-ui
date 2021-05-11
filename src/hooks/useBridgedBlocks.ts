@@ -44,7 +44,8 @@ const useBridgedBlocks = ({ isApiReady, api, chain }: Props) => {
     if (!shouldProceed) return;
 
     let unsubImportedHeaders: Promise<VoidFn> | null;
-    const unsubBestFinalized: Promise<VoidFn> | null = api.query[bridgedGrandpaChain].bestFinalized((res: CodecHeaderId) => {
+    const unsubBestFinalized: Promise<VoidFn> | null = api.query[bridgedGrandpaChain].bestFinalized(
+      (res: CodecHeaderId) => {
         const bestBridgedFinalizedBlock = res.toString();
         unsubImportedHeaders = api.query[bridgedGrandpaChain].importedHeaders(bestBridgedFinalizedBlock, (res: any) => {
           if (res.toJSON()) {
