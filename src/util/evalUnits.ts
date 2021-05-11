@@ -33,13 +33,13 @@ const si = [
   { value: 1e24, symbol: 'Y' }
 ];
 
-const floats = /^[0-9]*[.]{1}[0-9]*$/;
+const floats = /^[0-9]*[.,]{1}[0-9]*$/;
 const ints = /^[0-9]+$/;
-const alphaFloats = /^[0-9]*[.]{1}[0-9]*[a-zA-Z]{1}$/;
+const alphaFloats = /^[0-9]*[.,]{1}[0-9]*[a-zA-Z]{1}$/;
 const alphaInts = /^[0-9]*[a-zA-Z]{1}$/;
 
 export enum EvalMessages {
-  GIBBERISH = 'Input is not correct. Use numbers (dot as decimal symbol) or expression (e.g. 1k, 1.3m)',
+  GIBBERISH = 'Input is not correct. Use numbers, floats or expression (e.g. 1k, 1.3m)',
   SUCCESS = '',
   SYMBOL_ERROR = 'Provided symbol is not correct',
   GENERAL_ERROR = 'Check your input. Something went wrong'
@@ -61,8 +61,8 @@ export function evalUnits(input: string): [number | null, string] {
   if (floats.test(input) || ints.test(input)) {
     return [parseFloat(input), EvalMessages.SUCCESS];
   } else if (alphaInts.test(input) || alphaFloats.test(input)) {
-    const numericPart = parseFloat(input);
-    const charPart = input.replace(/[0-9.]/g, '');
+    const numericPart = parseFloat(input.replace(/[,]/g, '.'));
+    const charPart = input.replace(/[0-9.,]/g, '');
     const siVal = si.find((s) => s.symbol === charPart);
     return siVal ? [numericPart * siVal.value, EvalMessages.SUCCESS] : [null, EvalMessages.SYMBOL_ERROR];
   } else {

@@ -24,21 +24,33 @@ describe('Tests suite - evalUnits', () => {
     expect(msg).toBe(EvalMessages.SUCCESS);
   });
 
-  it('Should input float (dot for decimal symbol)', () => {
+  it('Should accept as input, float (dot for decimal symbol)', () => {
     const [actualValue, msg] = evalUnits('1.23');
     expect(actualValue).toBe(1.23);
     expect(msg).toBe(EvalMessages.SUCCESS);
   });
 
-  it('Should accept as input an expression (1k)', () => {
-    const [actualValue, msg] = evalUnits('1k');
-    expect(actualValue).toBe(1000);
+  it('Should accept as input, float (comma for decimal symbol)', () => {
+    const [actualValue, msg] = evalUnits('1,23');
+    expect(actualValue).toBeFalsy;
     expect(msg).toBe(EvalMessages.SUCCESS);
   });
 
-  it('Should accept as input an float expression (2.4567T)', () => {
-    const [actualValue, msg] = evalUnits('2.4567T');
-    expect(actualValue).toBe(2.4567 * 1e12);
+  it('Should accept as input an expression (1k)', () => {
+    const [actualValue, msg] = evalUnits('1k');
+    expect(actualValue).toBe(1e3);
+    expect(msg).toBe(EvalMessages.SUCCESS);
+  });
+
+  it('Should accept as input an float expression with dot as symbol (1.2k)', () => {
+    const [actualValue, msg] = evalUnits('1.2k');
+    expect(actualValue).toBe(1.2 * 1e3);
+    expect(msg).toBe(EvalMessages.SUCCESS);
+  });
+
+  it('Should accept as input an float expression with commas as symbol (1,2k)', () => {
+    const [actualValue, msg] = evalUnits('1,2k');
+    expect(actualValue).toBe(1.2 * 1e3);
     expect(msg).toBe(EvalMessages.SUCCESS);
   });
 
@@ -68,12 +80,6 @@ describe('Tests suite - evalUnits', () => {
   });
 
   // Not so happy paths
-  it('Should accept as input, float (comma for decimal symbol) and return error message', () => {
-    const [actualValue, msg] = evalUnits('1,23');
-    expect(actualValue).toBeFalsy;
-    expect(msg).toBe(EvalMessages.GIBBERISH);
-  });
-
   it('Should accept as input something gibberish (good23) and return error message', () => {
     const [actualValue, msg] = evalUnits('good23');
     expect(actualValue).toBeFalsy;
