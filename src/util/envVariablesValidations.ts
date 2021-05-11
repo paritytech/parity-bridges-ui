@@ -17,16 +17,30 @@
 const expectedVariables = [
   'REACT_APP_SUBSTRATE_PROVIDER_CHAIN_1',
   'REACT_APP_SUBSTRATE_PROVIDER_CHAIN_2',
-  'REACT_APP_CUSTOM_TYPES_URL_CHAIN_1',
-  'REACT_APP_CUSTOM_TYPES_URL_CHAIN_2',
   'REACT_APP_LANE_ID',
   'REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS'
+];
+
+const optionalVariables = [
+  'REACT_APP_CUSTOM_TYPES_URL_CHAIN_1',
+  'REACT_APP_CUSTOM_TYPES_URL_CHAIN_2',
+  'REACT_APP_CUSTOM_HASHER_CHAIN_1',
+  'REACT_APP_CUSTOM_HASHER_CHAIN_2'
 ];
 
 const checkExpectedVariables = () => {
   for (const v of expectedVariables) {
     if (!process.env[v]) {
       throw new Error(`Missing ${v} variable`);
+    }
+  }
+  return true;
+};
+
+const checkUnexpectedVariables = () => {
+  for (const v of Object.keys(process.env)) {
+    if (!expectedVariables.includes(v) && !optionalVariables.includes(v)) {
+      throw new Error(`Unexpected ${v} variable found.`);
     }
   }
   return true;
@@ -40,4 +54,4 @@ const checkEnvVariable = (variable: string) => {
   return envVariable;
 };
 
-export { checkEnvVariable, checkExpectedVariables };
+export { checkEnvVariable, checkExpectedVariables, checkUnexpectedVariables };

@@ -17,6 +17,10 @@
 const dotenv = require('dotenv');
 const result = dotenv.config();
 
+if (result.error) {
+  throw result.error;
+}
+
 const customTypesDir = './src/configs/substrateCustomTypes';
 
 const rialtoUrl =
@@ -27,20 +31,17 @@ const millauUrl =
 const chain1Url = result.parsed.REACT_APP_CUSTOM_TYPES_URL_CHAIN_1 || rialtoUrl;
 const chain2Url = result.parsed.REACT_APP_CUSTOM_TYPES_URL_CHAIN_2 || millauUrl;
 
-if (result.error) {
-  throw result.error;
-}
-
 const customTypes = [];
 
-customTypes.push({
-  path: `${customTypesDir}/chain1.json`,
-  url: chain1Url
-});
-
-customTypes.push({
-  path: `${customTypesDir}/chain2.json`,
-  url: chain2Url
-});
+customTypes.push([
+  {
+    path: `${customTypesDir}/chain1.json`,
+    url: chain1Url
+  },
+  {
+    path: `${customTypesDir}/chain2.json`,
+    url: chain2Url
+  }
+]);
 
 module.exports = customTypes;

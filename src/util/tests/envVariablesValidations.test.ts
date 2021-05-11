@@ -16,8 +16,7 @@
 
 import dotenv from 'dotenv';
 
-import { checkEnvVariable } from '../envVariablesValidations';
-import { checkExpectedVariables } from '../envVariablesValidations';
+import { checkEnvVariable, checkExpectedVariables, checkUnexpectedVariables } from '../envVariablesValidations';
 
 describe('envVariablesValidations', () => {
   beforeEach(() => {
@@ -74,5 +73,8 @@ describe('Validate .env file', () => {
 
   test('expected ENV variables are set', () => {
     expect(checkExpectedVariables()).toBeTruthy();
+  });
+  test('Unexpected ENV variables should not exist', () => {
+    expect(checkUnexpectedVariables()).toBeTruthy();
   });
 });
