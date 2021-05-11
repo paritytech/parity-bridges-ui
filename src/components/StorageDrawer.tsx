@@ -16,7 +16,7 @@
 
 import { Fade, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
+import React, { useCallback } from 'react';
 import CloseIcon from '@material-ui/icons/Close';
 import HistoryIcon from '@material-ui/icons/History';
 import Transactions from './Transactions';
@@ -52,8 +52,8 @@ export const StorageDrawer = () => {
   const classes = useStyles();
   const { drawer, setDrawer } = useGUIContext();
 
-  const handleDrawerOpen = () => setDrawer(`${drawer === 'open' ? '' : 'open'}`);
-  const handleDrawerClose = () => setDrawer('');
+  const handleDrawerOpen = useCallback(() => setDrawer(`${drawer === 'open' ? '' : 'open'}`), [drawer, setDrawer]);
+  const handleDrawerClose = useCallback(() => setDrawer(''), [setDrawer]);
 
   return (
     <>
