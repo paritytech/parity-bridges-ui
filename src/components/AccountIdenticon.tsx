@@ -21,7 +21,7 @@ import { useUpdateMessageContext } from '../contexts/MessageContext';
 import { MessageActionsCreators } from '../actions/messageActions';
 
 import ctx from 'classnames';
-import React from 'react';
+import React, { useCallback } from 'react';
 interface Props {
   address?: string;
   formatFound?: string;
@@ -38,16 +38,19 @@ export default function AccountIdenticon({ address, formatFound }: Props) {
   const placeholder = !address || formatFound === INCORRECT_FORMAT;
   const value = !placeholder ? address : emptyAddress;
   const classes = useStyles();
+
+  const onCopy = useCallback(() => {
+    value !== emptyAddress &&
+      dispatchMessage(MessageActionsCreators.triggerSuccessMessage({ message: 'Address copied' }));
+  }, [dispatchMessage, value]);
+
   return (
     <Identicon
       className={ctx(placeholder && classes.placeholder)}
       value={value}
       size={32}
       theme={'polkadot'}
-      onCopy={() => {
-        value !== emptyAddress &&
-          dispatchMessage(MessageActionsCreators.triggerSuccessMessage({ message: 'Address copied' }));
-      }}
+      onCopy={onCopy}
     />
   );
 }
