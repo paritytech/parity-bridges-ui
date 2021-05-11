@@ -16,8 +16,8 @@
 
 import { Container, Paper } from '@material-ui/core';
 import { fade, makeStyles } from '@material-ui/core/styles';
-import React, { useContext } from 'react';
-import { DrawerContext } from '../contexts/GUIContextProvider';
+import React from 'react';
+import { useGUIContext } from '../contexts/GUIContextProvider';
 
 import { substrateGray } from './theme';
 
@@ -67,7 +67,7 @@ interface BoxUIProps {
 
 export const BoxUI = ({ children }: BoxUIProps) => {
   const classes = useStyles();
-  const { drawer } = useContext(DrawerContext);
+  const { drawer } = useGUIContext();
 
   return (
     <Container className={`${classes.ui} ${drawer}`}>
@@ -78,6 +78,6 @@ export const BoxUI = ({ children }: BoxUIProps) => {
 
 export const BoxSidebar = ({ children }: BoxUIProps) => {
   const classes = useStyles();
-  const { drawer } = useContext(DrawerContext);
+  const { drawer } = useGUIContext();
   return <div className={`${classes.sidebar} ${drawer}`}>{children}</div>;
 };
