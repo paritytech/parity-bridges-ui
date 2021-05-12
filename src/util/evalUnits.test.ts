@@ -87,7 +87,7 @@ describe('Tests suite - evalUnits', () => {
   });
 
   it('Should accept as input double decimal symbols (1,23.445k) and return error message', () => {
-    const [actualValue, msg] = evalUnits('good23');
+    const [actualValue, msg] = evalUnits('1,23.445k');
     expect(actualValue).toBeFalsy;
     expect(msg).toBe(EvalMessages.GIBBERISH);
   });
