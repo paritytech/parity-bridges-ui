@@ -14,10 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-export { ButtonDrawerMenu, ButtonExt, ButtonSwitchMode, ButtonSubmit } from './Buttons';
-export { StorageDrawer } from './StorageDrawer';
-export { IconTxStatus } from './Icons';
-export { BoxUI, BoxSidebar } from './LayoutBoxes';
-export { MenuAction } from './MenuAction';
-export { NetworkSides, NetworkStats } from './Network';
-export { light } from './theme';
+import { useEffect, useState } from 'react';
+
+const useLocalStorage = (localStorageKey: string): [string, React.Dispatch<React.SetStateAction<string>>] => {
+  const [localValue, setLocalValue] = useState(localStorage.getItem(localStorageKey) || '');
+
+  useEffect((): void => {
+    localStorage.setItem(localStorageKey, localValue);
+  }, [localValue, localStorageKey]);
+
+  return [localValue, setLocalValue];
+};
+
+export default useLocalStorage;

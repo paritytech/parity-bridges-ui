@@ -32,6 +32,12 @@ const useStyles = makeStyles((theme) => ({
   },
   switchMode: {
     fontSize: theme.typography.body2.fontSize
+  },
+  drawerMenu: {
+    justifyContent: 'end',
+    '&.MuiButton-textPrimary': {
+      backgroundColor: theme.palette.secondary.light
+    }
   }
 }));
 
@@ -57,6 +63,15 @@ export const ButtonExt = ({
       onClick={() => openInNewTab(href)}
       {...props}
     >
+      {children}
+    </Button>
+  );
+};
+
+export const ButtonDrawerMenu = ({ children, color = 'secondary', fullWidth = true, ...props }: ButtonProps) => {
+  const classes = useStyles();
+  return (
+    <Button className={classes.drawerMenu} color={color} fullWidth={fullWidth} {...props}>
       {children}
     </Button>
   );
