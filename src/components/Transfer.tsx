@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Box, InputAdornment, makeStyles, TextField } from '@material-ui/core';
+import { Box, InputAdornment, makeStyles, TextField, Typography } from '@material-ui/core';
 import React, { useState, useEffect } from 'react';
 import BN from 'bn.js';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
@@ -109,7 +109,9 @@ const Transfer = () => {
           Account&apos;s amount (including fees: {estimatedFee}) is not enough for this transaction.
         </Alert>
       ) : (
-        receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`
+        <Typography variant="body1" color="secondary">
+          {receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}
+        </Typography>
       )}
     </>
   );

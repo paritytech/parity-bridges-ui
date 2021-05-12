@@ -14,12 +14,30 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-export { ButtonDrawerMenu, ButtonExt, ButtonSwitchMode, ButtonSubmit } from './Buttons';
-export { StorageDrawer } from './StorageDrawer';
-export { IconTxStatus } from './Icons';
-export { BoxUI, BoxSidebar } from './LayoutBoxes';
-export { MenuAction } from './MenuAction';
-export { NetworkSides, NetworkStats } from './Network';
-export { TransactionDisplay } from './TransactionDisplay';
-export { Alert } from './Alert';
-export { light } from './theme';
+const dotenv = require('dotenv');
+const result = dotenv.config();
+
+if (result.error) {
+  throw result.error;
+}
+
+const customTypesDir = './src/configs/substrateCustomTypes';
+
+const rialtoUrl =
+  'https://raw.githubusercontent.com/paritytech/parity-bridges-common/master/deployments/types-rialto.json';
+
+const chain1Url = result.parsed.REACT_APP_CHAIN_1_CUSTOM_TYPES_URL || rialtoUrl;
+const chain2Url = result.parsed.REACT_APP_CHAIN_2_CUSTOM_TYPES_URL || rialtoUrl;
+
+const customTypes = [
+  {
+    path: `${customTypesDir}/chain1.json`,
+    url: chain1Url
+  },
+  {
+    path: `${customTypesDir}/chain2.json`,
+    url: chain2Url
+  }
+];
+
+module.exports = customTypes;

@@ -14,12 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-export { ButtonDrawerMenu, ButtonExt, ButtonSwitchMode, ButtonSubmit } from './Buttons';
-export { StorageDrawer } from './StorageDrawer';
-export { IconTxStatus } from './Icons';
-export { BoxUI, BoxSidebar } from './LayoutBoxes';
-export { MenuAction } from './MenuAction';
-export { NetworkSides, NetworkStats } from './Network';
-export { TransactionDisplay } from './TransactionDisplay';
-export { Alert } from './Alert';
-export { light } from './theme';
+const http = require('https'); // or 'https' for https:// URLs
+const fs = require('fs');
+const customTypes = require('./customConfigs');
+
+customTypes.map(({ path, url }) => {
+  console.log('Start downloading file: ', url);
+  const file = fs.createWriteStream(path, { flags: 'w' });
+  http.get(url, function (response) {
+    response.pipe(file);
+  });
+});
