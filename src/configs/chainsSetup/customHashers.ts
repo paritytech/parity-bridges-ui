@@ -14,27 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-const http = require('https'); // or 'https' for https:// URLs
-const fs = require('fs');
+import { u8aConcat } from '@polkadot/util';
+import { blake2AsU8a, keccakAsU8a } from '@polkadot/util-crypto';
 
-const commonBridgesRepo = 'https://raw.githubusercontent.com/paritytech/parity-bridges-common/master/deployments';
-const customTypesDir = 'src/configs';
+type Hasher = { [index: string]: (data: Uint8Array) => Uint8Array } | null;
 
-const filesConfig = [
-  {
-    path: `${customTypesDir}/customTypesMillau.json`,
-    url: `${commonBridgesRepo}/types-millau.json`
-  },
-  {
-    path: `${customTypesDir}/customTypesRialto.json`,
-    url: `${commonBridgesRepo}/types-rialto.json`
-  }
-];
+function blake2Keccak256Hasher(data: Uint8Array) {
+  return u8aConcat(blake2AsU8a(data), keccakAsU8a(data));
+}
 
-filesConfig.map(({ path, url }) => {
-  console.log('Start downloading file: ', url);
-  const file = fs.createWriteStream(path, { flags: 'w' });
-  http.get(url, function (response) {
-    response.pipe(file);
-  });
-});
+const hashers: Hasher = {
+  blake2Keccak256Hasher
+};
+
+export default hashers;

@@ -19,17 +19,13 @@ import { useApiConnection } from './useApiConnection';
 import isEmpty from 'lodash/isEmpty';
 import { SourceTargetState, ChainDetails, ConnectionChainInformation } from '../types/sourceTargetTypes';
 
-interface Props {
-  connectionDetailsOne: ConnectionChainInformation;
-  connectionDetailsTwo: ConnectionChainInformation;
-}
-
-export function useConnections({ connectionDetailsOne, connectionDetailsTwo }: Props) {
+export function useConnections(chainsConnections: ConnectionChainInformation[]) {
+  const [connectionDetails1, connectionDetails2] = chainsConnections;
   const { configs: chain1Configs, polkadotjsUrl: polkadotjsUrl1, ...apiConnection1 } = useApiConnection(
-    connectionDetailsOne
+    connectionDetails1
   );
   const { configs: chain2Configs, polkadotjsUrl: polkadotjsUrl2, ...apiConnection2 } = useApiConnection(
-    connectionDetailsTwo
+    connectionDetails2
   );
   const [connections, setConnections] = useState<SourceTargetState>({} as SourceTargetState);
   const [apiReady, setApiReady] = useState(false);

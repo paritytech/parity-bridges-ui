@@ -10,9 +10,12 @@ The goal of the UI is to provide the users a convenient way of interacting with 
 The project includes a `.env` file at root project directory that contains all the variables for running the bridge UI:
 
 ```
-REACT_APP_PAIR=RialtoMillau
-REACT_APP_SUBSTRATE_PROVIDER_CHAIN_1=ws://127.0.0.1:9944
-REACT_APP_SUBSTRATE_PROVIDER_CHAIN_2=ws://127.0.0.1:9945
+REACT_APP_CHAIN_1_CUSTOM_TYPES_URL=https://raw.githubusercontent.com/paritytech/parity-bridges-common/master/deployments/types-rialto.json
+REACT_APP_CHAIN_1_SUBSTRATE_PROVIDER=wss://wss.rialto.brucke.link
+REACT_APP_CHAIN_2_CUSTOM_HASHER=blake2Keccak256Hasher
+REACT_APP_CHAIN_2_CUSTOM_TYPES_URL=https://raw.githubusercontent.com/paritytech/parity-bridges-common/master/deployments/types-millau.json
+REACT_APP_CHAIN_2_SUBSTRATE_PROVIDER=wss://wss.millau.brucke.link
+
 REACT_APP_LANE_ID=0x00000000
 REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS=false
 ```
@@ -21,6 +24,10 @@ REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS=false
 | --- | :---------------------------------------------------------------------------------------------------- |
 
 In case of questions about `.env` management please refer to this link: [create-react-app env files](https://create-react-app.dev/docs/adding-custom-environment-variables/#what-other-env-files-can-be-used)
+
+## Custom Hashers for building connections
+
+If any of the chains (or both) need to use a custom hasher function this one can be built and exported from the file: `src/configs/chainsSetup/customHashers.ts`. Then it is just a matter of referring the function name using variable `REACT_APP_CUSTOM_HASHER_CHAIN_<Chain number>` from `.env` file.
 
 ## Running the bridge
 
