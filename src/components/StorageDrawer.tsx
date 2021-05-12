@@ -64,12 +64,12 @@ export const StorageDrawer = () => {
       >
         History
       </ButtonDrawerMenu>
-      <Fade in={drawer === 'open'} timeout={300}>
+      <Fade in={drawer === 'open'} timeout={{ enter: 300, exit: 0 }}>
         <div className={classes.drawer}>
           <IconButton onClick={handleDrawerClose} color="secondary" className={classes.closeDrawerIcon}>
             <CloseIcon />
           </IconButton>
-          <Transactions />
+          <Transactions size="sm" />
         </div>
       </Fade>
     </>

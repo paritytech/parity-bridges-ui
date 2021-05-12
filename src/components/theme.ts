@@ -103,7 +103,7 @@ const shadows: Shadows = [
   '0px 10px 13px -6px rgba(0,0,0,0.2),0px 20px 31px 3px rgba(0,0,0,0.14),0px 8px 38px 7px rgba(0,0,0,0.12)',
   '0px 10px 13px -6px rgba(0,0,0,0.2),0px 21px 33px 3px rgba(0,0,0,0.14),0px 8px 40px 7px rgba(0,0,0,0.12)',
   '0px 10px 14px -6px rgba(0,0,0,0.2),0px 22px 35px 3px rgba(0,0,0,0.14),0px 8px 42px 7px rgba(0,0,0,0.12)',
-  '0px 11px 14px -7px rgba(0,0,0,0.2),0px 23px 36px 3px rgba(0,0,0,0.14),0px 9px 44px 8px rgba(0,0,0,0.12)',
+  '0px 32px 24px rgb(0 0 0 / 5%), 0px 16px 20px rgb(0 0 0 / 4%), 0px 12px 12px rgb(0 0 0 / 4%), 0px 6px 6px rgb(0 0 0 / 3%), 0px 3px 2px rgb(0 0 0 / 2%)',
   '0px 100px 80px rgba(0, 0, 0, 0.07), 0px 40px 32px rgba(0, 0, 0, 0.05), 0px 20px 20px rgba(0, 0, 0, 0.04), 0px 12px 12px rgba(0, 0, 0, 0.04), 0px 6px 6px rgba(0, 0, 0, 0.03), 0px 3px 2px rgba(0, 0, 0, 0.02)'
 ];
 
