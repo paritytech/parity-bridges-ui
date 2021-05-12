@@ -31,7 +31,6 @@ const getProviderInfo = (chainNumber: string, types: ApiOptions['types']) => {
 
   const hasher = (providedHasher && hashers && hashers[providedHasher]) || null;
 
-
   const polkadotjsUrl = createPolkadotJsUrl(types!, providerUrl);
   return {
     hasher,
