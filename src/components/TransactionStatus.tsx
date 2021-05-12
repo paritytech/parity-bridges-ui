@@ -215,7 +215,6 @@ const TransactionStatus = ({ transaction, onComplete, transactionDisplayProps }:
       </Box>
       <Card elevation={transactionDisplayProps?.size === 'sm' ? 23 : 24} className={classes.card}>
         <Box className="header" component="p">
-          {transactionDisplayProps && transactionDisplayProps.size}
           <IconTxStatus status={transaction.status} /> {transaction.type} {transaction.sourceChain} {'->'}{' '}
           {transaction.targetChain}
         </Box>
