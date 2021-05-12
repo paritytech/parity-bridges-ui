@@ -15,15 +15,18 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Box, InputAdornment, makeStyles, TextField, Typography } from '@material-ui/core';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import BN from 'bn.js';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
+import useAccounts from '../hooks/useAccounts';
+import useBalance from '../hooks/useBalance';
 import useLoadingApi from '../hooks/useLoadingApi';
 import useSendMessage from '../hooks/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
 
 import Receiver from './Receiver';
-import { ButtonSubmit } from '../components';
+import { Alert, ButtonSubmit } from '../components';
 
 const useStyles = makeStyles((theme) => ({
   inputAmount: {
@@ -46,11 +49,15 @@ const Transfer = () => {
   const classes = useStyles();
   const [isRunning, setIsRunning] = useState(false);
   const [transferInput, setTransferInput] = useState<string>('');
+  const [amountNotCorrect, setAmountNotCorrect] = useState<boolean>(false);
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
+  const { account } = useAccounts();
 
   const areApiReady = useLoadingApi();
 
   const { estimatedFee, receiverAddress } = useTransactionContext();
+  const { api, isApiReady } = sourceChainDetails.sourceApiConnection;
+  const balance = useBalance(api, account?.address || '');
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
     input: transferInput,
@@ -63,6 +70,15 @@ const Transfer = () => {
     setTransferInput(event.target.value);
   };
 
+  useEffect((): void => {
+    isRunning && setTransferInput('');
+  }, [isRunning]);
+
+  useEffect((): void => {
+    estimatedFee &&
+      setAmountNotCorrect(new BN(balance.free).sub(new BN(transferInput).add(new BN(estimatedFee))).toNumber() < 0);
+  }, [transferInput, estimatedFee, balance, isApiReady]);
+
   if (!areApiReady) return null;
 
   return (
@@ -70,7 +86,7 @@ const Transfer = () => {
       <Box mb={2}>
         <TextField
           onChange={onChange}
-          value={transferInput && transferInput}
+          value={transferInput}
           placeholder={'0'}
           className={classes.inputAmount}
           fullWidth
@@ -85,12 +101,18 @@ const Transfer = () => {
         />
       </Box>
       <Receiver />
-      <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
+      <ButtonSubmit disabled={isButtonDisabled() || amountNotCorrect} onClick={sendLaneMessage}>
         Send bridge transfer from {sourceChainDetails.sourceChain} to {targetChainDetails.targetChain}
       </ButtonSubmit>
-      <Typography variant="body1" color="secondary">
-        {receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}
-      </Typography>
+      {amountNotCorrect ? (
+        <Alert severity="error">
+          Account&apos;s amount (including fees: {estimatedFee}) is not enough for this transaction.
+        </Alert>
+      ) : (
+        <Typography variant="body1" color="secondary">
+          {receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}
+        </Typography>
+      )}
     </>
   );
 };
