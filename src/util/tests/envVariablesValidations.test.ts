@@ -38,10 +38,10 @@ describe('envVariablesValidations', () => {
     });
 
     test('Should validate and return prefix value according env value', () => {
-      const envValue = '58';
-      process.env.REACT_APP_SS58_PREFIX_CHAIN_1 = envValue;
+      const envValue = 'wss://provider';
+      process.env.REACT_APP_CHAIN_1_SUBSTRATE_PROVIDER = envValue;
 
-      const result = checkEnvVariable('REACT_APP_SS58_PREFIX_CHAIN_1');
+      const result = checkEnvVariable('REACT_APP_CHAIN_1_SUBSTRATE_PROVIDER');
       expect(result).toEqual(envValue);
     });
 

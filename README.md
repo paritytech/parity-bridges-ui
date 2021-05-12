@@ -10,11 +10,11 @@ The goal of the UI is to provide the users a convenient way of interacting with 
 The project includes a `.env` file at root project directory that contains all the variables for running the bridge UI:
 
 ```
-REACT_APP_CUSTOM_HASHER_CHAIN_2=blake2Keccak256Hasher
-REACT_APP_CUSTOM_TYPES_URL_CHAIN_1=https://raw.githubusercontent.com/paritytech/parity-bridges-common/master/deployments/types-rialto.json
-REACT_APP_CUSTOM_TYPES_URL_CHAIN_2=https://raw.githubusercontent.com/paritytech/parity-bridges-common/master/deployments/types-millau.json
-REACT_APP_SUBSTRATE_PROVIDER_CHAIN_1=wss://wss.rialto.brucke.link
-REACT_APP_SUBSTRATE_PROVIDER_CHAIN_2=wss://wss.millau.brucke.link
+REACT_APP_CHAIN_1_CUSTOM_TYPES_URL=https://raw.githubusercontent.com/paritytech/parity-bridges-common/master/deployments/types-rialto.json
+REACT_APP_CHAIN_1_SUBSTRATE_PROVIDER=wss://wss.rialto.brucke.link
+REACT_APP_CHAIN_2_CUSTOM_HASHER=blake2Keccak256Hasher
+REACT_APP_CHAIN_2_CUSTOM_TYPES_URL=https://raw.githubusercontent.com/paritytech/parity-bridges-common/master/deployments/types-millau.json
+REACT_APP_CHAIN_2_SUBSTRATE_PROVIDER=wss://wss.millau.brucke.link
 
 REACT_APP_LANE_ID=0x00000000
 REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS=false

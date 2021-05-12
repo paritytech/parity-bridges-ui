@@ -25,11 +25,9 @@ const customTypesDir = './src/configs/substrateCustomTypes';
 
 const rialtoUrl =
   'https://raw.githubusercontent.com/paritytech/parity-bridges-common/master/deployments/types-rialto.json';
-const millauUrl =
-  'https://raw.githubusercontent.com/paritytech/parity-bridges-common/master/deployments/types-millau.json';
 
-const chain1Url = result.parsed.REACT_APP_CUSTOM_TYPES_URL_CHAIN_1 || rialtoUrl;
-const chain2Url = result.parsed.REACT_APP_CUSTOM_TYPES_URL_CHAIN_2 || millauUrl;
+const chain1Url = result.parsed.REACT_APP_CHAIN_1_CUSTOM_TYPES_URL || rialtoUrl;
+const chain2Url = result.parsed.REACT_APP_CHAIN_2_CUSTOM_TYPES_URL || rialtoUrl;
 
 const customTypes = [
   {
