@@ -68,8 +68,8 @@ function Main() {
           <Typography variant="button">Bridges UI</Typography>
           <NetworkSides />
           <NetworkStats />
+          <StorageDrawer />
         </div>
-        <StorageDrawer />
         <ButtonExt> Help & Feedback </ButtonExt>
       </BoxSidebar>
       <BoxUI>

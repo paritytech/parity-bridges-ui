@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Fade, IconButton } from '@material-ui/core';
+import { Box, Fade, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useCallback } from 'react';
 import CloseIcon from '@material-ui/icons/Close';
@@ -56,7 +56,7 @@ export const StorageDrawer = () => {
   const handleDrawerClose = useCallback(() => setDrawer(''), [setDrawer]);
 
   return (
-    <>
+    <Box mt={4}>
       <ButtonDrawerMenu
         startIcon={<HistoryIcon />}
         onClick={handleDrawerOpen}
@@ -72,6 +72,6 @@ export const StorageDrawer = () => {
           <Transactions size="sm" />
         </div>
       </Fade>
-    </>
+    </Box>
   );
 };
