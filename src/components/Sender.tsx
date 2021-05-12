@@ -14,11 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Container, FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
+import { MenuItem, Select, fade } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { encodeAddress } from '@polkadot/util-crypto';
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useAccounts from '../hooks/useAccounts';
@@ -26,26 +25,53 @@ import useReceiver from '../hooks/useReceiver';
 import { Account as AccountType } from '../types/accountTypes';
 import formatAccounts from '../util/formatAccounts';
 import Account from './Account';
-import AccountDisplay from './AccountDisplay';
-import { Star } from '@material-ui/icons';
+import AccountDisplay, { AddressKind } from './AccountDisplay';
 import useSS58Format from '../hooks/useSS58Format';
 
-interface Props {
-  className?: string;
-}
+// TDOO replace MUI Select with MUI Popover it wraps around or Autocomplete to have more control over appearance
 
-const useStyles = makeStyles(() => ({
-  row: {
-    minWidth: '100%',
-    margin: '10px 0'
+const useStyles = makeStyles((theme) => ({
+  networkHeading: {
+    padding: theme.spacing(2),
+    paddingBottom: 0,
+    borderTop: `1px solid ${theme.palette.divider}`,
+    ...theme.typography.overline,
+    color: fade(theme.palette.text.hint, 0.75),
+    '&:first-child': {
+      paddingTop: 0,
+      border: 'none'
+    }
   },
-  root: {
-    alignItems: 'center',
-    display: 'flex'
+  selectAccountItem: {
+    display: 'block',
+    paddingTop: theme.spacing(),
+    paddingBottom: theme.spacing(),
+    paddingLeft: theme.spacing(1.75)
+  },
+  selectAccount: {
+    '& .MuiSelect-select': {
+      padding: theme.spacing(1.5),
+      paddingLeft: theme.spacing(1.75),
+      paddingRight: theme.spacing(3),
+      border: `1px solid ${theme.palette.divider}`,
+      borderRadius: theme.spacing(1.5),
+      borderBottomLeftRadius: 0,
+      borderBottomRightRadius: 0
+    }
+  },
+  selectCompanion: {
+    marginTop: -1,
+    padding: theme.spacing(0.5),
+    paddingLeft: theme.spacing(1.75),
+    paddingRight: theme.spacing(3),
+    border: `1px solid ${theme.palette.divider}`,
+    borderRadius: theme.spacing(1.5),
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0
   }
 }));
 
-const Sender = ({ className }: Props) => {
+const Sender = () => {
   const classes = useStyles();
   const [chains, setChains] = useState<Array<string[]>>([]);
   const { account, accounts, derivedAccount, setCurrentAccount } = useAccounts();
@@ -80,23 +106,21 @@ const Sender = ({ className }: Props) => {
     const formatedAccounts = formatAccounts(accounts, getSS58ByChain(source));
     const items = formatedAccounts.map(({ text, value, key }: any) => (
       <MenuItem
+        className={classes.selectAccountItem}
         key={key}
         value={value}
         onClick={() => {
           onChange(value, source);
         }}
       >
-        <div className={classes.row}>
-          <Account accountName={text} value={value} chain={source} />
-          <Account accountName={text} value={value} isDerived hideAddress chain={target} />
-        </div>
+        <Account accountName={text} value={value} chain={source} />
+        <Account accountName={text} value={value} chain={target} isDerived hideAddress />
       </MenuItem>
     ));
     return [
-      <Container key={source} className={classes.root}>
-        <Star />
+      <div className={classes.networkHeading} key={source}>
         {source}
-      </Container>,
+      </div>,
       items
     ];
   };
@@ -112,47 +136,25 @@ const Sender = ({ className }: Props) => {
   };
 
   return (
-    <Container className={className}>
-      <InputLabel className="label">{sourceChain} Account</InputLabel>
-      <div className="senderSelect">
-        <FormControl className="formControl">
-          <Select value={value} renderValue={(): React.ReactNode => <AccountSelected />}>
-            {chains.map((chain) => renderAccounts(chain))}
-          </Select>
-        </FormControl>
-      </div>
-
-      <div className="derivedAccount">
-        {derivedAccount && (
+    <>
+      <Select
+        disableUnderline
+        fullWidth
+        className={classes.selectAccount}
+        value={value}
+        renderValue={(): React.ReactNode => <AccountSelected />}
+      >
+        {chains.map((chain) => renderAccounts(chain))}
+      </Select>
+      <div className={classes.selectCompanion}>
+        {derivedAccount ? (
           <Account accountName={getName(account)} value={value} chain={targetChain} isDerived hideAddress />
+        ) : (
+          <AccountDisplay friendlyName="Sender" addressKind={AddressKind.COMPANION} hideAddress />
         )}
       </div>
-    </Container>
+    </>
   );
 };
 
-export default styled(Sender)`
-  border: 1px solid;
-  border-radius: 5px;
-  width: 100%;
-  padding-left: 0;
-  .label {
-    padding: 5px;
-  }
-  .senderSelect {
-    min-height: 40px;
-    width: 100%;
-  }
-  .formControl {
-    min-height: 40px;
-    width: 100%;
-  }
-  .derivedAccount {
-    min-height: 40px;
-    padding: 10px;
-  }
-  .chainSelect {
-    font-size: 18px;
-    color: blue !important;
-  }
-`;
+export default Sender;

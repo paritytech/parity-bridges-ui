@@ -169,9 +169,10 @@ export const light: ThemeOptions = {
       letterSpacing: 0.1
     },
     overline: {
-      fontSize: 11,
-      lineHeight: '120%',
-      letterSpacing: 0.7
+      fontWeight: 500,
+      fontSize: 14,
+      letterSpacing: 0.3,
+      textTransform: 'uppercase'
     }
   },
   palette: paletteLight,

@@ -47,8 +47,6 @@ const useStyles = makeStyles(() => ({
   },
   container: {
     display: 'flex',
-    minWidth: '100%',
-    padding: '0 10px',
     alignItems: 'center'
   },
   address: {
@@ -65,15 +63,7 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-const AccountDisplay = ({
-  address = '',
-  addressKind,
-  balance,
-  friendlyName,
-  hideAddress = false,
-  onClick,
-  derived = false
-}: Props) => {
+const AccountDisplay = ({ address = '', addressKind, balance, friendlyName, hideAddress = false, onClick }: Props) => {
   const classes = useStyles();
   const displayText = () => {
     const shortAddress = shorterItem(address);
@@ -85,17 +75,15 @@ const AccountDisplay = ({
       return `${addressKind}(${displayName})`;
     }
 
-    return name;
+    return displayName;
   };
 
   return (
-    <Container onClick={onClick} className={classes.container}>
+    <div onClick={onClick} className={classes.container}>
       <div className={classes.icon}>{<AccountIdenticon address={address} />}</div>
-      <div className={!address ? classes.missingAddress : classes.address}>
-        <p>{!address ? !derived && 'sender address' : displayText()}</p>
-      </div>
+      <div className={!address ? classes.missingAddress : classes.address}>{displayText()}</div>
       <Balance balance={balance} />
-    </Container>
+    </div>
   );
 };
 
