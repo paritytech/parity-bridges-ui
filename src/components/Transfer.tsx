@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Box, InputAdornment, makeStyles, TextField } from '@material-ui/core';
+import { Box, InputAdornment, makeStyles, TextField, Typography } from '@material-ui/core';
 import React, { useState } from 'react';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
@@ -88,7 +88,9 @@ const Transfer = () => {
       <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
         Send bridge transfer from {sourceChainDetails.sourceChain} to {targetChainDetails.targetChain}
       </ButtonSubmit>
-      {receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}
+      <Typography variant="body1" color="secondary">
+        {receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}
+      </Typography>
     </>
   );
 };

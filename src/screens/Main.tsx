@@ -14,20 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Box, Container, Grid, Typography } from '@material-ui/core';
-import React, { useEffect, useState, useCallback } from 'react';
+import { Box, Typography } from '@material-ui/core';
+import React, { useState } from 'react';
 
-import { BoxSidebar, BoxUI, ButtonExt, MenuAction, NetworkSides, NetworkStats } from '../components';
+import { BoxSidebar, BoxUI, ButtonExt, StorageDrawer, MenuAction, NetworkSides, NetworkStats } from '../components';
 import CustomCall from '../components/CustomCall';
-import DashboardCard from '../components/DashboardCard';
 import ExtensionAccountCheck from '../components/ExtensionAccountCheck';
 import Remark from '../components/Remark';
 import Sender from '../components/Sender';
 import SnackBar from '../components/SnackBar';
-import Transactions from '../components/Transactions';
 import Transfer from '../components/Transfer';
-import { ChainDetails } from '../types/sourceTargetTypes';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+import Transactions from '../components/Transactions';
 
 interface MenuActionItemsProps {
   idx: number;
@@ -58,16 +56,10 @@ const MenuContents = [
 ];
 
 function Main() {
-  const [items, setItems] = useState<MenuActionItemsProps[]>([] as MenuActionItemsProps[]);
+  const [items] = useState<MenuActionItemsProps[]>(MenuContents as MenuActionItemsProps[]);
   const [index, setIndex] = useState<number>(0);
 
   const searchItems = (choice: number) => items.find((x) => x.idx === choice);
-
-  useEffect(() => {
-    setItems(MenuContents);
-  }, []);
-
-  const isConnectedToWallet = useCallback(() => index !== 3, [index]);
 
   return (
     <>
@@ -76,44 +68,19 @@ function Main() {
           <Typography variant="button">Bridges UI</Typography>
           <NetworkSides />
           <NetworkStats />
+          <StorageDrawer />
         </div>
         <ButtonExt> Help & Feedback </ButtonExt>
       </BoxSidebar>
       <BoxUI>
         <MenuAction items={items} menuIdx={index} changeMenu={setIndex} />
-        <Container>
-          <Grid container>
-            <Grid item md={12}>
-              <ExtensionAccountCheck component={<Sender />} />
-            </Grid>
-            <Box marginY={2} textAlign="center" width="100%">
-              <ArrowDownwardIcon fontSize="large" color="primary" />
-            </Box>
-          </Grid>
-          <Grid container>
-            <Grid item md={12}>
-              {searchItems(index)?.component}
-            </Grid>
-          </Grid>
-          {isConnectedToWallet() && (
-            <Grid container>
-              <Grid item md={12}>
-                <Transactions type={searchItems(index)?.title} />
-              </Grid>
-            </Grid>
-          )}
-        </Container>
+        <ExtensionAccountCheck component={<Sender />} />
+        <Box marginY={2} textAlign="center" width="100%">
+          <ArrowDownwardIcon fontSize="large" color="primary" />
+        </Box>
+        <>{searchItems(index)?.component}</>
+        <Transactions type={searchItems(index)?.title} />
         <SnackBar />
-        <br />
-        <br />
-        <Grid container alignItems="center">
-          <Grid item md={5}>
-            <DashboardCard chainDetail={ChainDetails.SOURCE} />
-          </Grid>
-          <Grid item md={5}>
-            <DashboardCard chainDetail={ChainDetails.TARGET} />
-          </Grid>
-        </Grid>
       </BoxUI>
     </>
   );
