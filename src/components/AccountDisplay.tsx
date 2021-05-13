@@ -34,32 +34,19 @@ interface Props {
   balance?: string | null | undefined;
 }
 
-const useStyles = makeStyles(() => ({
-  onlyBalance: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    width: '100%',
-    padding: '0 10px'
-  },
-  icon: {
-    float: 'left'
-  },
+const useStyles = makeStyles((theme) => ({
   container: {
     display: 'flex',
     alignItems: 'center'
   },
   address: {
-    marginLeft: '10px',
-    width: '100%'
+    marginLeft: theme.spacing(),
+    marginRight: theme.spacing(),
+    width: '100%',
+    overflow: 'auto'
   },
   missingAddress: {
-    marginLeft: '10px',
-    width: '100%',
-    color: '#b2b2b2'
-  },
-  balances: {
-    marginLeft: 'auto'
+    color: theme.palette.text.disabled
   }
 }));
 
@@ -80,8 +67,8 @@ const AccountDisplay = ({ address = '', addressKind, balance, friendlyName, hide
 
   return (
     <div onClick={onClick} className={classes.container}>
-      <div className={classes.icon}>{<AccountIdenticon address={address} />}</div>
-      <div className={!address ? classes.missingAddress : classes.address}>{displayText()}</div>
+      <AccountIdenticon address={address} />
+      <div className={`${classes.address} ${!address && classes.missingAddress}`}>{displayText()}</div>
       <Balance balance={balance} />
     </div>
   );

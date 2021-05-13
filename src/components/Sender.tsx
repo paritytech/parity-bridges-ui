@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { MenuItem, Select, fade } from '@material-ui/core';
+import { MenuItem, Select } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { encodeAddress } from '@polkadot/util-crypto';
 import React, { useEffect, useState } from 'react';
@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: 0,
     borderTop: `1px solid ${theme.palette.divider}`,
     ...theme.typography.overline,
-    color: fade(theme.palette.text.hint, 0.75),
+    color: theme.palette.text.hint,
     '&:first-child': {
       paddingTop: 0,
       border: 'none'
@@ -50,8 +50,8 @@ const useStyles = makeStyles((theme) => ({
   },
   selectAccount: {
     '& .MuiSelect-select': {
-      padding: theme.spacing(1.5),
-      paddingLeft: theme.spacing(1.75),
+      padding: theme.spacing(1.25),
+      paddingTop: theme.spacing(0.5),
       paddingRight: theme.spacing(3),
       border: `1px solid ${theme.palette.divider}`,
       borderRadius: theme.spacing(1.5),
@@ -62,12 +62,17 @@ const useStyles = makeStyles((theme) => ({
   selectCompanion: {
     marginTop: -1,
     padding: theme.spacing(0.5),
-    paddingLeft: theme.spacing(1.75),
+    paddingLeft: theme.spacing(1.25),
     paddingRight: theme.spacing(3),
     border: `1px solid ${theme.palette.divider}`,
     borderRadius: theme.spacing(1.5),
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0
+  },
+  selectLabel: {
+    ...theme.typography.h4,
+    color: theme.palette.text.hint,
+    marginBottom: theme.spacing()
   }
 }));
 
@@ -142,7 +147,12 @@ const Sender = () => {
         fullWidth
         className={classes.selectAccount}
         value={value}
-        renderValue={(): React.ReactNode => <AccountSelected />}
+        renderValue={(): React.ReactNode => (
+          <>
+            <div className={classes.selectLabel}>Sender</div>
+            <AccountSelected />
+          </>
+        )}
       >
         {chains.map((chain) => renderAccounts(chain))}
       </Select>

@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import Container from '@material-ui/core/Container';
 import { makeStyles } from '@material-ui/core/styles';
 
 import React from 'react';
@@ -24,22 +23,19 @@ interface Props {
   onClick?: () => void;
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   balances: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    width: '100%',
-    padding: '0 10px'
+    whiteSpace: 'nowrap',
+    ...theme.typography.subtitle2
   }
 }));
 
 const Balance = ({ balance, onClick }: Props) => {
   const classes = useStyles();
   return (
-    <Container onClick={onClick} className={classes.balances}>
-      <p>{balance || '-'}</p>
-    </Container>
+    <div onClick={onClick} className={classes.balances}>
+      {balance || '-'}
+    </div>
   );
 };
 

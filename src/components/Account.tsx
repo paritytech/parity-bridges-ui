@@ -39,7 +39,7 @@ const Account = ({ accountName, value, chain, hideAddress = false, isDerived = f
     <AccountDisplay
       friendlyName={accountName}
       address={address}
-      balance={state.formattedBalance}
+      balance={`${state.formattedBalance} ${state.formattedBalance === '0' ? state.chainTokens : ''}`}
       addressKind={isDerived ? AddressKind.COMPANION : undefined}
       hideAddress={hideAddress}
     />

@@ -70,8 +70,8 @@ const paletteLight: PaletteOptions = {
   text: {
     primary: substrateGray[900],
     secondary: bridgesBlue[400],
-    disabled: substrateGray[400],
-    hint: substrateGray[700]
+    disabled: substrateGray[600],
+    hint: substrateGray[600]
   },
   action: {
     active: bridgesBlue[300]
@@ -131,7 +131,7 @@ export const light: ThemeOptions = {
       lineHeight: '120%'
     },
     h4: {
-      fontWeight: 500,
+      fontWeight: 600,
       fontSize: 14,
       lineHeight: '120%',
       color: grey[800]
