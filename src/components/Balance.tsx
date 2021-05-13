@@ -34,7 +34,7 @@ const Balance = ({ balance, onClick }: Props) => {
   const classes = useStyles();
   return (
     <div onClick={onClick} className={classes.balances}>
-      {balance || '-'}
+      {balance || ''}
     </div>
   );
 };

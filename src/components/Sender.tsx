@@ -27,6 +27,7 @@ import formatAccounts from '../util/formatAccounts';
 import Account from './Account';
 import AccountDisplay, { AddressKind } from './AccountDisplay';
 import useSS58Format from '../hooks/useSS58Format';
+import { SelectLabel } from '../components';
 
 // TDOO replace MUI Select with MUI Popover it wraps around or Autocomplete to have more control over appearance
 
@@ -48,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: theme.spacing(),
     paddingLeft: theme.spacing(1.75)
   },
-  selectAccount: {
+  accountMain: {
     '& .MuiSelect-select': {
       padding: theme.spacing(1.25),
       paddingTop: theme.spacing(0.5),
@@ -59,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
       borderBottomRightRadius: 0
     }
   },
-  selectCompanion: {
+  accountHelper: {
     marginTop: -1,
     padding: theme.spacing(0.5),
     paddingLeft: theme.spacing(1.25),
@@ -68,11 +69,6 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: theme.spacing(1.5),
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0
-  },
-  selectLabel: {
-    ...theme.typography.h4,
-    color: theme.palette.text.hint,
-    marginBottom: theme.spacing()
   }
 }));
 
@@ -145,18 +141,18 @@ const Sender = () => {
       <Select
         disableUnderline
         fullWidth
-        className={classes.selectAccount}
+        className={classes.accountMain}
         value={value}
         renderValue={(): React.ReactNode => (
           <>
-            <div className={classes.selectLabel}>Sender</div>
+            <SelectLabel>Sender</SelectLabel>
             <AccountSelected />
           </>
         )}
       >
         {chains.map((chain) => renderAccounts(chain))}
       </Select>
-      <div className={classes.selectCompanion}>
+      <div className={classes.accountHelper}>
         {derivedAccount ? (
           <Account accountName={getName(account)} value={value} chain={targetChain} isDerived hideAddress />
         ) : (

@@ -63,7 +63,7 @@ const paletteLight: PaletteOptions = {
   },
   error: {
     light: red[100],
-    main: '#FF3014',
+    main: '#DC2200',
     dark: red[500],
     contrastText: 'black'
   },
@@ -131,7 +131,7 @@ export const light: ThemeOptions = {
       lineHeight: '120%'
     },
     h4: {
-      fontWeight: 600,
+      fontWeight: 500,
       fontSize: 14,
       lineHeight: '120%',
       color: grey[800]

@@ -34,6 +34,7 @@ const Account = ({ accountName, value, chain, hideAddress = false, isDerived = f
   const { api, address } = useApiBalance(value, chain, isDerived);
 
   const state = useBalance(api, address, true);
+  console.log(state);
 
   return (
     <AccountDisplay

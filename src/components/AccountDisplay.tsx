@@ -23,6 +23,7 @@ import React from 'react';
 import Balance from './Balance';
 import shorterItem from '../util/shortenItem';
 import AccountIdenticon from './AccountIdenticon';
+import { Box } from '@material-ui/core';
 
 interface Props {
   addressKind?: AddressKind | string;
@@ -35,10 +36,6 @@ interface Props {
 }
 
 const useStyles = makeStyles((theme) => ({
-  container: {
-    display: 'flex',
-    alignItems: 'center'
-  },
   address: {
     marginLeft: theme.spacing(),
     marginRight: theme.spacing(),
@@ -66,11 +63,11 @@ const AccountDisplay = ({ address = '', addressKind, balance, friendlyName, hide
   };
 
   return (
-    <div onClick={onClick} className={classes.container}>
+    <Box onClick={onClick} display="flex" alignItems="center">
       <AccountIdenticon address={address} />
       <div className={`${classes.address} ${!address && classes.missingAddress}`}>{displayText()}</div>
       <Balance balance={balance} />
-    </div>
+    </Box>
   );
 };
 

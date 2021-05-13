@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Container, InputBase } from '@material-ui/core';
+import { Box, InputBase } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useCallback, useEffect, useState } from 'react';
 import { INCORRECT_FORMAT, GENERIC } from '../constants';
@@ -28,32 +28,31 @@ import usePrevious from '../hooks/usePrevious';
 
 import useReceiver from '../hooks/useReceiver';
 import AccountIdenticon from './AccountIdenticon';
+import { SelectLabel } from '../components';
+import Balance from './Balance';
 
 interface Props {
   setError: (value: string) => void;
 }
 
-const useStyles = makeStyles(() => ({
-  container: {
-    padding: '0',
-    float: 'left'
-  },
-  row: {
-    border: '1px solid grey',
-    borderRadius: '5px 5px 0 0',
-    display: 'flex',
-    padding: '10px 20px',
-    alignItems: 'center'
+const useStyles = makeStyles((theme) => ({
+  accountMain: {
+    padding: theme.spacing(1.25),
+    paddingTop: theme.spacing(0.5),
+    paddingRight: theme.spacing(3),
+    border: `1px solid ${theme.palette.divider}`,
+    borderRadius: theme.spacing(1.5),
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+    '& input': {
+      color: theme.palette.text.secondary
+    }
   },
   address: {
-    marginLeft: '10px'
-  },
-  balance: {
-    marginLeft: 'auto'
-  },
-  input: {
-    marginLeft: '10px',
-    width: '80%'
+    marginLeft: theme.spacing(),
+    marginRight: theme.spacing(),
+    width: '100%',
+    overflow: 'auto'
   }
 }));
 
@@ -103,7 +102,7 @@ function ReceiverInput({ setError }: Props) {
     const { formattedAccount, formatFound } = validateAccount(receiver)!;
     setFormatFound(formatFound);
     if (formatFound === INCORRECT_FORMAT) {
-      setError('Invalid address.');
+      setError('Invalid address');
       return;
     }
 
@@ -129,17 +128,20 @@ function ReceiverInput({ setError }: Props) {
 
   const addressInput = unformattedReceiverAddress || '';
   return (
-    <Container className={classes.container}>
-      <div className={classes.row}>
+    <div className={classes.accountMain}>
+      <SelectLabel>Receiver</SelectLabel>
+      <Box display="flex" alignItems="center">
         <AccountIdenticon address={addressInput} formatFound={formatFound} />
-        <div className={classes.input}>
-          <InputBase fullWidth onChange={onChange} value={addressInput} placeholder="recipient address" />
-        </div>
-        <div className={classes.balance}>
-          <p>{showBalance && state && state.formattedBalance}</p>
-        </div>
-      </div>
-    </Container>
+        <InputBase
+          className={classes.address}
+          fullWidth
+          onChange={onChange}
+          value={addressInput}
+          placeholder="Recipient address"
+        />
+        {showBalance && state && <Balance balance={state.formattedBalance} />}
+      </Box>
+    </div>
   );
 }
 

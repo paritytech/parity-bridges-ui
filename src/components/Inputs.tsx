@@ -14,23 +14,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useState } from 'react';
-import ReceiverInput from './ReceiverInput';
-import ReceiverDerivedAccount from './ReceiverDerivedAccount';
-import { Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
 
-const Receiver = () => {
-  const [error, setError] = useState('');
+interface SelectLabelProps {
+  children: string;
+}
 
-  return (
-    <>
-      <ReceiverInput setError={setError} />
-      <ReceiverDerivedAccount />
-      <Typography variant="body2" color="error">
-        {error}
-      </Typography>
-    </>
-  );
+const useStyles = makeStyles((theme) => ({
+  selectLabel: {
+    ...theme.typography.h4,
+    color: theme.palette.text.hint,
+    marginBottom: theme.spacing()
+  }
+}));
+
+export const SelectLabel = ({ children }: SelectLabelProps) => {
+  const classes = useStyles();
+  return <div className={classes.selectLabel}>{children}</div>;
 };
-
-export default Receiver;
