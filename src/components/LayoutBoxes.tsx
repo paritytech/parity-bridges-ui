@@ -35,10 +35,12 @@ const useStyles = makeStyles((theme) => ({
       }
     },
     '& .MuiPaper-root': {
+      borderRadius: theme.spacing(1.5)
+    },
+    '& > .MuiPaper-root': {
       width: 480,
       maxWidth: '100%',
-      padding: theme.spacing(2),
-      borderRadius: theme.spacing(1.5)
+      padding: theme.spacing(2)
     }
   },
   sidebar: {

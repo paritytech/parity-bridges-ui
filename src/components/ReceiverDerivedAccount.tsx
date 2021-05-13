@@ -22,17 +22,11 @@ import Account from './Account';
 import AccountDisplay, { AddressKind } from './AccountDisplay';
 import GenericAccount from './GenericAccount';
 import shortenItem from '../util/shortenItem';
+import { styleAccountCompanion } from './Inputs';
 
 const useStyles = makeStyles((theme) => ({
-  accountHelper: {
-    marginTop: -1,
-    padding: theme.spacing(0.5),
-    paddingLeft: theme.spacing(1.25),
-    paddingRight: theme.spacing(3),
-    border: `1px solid ${theme.palette.divider}`,
-    borderRadius: theme.spacing(1.5),
-    borderTopLeftRadius: 0,
-    borderTopRightRadius: 0
+  accountCompanion: {
+    ...styleAccountCompanion(theme)
   }
 }));
 
@@ -56,7 +50,7 @@ const ReceiverDerivedAccount = () => {
   if (derivedReceiverAccount) {
     const shortUnformattedReceiver = shortenItem(unformattedReceiverAddress || '');
     return (
-      <div className={classes.accountHelper}>
+      <div className={classes.accountCompanion}>
         <Account
           accountName={shortUnformattedReceiver}
           value={receiverAddress!}
@@ -66,16 +60,18 @@ const ReceiverDerivedAccount = () => {
         />
       </div>
     );
-  } else if (!receiverAddress) {
+  }
+
+  if (!receiverAddress) {
     return (
-      <div className={classes.accountHelper}>
+      <div className={classes.accountCompanion}>
         <AccountDisplay />
       </div>
     );
   }
 
   return (
-    <div className={classes.accountHelper}>
+    <div className={classes.accountCompanion}>
       <AccountDisplay address={receiverAddress!} addressKind={AddressKind.NATIVE} derived />
     </div>
   );

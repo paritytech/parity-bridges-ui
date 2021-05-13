@@ -33,6 +33,7 @@ interface Props {
   onClick?: () => void;
   derived?: boolean;
   balance?: string | null | undefined;
+  className?: string;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -47,7 +48,15 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const AccountDisplay = ({ address = '', addressKind, balance, friendlyName, hideAddress = false, onClick }: Props) => {
+const AccountDisplay = ({
+  address = '',
+  addressKind,
+  balance,
+  friendlyName,
+  hideAddress = false,
+  onClick,
+  className
+}: Props) => {
   const classes = useStyles();
   const displayText = () => {
     const shortAddress = shorterItem(address);
@@ -63,7 +72,7 @@ const AccountDisplay = ({ address = '', addressKind, balance, friendlyName, hide
   };
 
   return (
-    <Box onClick={onClick} display="flex" alignItems="center">
+    <Box onClick={onClick} display="flex" alignItems="center" className={className}>
       <AccountIdenticon address={address} />
       <div className={`${classes.address} ${!address && classes.missingAddress}`}>{displayText()}</div>
       <Balance balance={balance} />

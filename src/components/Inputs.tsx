@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import { Theme } from '@material-ui/core/styles';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 
@@ -28,6 +29,19 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing()
   }
 }));
+
+export const styleAccountCompanion = (theme: Theme) => {
+  return {
+    marginTop: -1,
+    padding: theme.spacing(0.5),
+    paddingLeft: theme.spacing(1.25),
+    paddingRight: theme.spacing(3),
+    border: `1px solid ${theme.palette.divider}`,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    borderRadius: theme.spacing(1.5)
+  };
+};
 
 export const SelectLabel = ({ children }: SelectLabelProps) => {
   const classes = useStyles();

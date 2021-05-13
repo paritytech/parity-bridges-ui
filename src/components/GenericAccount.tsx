@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import Container from '@material-ui/core/Container';
 import { encodeAddress } from '@polkadot/util-crypto';
 import React, { useState } from 'react';
 import { useUpdateTransactionContext } from '../contexts/TransactionContext';
@@ -26,27 +25,29 @@ import getDeriveAccount from '../util/getDeriveAccount';
 import shorterItem from '../util/shortenItem';
 import { getBridgeId } from '../util/getConfigs';
 import AccountDisplay, { AddressKind } from './AccountDisplay';
+import { Paper } from '@material-ui/core';
+import { styleAccountCompanion } from '.';
 
 interface Props {
   value: string;
   isDerived?: boolean;
 }
 
-const useStyles = makeStyles(() => ({
-  container: {
-    padding: '0',
-    float: 'left'
+const useStyles = makeStyles((theme) => ({
+  accountCompanion: {
+    ...styleAccountCompanion(theme),
+    borderRadius: 0,
+    '&:last-child': {
+      borderTopLeftRadius: 0,
+      borderTopRightRadius: 0,
+      borderRadius: theme.spacing(1.5)
+    }
   },
-  native: {
-    border: '1px solid',
-    borderTop: 'none',
-    padding: '5px 0'
-  },
-  companion: {
-    border: '1px solid',
-    borderTop: 'none',
-    borderRadius: '0 0 5px 5px',
-    padding: '5px 0'
+  selectAccountCompanionItem: {
+    '&:hover': {
+      cursor: 'pointer',
+      backgroundColor: theme.palette.secondary.light
+    }
   }
 }));
 
@@ -79,42 +80,55 @@ const GenericAccount = ({ value }: Props) => {
   });
   const derivedState = useBalance(targetApi, derivedAddress, true);
 
+  const looseHelperAccount = () => {
+    setSelected('');
+    dispatchTransaction(TransactionActionCreators.setReceiverAddress(null));
+  };
+
   const setNativeAsTarget = () => {
+    if (selected) {
+      looseHelperAccount();
+      return;
+    }
     setSelected(NATIVE);
     dispatchTransaction(TransactionActionCreators.setReceiverAddress(nativeAddress));
   };
 
   const setCompanionAsTarget = () => {
+    if (selected) {
+      looseHelperAccount();
+      return;
+    }
     setSelected(DERIVED);
     dispatchTransaction(TransactionActionCreators.setReceiverAddress(derivedAddress));
   };
 
   const shortGenericAddress = shorterItem(value);
   return (
-    <Container className={classes.container}>
+    <Paper elevation={!selected ? 23 : 0}>
       {(!selected || selected === NATIVE) && (
-        <div className={classes.native} onClick={setNativeAsTarget}>
-          <AccountDisplay
-            address={nativeAddress}
-            addressKind={AddressKind.NATIVE}
-            balance={nativeState.formattedBalance}
-            friendlyName={shortGenericAddress}
-            hideAddress
-          />
-        </div>
+        <AccountDisplay
+          className={`${classes.accountCompanion} ${classes.selectAccountCompanionItem}`}
+          onClick={setNativeAsTarget}
+          address={nativeAddress}
+          addressKind={AddressKind.NATIVE}
+          balance={nativeState.formattedBalance}
+          friendlyName={shortGenericAddress}
+          hideAddress
+        />
       )}
       {(!selected || selected === DERIVED) && (
-        <div className={classes.companion} onClick={setCompanionAsTarget}>
-          <AccountDisplay
-            address={derivedAddress}
-            addressKind={AddressKind.COMPANION}
-            balance={derivedState.formattedBalance}
-            friendlyName={shortGenericAddress}
-            hideAddress
-          />
-        </div>
+        <AccountDisplay
+          className={`${classes.accountCompanion} ${classes.selectAccountCompanionItem}`}
+          onClick={setCompanionAsTarget}
+          address={derivedAddress}
+          addressKind={AddressKind.COMPANION}
+          balance={derivedState.formattedBalance}
+          friendlyName={shortGenericAddress}
+          hideAddress
+        />
       )}
-    </Container>
+    </Paper>
   );
 };
 

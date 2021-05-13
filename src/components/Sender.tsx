@@ -27,7 +27,7 @@ import formatAccounts from '../util/formatAccounts';
 import Account from './Account';
 import AccountDisplay, { AddressKind } from './AccountDisplay';
 import useSS58Format from '../hooks/useSS58Format';
-import { SelectLabel } from '../components';
+import { SelectLabel, styleAccountCompanion } from '../components';
 
 // TDOO replace MUI Select with MUI Popover it wraps around or Autocomplete to have more control over appearance
 
@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
       border: 'none'
     }
   },
-  selectAccountItem: {
+  selectAccountMainItem: {
     display: 'block',
     paddingTop: theme.spacing(),
     paddingBottom: theme.spacing(),
@@ -60,15 +60,8 @@ const useStyles = makeStyles((theme) => ({
       borderBottomRightRadius: 0
     }
   },
-  accountHelper: {
-    marginTop: -1,
-    padding: theme.spacing(0.5),
-    paddingLeft: theme.spacing(1.25),
-    paddingRight: theme.spacing(3),
-    border: `1px solid ${theme.palette.divider}`,
-    borderRadius: theme.spacing(1.5),
-    borderTopLeftRadius: 0,
-    borderTopRightRadius: 0
+  accountCompanion: {
+    ...styleAccountCompanion(theme)
   }
 }));
 
@@ -107,7 +100,7 @@ const Sender = () => {
     const formatedAccounts = formatAccounts(accounts, getSS58ByChain(source));
     const items = formatedAccounts.map(({ text, value, key }: any) => (
       <MenuItem
-        className={classes.selectAccountItem}
+        className={classes.selectAccountMainItem}
         key={key}
         value={value}
         onClick={() => {
@@ -152,7 +145,7 @@ const Sender = () => {
       >
         {chains.map((chain) => renderAccounts(chain))}
       </Select>
-      <div className={classes.accountHelper}>
+      <div className={classes.accountCompanion}>
         {derivedAccount ? (
           <Account accountName={getName(account)} value={value} chain={targetChain} isDerived hideAddress />
         ) : (
