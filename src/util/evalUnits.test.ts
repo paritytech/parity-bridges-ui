@@ -32,7 +32,7 @@ describe('Tests suite - evalUnits', () => {
 
   it('Should accept as input, float (comma for decimal symbol)', () => {
     const [actualValue, msg] = evalUnits('1,23');
-    expect(actualValue).toBeFalsy;
+    expect(actualValue).toBe(1.23);
     expect(msg).toBe(EvalMessages.SUCCESS);
   });
 

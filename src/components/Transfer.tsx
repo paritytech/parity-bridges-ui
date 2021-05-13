@@ -52,7 +52,7 @@ function Transfer() {
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
   const areApiReady = useLoadingApi();
-  const transformToBase = 10 ** targetChainDetails.targetApiConnection.api.registry.chainDecimals[0];
+  const planck = 10 ** targetChainDetails.targetApiConnection.api.registry.chainDecimals[0];
   const { estimatedFee, receiverAddress } = useTransactionContext();
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
@@ -66,7 +66,7 @@ function Transfer() {
     if (event.target.value) {
       const [actualValue, message] = evalUnits(event.target.value);
       setHelperText(message);
-      setActualInput(actualValue && actualValue * transformToBase);
+      setActualInput(actualValue && actualValue * planck);
     }
     setTransferInput(event.target.value);
   };

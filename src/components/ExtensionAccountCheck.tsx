@@ -33,7 +33,7 @@ const ExtensionAccountCheck = ({ component }: Props): JSX.Element => {
   if (!extensionExists) {
     msg = 'Connect to a wallet. Install polkadotjs extension';
   } else if (!accountExists) {
-    msg = 'There are no accounts in the extension. Please create one. Please create one';
+    msg = 'There are no accounts in the extension. Please create one';
   }
 
   return <>{accountExists ? component : <Alert severity="error">{msg}</Alert>}</>;

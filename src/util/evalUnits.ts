@@ -59,7 +59,7 @@ export function evalUnits(input: string): [number | null, string] {
   }
 
   if (floats.test(input) || ints.test(input)) {
-    return [parseFloat(input), EvalMessages.SUCCESS];
+    return [parseFloat(input.replace(/[,]/g, '.')), EvalMessages.SUCCESS];
   } else if (alphaInts.test(input) || alphaFloats.test(input)) {
     const numericPart = parseFloat(input.replace(/[,]/g, '.'));
     const charPart = input.replace(/[0-9.,]/g, '');
