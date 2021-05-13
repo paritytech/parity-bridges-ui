@@ -14,10 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-export { ButtonExt, ButtonSwitchMode, ButtonSubmit } from './Buttons';
+export { ButtonDrawerMenu, ButtonExt, ButtonSwitchMode, ButtonSubmit } from './Buttons';
+export { StorageDrawer } from './StorageDrawer';
 export { IconTxStatus } from './Icons';
 export { BoxUI, BoxSidebar } from './LayoutBoxes';
 export { MenuAction } from './MenuAction';
 export { NetworkSides, NetworkStats } from './Network';
-export { TransactionDisplay } from './TransactionDisplay';
+export { Alert } from './Alert';
 export { light } from './theme';

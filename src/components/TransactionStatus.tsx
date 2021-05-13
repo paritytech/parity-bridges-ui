@@ -29,9 +29,13 @@ import useLoadingApi from '../hooks/useLoadingApi';
 import { ChainDetails } from '../types/sourceTargetTypes';
 import { Step, TransactionStatusEnum, TransanctionStatus } from '../types/transactionTypes';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
+export interface TransactionDisplayProps {
+  size?: 'sm';
+}
 interface Props {
   transaction: TransanctionStatus;
   onComplete: () => void;
+  transactionDisplayProps?: TransactionDisplayProps;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -46,11 +50,16 @@ const useStyles = makeStyles((theme) => ({
     },
     '& .header': {
       fontWeight: 500
+    },
+    '&.MuiPaper-root': {
+      maxWidth: '100%',
+      padding: theme.spacing(2),
+      borderRadius: theme.spacing(1.5)
     }
   }
 }));
 
-const TransactionStatus = ({ transaction, onComplete }: Props) => {
+const TransactionStatus = ({ transaction, onComplete, transactionDisplayProps }: Props) => {
   const classes = useStyles();
   const [nonceOfTargetFinalizedBlock, setNonceOfTargetFinalizedBlock] = useState<null | number>(null);
   const [latestReceivedNonceRuntimeApi, setLatestReceivedNonceRuntimeApi] = useState(0);
@@ -199,10 +208,12 @@ const TransactionStatus = ({ transaction, onComplete }: Props) => {
 
   return (
     <>
-      <ButtonSwitchMode disabled> Payload</ButtonSwitchMode>
-      <ButtonSwitchMode color="primary"> Receipt</ButtonSwitchMode>
-      <ButtonSwitchMode disabled> Human</ButtonSwitchMode>
-      <Card elevation={24} className={classes.card}>
+      <Box mt={2}>
+        <ButtonSwitchMode disabled> Payload</ButtonSwitchMode>
+        <ButtonSwitchMode color="primary"> Receipt</ButtonSwitchMode>
+        <ButtonSwitchMode disabled> Human</ButtonSwitchMode>
+      </Box>
+      <Card elevation={transactionDisplayProps?.size === 'sm' ? 23 : 24} className={classes.card}>
         <Box className="header" component="p">
           <IconTxStatus status={transaction.status} /> {transaction.type} {transaction.sourceChain} {'->'}{' '}
           {transaction.targetChain}

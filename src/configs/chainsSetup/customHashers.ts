@@ -13,25 +13,18 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
-import React from 'react';
-import { Alert } from '.';
-import { useKeyringContext } from '../contexts/KeyringContextProvider';
 
-interface Props {
-  component: JSX.Element;
+import { u8aConcat } from '@polkadot/util';
+import { blake2AsU8a, keccakAsU8a } from '@polkadot/util-crypto';
+
+type Hasher = { [index: string]: (data: Uint8Array) => Uint8Array } | null;
+
+function blake2Keccak256Hasher(data: Uint8Array) {
+  return u8aConcat(blake2AsU8a(data), keccakAsU8a(data));
 }
 
-const ExtensionAccountCheck = ({ component }: Props): JSX.Element => {
-  const { extensionExists, accountExists } = useKeyringContext();
-
-  let msg: string = '';
-  if (!extensionExists) {
-    msg = 'Connect to a wallet. Install polkadotjs extension';
-  } else if (!accountExists) {
-    msg = 'There are no accounts in the extension. Please create one';
-  }
-
-  return <>{accountExists ? component : <Alert severity="error">{msg}</Alert>}</>;
+const hashers: Hasher = {
+  blake2Keccak256Hasher
 };
 
-export default ExtensionAccountCheck;
+export default hashers;

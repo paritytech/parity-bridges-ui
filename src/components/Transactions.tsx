@@ -23,21 +23,20 @@ import { useTransactionContext } from '../contexts/TransactionContext';
 import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import { TransactionStatusEnum, TransanctionStatus } from '../types/transactionTypes';
 import shortenItem from '../util/shortenItem';
-import TransactionStatus from './TransactionStatus';
+import TransactionStatus, { TransactionDisplayProps } from './TransactionStatus';
 import TransactionStatusMock from './TransactionStatusMock';
 
-interface Props {
+interface Props extends TransactionDisplayProps {
   type?: string;
 }
 
-const Transactions = ({ type }: Props) => {
+const Transactions = ({ type, ...transactionDisplayProps }: Props) => {
   const { transactions } = useTransactionContext();
   const { dispatchTransaction } = useUpdateTransactionContext();
   const { dispatchMessage } = useUpdateMessageContext();
 
   return (
     <>
-      <h2>Transactions</h2>
       {transactions.length ? (
         transactions.map((transaction: TransanctionStatus) => {
           const onComplete = () => {
@@ -53,7 +52,14 @@ const Transactions = ({ type }: Props) => {
               })
             );
           };
-          return <TransactionStatus key={transaction.id} transaction={transaction} onComplete={onComplete} />;
+          return (
+            <TransactionStatus
+              key={transaction.id}
+              transaction={transaction}
+              onComplete={onComplete}
+              transactionDisplayProps={{ ...transactionDisplayProps }}
+            />
+          );
         })
       ) : (
         <TransactionStatusMock type={type} />

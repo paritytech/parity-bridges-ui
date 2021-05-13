@@ -15,12 +15,12 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React from 'react';
-import { Backdrop, CircularProgress, createMuiTheme, ThemeProvider } from '@material-ui/core';
+import { Backdrop, CircularProgress } from '@material-ui/core';
 import { SnackbarProvider } from 'notistack';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { substrateProviders } from './configs';
-import { light } from './components';
 import { AccountContextProvider } from './contexts/AccountContextProvider';
+import { GUIContextProvider } from './contexts/GUIContextProvider';
 import { KeyringContextProvider } from './contexts/KeyringContextProvider';
 import { MessageContextProvider } from './contexts/MessageContext';
 import { SourceTargetContextProvider } from './contexts/SourceTargetContextProvider';
@@ -28,10 +28,10 @@ import { TransactionContextProvider } from './contexts/TransactionContext';
 import { useConnections } from './hooks/useConnections';
 import Main from './screens/Main';
 
-const [connectionDetailsOne, connectionDetailsTwo] = substrateProviders();
+const [connectionDetails1, connectionDetails2] = substrateProviders();
 
 function App() {
-  const { connections, apiReady } = useConnections({ connectionDetailsOne, connectionDetailsTwo });
+  const { connections, apiReady } = useConnections([connectionDetails1, connectionDetails2]);
 
   if (!apiReady) {
     return (
@@ -51,9 +51,9 @@ function App() {
                 <BrowserRouter>
                   <Switch>
                     <Route path={'/'}>
-                      <ThemeProvider theme={createMuiTheme(light)}>
+                      <GUIContextProvider>
                         <Main />
-                      </ThemeProvider>
+                      </GUIContextProvider>
                     </Route>
                   </Switch>
                 </BrowserRouter>

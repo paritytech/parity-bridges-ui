@@ -13,25 +13,31 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
-import React from 'react';
-import { Alert } from '.';
-import { useKeyringContext } from '../contexts/KeyringContextProvider';
 
-interface Props {
-  component: JSX.Element;
+const dotenv = require('dotenv');
+const result = dotenv.config();
+
+if (result.error) {
+  throw result.error;
 }
 
-const ExtensionAccountCheck = ({ component }: Props): JSX.Element => {
-  const { extensionExists, accountExists } = useKeyringContext();
+const customTypesDir = './src/configs/substrateCustomTypes';
 
-  let msg: string = '';
-  if (!extensionExists) {
-    msg = 'Connect to a wallet. Install polkadotjs extension';
-  } else if (!accountExists) {
-    msg = 'There are no accounts in the extension. Please create one';
+const rialtoUrl =
+  'https://raw.githubusercontent.com/paritytech/parity-bridges-common/master/deployments/types-rialto.json';
+
+const chain1Url = result.parsed.REACT_APP_CHAIN_1_CUSTOM_TYPES_URL || rialtoUrl;
+const chain2Url = result.parsed.REACT_APP_CHAIN_2_CUSTOM_TYPES_URL || rialtoUrl;
+
+const customTypes = [
+  {
+    path: `${customTypesDir}/chain1.json`,
+    url: chain1Url
+  },
+  {
+    path: `${customTypesDir}/chain2.json`,
+    url: chain2Url
   }
+];
 
-  return <>{accountExists ? component : <Alert severity="error">{msg}</Alert>}</>;
-};
-
-export default ExtensionAccountCheck;
+module.exports = customTypes;
