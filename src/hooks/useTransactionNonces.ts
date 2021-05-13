@@ -16,13 +16,15 @@
 
 import { Codec } from '@polkadot/types/types';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useDashboard from './useDashboard';
 import useLaneId from './useLaneId';
 import useLoadingApi from './useLoadingApi';
 import useChainGetters from './useChainGetters';
+import { useMountedState } from './useMountedState';
+
 import { isTransactionCompleted } from '../util/transactionUtils';
 import { getSourceTargetRole } from '../util/chainsUtils';
 import { TransactionStatusType } from '../types/transactionTypes';
@@ -32,8 +34,8 @@ interface Props {
 }
 
 const useTransactionNonces = ({ transaction }: Props) => {
-  const [nonceOfTargetFinalizedBlock, setNonceOfTargetFinalizedBlock] = useState<null | number>(null);
-  const [latestReceivedNonceRuntimeApi, setLatestReceivedNonceRuntimeApi] = useState(0);
+  const [nonceOfTargetFinalizedBlock, setNonceOfTargetFinalizedBlock] = useMountedState<null | number>(null);
+  const [latestReceivedNonceRuntimeApi, setLatestReceivedNonceRuntimeApi] = useMountedState(0);
   const { getValuesByChain } = useChainGetters();
 
   const laneId = useLaneId();
@@ -84,7 +86,9 @@ const useTransactionNonces = ({ transaction }: Props) => {
     latestReceivedNonceMethodName,
     targetApi.registry,
     targetApi.rpc.chain,
-    targetApi.rpc.state
+    targetApi.rpc.state,
+    setNonceOfTargetFinalizedBlock,
+    setLatestReceivedNonceRuntimeApi
   ]);
 
   return { nonceOfTargetFinalizedBlock, latestReceivedNonceRuntimeApi };
