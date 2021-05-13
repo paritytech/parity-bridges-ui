@@ -84,8 +84,9 @@ function Transfer() {
 
   useEffect((): void => {
     estimatedFee &&
-      setAmountNotCorrect(new BN(balance.free).sub(new BN(transferInput).add(new BN(estimatedFee))).toNumber() < 0);
-  }, [transferInput, estimatedFee, balance, isApiReady]);
+      actualInput &&
+      setAmountNotCorrect(new BN(balance.free).sub(new BN(actualInput).add(new BN(estimatedFee))).toNumber() < 0);
+  }, [actualInput, estimatedFee, balance, isApiReady]);
 
   if (!areApiReady) return null;
 
