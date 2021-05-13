@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Box, InputAdornment, makeStyles, TextField, Typography } from '@material-ui/core';
+import { Box, makeStyles, TextField, Typography } from '@material-ui/core';
 import React, { useState, useEffect } from 'react';
 import BN from 'bn.js';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
@@ -24,8 +24,9 @@ import useBalance from '../hooks/useBalance';
 import useLoadingApi from '../hooks/useLoadingApi';
 import useSendMessage from '../hooks/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
-
+import { TokenSymbol } from './TokenSymbol';
 import Receiver from './Receiver';
+import { evalUnits } from '../util/evalUnits';
 import { Alert, ButtonSubmit } from '../components';
 
 const useStyles = makeStyles((theme) => ({
@@ -45,28 +46,35 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const Transfer = () => {
+function Transfer() {
   const classes = useStyles();
   const [isRunning, setIsRunning] = useState(false);
+  const [helperText, setHelperText] = useState('');
   const [transferInput, setTransferInput] = useState<string>('');
+  const [actualInput, setActualInput] = useState<number | null>();
   const [amountNotCorrect, setAmountNotCorrect] = useState<boolean>(false);
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   const { account } = useAccounts();
 
   const areApiReady = useLoadingApi();
-
+  const planck = 10 ** targetChainDetails.targetApiConnection.api.registry.chainDecimals[0];
   const { estimatedFee, receiverAddress } = useTransactionContext();
   const { api, isApiReady } = sourceChainDetails.sourceApiConnection;
   const balance = useBalance(api, account?.address || '');
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
-    input: transferInput,
+    input: actualInput?.toString() ?? '',
     isRunning,
     setIsRunning,
     type: TransactionTypes.TRANSFER
   });
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.value) {
+      const [actualValue, message] = evalUnits(event.target.value);
+      setHelperText(message);
+      setActualInput(actualValue && actualValue * planck);
+    }
     setTransferInput(event.target.value);
   };
 
@@ -91,12 +99,9 @@ const Transfer = () => {
           className={classes.inputAmount}
           fullWidth
           variant="outlined"
+          helperText={helperText}
           InputProps={{
-            endAdornment: (
-              <InputAdornment position="start">
-                n{targetChainDetails.targetApiConnection.api.registry.chainTokens}
-              </InputAdornment>
-            )
+            endAdornment: <TokenSymbol position="start" />
           }}
         />
       </Box>
@@ -115,6 +120,6 @@ const Transfer = () => {
       )}
     </>
   );
-};
+}
 
 export default Transfer;

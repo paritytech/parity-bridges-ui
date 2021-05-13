@@ -13,25 +13,21 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
+
 import React from 'react';
-import { Alert } from '.';
-import { useKeyringContext } from '../contexts/KeyringContextProvider';
+import { InputAdornment } from '@material-ui/core';
+import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 
 interface Props {
-  component: JSX.Element;
+  position?: 'start' | 'end';
 }
 
-const ExtensionAccountCheck = ({ component }: Props): JSX.Element => {
-  const { extensionExists, accountExists } = useKeyringContext();
+export const TokenSymbol = ({ position = 'start' }: Props): React.ReactElement => {
+  const { targetChainDetails } = useSourceTarget();
 
-  let msg: string = '';
-  if (!extensionExists) {
-    msg = 'Connect to a wallet. Install polkadotjs extension';
-  } else if (!accountExists) {
-    msg = 'There are no accounts in the extension. Please create one';
-  }
-
-  return <>{accountExists ? component : <Alert severity="error">{msg}</Alert>}</>;
+  return (
+    <InputAdornment position={position}>
+      {targetChainDetails.targetApiConnection.api.registry.chainTokens}
+    </InputAdornment>
+  );
 };
-
-export default ExtensionAccountCheck;
