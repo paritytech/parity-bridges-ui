@@ -15,7 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { TransactionActionTypes } from '../actions/transactionActions';
-import type { Payload, TransactionsActionType, TransactionState, TransanctionStatus } from '../types/transactionTypes';
+import { Payload, TransactionsActionType, TransactionState, TransactionStatusType } from '../types/transactionTypes';
 
 const updateTransaction = (state: TransactionState, payload: Payload): TransactionState => {
   if (state.transactions) {
@@ -36,7 +36,7 @@ const updateTransaction = (state: TransactionState, payload: Payload): Transacti
   return state;
 };
 
-const createTransaction = (state: TransactionState, initialTransaction: TransanctionStatus): TransactionState => {
+const createTransaction = (state: TransactionState, initialTransaction: TransactionStatusType): TransactionState => {
   const newState = { ...state };
   newState.transactions.unshift(initialTransaction);
   return newState;
