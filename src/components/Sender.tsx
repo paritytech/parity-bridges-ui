@@ -74,6 +74,7 @@ const Sender = ({ className }: Props) => {
     setCurrentAccount(value, chain);
     setReceiver(null);
   };
+
   const renderAccounts = (chains: string[]) => {
     const [source, target] = chains;
     const formatedAccounts = formatAccounts(accounts, getSS58ByChain(source));

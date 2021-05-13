@@ -149,7 +149,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
         return isRunning || !account;
         break;
       case TransactionTypes.TRANSFER:
-        return isRunning || !receiverAddress || !account;
+        return isRunning || !receiverAddress || !input || !account;
         break;
       case TransactionTypes.CUSTOM:
         return isRunning || !account || !input || !weightInput || !isValidCall;
