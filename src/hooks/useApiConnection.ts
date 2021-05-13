@@ -45,7 +45,7 @@ export function useApiConnection(connectionDetails: ConnectionChainInformation):
   const { chainNumber, hasher, provider, types, polkadotjsUrl } = connectionDetails;
 
   useEffect(() => {
-    ApiPromise.create({ hasher, provider, types })
+    ApiPromise.create({ hasher: hasher || undefined, provider, types })
       .then((api): void => {
         logger.info(`Chain ${chainNumber}: connection created.`);
         setApiPromise(api);

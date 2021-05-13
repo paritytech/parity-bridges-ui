@@ -14,17 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Box, makeStyles, TextField } from '@material-ui/core';
-import React, { useState } from 'react';
+import { Box, makeStyles, TextField, Typography } from '@material-ui/core';
+import React, { useState, useEffect } from 'react';
+import BN from 'bn.js';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
+import useAccounts from '../hooks/useAccounts';
+import useBalance from '../hooks/useBalance';
 import useLoadingApi from '../hooks/useLoadingApi';
 import useSendMessage from '../hooks/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
 import { TokenSymbol } from './TokenSymbol';
 import Receiver from './Receiver';
-import { ButtonSubmit } from '../components';
 import { evalUnits } from '../util/evalUnits';
+import { Alert, ButtonSubmit } from '../components';
 
 const useStyles = makeStyles((theme) => ({
   inputAmount: {
@@ -49,11 +52,15 @@ function Transfer() {
   const [helperText, setHelperText] = useState('');
   const [transferInput, setTransferInput] = useState<string>('');
   const [actualInput, setActualInput] = useState<number | null>();
+  const [amountNotCorrect, setAmountNotCorrect] = useState<boolean>(false);
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
+  const { account } = useAccounts();
 
   const areApiReady = useLoadingApi();
   const transformToBase = 10 ** targetChainDetails.targetApiConnection.api.registry.chainDecimals[0];
   const { estimatedFee, receiverAddress } = useTransactionContext();
+  const { api, isApiReady } = sourceChainDetails.sourceApiConnection;
+  const balance = useBalance(api, account?.address || '');
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
     input: actualInput?.toString() ?? '',
@@ -71,6 +78,15 @@ function Transfer() {
     setTransferInput(event.target.value);
   };
 
+  useEffect((): void => {
+    isRunning && setTransferInput('');
+  }, [isRunning]);
+
+  useEffect((): void => {
+    estimatedFee &&
+      setAmountNotCorrect(new BN(balance.free).sub(new BN(transferInput).add(new BN(estimatedFee))).toNumber() < 0);
+  }, [transferInput, estimatedFee, balance, isApiReady]);
+
   if (!areApiReady) return null;
 
   return (
@@ -78,7 +94,7 @@ function Transfer() {
       <Box mb={2}>
         <TextField
           onChange={onChange}
-          value={transferInput && transferInput}
+          value={transferInput}
           placeholder={'0'}
           className={classes.inputAmount}
           fullWidth
@@ -90,10 +106,18 @@ function Transfer() {
         />
       </Box>
       <Receiver />
-      <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
+      <ButtonSubmit disabled={isButtonDisabled() || amountNotCorrect} onClick={sendLaneMessage}>
         Send bridge transfer from {sourceChainDetails.sourceChain} to {targetChainDetails.targetChain}
       </ButtonSubmit>
-      {receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}
+      {amountNotCorrect ? (
+        <Alert severity="error">
+          Account&apos;s amount (including fees: {estimatedFee}) is not enough for this transaction.
+        </Alert>
+      ) : (
+        <Typography variant="body1" color="secondary">
+          {receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}
+        </Typography>
+      )}
     </>
   );
 }

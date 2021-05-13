@@ -14,11 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-export { ButtonDrawerMenu, ButtonExt, ButtonSwitchMode, ButtonSubmit } from './Buttons';
-export { StorageDrawer } from './StorageDrawer';
-export { IconTxStatus } from './Icons';
-export { BoxUI, BoxSidebar } from './LayoutBoxes';
-export { MenuAction } from './MenuAction';
-export { NetworkSides, NetworkStats } from './Network';
-export { Alert } from './Alert';
-export { light } from './theme';
+import { u8aConcat } from '@polkadot/util';
+import { blake2AsU8a, keccakAsU8a } from '@polkadot/util-crypto';
+
+type Hasher = { [index: string]: (data: Uint8Array) => Uint8Array } | null;
+
+function blake2Keccak256Hasher(data: Uint8Array) {
+  return u8aConcat(blake2AsU8a(data), keccakAsU8a(data));
+}
+
+const hashers: Hasher = {
+  blake2Keccak256Hasher
+};
+
+export default hashers;

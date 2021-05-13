@@ -26,7 +26,7 @@ export interface ApiPromiseConnectionType {
 
 export interface ConnectionChainInformation {
   chainNumber: string;
-  hasher?: (data: Uint8Array) => Uint8Array;
+  hasher: ((data: Uint8Array) => Uint8Array) | null;
   provider: ProviderInterface;
   types?: ApiOptions['types'];
   polkadotjsUrl: string;
