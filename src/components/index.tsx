@@ -16,6 +16,7 @@
 
 export { ButtonDrawerMenu, ButtonExt, ButtonSwitchMode, ButtonSubmit } from './Buttons';
 export { StorageDrawer } from './StorageDrawer';
+export { SelectLabel, styleAccountCompanion } from './Inputs';
 export { IconTxStatus } from './Icons';
 export { BoxUI, BoxSidebar } from './LayoutBoxes';
 export { MenuAction } from './MenuAction';

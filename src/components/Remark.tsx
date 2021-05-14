@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { TextField } from '@material-ui/core';
+import { TextField, Typography } from '@material-ui/core';
 import React, { useState } from 'react';
 import { ButtonSubmit } from '../components';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
@@ -47,11 +47,21 @@ const Remark = () => {
 
   return (
     <>
-      <TextField onChange={onChange} value={remarkInput} variant="outlined" fullWidth />
+      <TextField
+        label="Remark"
+        value={remarkInput}
+        variant="outlined"
+        fullWidth
+        multiline
+        rows={4}
+        onChange={onChange}
+      />
       <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
         Send bridge remark from {sourceChainDetails.sourceChain} to {targetChainDetails.targetChain}
       </ButtonSubmit>
-      {estimatedFee && `Estimated source Fee: ${estimatedFee}`}
+      <Typography variant="body1" color="secondary">
+        {estimatedFee && `Estimated source Fee: ${estimatedFee}`}
+      </Typography>
     </>
   );
 };

@@ -55,13 +55,13 @@ export const TransactionDisplay = ({ transaction, steps }: Props) => {
           <IconTxStatus status={transaction.status} /> {transaction.type} {transaction.sourceChain} {'->'}{' '}
           {transaction.targetChain}
         </Box>
-        {steps.map(({ chainType, label, onChain, status }, idx) => (
+        {steps.map(({ chainType, label, labelOnChain, status }, idx) => (
           <p key={idx}>
-            <IconTxStatus status={status} /> {chainType}: {label}
-            {onChain && (
+            <IconTxStatus status={status} /> {chainType}: {label}&nbsp;
+            {labelOnChain && (
               <Box ml={1} pt={0.25} pb={0.25} pl={0.5} pr={0.5} component="span" border={1} borderRadius={6}>
                 <Typography component="span" variant="subtitle2">
-                  {onChain}
+                  {labelOnChain}
                 </Typography>
               </Box>
             )}

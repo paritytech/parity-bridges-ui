@@ -23,7 +23,6 @@ import React, { Dispatch, SetStateAction, useEffect } from 'react';
 // This way to inject the styles works.
 const useStyles = makeStyles((theme) => ({
   menu: {
-    display: 'inline-block',
     background: theme.palette.secondary.light,
     padding: theme.spacing(),
     borderRadius: theme.spacing()
@@ -40,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
       background: theme.palette.primary.main
     },
     '&.current': {
-      marginBottom: theme.spacing(2),
+      marginBottom: theme.spacing(3),
       color: theme.palette.text.hint,
       '&:hover': {
         color: theme.palette.secondary.contrastText,

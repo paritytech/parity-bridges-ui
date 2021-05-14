@@ -18,31 +18,28 @@ import React from 'react';
 
 import useApiBalance from '../hooks/useApiBalance';
 import useBalance from '../hooks/useBalance';
-import AccountDisplay, { AddressKind } from './AccountDisplay';
+import AccountDisplay, { AddressKind, Props as AccountDisplayProps } from './AccountDisplay';
 
-interface Props {
-  accountName?: string;
+interface Props extends AccountDisplayProps {
   chain?: string | undefined;
-  className?: string;
-  hideAddress?: boolean;
-  isDerived?: boolean;
-  onClick?: () => void;
   value: string;
 }
 
-const Account = ({ accountName, value, chain, hideAddress = false, isDerived = false }: Props) => {
+const Account = ({ value, chain, hideAddress = false, isDerived = false, ...props }: Props) => {
   const { api, address } = useApiBalance(value, chain, isDerived);
 
   const state = useBalance(api, address, true);
 
   return (
-    <AccountDisplay
-      friendlyName={accountName}
-      address={address}
-      balance={state.formattedBalance}
-      addressKind={isDerived ? AddressKind.COMPANION : undefined}
-      hideAddress={hideAddress}
-    />
+    <>
+      <AccountDisplay
+        address={address}
+        balance={`${state.formattedBalance} ${state.formattedBalance === '0' ? state.chainTokens : ''}`}
+        addressKind={isDerived ? AddressKind.COMPANION : undefined}
+        hideAddress={hideAddress}
+        {...props}
+      />
+    </>
   );
 };
 

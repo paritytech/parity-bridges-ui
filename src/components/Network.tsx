@@ -14,11 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Box, Divider, IconButton } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import KeyboardReturnIcon from '@material-ui/icons/KeyboardReturn';
 import React from 'react';
-
+import { Box, Divider, IconButton, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useDashboard from '../hooks/useDashboard';
 import { ChainDetails } from '../types/sourceTargetTypes';
@@ -28,7 +27,6 @@ import { ChainDetails } from '../types/sourceTargetTypes';
 const useStyles = makeStyles((theme) => ({
   main: {
     position: 'relative',
-    ...theme.typography.h4,
     border: `1px solid ${theme.palette.divider}`,
     borderRadius: theme.spacing(0.5),
     '& .MuiIconButton-root': {
@@ -36,21 +34,19 @@ const useStyles = makeStyles((theme) => ({
       position: 'absolute',
       top: 0,
       bottom: 0,
-      right: '-1rem',
-      width: '2rem',
-      height: '2rem',
+      right: theme.spacing(-1.5),
+      width: theme.spacing(3),
+      height: theme.spacing(3),
       margin: 'auto',
-      border: `1px solid ${theme.palette.divider}`,
-      transform: 'rotate(-90deg)'
+      border: `1px solid ${theme.palette.divider}`
     }
   },
   statsEntry: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingRight: theme.spacing(),
     fontSize: theme.typography.subtitle2.fontSize,
-    paddingLeft: 1,
-    paddingRight: 2,
     '& span': {
       ...theme.typography.subtitle2
     }
@@ -60,21 +56,30 @@ const useStyles = makeStyles((theme) => ({
 export const NetworkSides = () => {
   const classes = useStyles();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
+  const dbSource = useDashboard(ChainDetails.SOURCE);
+  const dbTarget = useDashboard(ChainDetails.TARGET);
+
   return (
     <Box marginY={2} className={classes.main}>
-      <Box p={1}>
-        <a target="_blank" rel="noreferrer" href={sourceChainDetails.sourcePolkadotjsUrl}>
-          {sourceChainDetails.sourceChain}
-        </a>
+      <Box p={1} className={classes.statsEntry}>
+        <Typography variant="h4">
+          <a target="_blank" rel="noreferrer" href={sourceChainDetails.sourcePolkadotjsUrl}>
+            {sourceChainDetails.sourceChain}
+          </a>
+        </Typography>
+        <span># {dbSource.bestBlock}</span>
       </Box>
       <Divider />
       <IconButton size="small">
-        <KeyboardReturnIcon fontSize="small" />
+        <ArrowDownwardIcon fontSize="small" />
       </IconButton>
-      <Box p={1}>
-        <a target="_blank" rel="noreferrer" href={targetChainDetails.targetPolkadotjsUrl}>
-          {targetChainDetails.targetChain}
-        </a>
+      <Box p={1} className={classes.statsEntry}>
+        <Typography variant="h4">
+          <a target="_blank" rel="noreferrer" href={targetChainDetails.targetPolkadotjsUrl}>
+            {targetChainDetails.targetChain}
+          </a>
+        </Typography>
+        <span style={{ opacity: 0.4 }}># {dbTarget.bestBlock}</span>
       </Box>
     </Box>
   );
@@ -83,18 +88,15 @@ export const NetworkSides = () => {
 export const NetworkStats = () => {
   const classes = useStyles();
   const dbSource = useDashboard(ChainDetails.SOURCE);
+  const dbTarget = useDashboard(ChainDetails.TARGET);
 
   return (
     <>
       <Box className={classes.statsEntry}>
-        Finalized blocks:
-        <span>
-          {dbSource?.bestBlockFinalized} / {dbSource?.bestBlock}
-        </span>
-      </Box>
-      <Box className={classes.statsEntry}>
         Relayed blocks:
-        <span>{dbSource?.bestBridgedFinalizedBlock}</span>
+        <span>
+          {dbTarget?.bestBridgedFinalizedBlock} / {dbSource?.bestBlockFinalized}
+        </span>
       </Box>
       <Box className={classes.statsEntry}>
         Delivered messages:

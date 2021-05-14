@@ -22,7 +22,8 @@ import { MessageActionsCreators } from '../actions/messageActions';
 
 import ctx from 'classnames';
 import React, { useCallback } from 'react';
-interface Props {
+import { IdentityProps } from '@polkadot/react-identicon/types';
+interface Props extends IdentityProps {
   address?: string;
   formatFound?: string;
 }
@@ -33,7 +34,7 @@ const useStyles = makeStyles(() => ({
 }));
 const emptyAddress: string = '1nUC7afqmo7zwRFWxDjrUQu9skk6fk99pafb4SiyGSRc8z3';
 
-export default function AccountIdenticon({ address, formatFound }: Props) {
+export default function AccountIdenticon({ address, formatFound, size = 24, theme = 'polkadot', ...props }: Props) {
   const { dispatchMessage } = useUpdateMessageContext();
   const placeholder = !address || formatFound === INCORRECT_FORMAT;
   const value = !placeholder ? address : emptyAddress;
@@ -48,8 +49,9 @@ export default function AccountIdenticon({ address, formatFound }: Props) {
     <Identicon
       className={ctx(placeholder && classes.placeholder)}
       value={value}
-      size={32}
-      theme={'polkadot'}
+      size={size}
+      theme={theme}
+      {...props}
       onCopy={onCopy}
     />
   );

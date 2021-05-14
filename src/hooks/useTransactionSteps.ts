@@ -89,7 +89,7 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
       {
         chainType: sourceChain,
         label: 'Include message in block',
-        onChain: transaction.block,
+        labelOnChain: transaction.block,
         status: completionStatus(!!transaction.block)
       },
       {
@@ -105,13 +105,13 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
       {
         chainType: targetChain,
         label: 'Deliver message',
-        onChain: onChainCompleted(messageDelivered) && transaction.messageNonce,
+        labelOnChain: onChainCompleted(messageDelivered) && transaction.messageNonce,
         status: completionStatus(messageDelivered)
       },
       {
         chainType: targetChain,
         label: 'Finalize message in target block',
-        onChain: onChainCompleted(messageFinalizedOnTarget) && targetMessageDeliveryBlock,
+        labelOnChain: onChainCompleted(messageFinalizedOnTarget) && targetMessageDeliveryBlock,
         status: completionStatus(messageFinalizedOnTarget)
       },
       {

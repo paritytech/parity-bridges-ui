@@ -18,50 +18,45 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import Container from '@material-ui/core/Container';
-import { makeStyles } from '@material-ui/core/styles';
+import { fade, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import Balance from './Balance';
 import shorterItem from '../util/shortenItem';
 import AccountIdenticon from './AccountIdenticon';
+import { Box, Tooltip } from '@material-ui/core';
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 
-interface Props {
+export interface Props {
+  friendlyName?: string | null;
+  isDerived?: boolean;
   addressKind?: AddressKind | string;
   address?: string;
-  friendlyName?: string | null;
   hideAddress?: boolean;
   onClick?: () => void;
-  derived?: boolean;
   balance?: string | null | undefined;
+  className?: string;
+  withTooltip?: boolean;
 }
 
-const useStyles = makeStyles(() => ({
-  onlyBalance: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    width: '100%',
-    padding: '0 10px'
-  },
-  icon: {
-    float: 'left'
-  },
-  container: {
-    display: 'flex',
-    minWidth: '100%',
-    padding: '0 10px',
-    alignItems: 'center'
-  },
+const useStyles = makeStyles((theme) => ({
   address: {
-    marginLeft: '10px',
-    width: '100%'
+    display: 'flex',
+    alignItems: 'center',
+    marginLeft: theme.spacing(),
+    marginRight: theme.spacing(),
+    width: '100%',
+    overflow: 'auto'
   },
   missingAddress: {
-    marginLeft: '10px',
-    width: '100%',
-    color: '#b2b2b2'
+    color: theme.palette.text.disabled
   },
-  balances: {
-    marginLeft: 'auto'
+  tooltipIcon: {
+    ...theme.typography.body1,
+    marginTop: 2,
+    marginLeft: 2,
+    '&:not(:hover)': {
+      color: fade(theme.palette.text.hint, 0.75)
+    }
   }
 }));
 
@@ -72,7 +67,8 @@ const AccountDisplay = ({
   friendlyName,
   hideAddress = false,
   onClick,
-  derived = false
+  className,
+  withTooltip
 }: Props) => {
   const classes = useStyles();
   const displayText = () => {
@@ -85,17 +81,22 @@ const AccountDisplay = ({
       return `${addressKind}(${displayName})`;
     }
 
-    return name;
+    return displayName;
   };
 
   return (
-    <Container onClick={onClick} className={classes.container}>
-      <div className={classes.icon}>{<AccountIdenticon address={address} />}</div>
-      <div className={!address ? classes.missingAddress : classes.address}>
-        <p>{!address ? !derived && 'sender address' : displayText()}</p>
+    <Box onClick={onClick} display="flex" alignItems="center" className={className}>
+      <AccountIdenticon address={address} />
+      <div className={`${classes.address} ${!address && classes.missingAddress}`}>
+        {displayText()}
+        {withTooltip && (
+          <Tooltip title={address} arrow placement="top" interactive>
+            <HelpOutlineIcon className={classes.tooltipIcon} />
+          </Tooltip>
+        )}
       </div>
       <Balance balance={balance} />
-    </Container>
+    </Box>
   );
 };
 

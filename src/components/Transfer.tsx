@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import React, { useEffect, useState } from 'react';
 import { Box, makeStyles, TextField, Typography } from '@material-ui/core';
-import React, { useState, useEffect } from 'react';
 import BN from 'bn.js';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
@@ -34,7 +34,8 @@ const useStyles = makeStyles((theme) => ({
     '& .MuiInputBase-root': {
       '& .MuiInputAdornment-root': {
         position: 'absolute',
-        right: 0
+        right: theme.spacing(2),
+        ...theme.typography.subtitle2
       },
       '& input': {
         textAlign: 'center',

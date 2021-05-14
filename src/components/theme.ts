@@ -63,15 +63,15 @@ const paletteLight: PaletteOptions = {
   },
   error: {
     light: red[100],
-    main: '#FF3014',
+    main: '#DC2200',
     dark: red[500],
     contrastText: 'black'
   },
   text: {
     primary: substrateGray[900],
     secondary: bridgesBlue[400],
-    disabled: substrateGray[400],
-    hint: substrateGray[700]
+    disabled: substrateGray[600],
+    hint: substrateGray[600]
   },
   action: {
     active: bridgesBlue[300]
@@ -169,9 +169,10 @@ export const light: ThemeOptions = {
       letterSpacing: 0.1
     },
     overline: {
-      fontSize: 11,
-      lineHeight: '120%',
-      letterSpacing: 0.7
+      fontWeight: 500,
+      fontSize: 14,
+      letterSpacing: 0.3,
+      textTransform: 'uppercase'
     }
   },
   palette: paletteLight,

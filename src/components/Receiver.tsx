@@ -14,38 +14,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Container } from '@material-ui/core';
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import ReceiverInput from './ReceiverInput';
 import ReceiverDerivedAccount from './ReceiverDerivedAccount';
-
-const useStyles = makeStyles(() => ({
-  container: {
-    minWidth: '100%',
-    padding: '0',
-    display: 'flex',
-    flexDirection: 'column'
-  },
-  input: {
-    minWidth: '100%'
-  }
-}));
+import { Typography } from '@material-ui/core';
 
 const Receiver = () => {
   const [error, setError] = useState('');
-  const classes = useStyles();
 
   return (
-    <Container className={classes.container}>
-      <div className={classes.input}>
-        <ReceiverInput setError={setError} />
-      </div>
+    <>
+      <ReceiverInput setError={setError} />
       <ReceiverDerivedAccount />
-      <div>
-        <p>{error}</p>
-      </div>
-    </Container>
+      <Typography variant="body2" color="error">
+        {error}
+      </Typography>
+    </>
   );
 };
 
