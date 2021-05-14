@@ -148,7 +148,14 @@ const Sender = () => {
       </Select>
       <div className={classes.accountCompanion}>
         {derivedAccount ? (
-          <Account friendlyName={getName(account)} value={value} chain={targetChain} isDerived hideAddress />
+          <Account
+            friendlyName={getName(account)}
+            value={value}
+            chain={targetChain}
+            isDerived
+            hideAddress
+            withTooltip
+          />
         ) : (
           <AccountDisplay friendlyName="Sender" addressKind={AddressKind.COMPANION} hideAddress />
         )}

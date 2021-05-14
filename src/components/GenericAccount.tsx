@@ -112,6 +112,7 @@ const GenericAccount = ({ value }: Props) => {
           balance={nativeState.formattedBalance}
           friendlyName={shortGenericAddress}
           hideAddress
+          withTooltip
         />
       )}
       {(!selected || selected === COMPANION) && (
@@ -123,6 +124,7 @@ const GenericAccount = ({ value }: Props) => {
           balance={companionState.formattedBalance}
           friendlyName={shortGenericAddress}
           hideAddress
+          withTooltip
         />
       )}
     </Paper>

@@ -18,7 +18,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import Container from '@material-ui/core/Container';
-import { makeStyles } from '@material-ui/core/styles';
+import { fade, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import Balance from './Balance';
 import shorterItem from '../util/shortenItem';
@@ -40,6 +40,8 @@ export interface Props {
 
 const useStyles = makeStyles((theme) => ({
   address: {
+    display: 'flex',
+    alignItems: 'center',
     marginLeft: theme.spacing(),
     marginRight: theme.spacing(),
     width: '100%',
@@ -47,6 +49,14 @@ const useStyles = makeStyles((theme) => ({
   },
   missingAddress: {
     color: theme.palette.text.disabled
+  },
+  tooltipIcon: {
+    ...theme.typography.body1,
+    marginTop: 2,
+    marginLeft: 2,
+    '&:not(:hover)': {
+      color: fade(theme.palette.text.hint, 0.75)
+    }
   }
 }));
 
@@ -77,12 +87,14 @@ const AccountDisplay = ({
   return (
     <Box onClick={onClick} display="flex" alignItems="center" className={className}>
       <AccountIdenticon address={address} />
-      <div className={`${classes.address} ${!address && classes.missingAddress}`}>{displayText()}</div>
-      {withTooltip && (
-        <Tooltip title={address} arrow placement="top" interactive>
-          <HelpOutlineIcon fontSize="small" />
-        </Tooltip>
-      )}
+      <div className={`${classes.address} ${!address && classes.missingAddress}`}>
+        {displayText()}
+        {withTooltip && (
+          <Tooltip title={address} arrow placement="top" interactive>
+            <HelpOutlineIcon className={classes.tooltipIcon} />
+          </Tooltip>
+        )}
+      </div>
       <Balance balance={balance} />
     </Box>
   );

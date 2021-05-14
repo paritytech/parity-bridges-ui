@@ -57,6 +57,7 @@ const ReceiverDerivedAccount = () => {
           chain={targetChain}
           isDerived
           hideAddress
+          withTooltip
         />
       </div>
     );
@@ -72,7 +73,7 @@ const ReceiverDerivedAccount = () => {
 
   return (
     <div className={classes.accountCompanion}>
-      <AccountDisplay address={receiverAddress!} addressKind={AddressKind.NATIVE} isDerived />
+      <AccountDisplay address={receiverAddress!} addressKind={AddressKind.NATIVE} isDerived withTooltip />
     </div>
   );
 };
