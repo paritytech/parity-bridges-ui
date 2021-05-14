@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Box, TextField } from '@material-ui/core';
+import { Box, TextField, Typography } from '@material-ui/core';
 import React, { useState } from 'react';
 import { Message } from 'semantic-ui-react';
 import { ButtonSubmit } from '../components';
@@ -89,7 +89,9 @@ const CustomCall = () => {
       <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
         Send custom call from {sourceChainDetails.sourceChain} to {targetChainDetails.targetChain}
       </ButtonSubmit>
-      {estimatedFee && `Estimated source Fee: ${estimatedFee}`}
+      <Typography variant="body1" color="secondary">
+        {estimatedFee && `Estimated source Fee: ${estimatedFee}`}
+      </Typography>
       <div>
         {decoded && (
           <Message>

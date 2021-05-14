@@ -34,7 +34,8 @@ const useStyles = makeStyles((theme) => ({
     '& .MuiInputBase-root': {
       '& .MuiInputAdornment-root': {
         position: 'absolute',
-        right: 0
+        right: theme.spacing(2),
+        ...theme.typography.subtitle2
       },
       '& input': {
         textAlign: 'center',

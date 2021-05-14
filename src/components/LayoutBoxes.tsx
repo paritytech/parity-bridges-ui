@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
         paddingLeft: 240 + theme.spacing(3)
       }
     },
-    '& .MuiPaper-root': {
+    '& .MuiPaper-root, .MuiOutlinedInput-notchedOutline': {
       borderRadius: theme.spacing(1.5)
     },
     '& > .MuiPaper-root': {
