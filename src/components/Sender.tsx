@@ -29,7 +29,7 @@ import AccountDisplay, { AddressKind } from './AccountDisplay';
 import { SelectLabel, styleAccountCompanion } from '../components';
 import useChainGetters from '../hooks/useChainGetters';
 
-// TDOO replace MUI Select with MUI Popover it wraps around or Autocomplete to have more control over appearance
+// TODO replace MUI Select with MUI Popover it wraps around or Autocomplete to have more control over appearance
 
 const useStyles = makeStyles((theme) => ({
   networkHeading: {

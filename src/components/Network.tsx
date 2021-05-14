@@ -95,7 +95,7 @@ export const NetworkStats = () => {
       <Box className={classes.statsEntry}>
         Relayed blocks:
         <span>
-          {dbTarget?.bestBridgedFinalizedBlock} / {dbSource?.bestBlockFinalized}{' '}
+          {dbTarget?.bestBridgedFinalizedBlock} / {dbSource?.bestBlockFinalized}
         </span>
       </Box>
       <Box className={classes.statsEntry}>
