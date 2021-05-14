@@ -22,7 +22,6 @@ import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useDashboard from '../hooks/useDashboard';
 
 import useLoadingApi from '../hooks/useLoadingApi';
-import { isTransactionCompleted } from '../util/transactionUtils';
 import { getSourceTargetRole } from '../util/chainsUtils';
 import { Step, TransactionStatusEnum, TransactionStatusType } from '../types/transactionTypes';
 
@@ -33,6 +32,8 @@ interface Props {
 
 const useTransactionSteps = ({ transaction, onComplete }: Props) => {
   const [steps, setSteps] = useState<Array<Step>>([]);
+  const [targetMessageDeliveryBlock, setTargetMessageDeliveryBlock] = useState('');
+  const [finished, setFinished] = useState(false);
 
   const { nonceOfTargetFinalizedBlock, latestReceivedNonceRuntimeApi } = useTransactionNonces({ transaction });
 
@@ -54,7 +55,7 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
   } = useDashboard(targetRole);
 
   useEffect(() => {
-    if (!areApiLoading || !transaction || isTransactionCompleted(transaction)) {
+    if (!areApiLoading || !transaction || finished) {
       return;
     }
 
@@ -76,11 +77,12 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
     const sourceTransactionFinalized = stepEvaluator(transaction.block, bestBlockFinalized);
     const blockFinalityRelayed = stepEvaluator(transaction.block, bestBridgedFinalizedBlockOnTarget);
     const messageDelivered = stepEvaluator(transaction.messageNonce, latestReceivedNonceRuntimeApi);
-    const messageFinalizedOnTarget = stepEvaluator(transaction.messageNonce, nonceOfTargetFinalizedBlock);
+    const messageFinalizedOnTarget = stepEvaluator(transaction.messageNonce, targetMessageDeliveryBlock);
     const sourceConfirmationReceived = stepEvaluator(transaction.messageNonce, latestReceivedNonceOnSource);
+    const onChainCompleted = (value: boolean) => completionStatus(value) === TransactionStatusEnum.COMPLETED;
 
-    if (sourceConfirmationReceived) {
-      onComplete();
+    if (messageDelivered && !targetMessageDeliveryBlock) {
+      setTargetMessageDeliveryBlock(bestBridgedFinalizedBlockOnTarget);
     }
 
     setSteps([
@@ -103,15 +105,13 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
       {
         chainType: targetChain,
         label: 'Deliver message',
-        onChain: transaction.messageNonce,
+        onChain: onChainCompleted(messageDelivered) && transaction.messageNonce,
         status: completionStatus(messageDelivered)
       },
       {
         chainType: targetChain,
         label: 'Finalize message in target block',
-        // TODO [#113] We should remember the first block that caused the evaluator to go brrr.
-        onChain:
-          completionStatus(messageFinalizedOnTarget) === TransactionStatusEnum.COMPLETED && bestBlockFinalizedOnTarget,
+        onChain: onChainCompleted(messageFinalizedOnTarget) && targetMessageDeliveryBlock,
         status: completionStatus(messageFinalizedOnTarget)
       },
       {
@@ -120,17 +120,24 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
         status: completionStatus(sourceConfirmationReceived)
       }
     ]);
+
+    if (sourceConfirmationReceived) {
+      onComplete();
+      setFinished(true);
+    }
   }, [
     areApiLoading,
     bestBlockFinalized,
     bestBlockFinalizedOnTarget,
     bestBridgedFinalizedBlockOnTarget,
+    finished,
     latestReceivedNonceOnSource,
     latestReceivedNonceRuntimeApi,
     nonceOfTargetFinalizedBlock,
     onComplete,
     sourceChain,
     targetChain,
+    targetMessageDeliveryBlock,
     transaction
   ]);
 
