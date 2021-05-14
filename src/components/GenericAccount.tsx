@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const NATIVE = 'NATIVE';
-const DERIVED = 'DERIVED';
+const COMPANION = 'COMPANION';
 
 const GenericAccount = ({ value }: Props) => {
   const [selected, setSelected] = useState('');
@@ -60,25 +60,22 @@ const GenericAccount = ({ value }: Props) => {
 
   const { dispatchTransaction } = useUpdateTransactionContext();
   const {
-    sourceChainDetails: {
-      sourceConfigs,
-      sourceApiConnection: { api: sourceApi }
-    },
+    sourceChainDetails: { sourceConfigs },
     targetChainDetails: {
       targetConfigs,
       targetApiConnection: { api: targetApi }
     }
   } = useSourceTarget();
 
-  const nativeAddress = encodeAddress(value, sourceConfigs.ss58Format);
-  const nativeState = useBalance(sourceApi, nativeAddress, true);
+  const nativeAddress = encodeAddress(value, targetConfigs.ss58Format);
+  const nativeState = useBalance(targetApi, nativeAddress, true);
 
-  const derivedAddress = getDeriveAccount({
+  const companionAddress = getDeriveAccount({
     ss58Format: targetConfigs.ss58Format,
     address: value,
     bridgeId: getBridgeId(targetConfigs, sourceConfigs.chainName)
   });
-  const derivedState = useBalance(targetApi, derivedAddress, true);
+  const companionState = useBalance(targetApi, companionAddress, true);
 
   const looseHelperAccount = () => {
     setSelected('');
@@ -99,8 +96,8 @@ const GenericAccount = ({ value }: Props) => {
       looseHelperAccount();
       return;
     }
-    setSelected(DERIVED);
-    dispatchTransaction(TransactionActionCreators.setReceiverAddress(derivedAddress));
+    setSelected(COMPANION);
+    dispatchTransaction(TransactionActionCreators.setReceiverAddress(companionAddress));
   };
 
   const shortGenericAddress = shorterItem(value);
@@ -117,13 +114,13 @@ const GenericAccount = ({ value }: Props) => {
           hideAddress
         />
       )}
-      {(!selected || selected === DERIVED) && (
+      {(!selected || selected === COMPANION) && (
         <AccountDisplay
           className={`${classes.accountCompanion} ${classes.selectAccountCompanionItem}`}
           onClick={setCompanionAsTarget}
-          address={derivedAddress}
+          address={companionAddress}
           addressKind={AddressKind.COMPANION}
-          balance={derivedState.formattedBalance}
+          balance={companionState.formattedBalance}
           friendlyName={shortGenericAddress}
           hideAddress
         />

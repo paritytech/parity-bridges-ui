@@ -56,6 +56,8 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+// TODO: To refactor state management for this component #160
+
 function ReceiverInput({ setError }: Props) {
   const classes = useStyles();
   const [formatFound, setFormatFound] = useState('');
@@ -87,7 +89,10 @@ function ReceiverInput({ setError }: Props) {
   useEffect(() => {
     if (prevTargetChain !== targetChain) {
       reset();
-      setUnformattedReceiver('');
+      setUnformattedReceiver(null);
+    }
+    if (!unformattedReceiverAddress) {
+      setShowBalance(false);
     }
   }, [unformattedReceiverAddress, setUnformattedReceiver, prevTargetChain, receiverAddress, reset, targetChain]);
 

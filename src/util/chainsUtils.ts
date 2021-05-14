@@ -14,12 +14,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-export { ButtonDrawerMenu, ButtonExt, ButtonSwitchMode, ButtonSubmit } from './Buttons';
-export { StorageDrawer } from './StorageDrawer';
-export { SelectLabel, styleAccountCompanion } from './Inputs';
-export { IconTxStatus } from './Icons';
-export { BoxUI, BoxSidebar } from './LayoutBoxes';
-export { MenuAction } from './MenuAction';
-export { NetworkSides, NetworkStats } from './Network';
-export { Alert } from './Alert';
-export { light } from './theme';
+import { ChainDetails } from '../types/sourceTargetTypes';
+import { SourceTargetState } from '../types/sourceTargetTypes';
+
+interface Input {
+  useSourceTarget: () => SourceTargetState;
+  sourceChain: string;
+}
+
+export function getSourceTargetRole({ useSourceTarget, sourceChain }: Input) {
+  const {
+    sourceChainDetails: { sourceChain: currentSourceChain }
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+  } = useSourceTarget();
+
+  const sourceChainsMatch = sourceChain === currentSourceChain;
+
+  const sourceRole = sourceChainsMatch ? ChainDetails.SOURCE : ChainDetails.TARGET;
+  const targetRole = sourceChainsMatch ? ChainDetails.TARGET : ChainDetails.SOURCE;
+
+  return { sourceRole, targetRole, sourceChainsMatch };
+}

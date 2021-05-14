@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { TransanctionStatus, UpdatedTransanctionStatus } from '../types/transactionTypes';
+import { TransactionStatusType, UpdatedTransactionStatusType } from '../types/transactionTypes';
 
 enum TransactionActionTypes {
   SET_ESTIMATED_FEE = 'SET_ESTIMATED_FEE',
@@ -43,14 +43,14 @@ const setUnformattedReceiverAddress = (unformattedReceiverAddress: string | null
   type: TransactionActionTypes.SET_UNFORMATTED_RECEIVER_ADDRESS
 });
 
-const createTransactionStatus = (initialTransaction: TransanctionStatus) => {
+const createTransactionStatus = (initialTransaction: TransactionStatusType) => {
   return {
     payload: { initialTransaction },
     type: TransactionActionTypes.CREATE_TRANSACTION_STATUS
   };
 };
 
-const updateTransactionStatus = (updatedValues: UpdatedTransanctionStatus, id: string) => {
+const updateTransactionStatus = (updatedValues: UpdatedTransactionStatusType, id: string) => {
   return {
     payload: { id, updatedValues },
     type: TransactionActionTypes.UPDATE_CURRENT_TRANSACTION_STATUS

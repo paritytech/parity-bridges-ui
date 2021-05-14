@@ -20,7 +20,7 @@ export interface TransactionContextType {
   estimatedFee: string | null;
   receiverAddress: string | null;
   unformattedReceiverAddress: string | null;
-  transactions: Array<TransanctionStatus>;
+  transactions: Array<TransactionStatusType>;
   derivedReceiverAccount: string | null;
   genericReceiverAccount: string | null;
 }
@@ -29,7 +29,7 @@ export interface Payload {
   [propName: string]: any;
 }
 
-export interface UpdatedTransanctionStatus {
+export interface UpdatedTransactionStatusType {
   [propName: string]: any;
 }
 
@@ -41,7 +41,7 @@ export enum TransactionStatusEnum {
   FAILED = 'FAILED'
 }
 
-export interface TransanctionStatus extends UpdatedTransanctionStatus {
+export interface TransactionStatusType extends UpdatedTransactionStatusType {
   input: string;
   sourceChain: string;
   targetChain: string;
@@ -56,7 +56,7 @@ export interface TransactionState {
   unformattedReceiverAddress: string | null;
   derivedReceiverAccount: string | null;
   genericReceiverAccount: string | null;
-  transactions: Array<TransanctionStatus>;
+  transactions: Array<TransactionStatusType>;
 }
 
 export type TransactionsActionType = { type: TransactionActionTypes; payload: Payload };
@@ -70,6 +70,6 @@ export enum TransactionTypes {
 export interface Step {
   chainType: string;
   label: string;
-  onChain?: string;
+  labelOnChain?: string;
   status: keyof typeof TransactionStatusEnum;
 }

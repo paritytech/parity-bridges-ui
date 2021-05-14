@@ -14,10 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import { TransactionActionCreators } from '../actions/transactionActions';
 import type { KeyringPair } from '@polkadot/keyring/types';
 import { encodeAddress } from '@polkadot/util-crypto';
 import { useEffect, useState } from 'react';
-
+import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import { AccountActionCreators } from '../actions/accountActions';
 import { SourceTargetActionsCreators } from '../actions/sourceTargetActions';
 import { useUpdateAccountContext } from '../contexts/AccountContextProvider';
@@ -25,7 +26,7 @@ import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useKeyringContext } from '../contexts/KeyringContextProvider';
 import { useUpdateSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useDerivedAccount from '../hooks/useDerivedAccount';
-import useSS58Format from '../hooks/useSS58Format';
+import useChainGetters from '../hooks/useChainGetters';
 
 interface Accounts {
   account: KeyringPair | null;
@@ -41,7 +42,8 @@ const useAccounts = (): Accounts => {
   const { dispatchChangeSourceTarget } = useUpdateSourceTarget();
   const derivedAccount = useDerivedAccount();
   const { account } = useAccountContext();
-  const { getSS58ByChain } = useSS58Format();
+  const { getValuesByChain } = useChainGetters();
+  const { dispatchTransaction } = useUpdateTransactionContext();
 
   useEffect(() => {
     if (keyringPairsReady && keyringPairs.length) {
@@ -50,11 +52,12 @@ const useAccounts = (): Accounts => {
   }, [keyringPairsReady, keyringPairs, setAccounts]);
 
   const setCurrentAccount = (value: string, chain: string) => {
-    const ss58Format = getSS58ByChain(chain);
+    const { ss58Format } = getValuesByChain(chain);
 
     const account = accounts.find(({ address }) => encodeAddress(address, ss58Format) === value);
     if (account) {
       dispatchChangeSourceTarget(SourceTargetActionsCreators.switchChains(chain));
+      dispatchTransaction(TransactionActionCreators.setUnformattedReceiverAddress(null));
       dispatchAccount(AccountActionCreators.setAccount(account));
     }
   };

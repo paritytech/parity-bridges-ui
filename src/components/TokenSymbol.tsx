@@ -14,12 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-export { ButtonDrawerMenu, ButtonExt, ButtonSwitchMode, ButtonSubmit } from './Buttons';
-export { StorageDrawer } from './StorageDrawer';
-export { SelectLabel, styleAccountCompanion } from './Inputs';
-export { IconTxStatus } from './Icons';
-export { BoxUI, BoxSidebar } from './LayoutBoxes';
-export { MenuAction } from './MenuAction';
-export { NetworkSides, NetworkStats } from './Network';
-export { Alert } from './Alert';
-export { light } from './theme';
+import React from 'react';
+import { InputAdornment } from '@material-ui/core';
+import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
+
+interface Props {
+  position?: 'start' | 'end';
+}
+
+export const TokenSymbol = ({ position = 'start' }: Props): React.ReactElement => {
+  const { targetChainDetails } = useSourceTarget();
+
+  return (
+    <InputAdornment position={position}>
+      {targetChainDetails.targetApiConnection.api.registry.chainTokens}
+    </InputAdornment>
+  );
+};

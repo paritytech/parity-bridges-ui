@@ -13,28 +13,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
+import React from 'react';
+import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 
-const http = require('https'); // or 'https' for https:// URLs
-const fs = require('fs');
-
-const commonBridgesRepo = 'https://raw.githubusercontent.com/paritytech/parity-bridges-common/master/deployments';
-const customTypesDir = 'src/configs';
-
-const filesConfig = [
-  {
-    path: `${customTypesDir}/customTypesMillau.json`,
-    url: `${commonBridgesRepo}/types-millau.json`
-  },
-  {
-    path: `${customTypesDir}/customTypesRialto.json`,
-    url: `${commonBridgesRepo}/types-rialto.json`
-  }
-];
-
-filesConfig.map(({ path, url }) => {
-  console.log('Start downloading file: ', url);
-  const file = fs.createWriteStream(path, { flags: 'w' });
-  http.get(url, function (response) {
-    response.pipe(file);
-  });
-});
+export function Alert(props: JSX.IntrinsicAttributes & AlertProps) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}

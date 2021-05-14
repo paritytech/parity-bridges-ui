@@ -26,8 +26,8 @@ import { Account as AccountType } from '../types/accountTypes';
 import formatAccounts from '../util/formatAccounts';
 import Account from './Account';
 import AccountDisplay, { AddressKind } from './AccountDisplay';
-import useSS58Format from '../hooks/useSS58Format';
 import { SelectLabel, styleAccountCompanion } from '../components';
+import useChainGetters from '../hooks/useChainGetters';
 
 // TDOO replace MUI Select with MUI Popover it wraps around or Autocomplete to have more control over appearance
 
@@ -77,7 +77,7 @@ const Sender = () => {
     targetChainDetails: { targetChain }
   } = useSourceTarget();
   const { setReceiver } = useReceiver();
-  const { getSS58ByChain } = useSS58Format();
+  const { getValuesByChain } = useChainGetters();
 
   useEffect(() => {
     if (!chains.length) {
@@ -97,7 +97,8 @@ const Sender = () => {
 
   const renderAccounts = (chains: string[]) => {
     const [source, target] = chains;
-    const formatedAccounts = formatAccounts(accounts, getSS58ByChain(source));
+    const { ss58Format } = getValuesByChain(source);
+    const formatedAccounts = formatAccounts(accounts, ss58Format);
     const items = formatedAccounts.map(({ text, value, key }: any) => (
       <MenuItem
         className={classes.selectAccountMainItem}

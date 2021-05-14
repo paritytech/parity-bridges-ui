@@ -17,28 +17,42 @@
 import { makeStyles } from '@material-ui/core/styles';
 import Identicon from '@polkadot/react-identicon';
 import { INCORRECT_FORMAT } from '../constants';
+import { useUpdateMessageContext } from '../contexts/MessageContext';
+import { MessageActionsCreators } from '../actions/messageActions';
+
 import ctx from 'classnames';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { IdentityProps } from '@polkadot/react-identicon/types';
 interface Props extends IdentityProps {
   address?: string;
   formatFound?: string;
 }
-
 const useStyles = makeStyles(() => ({
   placeholder: {
     filter: 'grayscale(1)'
   }
 }));
+const emptyAddress: string = '1nUC7afqmo7zwRFWxDjrUQu9skk6fk99pafb4SiyGSRc8z3';
 
 export default function AccountIdenticon({ address, formatFound, size = 24, theme = 'polkadot', ...props }: Props) {
+  const { dispatchMessage } = useUpdateMessageContext();
   const placeholder = !address || formatFound === INCORRECT_FORMAT;
-
-  const value = !placeholder ? address : '1nUC7afqmo7zwRFWxDjrUQu9skk6fk99pafb4SiyGSRc8z3';
-
+  const value = !placeholder ? address : emptyAddress;
   const classes = useStyles();
 
+  const onCopy = useCallback(() => {
+    value !== emptyAddress &&
+      dispatchMessage(MessageActionsCreators.triggerSuccessMessage({ message: 'Address copied' }));
+  }, [dispatchMessage, value]);
+
   return (
-    <Identicon className={ctx(placeholder && classes.placeholder)} value={value} size={size} theme={theme} {...props} />
+    <Identicon
+      className={ctx(placeholder && classes.placeholder)}
+      value={value}
+      size={size}
+      theme={theme}
+      {...props}
+      onCopy={onCopy}
+    />
   );
 }
