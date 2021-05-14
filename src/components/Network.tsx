@@ -62,7 +62,11 @@ export const NetworkSides = () => {
   return (
     <Box marginY={2} className={classes.main}>
       <Box p={1} className={classes.statsEntry}>
-        <Typography variant="h4">{sourceChainDetails.sourceChain}</Typography>
+        <Typography variant="h4">
+          <a target="_blank" rel="noreferrer" href={sourceChainDetails.sourcePolkadotjsUrl}>
+            {sourceChainDetails.sourceChain}
+          </a>
+        </Typography>
         <span># {dbSource.bestBlock}</span>
       </Box>
       <Divider />
@@ -70,7 +74,11 @@ export const NetworkSides = () => {
         <ArrowDownwardIcon fontSize="small" />
       </IconButton>
       <Box p={1} className={classes.statsEntry}>
-        <Typography variant="h4">{targetChainDetails.targetChain}</Typography>
+        <Typography variant="h4">
+          <a target="_blank" rel="noreferrer" href={targetChainDetails.targetPolkadotjsUrl}>
+            {targetChainDetails.targetChain}
+          </a>
+        </Typography>
         <span style={{ opacity: 0.4 }}># {dbTarget.bestBlock}</span>
       </Box>
     </Box>
