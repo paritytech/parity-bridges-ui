@@ -62,12 +62,20 @@ export const NetworkSides = () => {
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   return (
     <Box marginY={2} className={classes.main}>
-      <Box p={1}>{sourceChainDetails.sourceChain}</Box>
+      <Box p={1}>
+        <a target="_blank" rel="noreferrer" href={sourceChainDetails.sourcePolkadotjsUrl}>
+          {sourceChainDetails.sourceChain}
+        </a>
+      </Box>
       <Divider />
       <IconButton size="small">
         <KeyboardReturnIcon fontSize="small" />
       </IconButton>
-      <Box p={1}>{targetChainDetails.targetChain}</Box>
+      <Box p={1}>
+        <a target="_blank" rel="noreferrer" href={targetChainDetails.targetPolkadotjsUrl}>
+          {targetChainDetails.targetChain}
+        </a>
+      </Box>
     </Box>
   );
 };
