@@ -108,8 +108,8 @@ const Sender = () => {
           onChange(value, source);
         }}
       >
-        <Account accountName={text} value={value} chain={source} />
-        <Account accountName={text} value={value} chain={target} isDerived hideAddress />
+        <Account friendlyName={text} value={value} chain={source} />
+        <Account friendlyName={text} value={value} chain={target} isDerived hideAddress />
       </MenuItem>
     ));
     return [
@@ -125,7 +125,7 @@ const Sender = () => {
   const AccountSelected = () => {
     if (account) {
       const text = getName(account);
-      return <Account accountName={text} value={value} chain={sourceChain} />;
+      return <Account friendlyName={text} value={value} chain={sourceChain} />;
     }
     return <AccountDisplay friendlyName="Select sender account" hideAddress />;
   };
@@ -148,7 +148,7 @@ const Sender = () => {
       </Select>
       <div className={classes.accountCompanion}>
         {derivedAccount ? (
-          <Account accountName={getName(account)} value={value} chain={targetChain} isDerived hideAddress />
+          <Account friendlyName={getName(account)} value={value} chain={targetChain} isDerived hideAddress />
         ) : (
           <AccountDisplay friendlyName="Sender" addressKind={AddressKind.COMPANION} hideAddress />
         )}

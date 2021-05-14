@@ -52,7 +52,7 @@ const ReceiverDerivedAccount = () => {
     return (
       <div className={classes.accountCompanion}>
         <Account
-          accountName={shortUnformattedReceiver}
+          friendlyName={shortUnformattedReceiver}
           value={receiverAddress!}
           chain={targetChain}
           isDerived
@@ -72,7 +72,7 @@ const ReceiverDerivedAccount = () => {
 
   return (
     <div className={classes.accountCompanion}>
-      <AccountDisplay address={receiverAddress!} addressKind={AddressKind.NATIVE} derived />
+      <AccountDisplay address={receiverAddress!} addressKind={AddressKind.NATIVE} isDerived />
     </div>
   );
 };

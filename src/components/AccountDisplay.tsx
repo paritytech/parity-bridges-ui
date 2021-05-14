@@ -23,17 +23,19 @@ import React from 'react';
 import Balance from './Balance';
 import shorterItem from '../util/shortenItem';
 import AccountIdenticon from './AccountIdenticon';
-import { Box } from '@material-ui/core';
+import { Box, Tooltip } from '@material-ui/core';
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 
-interface Props {
+export interface Props {
+  friendlyName?: string | null;
+  isDerived?: boolean;
   addressKind?: AddressKind | string;
   address?: string;
-  friendlyName?: string | null;
   hideAddress?: boolean;
   onClick?: () => void;
-  derived?: boolean;
   balance?: string | null | undefined;
   className?: string;
+  withTooltip?: boolean;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -55,7 +57,8 @@ const AccountDisplay = ({
   friendlyName,
   hideAddress = false,
   onClick,
-  className
+  className,
+  withTooltip
 }: Props) => {
   const classes = useStyles();
   const displayText = () => {
@@ -75,6 +78,11 @@ const AccountDisplay = ({
     <Box onClick={onClick} display="flex" alignItems="center" className={className}>
       <AccountIdenticon address={address} />
       <div className={`${classes.address} ${!address && classes.missingAddress}`}>{displayText()}</div>
+      {withTooltip && (
+        <Tooltip title={address} arrow placement="top" interactive>
+          <HelpOutlineIcon fontSize="small" />
+        </Tooltip>
+      )}
       <Balance balance={balance} />
     </Box>
   );
