@@ -16,7 +16,7 @@
 
 import BN from 'bn.js';
 import { useEffect, useState } from 'react';
-
+import { useMountedState } from './useMountedState';
 import useTransactionNonces from '../hooks/useTransactionNonces';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useDashboard from '../hooks/useDashboard';
@@ -32,10 +32,11 @@ interface Props {
 
 const useTransactionSteps = ({ transaction, onComplete }: Props) => {
   const [steps, setSteps] = useState<Array<Step>>([]);
+  const [nonceOfTargetFinalizedBlock, setNonceOfTargetFinalizedBlock] = useMountedState<null | number>(null);
   const [targetMessageDeliveryBlock, setTargetMessageDeliveryBlock] = useState('');
   const [finished, setFinished] = useState(false);
 
-  const { nonceOfTargetFinalizedBlock, latestReceivedNonceRuntimeApi } = useTransactionNonces({ transaction });
+  const { getNonceByHash, latestReceivedNonceRuntimeApi } = useTransactionNonces({ transaction });
 
   const areApiLoading = useLoadingApi();
 
@@ -53,6 +54,17 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
     bestBridgedFinalizedBlock: bestBridgedFinalizedBlockOnTarget,
     bestBlockFinalized: bestBlockFinalizedOnTarget
   } = useDashboard(targetRole);
+
+  useEffect(() => {
+    const getNonceOfTargetFinalizedBlock = async () => {
+      const nonce = await getNonceByHash(parseInt(targetMessageDeliveryBlock));
+      setNonceOfTargetFinalizedBlock(nonce);
+    };
+
+    if (targetMessageDeliveryBlock) {
+      getNonceOfTargetFinalizedBlock();
+    }
+  }, [targetMessageDeliveryBlock, getNonceByHash, setNonceOfTargetFinalizedBlock]);
 
   useEffect(() => {
     if (!areApiLoading || !transaction || finished) {
@@ -77,7 +89,7 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
     const sourceTransactionFinalized = stepEvaluator(transaction.block, bestBlockFinalized);
     const blockFinalityRelayed = stepEvaluator(transaction.block, bestBridgedFinalizedBlockOnTarget);
     const messageDelivered = stepEvaluator(transaction.messageNonce, latestReceivedNonceRuntimeApi);
-    const messageFinalizedOnTarget = stepEvaluator(transaction.messageNonce, targetMessageDeliveryBlock);
+    const messageFinalizedOnTarget = stepEvaluator(transaction.messageNonce, nonceOfTargetFinalizedBlock);
     const sourceConfirmationReceived = stepEvaluator(transaction.messageNonce, latestReceivedNonceOnSource);
     const onChainCompleted = (value: boolean) => completionStatus(value) === TransactionStatusEnum.COMPLETED;
 
@@ -120,6 +132,22 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
         status: completionStatus(sourceConfirmationReceived)
       }
     ]);
+
+    console.log('----------------');
+    console.log(
+      'Deliver message: latestReceivedNonceRuntimeApi > transaction.messageNonce |',
+      `${latestReceivedNonceRuntimeApi} > ${transaction.messageNonce}| messageDelivered:`,
+      messageDelivered
+    );
+    console.log(
+      'Finalize message in target block:  nonceOfTargetFinalizedBlock > transaction.messageNonce |',
+      `${nonceOfTargetFinalizedBlock} > ${transaction.messageNonce} | messageFinalizedOnTarget:`,
+      messageFinalizedOnTarget
+    );
+
+    console.log('transaction.messageNonce', transaction.messageNonce);
+    console.log('targetMessageDeliveryBlock', targetMessageDeliveryBlock);
+    console.log('messageFinalizedOnTarget', messageFinalizedOnTarget);
 
     if (sourceConfirmationReceived) {
       onComplete();
