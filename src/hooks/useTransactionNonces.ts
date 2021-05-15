@@ -35,6 +35,7 @@ interface Props {
 
 const useTransactionNonces = ({ transaction }: Props) => {
   const [latestReceivedNonceRuntimeApi, setLatestReceivedNonceRuntimeApi] = useMountedState(0);
+  const [nonceOfCurrentTargetBlock, setNonceOfCurrentTargetBlock] = useMountedState<null | number>(null);
   const { getValuesByChain } = useChainGetters();
 
   const laneId = useLaneId();
@@ -79,6 +80,12 @@ const useTransactionNonces = ({ transaction }: Props) => {
       setLatestReceivedNonceRuntimeApi(parseInt(latestReceivedNonceCallType.toString()));
     };
 
+    const getNonceOfCurrentBlock = async () => {
+      const nonce = await getNonceByHash(parseInt(bestBlockFinalizedOnTarget));
+      setNonceOfCurrentTargetBlock(nonce);
+    };
+
+    getNonceOfCurrentBlock();
     getLatestReceivedNonce();
   }, [
     areApiLoading,
@@ -89,10 +96,12 @@ const useTransactionNonces = ({ transaction }: Props) => {
     targetApi.registry,
     targetApi.rpc.chain,
     targetApi.rpc.state,
-    setLatestReceivedNonceRuntimeApi
+    setLatestReceivedNonceRuntimeApi,
+    getNonceByHash,
+    setNonceOfCurrentTargetBlock
   ]);
 
-  return { getNonceByHash, latestReceivedNonceRuntimeApi };
+  return { getNonceByHash, latestReceivedNonceRuntimeApi, nonceOfCurrentTargetBlock };
 };
 
 export default useTransactionNonces;
