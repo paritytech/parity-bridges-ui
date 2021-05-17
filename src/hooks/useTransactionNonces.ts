@@ -16,7 +16,7 @@
 
 import { Codec } from '@polkadot/types/types';
 
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useDashboard from './useDashboard';
@@ -34,7 +34,7 @@ interface Props {
 }
 
 const useTransactionNonces = ({ transaction }: Props) => {
-  const [latestReceivedNonceRuntimeApi, setLatestReceivedNonceRuntimeApi] = useMountedState(0);
+  const [latestReceivedNonceRuntimeApi, setLatestReceivedNonceRuntimeApi] = useMountedState({ nonce: 0, block: '' });
   const [nonceOfCurrentTargetBlock, setNonceOfCurrentTargetBlock] = useMountedState<null | number>(null);
   const { getValuesByChain } = useChainGetters();
 
@@ -46,14 +46,18 @@ const useTransactionNonces = ({ transaction }: Props) => {
     sourceChain
   });
 
-  const { bestBlockFinalized: bestBlockFinalizedOnTarget } = useDashboard(targetRole);
+  const { bestBlockFinalized: bestBlockFinalizedOnTarget, bestBlock } = useDashboard(targetRole);
 
   const { latestReceivedNonceMethodName } = getSubstrateDynamicNames(sourceChain);
   const { api: targetApi } = getValuesByChain(targetChain);
 
-  const getNonceByHash = useCallback(
-    async (targetBlock: number) => {
-      const blockHash = await targetApi.rpc.chain.getBlockHash(targetBlock);
+  useEffect(() => {
+    if (!areApiLoading || !transaction || !transaction || isTransactionCompleted(transaction)) {
+      return;
+    }
+
+    const getLatestReceivedNonceByHash = async () => {
+      const blockHash = await targetApi.rpc.chain.getBlockHash(bestBlockFinalizedOnTarget);
       const latestReceivedNonceCall = await targetApi.rpc.state.call<Codec>(
         latestReceivedNonceMethodName,
         laneId,
@@ -63,30 +67,19 @@ const useTransactionNonces = ({ transaction }: Props) => {
       // @ts-ignore
       const latestReceivedNonceCallType = targetApi.registry.createType('MessageNonce', latestReceivedNonceCall);
       const latestReceivedNonce = latestReceivedNonceCallType.toString();
+      setNonceOfCurrentTargetBlock(parseInt(latestReceivedNonce));
       return parseInt(latestReceivedNonce);
-    },
-    [laneId, latestReceivedNonceMethodName, targetApi.registry, targetApi.rpc.chain, targetApi.rpc.state]
-  );
-
-  useEffect(() => {
-    if (!areApiLoading || !transaction || !transaction || isTransactionCompleted(transaction)) {
-      return;
-    }
+    };
 
     const getLatestReceivedNonce = async () => {
       const latestReceivedNonceCall = await targetApi.rpc.state.call<Codec>(latestReceivedNonceMethodName, laneId);
       // @ts-ignore
       const latestReceivedNonceCallType = targetApi.registry.createType('MessageNonce', latestReceivedNonceCall);
-      setLatestReceivedNonceRuntimeApi(parseInt(latestReceivedNonceCallType.toString()));
+      setLatestReceivedNonceRuntimeApi({ nonce: parseInt(latestReceivedNonceCallType.toString()), block: bestBlock });
     };
 
-    const getNonceOfCurrentBlock = async () => {
-      const nonce = await getNonceByHash(parseInt(bestBlockFinalizedOnTarget));
-      setNonceOfCurrentTargetBlock(nonce);
-    };
-
-    getNonceOfCurrentBlock();
     getLatestReceivedNonce();
+    getLatestReceivedNonceByHash();
   }, [
     areApiLoading,
     bestBlockFinalizedOnTarget,
@@ -97,11 +90,11 @@ const useTransactionNonces = ({ transaction }: Props) => {
     targetApi.rpc.chain,
     targetApi.rpc.state,
     setLatestReceivedNonceRuntimeApi,
-    getNonceByHash,
-    setNonceOfCurrentTargetBlock
+    setNonceOfCurrentTargetBlock,
+    bestBlock
   ]);
 
-  return { getNonceByHash, latestReceivedNonceRuntimeApi, nonceOfCurrentTargetBlock };
+  return { latestReceivedNonceRuntimeApi, nonceOfCurrentTargetBlock };
 };
 
 export default useTransactionNonces;

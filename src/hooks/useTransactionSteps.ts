@@ -36,9 +36,10 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
     null | number
   >(null);
   const [targetMessageDeliveryBlock, setTargetMessageDeliveryBlock] = useMountedState('');
+  //const [targetMessageDelivery, setTargetMessageDelivery] = useMountedState({ nonce: 0, block: '' });
   const [finished, setFinished] = useState(false);
 
-  const { getNonceByHash, latestReceivedNonceRuntimeApi, nonceOfCurrentTargetBlock } = useTransactionNonces({
+  const { latestReceivedNonceRuntimeApi, nonceOfCurrentTargetBlock } = useTransactionNonces({
     transaction
   });
 
@@ -60,26 +61,22 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
   } = useDashboard(targetRole);
 
   useEffect(() => {
-    const getNonceOfTargetFinalizedBlock = async () => {
-      const nonce = await getNonceByHash(parseInt(targetMessageDeliveryBlock));
-      setTransactionNonceOfTargetFinalizedBlock(nonce);
-    };
-
-    if (targetMessageDeliveryBlock) {
-      getNonceOfTargetFinalizedBlock();
-    }
-  }, [targetMessageDeliveryBlock, getNonceByHash, setTransactionNonceOfTargetFinalizedBlock]);
-
-  useEffect(() => {
     if (!areApiLoading || !transaction || finished) {
       return;
     }
 
-    const stepEvaluator = (transactionValue: string | number | null, chainValue: string | number | null): boolean => {
+    const stepEvaluator = (
+      transactionValue: string | number | null,
+      chainValue: string | number | null,
+      greaterEqual?: boolean
+    ): boolean => {
       if (!transactionValue || !chainValue) return false;
 
       const bnChainValue = new BN(chainValue);
       const bnTransactionValue = new BN(transactionValue);
+      if (greaterEqual) {
+        return bnChainValue.gte(bnTransactionValue);
+      }
       return bnChainValue.gt(bnTransactionValue);
     };
 
@@ -90,15 +87,28 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
       return isCompleted ? TransactionStatusEnum.COMPLETED : TransactionStatusEnum.IN_PROGRESS;
     };
 
+    // 1. We wait until the block transaction gets finalized / transaction.block < source.bestBlockFinalized
     const sourceTransactionFinalized = stepEvaluator(transaction.block, bestBlockFinalized);
+    // 2. When the target chain knows about a bigger source block number we infer that transaction block was realayed to target chain.
     const blockFinalityRelayed = stepEvaluator(transaction.block, bestBridgedFinalizedBlockOnTarget);
-    const messageDelivered = stepEvaluator(transaction.messageNonce, latestReceivedNonceRuntimeApi);
-    const messageFinalizedOnTarget = stepEvaluator(transactionNonceOfTargetFinalizedBlock, nonceOfCurrentTargetBlock);
+    // 3
+    // 3.1 We read the latest received nonce of the target chain rpc state call.
+    // 3.2 With the value obtained we compare it with the transaction nonce, if the value is bigger or equal then means target chain is aware about this nonce.
+    const messageDelivered = stepEvaluator(transaction.messageNonce, latestReceivedNonceRuntimeApi.nonce, true);
+    // 4
+
+    const messageFinalizedOnTarget = stepEvaluator(
+      transactionNonceOfTargetFinalizedBlock,
+      nonceOfCurrentTargetBlock,
+      true
+    );
     const sourceConfirmationReceived = stepEvaluator(transaction.messageNonce, latestReceivedNonceOnSource);
     const onChainCompleted = (value: boolean) => completionStatus(value) === TransactionStatusEnum.COMPLETED;
 
+    // 4.1 If previous step was completed and we didn't catch the the block where the message was included we set
     if (messageDelivered && !targetMessageDeliveryBlock) {
-      setTargetMessageDeliveryBlock(bestBlockFinalizedOnTarget);
+      setTransactionNonceOfTargetFinalizedBlock(latestReceivedNonceRuntimeApi.nonce);
+      setTargetMessageDeliveryBlock(latestReceivedNonceRuntimeApi.block);
     }
 
     setSteps([
@@ -133,11 +143,11 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
       {
         chainType: sourceChain,
         label: 'Confirm delivery',
-        status: completionStatus(sourceConfirmationReceived)
+        status: completionStatus(messageFinalizedOnTarget && sourceConfirmationReceived)
       }
     ]);
 
-    if (sourceConfirmationReceived) {
+    if (messageFinalizedOnTarget && sourceConfirmationReceived) {
       onComplete();
       setFinished(true);
     }
@@ -156,7 +166,8 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
     targetMessageDeliveryBlock,
     transaction,
     nonceOfCurrentTargetBlock,
-    setTargetMessageDeliveryBlock
+    setTargetMessageDeliveryBlock,
+    setTransactionNonceOfTargetFinalizedBlock
   ]);
 
   return steps;
