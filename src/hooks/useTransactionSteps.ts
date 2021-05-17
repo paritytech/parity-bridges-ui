@@ -30,15 +30,19 @@ interface Props {
   onComplete: () => void;
 }
 
+interface MessageOnTarget {
+  nonce: number;
+  block: string;
+}
+
 const useTransactionSteps = ({ transaction, onComplete }: Props) => {
   const [steps, setSteps] = useState<Array<Step>>([]);
-  const [transactionNonceOfTargetFinalizedBlock, setTransactionNonceOfTargetFinalizedBlock] = useMountedState<
-    null | number
-  >(null);
-  const [targetMessageDeliveryBlock, setTargetMessageDeliveryBlock] = useMountedState('');
-  //const [targetMessageDelivery, setTargetMessageDelivery] = useMountedState({ nonce: 0, block: '' });
+  //const [messageOnTarget.nonce, setTransactionNonceOfTargetFinalizedBlock] = useMountedState<null | (number > null);
+  //const [messageOnTarget.block, setTargetMessageDeliveryBlock] = useMountedState('');
+  const [messageOnTarget, setMessageOnTarget] = useMountedState({} as MessageOnTarget);
   const [finished, setFinished] = useState(false);
 
+  // 4.2 * We keep the related nonce in nonceOfCurrentTargetBlock so we can determine when the message in the target block was finalized.
   const { latestReceivedNonceRuntimeApi, nonceOfCurrentTargetBlock } = useTransactionNonces({
     transaction
   });
@@ -91,24 +95,20 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
     const sourceTransactionFinalized = stepEvaluator(transaction.block, bestBlockFinalized);
     // 2. When the target chain knows about a bigger source block number we infer that transaction block was realayed to target chain.
     const blockFinalityRelayed = stepEvaluator(transaction.block, bestBridgedFinalizedBlockOnTarget);
-    // 3
     // 3.1 We read the latest received nonce of the target chain rpc state call.
     // 3.2 With the value obtained we compare it with the transaction nonce, if the value is bigger or equal then means target chain is aware about this nonce.
     const messageDelivered = stepEvaluator(transaction.messageNonce, latestReceivedNonceRuntimeApi.nonce, true);
-    // 4
+    // 4.1 *
+    // 4.2 **
+    // 4.3 When the current nonce in the target is bigger than the message nonce related to the message block, we set the step as completed.
+    const messageFinalizedOnTarget = stepEvaluator(messageOnTarget.nonce, nonceOfCurrentTargetBlock, true);
 
-    const messageFinalizedOnTarget = stepEvaluator(
-      transactionNonceOfTargetFinalizedBlock,
-      nonceOfCurrentTargetBlock,
-      true
-    );
     const sourceConfirmationReceived = stepEvaluator(transaction.messageNonce, latestReceivedNonceOnSource);
     const onChainCompleted = (value: boolean) => completionStatus(value) === TransactionStatusEnum.COMPLETED;
 
-    // 4.1 If previous step was completed and we didn't catch the the block where the message was included we set
-    if (messageDelivered && !targetMessageDeliveryBlock) {
-      setTransactionNonceOfTargetFinalizedBlock(latestReceivedNonceRuntimeApi.nonce);
-      setTargetMessageDeliveryBlock(latestReceivedNonceRuntimeApi.block);
+    // 4.1 * We catch the current target bestBlock and related nonce only if previous step was finished and we didn't saved the information of message in target chain.
+    if (messageDelivered && !messageOnTarget.block) {
+      setMessageOnTarget(latestReceivedNonceRuntimeApi);
     }
 
     setSteps([
@@ -137,7 +137,7 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
       {
         chainType: targetChain,
         label: 'Finalize message in target block',
-        labelOnChain: onChainCompleted(messageFinalizedOnTarget) && targetMessageDeliveryBlock,
+        labelOnChain: onChainCompleted(messageFinalizedOnTarget) && messageOnTarget.block,
         status: completionStatus(messageFinalizedOnTarget)
       },
       {
@@ -159,15 +159,14 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
     finished,
     latestReceivedNonceOnSource,
     latestReceivedNonceRuntimeApi,
-    transactionNonceOfTargetFinalizedBlock,
+    messageOnTarget.nonce,
     onComplete,
     sourceChain,
     targetChain,
-    targetMessageDeliveryBlock,
+    messageOnTarget.block,
     transaction,
     nonceOfCurrentTargetBlock,
-    setTargetMessageDeliveryBlock,
-    setTransactionNonceOfTargetFinalizedBlock
+    setMessageOnTarget
   ]);
 
   return steps;
