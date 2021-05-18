@@ -16,7 +16,6 @@
 
 import BN from 'bn.js';
 import { useEffect, useState } from 'react';
-import { useMountedState } from './useMountedState';
 import useTransactionNonces from '../hooks/useTransactionNonces';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useDashboard from '../hooks/useDashboard';
@@ -35,7 +34,6 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
   const [deliveryBlock, setDeliveryBlock] = useState<string | null>();
   const [finished, setFinished] = useState(false);
 
-  // 4.2 * We keep the related nonce in nonceOfCurrentTargetBlock so we can determine when the message in the target block was finalized.
   const { nonceOfBestTargetBlock, nonceOfFinalTargetBlock } = useTransactionNonces({
     transaction
   });
@@ -55,7 +53,7 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
   const {
     bestBridgedFinalizedBlock: bestBridgedFinalizedBlockOnTarget,
     bestBlockFinalized: bestBlockFinalizedOnTarget,
-    bestBlock: bestBlockOnTarget,
+    bestBlock: bestBlockOnTarget
   } = useDashboard(targetRole);
 
   useEffect(() => {
@@ -87,14 +85,14 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
     // 3.2 With the value obtained we compare it with the transaction nonce, if the value is bigger or equal then means target chain is aware about this nonce.
     const messageDelivered = stepEvaluator(transaction.messageNonce, nonceOfBestTargetBlock);
     // 4.1 *
-    // 4.2 **
-    // 4.3 When the current nonce in the target is bigger than the message nonce related to the message block, we set the step as completed.
+    // 4.2 We match the transaction nonce with the current nonce of the best finalized target block
     const messageFinalizedOnTarget = stepEvaluator(transaction.messageNonce, nonceOfFinalTargetBlock);
 
+    // 5. Once the source chain is confirms through the latestReceivedNonceOnSource, that target chain is aware about the message nonce, the transaction is completed.
     const sourceConfirmationReceived = stepEvaluator(transaction.messageNonce, latestReceivedNonceOnSource);
     const onChainCompleted = (value: boolean) => completionStatus(value) === TransactionStatusEnum.COMPLETED;
 
-    // 4.1 * We catch the current target bestBlock and related nonce only if previous step was finished and we didn't saved the information of message in target chain.
+    // 4.1 * We catch the best block on target related to the message delivery.
     if (messageDelivered && !deliveryBlock) {
       setDeliveryBlock(bestBlockOnTarget);
     }
@@ -125,6 +123,7 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
       {
         chainType: targetChain,
         label: 'Finalize message in target block',
+        labelOnChain: onChainCompleted(messageFinalizedOnTarget) && deliveryBlock,
         status: completionStatus(messageFinalizedOnTarget)
       },
       {
@@ -147,6 +146,8 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
     deliveryBlock,
     finished,
     latestReceivedNonceOnSource,
+    nonceOfBestTargetBlock,
+    nonceOfFinalTargetBlock,
     onComplete,
     setDeliveryBlock,
     sourceChain,

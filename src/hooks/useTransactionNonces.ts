@@ -90,7 +90,7 @@ const useTransactionNonces = ({ transaction }: Props) => {
     setNonceOfBestTargetBlock,
     setNonceOfFinalTargetBlock,
     bestBlock,
-    bestBlockFinalized,
+    bestBlockFinalized
   ]);
 
   return { nonceOfBestTargetBlock, nonceOfFinalTargetBlock };
