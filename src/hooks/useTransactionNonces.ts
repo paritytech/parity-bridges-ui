@@ -34,8 +34,8 @@ interface Props {
 }
 
 const useTransactionNonces = ({ transaction }: Props) => {
-  const [latestReceivedNonceRuntimeApi, setLatestReceivedNonceRuntimeApi] = useMountedState({ nonce: 0, block: '' });
-  const [nonceOfCurrentTargetBlock, setNonceOfCurrentTargetBlock] = useMountedState<null | number>(null);
+  const [nonceOfBestTargetBlock, setNonceOfBestTargetBlock] = useMountedState<null | number>(null);
+  const [nonceOfFinalTargetBlock, setNonceOfFinalTargetBlock] = useMountedState<null | number>(null);
   const { getValuesByChain } = useChainGetters();
 
   const laneId = useLaneId();
@@ -46,7 +46,7 @@ const useTransactionNonces = ({ transaction }: Props) => {
     sourceChain
   });
 
-  const { bestBlockFinalized: bestBlockFinalizedOnTarget, bestBlock } = useDashboard(targetRole);
+  const { bestBlockFinalized, bestBlock } = useDashboard(targetRole);
 
   const { latestReceivedNonceMethodName } = getSubstrateDynamicNames(sourceChain);
   const { api: targetApi } = getValuesByChain(targetChain);
@@ -56,8 +56,8 @@ const useTransactionNonces = ({ transaction }: Props) => {
       return;
     }
 
-    const getLatestReceivedNonceByHash = async () => {
-      const blockHash = await targetApi.rpc.chain.getBlockHash(bestBlockFinalizedOnTarget);
+    const getLatestReceivedNonce = async (blockNumber: string) => {
+      const blockHash = await targetApi.rpc.chain.getBlockHash(blockNumber);
       const latestReceivedNonceCall = await targetApi.rpc.state.call<Codec>(
         latestReceivedNonceMethodName,
         laneId,
@@ -67,34 +67,33 @@ const useTransactionNonces = ({ transaction }: Props) => {
       // @ts-ignore
       const latestReceivedNonceCallType = targetApi.registry.createType('MessageNonce', latestReceivedNonceCall);
       const latestReceivedNonce = latestReceivedNonceCallType.toString();
-      setNonceOfCurrentTargetBlock(parseInt(latestReceivedNonce));
       return parseInt(latestReceivedNonce);
     };
 
-    const getLatestReceivedNonce = async () => {
-      const latestReceivedNonceCall = await targetApi.rpc.state.call<Codec>(latestReceivedNonceMethodName, laneId);
-      // @ts-ignore
-      const latestReceivedNonceCallType = targetApi.registry.createType('MessageNonce', latestReceivedNonceCall);
-      setLatestReceivedNonceRuntimeApi({ nonce: parseInt(latestReceivedNonceCallType.toString()), block: bestBlock });
+    const updateNonces = async () => {
+      const finalizedNonce = getLatestReceivedNonce(bestBlockFinalized);
+      const bestNonce = getLatestReceivedNonce(bestBlock);
+
+      setNonceOfBestTargetBlock(await bestNonce);
+      setNonceOfFinalTargetBlock(await finalizedNonce);
     };
 
-    getLatestReceivedNonce();
-    getLatestReceivedNonceByHash();
+    updateNonces();
   }, [
     areApiLoading,
-    bestBlockFinalizedOnTarget,
     transaction,
     laneId,
     latestReceivedNonceMethodName,
     targetApi.registry,
     targetApi.rpc.chain,
     targetApi.rpc.state,
-    setLatestReceivedNonceRuntimeApi,
-    setNonceOfCurrentTargetBlock,
-    bestBlock
+    setNonceOfBestTargetBlock,
+    setNonceOfFinalTargetBlock,
+    bestBlock,
+    bestBlockFinalized,
   ]);
 
-  return { latestReceivedNonceRuntimeApi, nonceOfCurrentTargetBlock };
+  return { nonceOfBestTargetBlock, nonceOfFinalTargetBlock };
 };
 
 export default useTransactionNonces;

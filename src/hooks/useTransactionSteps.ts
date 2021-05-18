@@ -30,18 +30,13 @@ interface Props {
   onComplete: () => void;
 }
 
-interface MessageOnTarget {
-  nonce: number;
-  block: string;
-}
-
 const useTransactionSteps = ({ transaction, onComplete }: Props) => {
   const [steps, setSteps] = useState<Array<Step>>([]);
-  const [messageOnTarget, setMessageOnTarget] = useMountedState({} as MessageOnTarget);
+  const [deliveryBlock, setDeliveryBlock] = useState<string | null>();
   const [finished, setFinished] = useState(false);
 
   // 4.2 * We keep the related nonce in nonceOfCurrentTargetBlock so we can determine when the message in the target block was finalized.
-  const { latestReceivedNonceRuntimeApi, nonceOfCurrentTargetBlock } = useTransactionNonces({
+  const { nonceOfBestTargetBlock, nonceOfFinalTargetBlock } = useTransactionNonces({
     transaction
   });
 
@@ -59,7 +54,8 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
   } = useDashboard(sourceRole);
   const {
     bestBridgedFinalizedBlock: bestBridgedFinalizedBlockOnTarget,
-    bestBlockFinalized: bestBlockFinalizedOnTarget
+    bestBlockFinalized: bestBlockFinalizedOnTarget,
+    bestBlock: bestBlockOnTarget,
   } = useDashboard(targetRole);
 
   useEffect(() => {
@@ -89,18 +85,18 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
     const blockFinalityRelayed = stepEvaluator(transaction.block, bestBridgedFinalizedBlockOnTarget);
     // 3.1 We read the latest received nonce of the target chain rpc state call.
     // 3.2 With the value obtained we compare it with the transaction nonce, if the value is bigger or equal then means target chain is aware about this nonce.
-    const messageDelivered = stepEvaluator(transaction.messageNonce, latestReceivedNonceRuntimeApi.nonce);
+    const messageDelivered = stepEvaluator(transaction.messageNonce, nonceOfBestTargetBlock);
     // 4.1 *
     // 4.2 **
     // 4.3 When the current nonce in the target is bigger than the message nonce related to the message block, we set the step as completed.
-    const messageFinalizedOnTarget = stepEvaluator(messageOnTarget.nonce, nonceOfCurrentTargetBlock);
+    const messageFinalizedOnTarget = stepEvaluator(transaction.messageNonce, nonceOfFinalTargetBlock);
 
     const sourceConfirmationReceived = stepEvaluator(transaction.messageNonce, latestReceivedNonceOnSource);
     const onChainCompleted = (value: boolean) => completionStatus(value) === TransactionStatusEnum.COMPLETED;
 
     // 4.1 * We catch the current target bestBlock and related nonce only if previous step was finished and we didn't saved the information of message in target chain.
-    if (messageDelivered && !messageOnTarget.block) {
-      setMessageOnTarget(latestReceivedNonceRuntimeApi);
+    if (messageDelivered && !deliveryBlock) {
+      setDeliveryBlock(bestBlockOnTarget);
     }
 
     setSteps([
@@ -123,13 +119,12 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
       {
         chainType: targetChain,
         label: 'Deliver message',
-        labelOnChain: onChainCompleted(messageDelivered) && transaction.messageNonce,
+        labelOnChain: onChainCompleted(messageDelivered) && deliveryBlock,
         status: completionStatus(messageDelivered)
       },
       {
         chainType: targetChain,
         label: 'Finalize message in target block',
-        labelOnChain: onChainCompleted(messageFinalizedOnTarget) && messageOnTarget.block,
         status: completionStatus(messageFinalizedOnTarget)
       },
       {
@@ -147,18 +142,16 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
     areApiLoading,
     bestBlockFinalized,
     bestBlockFinalizedOnTarget,
+    bestBlockOnTarget,
     bestBridgedFinalizedBlockOnTarget,
+    deliveryBlock,
     finished,
     latestReceivedNonceOnSource,
-    latestReceivedNonceRuntimeApi,
-    messageOnTarget.nonce,
     onComplete,
+    setDeliveryBlock,
     sourceChain,
     targetChain,
-    messageOnTarget.block,
-    transaction,
-    nonceOfCurrentTargetBlock,
-    setMessageOnTarget
+    transaction
   ]);
 
   return steps;
