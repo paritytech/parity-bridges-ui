@@ -23,12 +23,12 @@ interface Props {
 }
 
 // TODO: Move this to a more generic error-show component
-const statusFunc = (from: string, state: boolean) => `${from} status: ${!state && 'dis'}connected.`;
+const statusFunc = (from: string, state: boolean) => `${from} chain status: ${!state ? 'disconnected' : 'connected'}`;
 
 const ExtensionAccountCheck = ({ component }: Props): JSX.Element => {
   const { extensionExists, accountExists } = useKeyringContext();
   // TODO: Move this to a more generic error-show component
-  const { areApiReady, sourceReady, targetReady } = useLoadingApi();
+  const { sourceReady, targetReady } = useLoadingApi();
 
   let msg: string = '';
   if (!extensionExists) {
@@ -36,11 +36,13 @@ const ExtensionAccountCheck = ({ component }: Props): JSX.Element => {
   } else if (!accountExists) {
     msg = 'There are no accounts in the extension. Please create one';
     // TODO: Move this to a more generic error-show component
-  } else if (!areApiReady) {
-    msg = `${statusFunc('Source', sourceReady)} ${statusFunc('Target', targetReady)}`;
+  } else if (!sourceReady || !targetReady) {
+    msg = `${!sourceReady ? statusFunc('Source', sourceReady) : ''} ${
+      !targetReady ? statusFunc('Target', targetReady) : ''
+    }`;
   }
 
-  return <>{accountExists && areApiReady ? component : <Alert severity="error">{msg}</Alert>}</>;
+  return <>{accountExists && sourceReady && targetReady ? component : <Alert severity="error">{msg}</Alert>}</>;
 };
 
 export default ExtensionAccountCheck;
