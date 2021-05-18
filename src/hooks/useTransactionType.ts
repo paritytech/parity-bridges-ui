@@ -35,7 +35,7 @@ interface Props {
 }
 
 export default function useTransactionType({ input, type, weightInput }: Props): TransactionFunction {
-  const areApiReady = useLoadingApi();
+  const { areApiReady } = useLoadingApi();
   const {
     sourceChainDetails: {
       sourceApiConnection: { api: sourceApi }

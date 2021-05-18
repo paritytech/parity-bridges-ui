@@ -22,6 +22,7 @@ import React, { useEffect, useState } from 'react';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useAccounts from '../hooks/useAccounts';
 import useReceiver from '../hooks/useReceiver';
+import useLoadingApi from '../hooks/useLoadingApi';
 import { Account as AccountType } from '../types/accountTypes';
 import formatAccounts from '../util/formatAccounts';
 import Account from './Account';
@@ -79,6 +80,8 @@ const Sender = () => {
   const { setReceiver } = useReceiver();
   const { getValuesByChain } = useChainGetters();
 
+  const { areApiReady } = useLoadingApi();
+
   useEffect(() => {
     if (!chains.length) {
       setChains([
@@ -135,6 +138,7 @@ const Sender = () => {
       <Select
         disableUnderline
         fullWidth
+        disabled={!areApiReady}
         className={classes.accountMain}
         value={value}
         renderValue={(): React.ReactNode => (

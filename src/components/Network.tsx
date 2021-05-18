@@ -21,6 +21,8 @@ import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useDashboard from '../hooks/useDashboard';
 import { ChainDetails } from '../types/sourceTargetTypes';
+import useLoadingApi from '../hooks/useLoadingApi';
+import { IconApiStatus } from './Icons';
 
 // As this is placed as a child in the Material UI Select component, for some reason style components classes are not working.
 // This way to inject the styles works.
@@ -50,6 +52,11 @@ const useStyles = makeStyles((theme) => ({
     '& span': {
       ...theme.typography.subtitle2
     }
+  },
+  svg: {
+    marginBottom: '0.2em',
+    fontSize: '0.5em',
+    marginRight: theme.spacing()
   }
 }));
 
@@ -58,11 +65,13 @@ export const NetworkSides = () => {
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   const dbSource = useDashboard(ChainDetails.SOURCE);
   const dbTarget = useDashboard(ChainDetails.TARGET);
+  const { sourceReady, targetReady } = useLoadingApi();
 
   return (
     <Box marginY={2} className={classes.main}>
       <Box p={1} className={classes.statsEntry}>
         <Typography variant="h4">
+          <IconApiStatus className={classes.svg} status={sourceReady} />
           <a target="_blank" rel="noreferrer" href={sourceChainDetails.sourcePolkadotjsUrl}>
             {sourceChainDetails.sourceChain}
           </a>
@@ -75,6 +84,7 @@ export const NetworkSides = () => {
       </IconButton>
       <Box p={1} className={classes.statsEntry}>
         <Typography variant="h4">
+          <IconApiStatus className={classes.svg} status={targetReady} />
           <a target="_blank" rel="noreferrer" href={targetChainDetails.targetPolkadotjsUrl}>
             {targetChainDetails.targetChain}
           </a>

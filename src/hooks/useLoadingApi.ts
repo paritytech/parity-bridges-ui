@@ -18,7 +18,13 @@ import { useEffect, useState } from 'react';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 
-export default function useLoadingApi(): boolean {
+interface LoadingStates {
+  areApiReady: boolean;
+  sourceReady: boolean;
+  targetReady: boolean;
+}
+
+export default function useLoadingApi(): LoadingStates {
   const {
     sourceChainDetails: {
       sourceApiConnection: { isApiReady: isSourceApiReady }
@@ -29,10 +35,18 @@ export default function useLoadingApi(): boolean {
   } = useSourceTarget();
 
   const [areReady, setAreReady] = useState(false);
+  const [isSourceReady, setIsSourceReady] = useState(false);
+  const [isTargetReady, setIsTargetReady] = useState(false);
 
   useEffect(() => {
+    isSourceApiReady && setIsSourceReady(isSourceApiReady);
+    isTargetApiReady && setIsTargetReady(isTargetApiReady);
     setAreReady(isSourceApiReady && isTargetApiReady);
   }, [isSourceApiReady, isTargetApiReady]);
 
-  return areReady;
+  return {
+    areApiReady: areReady,
+    sourceReady: isSourceReady,
+    targetReady: isTargetReady
+  };
 }

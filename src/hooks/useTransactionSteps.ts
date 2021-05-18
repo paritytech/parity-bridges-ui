@@ -42,7 +42,7 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
     transaction
   });
 
-  const areApiLoading = useLoadingApi();
+  const { areApiReady } = useLoadingApi();
 
   const { sourceChain, targetChain } = transaction;
   const { sourceRole, targetRole } = getSourceTargetRole({
@@ -71,7 +71,7 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
   }, [targetMessageDeliveryBlock, getNonceByHash, setTransactionNonceOfTargetFinalizedBlock]);
 
   useEffect(() => {
-    if (!areApiLoading || !transaction || finished) {
+    if (!areApiReady || !transaction || finished) {
       return;
     }
 
@@ -142,7 +142,7 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
       setFinished(true);
     }
   }, [
-    areApiLoading,
+    areApiReady,
     bestBlockFinalized,
     bestBlockFinalizedOnTarget,
     bestBridgedFinalizedBlockOnTarget,
