@@ -77,7 +77,7 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
       return isCompleted ? TransactionStatusEnum.COMPLETED : TransactionStatusEnum.IN_PROGRESS;
     };
 
-    // 1. We wait until the block transaction gets finalized / transaction.block < source.bestBlockFinalized
+    // 1. We wait until the block transaction gets finalized  ( source.bestBlockFinalized is greater or equal to transaction.block )
     const sourceTransactionFinalized = stepEvaluator(transaction.block, bestBlockFinalized);
     // 2. When the target chain knows about a bigger source block number we infer that transaction block was realayed to target chain.
     const blockFinalityRelayed = stepEvaluator(transaction.block, bestBridgedFinalizedBlockOnTarget);
@@ -116,25 +116,23 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
       },
       {
         chainType: targetChain,
-        label: 'Deliver message',
+        label: 'Deliver message in target block',
         labelOnChain: onChainCompleted(messageDelivered) && deliveryBlock,
         status: completionStatus(messageDelivered)
       },
       {
         chainType: targetChain,
-        label: 'Finalize message in target block',
-        // TODO: To apply a different design for blocks and nonces: #175
-        labelOnChain: onChainCompleted(messageFinalizedOnTarget) && deliveryBlock,
+        label: 'Finalize message',
         status: completionStatus(messageFinalizedOnTarget)
       },
       {
         chainType: sourceChain,
         label: 'Confirm delivery',
-        status: completionStatus(messageFinalizedOnTarget && sourceConfirmationReceived)
+        status: completionStatus(sourceConfirmationReceived)
       }
     ]);
 
-    if (messageFinalizedOnTarget && sourceConfirmationReceived) {
+    if (sourceConfirmationReceived) {
       onComplete();
       setFinished(true);
     }
