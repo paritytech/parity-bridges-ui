@@ -38,7 +38,6 @@ export const substrateGray = {
   800: '#323F47',
   900: '#202B33'
 };
-
 export const substrateGreen = {
   100: '#7E8D96',
   200: '#5CFFC8',
