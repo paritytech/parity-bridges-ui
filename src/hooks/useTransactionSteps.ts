@@ -123,6 +123,7 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
       {
         chainType: targetChain,
         label: 'Finalize message in target block',
+        // TODO: To apply a different design for blocks and nonces: #175
         labelOnChain: onChainCompleted(messageFinalizedOnTarget) && deliveryBlock,
         status: completionStatus(messageFinalizedOnTarget)
       },
