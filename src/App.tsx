@@ -27,14 +27,13 @@ import { SourceTargetContextProvider } from './contexts/SourceTargetContextProvi
 import { TransactionContextProvider } from './contexts/TransactionContext';
 import { useConnections } from './hooks/useConnections';
 import Main from './screens/Main';
-import { isEmpty } from 'lodash';
 
 const [connectionDetails1, connectionDetails2] = substrateProviders();
 
 function App() {
   const { connections } = useConnections([connectionDetails1, connectionDetails2]);
 
-  if (isEmpty(connections)) {
+  if (Object.keys(connections).length === 0) {
     return (
       <Backdrop open>
         <CircularProgress color="inherit" />

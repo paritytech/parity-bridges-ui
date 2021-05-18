@@ -81,7 +81,7 @@ export function useApiConnection(connectionDetails: ConnectionChainInformation):
     if (apiPromise.isReady && isEmpty(configs)) {
       getChainConfigs();
     }
-  }, [apiPromise, configs, isReady]);
+  }, [apiPromise, apiPromise.isReady, configs, isReady]);
 
   return { api: apiPromise, isApiReady: isReady, configs, polkadotjsUrl };
 }

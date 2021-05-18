@@ -42,7 +42,7 @@ const ExtensionAccountCheck = ({ component }: Props): JSX.Element => {
     }`;
   }
 
-  return <>{accountExists && sourceReady && targetReady ? component : <Alert severity="error">{msg}</Alert>}</>;
+  return <>{msg ? <Alert severity="error">{msg}</Alert> : component}</>;
 };
 
 export default ExtensionAccountCheck;
