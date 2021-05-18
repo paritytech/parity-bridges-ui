@@ -37,8 +37,6 @@ interface MessageOnTarget {
 
 const useTransactionSteps = ({ transaction, onComplete }: Props) => {
   const [steps, setSteps] = useState<Array<Step>>([]);
-  //const [messageOnTarget.nonce, setTransactionNonceOfTargetFinalizedBlock] = useMountedState<null | (number > null);
-  //const [messageOnTarget.block, setTargetMessageDeliveryBlock] = useMountedState('');
   const [messageOnTarget, setMessageOnTarget] = useMountedState({} as MessageOnTarget);
   const [finished, setFinished] = useState(false);
 
@@ -69,19 +67,13 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
       return;
     }
 
-    const stepEvaluator = (
-      transactionValue: string | number | null,
-      chainValue: string | number | null,
-      greaterEqual?: boolean
-    ): boolean => {
+    const stepEvaluator = (transactionValue: string | number | null, chainValue: string | number | null): boolean => {
       if (!transactionValue || !chainValue) return false;
 
       const bnChainValue = new BN(chainValue);
       const bnTransactionValue = new BN(transactionValue);
-      if (greaterEqual) {
-        return bnChainValue.gte(bnTransactionValue);
-      }
-      return bnChainValue.gt(bnTransactionValue);
+
+      return bnChainValue.gte(bnTransactionValue);
     };
 
     const completionStatus = (isCompleted: boolean): TransactionStatusEnum => {
@@ -97,11 +89,11 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
     const blockFinalityRelayed = stepEvaluator(transaction.block, bestBridgedFinalizedBlockOnTarget);
     // 3.1 We read the latest received nonce of the target chain rpc state call.
     // 3.2 With the value obtained we compare it with the transaction nonce, if the value is bigger or equal then means target chain is aware about this nonce.
-    const messageDelivered = stepEvaluator(transaction.messageNonce, latestReceivedNonceRuntimeApi.nonce, true);
+    const messageDelivered = stepEvaluator(transaction.messageNonce, latestReceivedNonceRuntimeApi.nonce);
     // 4.1 *
     // 4.2 **
     // 4.3 When the current nonce in the target is bigger than the message nonce related to the message block, we set the step as completed.
-    const messageFinalizedOnTarget = stepEvaluator(messageOnTarget.nonce, nonceOfCurrentTargetBlock, true);
+    const messageFinalizedOnTarget = stepEvaluator(messageOnTarget.nonce, nonceOfCurrentTargetBlock);
 
     const sourceConfirmationReceived = stepEvaluator(transaction.messageNonce, latestReceivedNonceOnSource);
     const onChainCompleted = (value: boolean) => completionStatus(value) === TransactionStatusEnum.COMPLETED;
