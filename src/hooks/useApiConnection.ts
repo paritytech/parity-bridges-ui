@@ -70,7 +70,7 @@ export function useApiConnection(connectionDetails: ConnectionChainInformation):
         .catch((err): void => {
           logger.error(`Chain ${chainNumber}: Error registering types. Details: ${err}`);
         });
-  }, [apiPromise, chainNumber, isReady, types]);
+  }, [apiPromise, apiPromise.isReady, chainNumber, isReady, types]);
 
   useEffect(() => {
     const getChainConfigs = async () => {
@@ -81,7 +81,7 @@ export function useApiConnection(connectionDetails: ConnectionChainInformation):
     if (apiPromise.isReady && isEmpty(configs)) {
       getChainConfigs();
     }
-  }, [apiPromise, apiPromise.isReady, configs, isReady]);
+  }, [apiPromise, apiPromise.isReady, configs]);
 
   return { api: apiPromise, isApiReady: isReady, configs, polkadotjsUrl };
 }
