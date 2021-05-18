@@ -37,7 +37,7 @@ const Transactions = ({ type, ...transactionDisplayProps }: Props) => {
 
   return (
     <>
-      {transactions.length ? (
+      {transactions?.length ? (
         transactions.map((transaction: TransactionStatusType) => {
           const onComplete = () => {
             dispatchTransaction(

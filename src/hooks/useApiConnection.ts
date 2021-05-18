@@ -78,7 +78,7 @@ export function useApiConnection(connectionDetails: ConnectionChainInformation):
       setConfigs(values);
     };
 
-    if (isReady && isEmpty(configs)) {
+    if (apiPromise.isReady && isEmpty(configs)) {
       getChainConfigs();
     }
   }, [apiPromise, configs, isReady]);

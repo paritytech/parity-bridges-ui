@@ -20,7 +20,6 @@ import { Message } from 'semantic-ui-react';
 import { ButtonSubmit } from '../components';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
-import useLoadingApi from '../hooks/useLoadingApi';
 import useSendMessage from '../hooks/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
 
@@ -33,7 +32,6 @@ const CustomCall = () => {
   const [error, setError] = useState<string | null>();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
-  const areApiReady = useLoadingApi();
   const { estimatedFee } = useTransactionContext();
   const {
     targetChainDetails: {
@@ -57,10 +55,6 @@ const CustomCall = () => {
   const onWeightChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setWeightInput(event.target.value);
   };
-
-  if (!areApiReady) {
-    return null;
-  }
 
   function decodePayload(input: string) {
     try {
