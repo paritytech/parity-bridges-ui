@@ -32,7 +32,7 @@ export default function useLoadingApi(): LoadingStates {
   } = useSourceTarget();
 
   return {
-    areApiReady: isSourceApiReady && false,
+    areApiReady: isSourceApiReady && isTargetApiReady,
     sourceReady: isSourceApiReady,
     targetReady: isTargetApiReady
   };

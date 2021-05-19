@@ -16,7 +16,6 @@
 
 import BN from 'bn.js';
 import { useEffect, useState } from 'react';
-import { useMountedState } from './useMountedState';
 import useTransactionNonces from '../hooks/useTransactionNonces';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useDashboard from '../hooks/useDashboard';
@@ -32,13 +31,10 @@ interface Props {
 
 const useTransactionSteps = ({ transaction, onComplete }: Props) => {
   const [steps, setSteps] = useState<Array<Step>>([]);
-  const [transactionNonceOfTargetFinalizedBlock, setTransactionNonceOfTargetFinalizedBlock] = useMountedState<
-    null | number
-  >(null);
-  const [targetMessageDeliveryBlock, setTargetMessageDeliveryBlock] = useMountedState('');
+  const [deliveryBlock, setDeliveryBlock] = useState<string | null>();
   const [finished, setFinished] = useState(false);
 
-  const { getNonceByHash, latestReceivedNonceRuntimeApi, nonceOfCurrentTargetBlock } = useTransactionNonces({
+  const { nonceOfBestTargetBlock, nonceOfFinalTargetBlock } = useTransactionNonces({
     transaction
   });
 
@@ -56,19 +52,9 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
   } = useDashboard(sourceRole);
   const {
     bestBridgedFinalizedBlock: bestBridgedFinalizedBlockOnTarget,
-    bestBlockFinalized: bestBlockFinalizedOnTarget
+    bestBlockFinalized: bestBlockFinalizedOnTarget,
+    bestBlock: bestBlockOnTarget
   } = useDashboard(targetRole);
-
-  useEffect(() => {
-    const getNonceOfTargetFinalizedBlock = async () => {
-      const nonce = await getNonceByHash(parseInt(targetMessageDeliveryBlock));
-      setTransactionNonceOfTargetFinalizedBlock(nonce);
-    };
-
-    if (targetMessageDeliveryBlock) {
-      getNonceOfTargetFinalizedBlock();
-    }
-  }, [targetMessageDeliveryBlock, getNonceByHash, setTransactionNonceOfTargetFinalizedBlock]);
 
   useEffect(() => {
     if (!areApiReady || !transaction || finished) {
@@ -80,7 +66,8 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
 
       const bnChainValue = new BN(chainValue);
       const bnTransactionValue = new BN(transactionValue);
-      return bnChainValue.gt(bnTransactionValue);
+
+      return bnChainValue.gte(bnTransactionValue);
     };
 
     const completionStatus = (isCompleted: boolean): TransactionStatusEnum => {
@@ -90,15 +77,24 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
       return isCompleted ? TransactionStatusEnum.COMPLETED : TransactionStatusEnum.IN_PROGRESS;
     };
 
+    // 1. We wait until the block transaction gets finalized  ( source.bestBlockFinalized is greater or equal to transaction.block )
     const sourceTransactionFinalized = stepEvaluator(transaction.block, bestBlockFinalized);
+    // 2. When the target chain knows about a bigger source block number we infer that transaction block was realayed to target chain.
     const blockFinalityRelayed = stepEvaluator(transaction.block, bestBridgedFinalizedBlockOnTarget);
-    const messageDelivered = stepEvaluator(transaction.messageNonce, latestReceivedNonceRuntimeApi);
-    const messageFinalizedOnTarget = stepEvaluator(transactionNonceOfTargetFinalizedBlock, nonceOfCurrentTargetBlock);
+    // 3.1 We read the latest received nonce of the target chain rpc state call.
+    // 3.2 With the value obtained we compare it with the transaction nonce, if the value is bigger or equal then means target chain is aware about this nonce.
+    const messageDelivered = stepEvaluator(transaction.messageNonce, nonceOfBestTargetBlock);
+    // 4.1 *
+    // 4.2 We match the transaction nonce with the current nonce of the best finalized target block
+    const messageFinalizedOnTarget = stepEvaluator(transaction.messageNonce, nonceOfFinalTargetBlock);
+
+    // 5. Once the source chain is confirms through the latestReceivedNonceOnSource, that target chain is aware about the message nonce, the transaction is completed.
     const sourceConfirmationReceived = stepEvaluator(transaction.messageNonce, latestReceivedNonceOnSource);
     const onChainCompleted = (value: boolean) => completionStatus(value) === TransactionStatusEnum.COMPLETED;
 
-    if (messageDelivered && !targetMessageDeliveryBlock) {
-      setTargetMessageDeliveryBlock(bestBlockFinalizedOnTarget);
+    // 4.1 * We catch the best block on target related to the message delivery.
+    if (messageDelivered && !deliveryBlock) {
+      setDeliveryBlock(bestBlockOnTarget);
     }
 
     setSteps([
@@ -120,14 +116,13 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
       },
       {
         chainType: targetChain,
-        label: 'Deliver message',
-        labelOnChain: onChainCompleted(messageDelivered) && transaction.messageNonce,
+        label: 'Deliver message in target block',
+        labelOnChain: onChainCompleted(messageDelivered) && deliveryBlock,
         status: completionStatus(messageDelivered)
       },
       {
         chainType: targetChain,
-        label: 'Finalize message in target block',
-        labelOnChain: onChainCompleted(messageFinalizedOnTarget) && targetMessageDeliveryBlock,
+        label: 'Finalize message',
         status: completionStatus(messageFinalizedOnTarget)
       },
       {
@@ -145,18 +140,18 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
     areApiReady,
     bestBlockFinalized,
     bestBlockFinalizedOnTarget,
+    bestBlockOnTarget,
     bestBridgedFinalizedBlockOnTarget,
+    deliveryBlock,
     finished,
     latestReceivedNonceOnSource,
-    latestReceivedNonceRuntimeApi,
-    transactionNonceOfTargetFinalizedBlock,
+    nonceOfBestTargetBlock,
+    nonceOfFinalTargetBlock,
     onComplete,
+    setDeliveryBlock,
     sourceChain,
     targetChain,
-    targetMessageDeliveryBlock,
-    transaction,
-    nonceOfCurrentTargetBlock,
-    setTargetMessageDeliveryBlock
+    transaction
   ]);
 
   return steps;
