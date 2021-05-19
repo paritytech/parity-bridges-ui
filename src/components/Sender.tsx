@@ -133,8 +133,6 @@ const Sender = () => {
     return <AccountDisplay friendlyName="Select sender account" hideAddress />;
   };
 
-  console.log('areApiReady', areApiReady);
-
   return (
     <>
       <Select
