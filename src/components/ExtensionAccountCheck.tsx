@@ -22,12 +22,12 @@ interface Props {
   component: JSX.Element;
 }
 
-// TODO: Move this to a more generic error-show component
+// TODO #176: Move this to a more generic error-show component
 const statusFunc = (from: string, state: boolean) => `${from} chain status: ${!state ? 'disconnected' : 'connected'}`;
 
 const ExtensionAccountCheck = ({ component }: Props): JSX.Element => {
   const { extensionExists, accountExists } = useKeyringContext();
-  // TODO: Move this to a more generic error-show component
+  // TODO #176: Move this to a more generic error-show component
   const { sourceReady, targetReady } = useLoadingApi();
 
   let msg: string = '';
@@ -35,7 +35,7 @@ const ExtensionAccountCheck = ({ component }: Props): JSX.Element => {
     msg = 'Connect to a wallet. Install polkadotjs extension';
   } else if (!accountExists) {
     msg = 'There are no accounts in the extension. Please create one';
-    // TODO: Move this to a more generic error-show component
+    // TODO #176: Move this to a more generic error-show component
   } else if (!sourceReady || !targetReady) {
     msg = `${!sourceReady ? statusFunc('Source', sourceReady) : ''} ${
       !targetReady ? statusFunc('Target', targetReady) : ''
