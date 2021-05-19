@@ -38,6 +38,14 @@ export const substrateGray = {
   800: '#323F47',
   900: '#202B33'
 };
+export const substrateGreen = {
+  100: '#7E8D96',
+  200: '#5CFFC8',
+  300: '#18FFB2',
+  400: '#16DB9A',
+  500: '#11B37C',
+  600: '#1A9A6C'
+};
 
 const paletteLight: PaletteOptions = {
   type: 'light',
@@ -65,6 +73,12 @@ const paletteLight: PaletteOptions = {
     light: red[100],
     main: '#DC2200',
     dark: red[500],
+    contrastText: 'black'
+  },
+  success: {
+    light: substrateGreen[100],
+    main: substrateGreen[400],
+    dark: substrateGreen[500],
     contrastText: 'black'
   },
   text: {

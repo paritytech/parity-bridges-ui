@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import { makeStyles } from '@material-ui/core/styles';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
@@ -23,8 +24,22 @@ import React from 'react';
 
 import { TransactionStatusEnum } from '../types/transactionTypes';
 
+const useStyles = makeStyles((theme) => ({
+  error: {
+    color: theme.palette.error.main
+  },
+  success: {
+    color: theme.palette.success.main
+  }
+}));
+
 interface IconTxStatusProps {
   status: keyof typeof TransactionStatusEnum;
+}
+
+interface IconApiStatusProps {
+  status: boolean;
+  className?: string;
 }
 export const IconTxStatus = ({ status }: IconTxStatusProps) => {
   switch (status) {
@@ -39,4 +54,9 @@ export const IconTxStatus = ({ status }: IconTxStatusProps) => {
     default:
       return <FiberManualRecordIcon />;
   }
+};
+
+export const IconApiStatus = ({ status, className }: IconApiStatusProps) => {
+  const classes = useStyles();
+  return <FiberManualRecordIcon className={`${status ? classes.success : classes.error} ${className}`} />;
 };

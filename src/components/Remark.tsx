@@ -19,7 +19,6 @@ import React, { useState } from 'react';
 import { ButtonSubmit } from '../components';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
-import useLoadingApi from '../hooks/useLoadingApi';
 import useSendMessage from '../hooks/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
 
@@ -28,7 +27,6 @@ const Remark = () => {
   const [remarkInput, setRemarkInput] = useState('0x');
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
-  const areApiReady = useLoadingApi();
   const { estimatedFee } = useTransactionContext();
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
@@ -40,10 +38,6 @@ const Remark = () => {
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRemarkInput(event.target.value);
   };
-
-  if (!areApiReady) {
-    return null;
-  }
 
   return (
     <>

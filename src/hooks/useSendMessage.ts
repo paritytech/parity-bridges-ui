@@ -30,6 +30,7 @@ import useTransactionPreparation from '../hooks/useTransactionPreparation';
 import { TransactionStatusEnum, TransactionTypes } from '../types/transactionTypes';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
 import logger from '../util/logger';
+import useLoadingApi from '../hooks/useLoadingApi';
 
 interface Props {
   isValidCall?: boolean;
@@ -143,16 +144,18 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
     }
   };
 
+  const { areApiReady } = useLoadingApi();
+
   const isButtonDisabled = () => {
     switch (type) {
       case TransactionTypes.REMARK:
-        return isRunning || !account;
+        return isRunning || !account || !areApiReady;
         break;
       case TransactionTypes.TRANSFER:
-        return isRunning || !receiverAddress || !input || !account;
+        return isRunning || !receiverAddress || !input || !account || !areApiReady;
         break;
       case TransactionTypes.CUSTOM:
-        return isRunning || !account || !input || !weightInput || !isValidCall;
+        return isRunning || !account || !input || !weightInput || !isValidCall || !areApiReady;
         break;
       default:
         throw new Error(`Unknown type: ${type}`);

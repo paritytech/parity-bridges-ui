@@ -13,12 +13,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
-
-import { useEffect, useState } from 'react';
-
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 
-export default function useLoadingApi(): boolean {
+interface LoadingStates {
+  areApiReady: boolean;
+  sourceReady: boolean;
+  targetReady: boolean;
+}
+
+export default function useLoadingApi(): LoadingStates {
   const {
     sourceChainDetails: {
       sourceApiConnection: { isApiReady: isSourceApiReady }
@@ -28,11 +31,9 @@ export default function useLoadingApi(): boolean {
     }
   } = useSourceTarget();
 
-  const [areReady, setAreReady] = useState(false);
-
-  useEffect(() => {
-    setAreReady(isSourceApiReady && isTargetApiReady);
-  }, [isSourceApiReady, isTargetApiReady]);
-
-  return areReady;
+  return {
+    areApiReady: isSourceApiReady && isTargetApiReady,
+    sourceReady: isSourceApiReady,
+    targetReady: isTargetApiReady
+  };
 }

@@ -39,7 +39,7 @@ const useTransactionNonces = ({ transaction }: Props) => {
   const { getValuesByChain } = useChainGetters();
 
   const laneId = useLaneId();
-  const areApiLoading = useLoadingApi();
+  const { areApiReady } = useLoadingApi();
   const { sourceChain, targetChain } = transaction;
   const { targetRole } = getSourceTargetRole({
     useSourceTarget,
@@ -52,7 +52,7 @@ const useTransactionNonces = ({ transaction }: Props) => {
   const { api: targetApi } = getValuesByChain(targetChain);
 
   useEffect(() => {
-    if (!areApiLoading || !transaction || !transaction || isTransactionCompleted(transaction)) {
+    if (!areApiReady || !transaction || !transaction || isTransactionCompleted(transaction)) {
       return;
     }
 
@@ -80,7 +80,7 @@ const useTransactionNonces = ({ transaction }: Props) => {
 
     updateNonces();
   }, [
-    areApiLoading,
+    areApiReady,
     transaction,
     laneId,
     latestReceivedNonceMethodName,

@@ -21,7 +21,6 @@ import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import useAccounts from '../hooks/useAccounts';
 import useBalance from '../hooks/useBalance';
-import useLoadingApi from '../hooks/useLoadingApi';
 import useSendMessage from '../hooks/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
 import { TokenSymbol } from './TokenSymbol';
@@ -57,7 +56,6 @@ function Transfer() {
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   const { account } = useAccounts();
 
-  const areApiReady = useLoadingApi();
   const planck = 10 ** targetChainDetails.targetApiConnection.api.registry.chainDecimals[0];
   const { estimatedFee, receiverAddress } = useTransactionContext();
   const { api, isApiReady } = sourceChainDetails.sourceApiConnection;
@@ -88,8 +86,6 @@ function Transfer() {
       actualInput &&
       setAmountNotCorrect(new BN(balance.free).sub(new BN(actualInput).add(new BN(estimatedFee))).toNumber() < 0);
   }, [actualInput, estimatedFee, balance, isApiReady]);
-
-  if (!areApiReady) return null;
 
   return (
     <>

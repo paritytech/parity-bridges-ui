@@ -31,12 +31,11 @@ export function useConnections(chainsConnections: ConnectionChainInformation[]) 
   const [apiReady, setApiReady] = useState(false);
 
   useEffect(() => {
-    if (chain1Configs && chain2Configs && apiConnection1 && apiConnection2) {
+    if (chain1Configs && chain2Configs) {
       const chainName1 = chain1Configs.chainName;
       const chainName2 = chain2Configs.chainName;
-      const apiReady = apiConnection1.isApiReady && apiConnection2.isApiReady;
-
-      if (chainName1 && chainName2 && apiReady && isEmpty(connections)) {
+      const apiReady = apiConnection1?.isApiReady && apiConnection2?.isApiReady;
+      if (chainName1 && chainName2 && isEmpty(connections)) {
         const connections = {
           [ChainDetails.SOURCE]: {
             sourceConfigs: chain1Configs,
