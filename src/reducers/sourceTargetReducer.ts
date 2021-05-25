@@ -26,15 +26,13 @@ export default function sourceTargetReducer(state: SourceTargetState, action: So
             apiConnection: state[ChainDetails.TARGET].apiConnection,
             configs: state[ChainDetails.TARGET].configs,
             chain: state[ChainDetails.TARGET].chain,
-            polkadotjsUrl: state[ChainDetails.TARGET].polkadotjsUrl,
-            onChainValues: state[ChainDetails.TARGET].onChainValues
+            polkadotjsUrl: state[ChainDetails.TARGET].polkadotjsUrl
           },
           [ChainDetails.TARGET]: {
             apiConnection: state[ChainDetails.SOURCE].apiConnection,
             chain: state[ChainDetails.SOURCE].chain,
             polkadotjsUrl: state[ChainDetails.SOURCE].polkadotjsUrl,
-            configs: state[ChainDetails.SOURCE].configs,
-            onChainValues: state[ChainDetails.SOURCE].onChainValues
+            configs: state[ChainDetails.SOURCE].configs
           }
         };
       }

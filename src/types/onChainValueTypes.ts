@@ -14,24 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ChainValues } from '../types/sourceTargetTypes';
-import { SourceTargetState } from '../types/sourceTargetTypes';
+import { ChainDetails } from '../types/sourceTargetTypes';
 
-interface Input {
-  useSourceTarget: () => SourceTargetState;
-  sourceChain: string;
+export interface OnChainValues {
+  bestBlock: string;
+  bestBlockFinalized: string;
+  bestBridgedFinalizedBlock: string;
+  bridgeReceivedMessages: string;
+  outboundLanes: {
+    latestReceivedNonce: string;
+    pendingMessages: string;
+    totalMessages: string;
+  };
 }
 
-export function getSourceTargetRole({ useSourceTarget, sourceChain }: Input) {
-  const {
-    sourceChainDetails: { chain: currentSourceChain }
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-  } = useSourceTarget();
-
-  const sourceChainsMatch = sourceChain === currentSourceChain;
-
-  const sourceRole = sourceChainsMatch ? ChainValues.SOURCE : ChainValues.TARGET;
-  const targetRole = sourceChainsMatch ? ChainValues.TARGET : ChainValues.SOURCE;
-
-  return { sourceRole, targetRole, sourceChainsMatch };
+export interface OnChainValuesContextType {
+  [ChainDetails.SOURCE]: OnChainValues;
+  [ChainDetails.TARGET]: OnChainValues;
 }

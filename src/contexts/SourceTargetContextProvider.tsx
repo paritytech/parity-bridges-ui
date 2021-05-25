@@ -16,8 +16,7 @@
 
 import React, { useContext, useReducer } from 'react';
 import sourceTargetReducer from '../reducers/sourceTargetReducer';
-import { SourceTargetAction, SourceTargetState, ChainDetails } from '../types/sourceTargetTypes';
-import onChainValues from '../hooks/useOnChainValues';
+import { SourceTargetAction, SourceTargetState } from '../types/sourceTargetTypes';
 
 export interface UpdateSourceTargetContext {
   dispatchChangeSourceTarget: React.Dispatch<SourceTargetAction>;
@@ -43,11 +42,6 @@ export function useUpdateSourceTarget() {
 }
 
 export function SourceTargetContextProvider({ connections, children }: SourceTargetContextProps): React.ReactElement {
-  const onSourceChainValues = onChainValues(ChainDetails.SOURCE);
-  const onTargetChainValues = onChainValues(ChainDetails.TARGET);
-  connections[ChainDetails.SOURCE].onChainValues = onSourceChainValues;
-  connections[ChainDetails.TARGET].onChainValues = onTargetChainValues;
-
   const [sourceTargetChains, dispatchChangeSourceTarget] = useReducer(sourceTargetReducer, connections);
 
   return (

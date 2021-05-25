@@ -25,6 +25,7 @@ import { KeyringContextProvider } from './contexts/KeyringContextProvider';
 import { MessageContextProvider } from './contexts/MessageContext';
 import { SourceTargetContextProvider } from './contexts/SourceTargetContextProvider';
 import { TransactionContextProvider } from './contexts/TransactionContext';
+import { ChainValuesContextProvider } from './contexts/ChainValuesContextProvider';
 import { useConnections } from './hooks/useConnections';
 import Main from './screens/Main';
 import { isEmpty } from 'lodash';
@@ -44,25 +45,27 @@ function App() {
 
   return (
     <SourceTargetContextProvider connections={connections}>
-      <MessageContextProvider>
-        <SnackbarProvider>
-          <KeyringContextProvider>
-            <AccountContextProvider>
-              <TransactionContextProvider>
-                <BrowserRouter>
-                  <Switch>
-                    <Route path={'/'}>
-                      <GUIContextProvider>
-                        <Main />
-                      </GUIContextProvider>
-                    </Route>
-                  </Switch>
-                </BrowserRouter>
-              </TransactionContextProvider>
-            </AccountContextProvider>
-          </KeyringContextProvider>
-        </SnackbarProvider>
-      </MessageContextProvider>
+      <ChainValuesContextProvider>
+        <MessageContextProvider>
+          <SnackbarProvider>
+            <KeyringContextProvider>
+              <AccountContextProvider>
+                <TransactionContextProvider>
+                  <BrowserRouter>
+                    <Switch>
+                      <Route path={'/'}>
+                        <GUIContextProvider>
+                          <Main />
+                        </GUIContextProvider>
+                      </Route>
+                    </Switch>
+                  </BrowserRouter>
+                </TransactionContextProvider>
+              </AccountContextProvider>
+            </KeyringContextProvider>
+          </SnackbarProvider>
+        </MessageContextProvider>
+      </ChainValuesContextProvider>
     </SourceTargetContextProvider>
   );
 }

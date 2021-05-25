@@ -19,8 +19,8 @@ import { Box, Divider, IconButton, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import onChainValues from '../hooks/useOnChainValues';
-import { ChainDetails } from '../types/sourceTargetTypes';
+import { useOnChainValuesContext } from '../contexts/ChainValuesContextProvider';
+
 import useLoadingApi from '../hooks/useLoadingApi';
 import { IconApiStatus } from './Icons';
 
@@ -62,9 +62,8 @@ const useStyles = makeStyles((theme) => ({
 
 export const NetworkSides = () => {
   const classes = useStyles();
+  const { sourceChainValues, targetChainValues } = useOnChainValuesContext();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
-  const dbSource = onChainValues(ChainDetails.SOURCE);
-  const dbTarget = onChainValues(ChainDetails.TARGET);
   const { sourceReady, targetReady } = useLoadingApi();
 
   return (
@@ -76,7 +75,7 @@ export const NetworkSides = () => {
             {sourceChainDetails.chain}
           </a>
         </Typography>
-        <span># {dbSource.bestBlock}</span>
+        <span># {sourceChainValues.bestBlock}</span>
       </Box>
       <Divider />
       <IconButton size="small">
@@ -89,7 +88,7 @@ export const NetworkSides = () => {
             {targetChainDetails.chain}
           </a>
         </Typography>
-        <span style={{ opacity: 0.4 }}># {dbTarget.bestBlock}</span>
+        <span style={{ opacity: 0.4 }}># {targetChainValues.bestBlock}</span>
       </Box>
     </Box>
   );
@@ -97,24 +96,23 @@ export const NetworkSides = () => {
 
 export const NetworkStats = () => {
   const classes = useStyles();
-  const dbSource = onChainValues(ChainDetails.SOURCE);
-  const dbTarget = onChainValues(ChainDetails.TARGET);
+  const { sourceChainValues, targetChainValues } = useOnChainValuesContext();
 
   return (
     <>
       <Box className={classes.statsEntry}>
         Relayed blocks:
         <span>
-          {dbTarget?.bestBridgedFinalizedBlock} / {dbSource?.bestBlockFinalized}
+          {targetChainValues?.bestBridgedFinalizedBlock} / {sourceChainValues?.bestBlockFinalized}
         </span>
       </Box>
       <Box className={classes.statsEntry}>
         Delivered messages:
-        <span>{dbSource?.outboundLanes.totalMessages}</span>
+        <span>{sourceChainValues?.outboundLanes.totalMessages}</span>
       </Box>
       <Box className={classes.statsEntry}>
         Awaiting messages:
-        <span>{dbSource?.outboundLanes.pendingMessages}</span>
+        <span>{sourceChainValues?.outboundLanes.pendingMessages}</span>
       </Box>
     </>
   );
