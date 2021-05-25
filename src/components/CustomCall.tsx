@@ -35,7 +35,7 @@ const CustomCall = () => {
   const { estimatedFee } = useTransactionContext();
   const {
     targetChainDetails: {
-      targetApiConnection: { api: targetApi }
+      apiConnection: { api: targetApi }
     }
   } = useSourceTarget();
 
@@ -81,7 +81,7 @@ const CustomCall = () => {
       </Box>
       <TextField onChange={onWeightChange} value={weightInput} label="Weight" variant="outlined" fullWidth />
       <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
-        Send custom call from {sourceChainDetails.sourceChain} to {targetChainDetails.targetChain}
+        Send custom call from {sourceChainDetails.chain} to {targetChainDetails.chain}
       </ButtonSubmit>
       <Typography variant="body1" color="secondary">
         {estimatedFee && `Estimated source Fee: ${estimatedFee}`}

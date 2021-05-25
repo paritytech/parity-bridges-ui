@@ -38,10 +38,10 @@ export default function useTransactionType({ input, type, weightInput }: Props):
   const { areApiReady } = useLoadingApi();
   const {
     sourceChainDetails: {
-      sourceApiConnection: { api: sourceApi }
+      apiConnection: { api: sourceApi }
     },
     targetChainDetails: {
-      targetApiConnection: { api: targetApi }
+      apiConnection: { api: targetApi }
     }
   } = useSourceTarget();
 

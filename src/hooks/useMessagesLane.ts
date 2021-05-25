@@ -33,9 +33,7 @@ interface Props {
 }
 
 interface Output {
-  inboundLanes: {
-    bridgeReceivedMessages: string;
-  };
+  bridgeReceivedMessages: string;
   outboundLanes: {
     pendingMessages: string;
     totalMessages: string;
@@ -50,7 +48,7 @@ const useMessageLane = ({ isApiReady, api, chain }: Props): Output => {
     pendingMessages: '0',
     totalMessages: '0'
   });
-  const [inboundLanes, setInboudLanes] = useMountedState({ bridgeReceivedMessages: '0' });
+  const [bridgeReceivedMessages, setBridgesReceivedMessages] = useMountedState('0');
 
   const laneId = useLaneId();
   const { bridgedMessages, latestReceivedNonceMethodName } = getSubstrateDynamicNames(chain);
@@ -85,7 +83,7 @@ const useMessageLane = ({ isApiReady, api, chain }: Props): Output => {
 
     const shouldGetLane: boolean = !!(api && isApiReady && api.query[bridgedMessages] && chain);
     const unsubscribeOutboundLanes: Promise<VoidFn> | null = shouldGetLane ? getLane(setOutboudLanes, true) : null;
-    const unsubscribeInboundLanes: Promise<VoidFn> | null = shouldGetLane ? getLane(setInboudLanes) : null;
+    const unsubscribeInboundLanes: Promise<VoidFn> | null = shouldGetLane ? getLane(setBridgesReceivedMessages) : null;
 
     return async (): Promise<void> => {
       unsubscribeOutboundLanes && (await unsubscribeOutboundLanes)();
@@ -99,11 +97,11 @@ const useMessageLane = ({ isApiReady, api, chain }: Props): Output => {
     laneId,
     latestReceivedNonceMethodName,
     setOutboudLanes,
-    setInboudLanes,
+    setBridgesReceivedMessages,
     dispatchMessage
   ]);
 
-  return { inboundLanes, outboundLanes };
+  return { bridgeReceivedMessages, outboundLanes };
 };
 
 export default useMessageLane;

@@ -47,10 +47,10 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
   const laneId = useLaneId();
   const {
     sourceChainDetails: {
-      sourceApiConnection: { api: sourceApi },
-      sourceChain
+      apiConnection: { api: sourceApi },
+      chain: sourceChain
     },
-    targetChainDetails: { targetChain }
+    targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
   const { account } = useAccountContext();
   const { payload } = useTransactionPreparation({ input, isValidCall, type, weightInput });

@@ -31,8 +31,8 @@ const getReceiverAddress = ({
   sourceChainDetails,
   receiverAddress
 }: Props) => {
-  const { sourceConfigs } = sourceChainDetails;
-  const { targetChain, targetConfigs } = targetChainDetails;
+  const { configs: sourceConfigs } = sourceChainDetails;
+  const { chain: targetChain, configs: targetConfigs } = targetChainDetails;
 
   const targetSS58Format = targetConfigs.ss58Format;
   const bridgeId = getBridgeId(targetConfigs, sourceConfigs.chainName);

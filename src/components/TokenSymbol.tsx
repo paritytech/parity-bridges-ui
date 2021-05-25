@@ -26,8 +26,6 @@ export const TokenSymbol = ({ position = 'start' }: Props): React.ReactElement =
   const { targetChainDetails } = useSourceTarget();
 
   return (
-    <InputAdornment position={position}>
-      {targetChainDetails.targetApiConnection.api.registry.chainTokens}
-    </InputAdornment>
+    <InputAdornment position={position}>{targetChainDetails.apiConnection.api.registry.chainTokens}</InputAdornment>
   );
 };

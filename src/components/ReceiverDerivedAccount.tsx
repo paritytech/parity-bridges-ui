@@ -40,7 +40,7 @@ const ReceiverDerivedAccount = () => {
   } = useTransactionContext();
 
   const {
-    targetChainDetails: { targetChain }
+    targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
 
   if (genericReceiverAccount) {

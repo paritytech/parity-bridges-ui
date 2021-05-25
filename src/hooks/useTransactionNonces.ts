@@ -19,7 +19,7 @@ import { Codec } from '@polkadot/types/types';
 import { useEffect } from 'react';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import useDashboard from './useDashboard';
+import onChainValues from './useOnChainValues';
 import useLaneId from './useLaneId';
 import useLoadingApi from './useLoadingApi';
 import useChainGetters from './useChainGetters';
@@ -46,7 +46,7 @@ const useTransactionNonces = ({ transaction }: Props) => {
     sourceChain
   });
 
-  const { bestBlockFinalized, bestBlock } = useDashboard(targetRole);
+  const { bestBlockFinalized, bestBlock } = onChainValues(targetRole);
 
   const { latestReceivedNonceMethodName } = getSubstrateDynamicNames(sourceChain);
   const { api: targetApi } = getValuesByChain(targetChain);

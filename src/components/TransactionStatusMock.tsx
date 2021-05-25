@@ -53,8 +53,8 @@ const TransactionStatusMock = ({ type }: Props) => {
   const [steps, setSteps] = useState<Array<Step>>([]);
 
   const {
-    sourceChainDetails: { sourceChain },
-    targetChainDetails: { targetChain }
+    sourceChainDetails: { chain: sourceChain },
+    targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
 
   useEffect(() => {

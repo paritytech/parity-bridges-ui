@@ -17,17 +17,17 @@
 import { ChainDetails } from '../types/sourceTargetTypes';
 import useBlocksInfo from './useBlocksInfo';
 import useBridgedBlocks from './useBridgedBlocks';
-import useDashboardProfile from './useDashboardProfile';
+import useChainProfile from './useChainProfile';
 import useMessagesLane from './useMessagesLane';
 
-const useDashboard = (ChainDetail: ChainDetails) => {
-  const { api, destination, local, isApiReady, polkadotjsUrl } = useDashboardProfile(ChainDetail);
+const useOnChainValues = (ChainDetail: ChainDetails) => {
+  const { api, target, source, isApiReady, polkadotjsUrl } = useChainProfile(ChainDetail);
 
-  const blockInfo = useBlocksInfo({ api, chain: local, isApiReady });
-  const bridgedBlocks = useBridgedBlocks({ api, chain: destination, isApiReady });
-  const messagesLane = useMessagesLane({ api, chain: destination, isApiReady });
+  const blockInfo = useBlocksInfo({ api, chain: source, isApiReady });
+  const bridgedBlocks = useBridgedBlocks({ api, chain: target, isApiReady });
+  const messagesLane = useMessagesLane({ api, chain: target, isApiReady });
 
-  return { ...blockInfo, ...bridgedBlocks, ...messagesLane, local, polkadotjsUrl };
+  return { ...blockInfo, ...bridgedBlocks, ...messagesLane, source, polkadotjsUrl };
 };
 
-export default useDashboard;
+export default useOnChainValues;

@@ -27,13 +27,13 @@ type State = {
 const useApiBalance = (address: string | null, chain: string | undefined, isDerived: boolean): State => {
   const {
     sourceChainDetails: {
-      sourceApiConnection: { api: sourceApi },
-      sourceConfigs
+      apiConnection: { api: sourceApi },
+      configs: sourceConfigs
     },
     targetChainDetails: {
-      targetApiConnection: { api: targetApi },
-      targetChain,
-      targetConfigs
+      apiConnection: { api: targetApi },
+      chain: targetChain,
+      configs: targetConfigs
     }
   } = useSourceTarget();
 

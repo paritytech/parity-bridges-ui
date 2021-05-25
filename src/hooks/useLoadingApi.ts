@@ -24,10 +24,10 @@ interface LoadingStates {
 export default function useLoadingApi(): LoadingStates {
   const {
     sourceChainDetails: {
-      sourceApiConnection: { isApiReady: isSourceApiReady }
+      apiConnection: { isApiReady: isSourceApiReady }
     },
     targetChainDetails: {
-      targetApiConnection: { isApiReady: isTargetApiReady }
+      apiConnection: { isApiReady: isTargetApiReady }
     }
   } = useSourceTarget();
 

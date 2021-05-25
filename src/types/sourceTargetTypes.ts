@@ -48,6 +48,19 @@ interface Payload {
   [propName: string]: string;
 }
 
+interface OutboundLanes {
+  latestReceivedNonce: string;
+  pendingMessages: string;
+  totalMessages: string;
+}
+export interface OnChainValues {
+  bestBlock: string;
+  bestBlockFinalized: string;
+  bestBridgedFinalizedBlock: string;
+  outboundLanes: OutboundLanes;
+  bridgeReceivedMessages: string;
+}
+
 export type SourceTargetAction = { type: SourceTargetActionsTypes; payload?: Payload };
 export interface ApiPromiseContextType {
   api: ApiPromise; // From @polkadot/api\
@@ -61,17 +74,19 @@ export enum ChainDetails {
   TARGET = 'targetChainDetails'
 }
 export interface SourceState {
-  sourceConfigs: Configs;
-  sourceApiConnection: ApiPromiseConnectionType;
-  sourceChain: string;
-  sourcePolkadotjsUrl: string;
+  configs: Configs;
+  apiConnection: ApiPromiseConnectionType;
+  chain: string;
+  polkadotjsUrl: string;
+  onChainValues: OnChainValues;
 }
 
 export interface TargetState {
-  targetConfigs: Configs;
-  targetApiConnection: ApiPromiseConnectionType;
-  targetChain: string;
-  targetPolkadotjsUrl: string;
+  configs: Configs;
+  apiConnection: ApiPromiseConnectionType;
+  chain: string;
+  polkadotjsUrl: string;
+  onChainValues: OnChainValues;
 }
 
 export interface SourceTargetState {

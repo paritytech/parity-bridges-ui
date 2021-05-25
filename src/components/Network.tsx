@@ -19,7 +19,7 @@ import { Box, Divider, IconButton, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import useDashboard from '../hooks/useDashboard';
+import onChainValues from '../hooks/useOnChainValues';
 import { ChainDetails } from '../types/sourceTargetTypes';
 import useLoadingApi from '../hooks/useLoadingApi';
 import { IconApiStatus } from './Icons';
@@ -63,8 +63,8 @@ const useStyles = makeStyles((theme) => ({
 export const NetworkSides = () => {
   const classes = useStyles();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
-  const dbSource = useDashboard(ChainDetails.SOURCE);
-  const dbTarget = useDashboard(ChainDetails.TARGET);
+  const dbSource = onChainValues(ChainDetails.SOURCE);
+  const dbTarget = onChainValues(ChainDetails.TARGET);
   const { sourceReady, targetReady } = useLoadingApi();
 
   return (
@@ -72,8 +72,8 @@ export const NetworkSides = () => {
       <Box p={1} className={classes.statsEntry}>
         <Typography variant="h4">
           <IconApiStatus className={classes.svg} status={sourceReady} />
-          <a target="_blank" rel="noreferrer" href={sourceChainDetails.sourcePolkadotjsUrl}>
-            {sourceChainDetails.sourceChain}
+          <a target="_blank" rel="noreferrer" href={sourceChainDetails.polkadotjsUrl}>
+            {sourceChainDetails.chain}
           </a>
         </Typography>
         <span># {dbSource.bestBlock}</span>
@@ -85,8 +85,8 @@ export const NetworkSides = () => {
       <Box p={1} className={classes.statsEntry}>
         <Typography variant="h4">
           <IconApiStatus className={classes.svg} status={targetReady} />
-          <a target="_blank" rel="noreferrer" href={targetChainDetails.targetPolkadotjsUrl}>
-            {targetChainDetails.targetChain}
+          <a target="_blank" rel="noreferrer" href={targetChainDetails.polkadotjsUrl}>
+            {targetChainDetails.chain}
           </a>
         </Typography>
         <span style={{ opacity: 0.4 }}># {dbTarget.bestBlock}</span>
@@ -97,8 +97,8 @@ export const NetworkSides = () => {
 
 export const NetworkStats = () => {
   const classes = useStyles();
-  const dbSource = useDashboard(ChainDetails.SOURCE);
-  const dbTarget = useDashboard(ChainDetails.TARGET);
+  const dbSource = onChainValues(ChainDetails.SOURCE);
+  const dbTarget = onChainValues(ChainDetails.TARGET);
 
   return (
     <>

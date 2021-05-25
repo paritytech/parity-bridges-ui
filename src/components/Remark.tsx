@@ -51,7 +51,7 @@ const Remark = () => {
         onChange={onChange}
       />
       <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
-        Send bridge remark from {sourceChainDetails.sourceChain} to {targetChainDetails.targetChain}
+        Send bridge remark from {sourceChainDetails.chain} to {targetChainDetails.chain}
       </ButtonSubmit>
       <Typography variant="body1" color="secondary">
         {estimatedFee && `Estimated source Fee: ${estimatedFee}`}

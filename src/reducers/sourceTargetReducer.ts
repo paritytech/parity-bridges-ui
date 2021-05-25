@@ -20,19 +20,21 @@ import { ChainDetails, SourceTargetAction, SourceTargetState } from '../types/so
 export default function sourceTargetReducer(state: SourceTargetState, action: SourceTargetAction): SourceTargetState {
   switch (action.type) {
     case SourceTargetActionsTypes.SWAP_CHAINS: {
-      if (action.payload!.chain !== state[ChainDetails.SOURCE].sourceChain) {
+      if (action.payload!.chain !== state[ChainDetails.SOURCE].chain) {
         return {
           [ChainDetails.SOURCE]: {
-            sourceApiConnection: state[ChainDetails.TARGET].targetApiConnection,
-            sourceConfigs: state[ChainDetails.TARGET].targetConfigs,
-            sourceChain: state[ChainDetails.TARGET].targetChain,
-            sourcePolkadotjsUrl: state[ChainDetails.TARGET].targetPolkadotjsUrl
+            apiConnection: state[ChainDetails.TARGET].apiConnection,
+            configs: state[ChainDetails.TARGET].configs,
+            chain: state[ChainDetails.TARGET].chain,
+            polkadotjsUrl: state[ChainDetails.TARGET].polkadotjsUrl,
+            onChainValues: state[ChainDetails.TARGET].onChainValues
           },
           [ChainDetails.TARGET]: {
-            targetApiConnection: state[ChainDetails.SOURCE].sourceApiConnection,
-            targetChain: state[ChainDetails.SOURCE].sourceChain,
-            targetPolkadotjsUrl: state[ChainDetails.SOURCE].sourcePolkadotjsUrl,
-            targetConfigs: state[ChainDetails.SOURCE].sourceConfigs
+            apiConnection: state[ChainDetails.SOURCE].apiConnection,
+            chain: state[ChainDetails.SOURCE].chain,
+            polkadotjsUrl: state[ChainDetails.SOURCE].polkadotjsUrl,
+            configs: state[ChainDetails.SOURCE].configs,
+            onChainValues: state[ChainDetails.SOURCE].onChainValues
           }
         };
       }

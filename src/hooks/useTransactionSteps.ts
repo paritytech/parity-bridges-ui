@@ -18,7 +18,7 @@ import BN from 'bn.js';
 import { useEffect, useState } from 'react';
 import useTransactionNonces from '../hooks/useTransactionNonces';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import useDashboard from '../hooks/useDashboard';
+import onChainValues from './useOnChainValues';
 
 import useLoadingApi from '../hooks/useLoadingApi';
 import { getSourceTargetRole } from '../util/chainsUtils';
@@ -49,12 +49,12 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
   const {
     bestBlockFinalized,
     outboundLanes: { latestReceivedNonce: latestReceivedNonceOnSource }
-  } = useDashboard(sourceRole);
+  } = onChainValues(sourceRole);
   const {
     bestBridgedFinalizedBlock: bestBridgedFinalizedBlockOnTarget,
     bestBlockFinalized: bestBlockFinalizedOnTarget,
     bestBlock: bestBlockOnTarget
-  } = useDashboard(targetRole);
+  } = onChainValues(targetRole);
 
   useEffect(() => {
     if (!areApiReady || !transaction || finished) {

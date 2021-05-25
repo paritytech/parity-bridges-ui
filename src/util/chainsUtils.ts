@@ -24,7 +24,7 @@ interface Input {
 
 export function getSourceTargetRole({ useSourceTarget, sourceChain }: Input) {
   const {
-    sourceChainDetails: { sourceChain: currentSourceChain }
+    sourceChainDetails: { chain: currentSourceChain }
     // eslint-disable-next-line react-hooks/rules-of-hooks
   } = useSourceTarget();
 
