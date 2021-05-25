@@ -74,14 +74,7 @@ export enum ChainDetails {
   TARGET = 'targetChainDetails'
 }
 
-export interface SourceState {
-  configs: Configs;
-  apiConnection: ApiPromiseConnectionType;
-  chain: string;
-  polkadotjsUrl: string;
-}
-
-export interface TargetState {
+export interface ChainState {
   configs: Configs;
   apiConnection: ApiPromiseConnectionType;
   chain: string;
@@ -89,6 +82,6 @@ export interface TargetState {
 }
 
 export interface SourceTargetState {
-  [ChainDetails.SOURCE]: SourceState;
-  [ChainDetails.TARGET]: TargetState;
+  [ChainDetails.SOURCE]: ChainState;
+  [ChainDetails.TARGET]: ChainState;
 }
