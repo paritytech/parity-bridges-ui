@@ -66,10 +66,6 @@ export const NetworkSides = () => {
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   const { sourceReady, targetReady } = useLoadingApi();
 
-  console.log('--------');
-  console.log('sourceChainDetails.chain', sourceChainDetails.chain);
-  console.log('targetChainDetails.chain', targetChainDetails.chain);
-
   return (
     <Box marginY={2} className={classes.main}>
       <Box p={1} className={classes.statsEntry}>
