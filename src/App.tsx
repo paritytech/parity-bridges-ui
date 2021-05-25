@@ -25,7 +25,7 @@ import { KeyringContextProvider } from './contexts/KeyringContextProvider';
 import { MessageContextProvider } from './contexts/MessageContext';
 import { SourceTargetContextProvider } from './contexts/SourceTargetContextProvider';
 import { TransactionContextProvider } from './contexts/TransactionContext';
-import { ChainValuesContextProvider } from './contexts/ChainValuesContextProvider';
+import { OnChainValuesContextProvider } from './contexts/OnChainValuesContextProvider';
 import { useConnections } from './hooks/useConnections';
 import Main from './screens/Main';
 import { isEmpty } from 'lodash';
@@ -45,7 +45,7 @@ function App() {
 
   return (
     <SourceTargetContextProvider connections={connections}>
-      <ChainValuesContextProvider>
+      <OnChainValuesContextProvider>
         <MessageContextProvider>
           <SnackbarProvider>
             <KeyringContextProvider>
@@ -65,7 +65,7 @@ function App() {
             </KeyringContextProvider>
           </SnackbarProvider>
         </MessageContextProvider>
-      </ChainValuesContextProvider>
+      </OnChainValuesContextProvider>
     </SourceTargetContextProvider>
   );
 }

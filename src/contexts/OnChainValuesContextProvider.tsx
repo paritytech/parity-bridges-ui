@@ -48,7 +48,7 @@ export function useOnChainValuesContext() {
   return useContext(OnChainValuesContext);
 }
 
-export function ChainValuesContextProvider(props: OnChainValuesContextProviderProps): React.ReactElement {
+export function OnChainValuesContextProvider(props: OnChainValuesContextProviderProps): React.ReactElement {
   const onSourceChainValues = useOnChainValues(ChainDetails.SOURCE);
   const onTargetChainValues = useOnChainValues(ChainDetails.TARGET);
   const { children = null } = props;
