@@ -37,29 +37,42 @@ interface Props {
 
 const useBridgedBlocks = ({ isApiReady, api, chain }: Props) => {
   const [bestBridgedFinalizedBlock, setBestBridgedFinalizedBlock] = useState('');
-
+  const [bestFinalizedBlock, setBestFinalizedBlock] = useState('');
   const { bridgedGrandpaChain } = getSubstrateDynamicNames(chain);
+
   useEffect((): (() => void) | undefined => {
     const shouldProceed: boolean = !!(api && isApiReady && chain);
     if (!shouldProceed) return;
 
-    let unsubImportedHeaders: Promise<VoidFn> | null;
     const unsubBestFinalized: Promise<VoidFn> | null = api.query[bridgedGrandpaChain].bestFinalized(
-      (res: CodecHeaderId) => {
-        const bestBridgedFinalizedBlock = res.toString();
-        unsubImportedHeaders = api.query[bridgedGrandpaChain].importedHeaders(bestBridgedFinalizedBlock, (res: any) => {
-          if (res.toJSON()) {
-            setBestBridgedFinalizedBlock(res.toJSON().number);
-          }
-        });
+      async (res: CodecHeaderId) => {
+        const bestFinalized = res.toString();
+        setBestFinalizedBlock(bestFinalized);
       }
     );
 
     return async (): Promise<void> => {
       unsubBestFinalized && (await unsubBestFinalized)();
-      unsubImportedHeaders && (await unsubImportedHeaders)();
     };
   }, [isApiReady, chain, api, bridgedGrandpaChain]);
+
+  useEffect((): (() => void) | undefined => {
+    const shouldProceed: boolean = !!(api && isApiReady && chain);
+    if (!shouldProceed) return;
+
+    const unsubImportedHeaders: Promise<VoidFn> | null = api.query[bridgedGrandpaChain].importedHeaders(
+      bestFinalizedBlock,
+      async (res: any) => {
+        if (res.toJSON()) {
+          setBestBridgedFinalizedBlock(res.toJSON().number);
+        }
+      }
+    );
+
+    return async (): Promise<void> => {
+      unsubImportedHeaders && (await unsubImportedHeaders)();
+    };
+  }, [isApiReady, chain, api, bridgedGrandpaChain, bestFinalizedBlock]);
 
   return { bestBridgedFinalizedBlock };
 };
