@@ -15,12 +15,20 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ChainDetails } from '../types/sourceTargetTypes';
+import { OnChainValues } from '../types/onChainValueTypes';
 import useBlocksInfo from './useBlocksInfo';
 import useBridgedBlocks from './useBridgedBlocks';
 import useChainProfile from './useChainProfile';
 import useMessagesLane from './useMessagesLane';
 
-const useOnChainValues = (ChainDetail: ChainDetails) => {
+interface Source {
+  source: string;
+  polkadotjsUrl: string;
+}
+
+type Output = OnChainValues & Source;
+
+const useOnChainValues = (ChainDetail: ChainDetails): Output => {
   const { api, target, source, isApiReady, polkadotjsUrl } = useChainProfile(ChainDetail);
 
   const blockInfo = useBlocksInfo({ api, chain: source, isApiReady });

@@ -19,7 +19,7 @@ import { Codec } from '@polkadot/types/types';
 import { useEffect } from 'react';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useOnChainValuesContext } from '../contexts/ChainValuesContextProvider';
+import { useOnChainValuesContext } from '../contexts/OnChainValuesContextProvider';
 
 import useLaneId from './useLaneId';
 import useLoadingApi from './useLoadingApi';

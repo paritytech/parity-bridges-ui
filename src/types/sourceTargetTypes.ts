@@ -74,10 +74,6 @@ export enum ChainDetails {
   TARGET = 'targetChainDetails'
 }
 
-export enum ChainValues {
-  SOURCE = 'sourceChainValues',
-  TARGET = 'targetChainValues'
-}
 export interface SourceState {
   configs: Configs;
   apiConnection: ApiPromiseConnectionType;

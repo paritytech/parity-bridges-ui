@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ChainValues } from '../types/sourceTargetTypes';
+import { ChainValues } from '../types/onChainValueTypes';
 import { SourceTargetState } from '../types/sourceTargetTypes';
 
 interface Input {

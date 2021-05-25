@@ -18,7 +18,7 @@ import BN from 'bn.js';
 import { useEffect, useState } from 'react';
 import useTransactionNonces from '../hooks/useTransactionNonces';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useOnChainValuesContext } from '../contexts/ChainValuesContextProvider';
+import { useOnChainValuesContext } from '../contexts/OnChainValuesContextProvider';
 
 import useLoadingApi from '../hooks/useLoadingApi';
 import { getSourceTargetRole } from '../util/chainsUtils';

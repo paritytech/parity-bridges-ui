@@ -19,7 +19,7 @@ import { Box, Divider, IconButton, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useOnChainValuesContext } from '../contexts/ChainValuesContextProvider';
+import { useOnChainValuesContext } from '../contexts/OnChainValuesContextProvider';
 
 import useLoadingApi from '../hooks/useLoadingApi';
 import { IconApiStatus } from './Icons';

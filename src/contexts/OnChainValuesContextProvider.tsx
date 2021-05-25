@@ -15,26 +15,9 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React, { useContext } from 'react';
-import { ChainValues, ChainDetails } from '../types/sourceTargetTypes';
-
+import { ChainDetails } from '../types/sourceTargetTypes';
+import { ChainValues, OnChainValuesContextType } from '../types/onChainValueTypes';
 import useOnChainValues from '../hooks/useOnChainValues';
-
-interface OnChainValues {
-  bestBlock: string;
-  bestBlockFinalized: string;
-  bestBridgedFinalizedBlock: string;
-  bridgeReceivedMessages: string;
-  outboundLanes: {
-    latestReceivedNonce: string;
-    pendingMessages: string;
-    totalMessages: string;
-  };
-}
-
-export interface OnChainValuesContextType {
-  [ChainValues.SOURCE]: OnChainValues;
-  [ChainValues.TARGET]: OnChainValues;
-}
 
 interface OnChainValuesContextProviderProps {
   children: React.ReactElement;
