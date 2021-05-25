@@ -21,20 +21,12 @@ export default function sourceTargetReducer(state: SourceTargetState, action: So
   switch (action.type) {
     case SourceTargetActionsTypes.SWAP_CHAINS: {
       if (action.payload!.chain !== state[ChainDetails.SOURCE].chain) {
-        return {
-          [ChainDetails.SOURCE]: {
-            apiConnection: state[ChainDetails.TARGET].apiConnection,
-            configs: state[ChainDetails.TARGET].configs,
-            chain: state[ChainDetails.TARGET].chain,
-            polkadotjsUrl: state[ChainDetails.TARGET].polkadotjsUrl
-          },
-          [ChainDetails.TARGET]: {
-            apiConnection: state[ChainDetails.SOURCE].apiConnection,
-            chain: state[ChainDetails.SOURCE].chain,
-            polkadotjsUrl: state[ChainDetails.SOURCE].polkadotjsUrl,
-            configs: state[ChainDetails.SOURCE].configs
-          }
-        };
+        const newState = { ...state };
+
+        newState[ChainDetails.TARGET] = state[ChainDetails.SOURCE];
+        newState[ChainDetails.SOURCE] = state[ChainDetails.TARGET];
+
+        return newState;
       }
       return state;
     }
