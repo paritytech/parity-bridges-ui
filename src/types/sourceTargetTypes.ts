@@ -48,19 +48,6 @@ interface Payload {
   [propName: string]: string;
 }
 
-interface OutboundLanes {
-  latestReceivedNonce: string;
-  pendingMessages: string;
-  totalMessages: string;
-}
-export interface OnChainValues {
-  bestBlock: string;
-  bestBlockFinalized: string;
-  bestBridgedFinalizedBlock: string;
-  outboundLanes: OutboundLanes;
-  bridgeReceivedMessages: string;
-}
-
 export type SourceTargetAction = { type: SourceTargetActionsTypes; payload?: Payload };
 export interface ApiPromiseContextType {
   api: ApiPromise; // From @polkadot/api\
