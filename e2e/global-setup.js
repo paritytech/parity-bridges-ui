@@ -13,21 +13,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
+const { setup: setupPuppeteer } = require('jest-environment-puppeteer')
 
-module.exports = {
-  preset: 'jest-puppeteer',
-  globals: {
-    SERVER_URL: 'http://localhost:3210',
-    JEST_TIMEOUT: 10000
-  },
-  testRegex: './*\\.test\\.tsx$',
-  transform: {
-    '\\.js$': 'react-scripts/config/jest/babelTransform'
-  },
-  globalSetup: "./global-setup.js",
-  globalTeardown: "./global-teardown.js",
-  verbose: true,
-  testEnvironment: "./custom-environment.js"
+module.exports = async function globalSetup(globalConfig) {
+  await setupPuppeteer(globalConfig);
+  console.log('log setup()');
+  // Your global setup
 };
-
-console.log('Running E2E integration tests on port 3210');

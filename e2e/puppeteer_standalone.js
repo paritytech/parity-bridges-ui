@@ -19,17 +19,25 @@ const SERVER_URL = 'http://localhost:3001';
 
 (async function main() {
   try {
-    const browser = await puppeteer.launch({ headless: false });
+    const pathToExtension = require('path').join(__dirname);
+    // console.log('----- ', pathToExtension);
+    const browser = await puppeteer.launch({
+      executablePath:process.env.chrome,
+      headless: false
+    });
     const page = await browser.newPage();
     await page.goto(SERVER_URL, { waitUntil: 'domcontentloaded' });
 
-    const urlLink = await page.$('a[href*="https://github.com"]');
-    if (urlLink) {
-      await urlLink.click();
-    } else {
-      console.log('No "urlLink" found on page');
-    }
-    // wait 2 secs and shut down!
+    // HERE ARE ALL THE TESTS
+    // console.log(page);
+    // const urlLink = await page.$('a[href*="https://github.com"]');
+    // if (urlLink) {
+    //   await urlLink.click();
+    // } else {
+    //   console.log('No "urlLink" found on page');
+    // }
+
+    // wait 20 secs and shut down!
     await new Promise((resolve) => setTimeout(resolve, 20000));
     await browser.close();
   } catch (error) {
