@@ -52,7 +52,7 @@
     "test:e2e": "jest -c e2e/jest.config.js",
     "test:e2e-alone": "node e2e/puppeteer_standalone.js",
     "test:e2e-watch": "jest -c e2e/jest.config.js --watch",
-    "test": "react-app-rewired test --transformIgnorePatterns 'node_modules/(?!@codemirror)/' && yarn run e2e ",
+    "test": "react-app-rewired test --transformIgnorePatterns 'node_modules/(?!@codemirror)/'",
     "eject": "react-app-rewired eject",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "downloadCustomTypes": "node ./src/configs/chainsSetup/downloadCustomTypes.js"

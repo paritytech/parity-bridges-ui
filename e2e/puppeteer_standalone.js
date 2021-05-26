@@ -19,7 +19,7 @@ const SERVER_URL = 'http://localhost:3001';
 
 (async function main() {
   try {
-    const pathToExtension = require('path').join(__dirname);
+    // const pathToExtension = require('path').join(__dirname);
     // console.log('----- ', pathToExtension);
     const browser = await puppeteer.launch({
       executablePath:process.env.chrome,
@@ -28,7 +28,7 @@ const SERVER_URL = 'http://localhost:3001';
     const page = await browser.newPage();
     await page.goto(SERVER_URL, { waitUntil: 'domcontentloaded' });
 
-    // HERE ARE ALL THE TESTS
+    // HERE SHOULD BE ALL THE TESTS
     // console.log(page);
     // const urlLink = await page.$('a[href*="https://github.com"]');
     // if (urlLink) {

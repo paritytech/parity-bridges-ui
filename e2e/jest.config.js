@@ -17,7 +17,7 @@
 module.exports = {
   preset: 'jest-puppeteer',
   globals: {
-    SERVER_URL: 'http://localhost:3210',
+    SERVER_URL: 'http://localhost:3001',
     JEST_TIMEOUT: 10000
   },
   testRegex: './*\\.test\\.tsx$',
@@ -30,4 +30,4 @@ module.exports = {
   testEnvironment: "./custom-environment.js"
 };
 
-console.log('Running E2E integration tests on port 3210');
+console.log('Running E2E integration tests on port 3001');
