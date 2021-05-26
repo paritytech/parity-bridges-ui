@@ -42,14 +42,13 @@ export function KeyringContextProvider(props: KeyringContextProviderProps): Reac
   const [extensionExists, setExtensionExists] = useState<boolean>(false);
   const [accountExists, setAccountExists] = useState<boolean>(false);
 
-  const isDevelopment = Boolean(process.env.REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS);
-
+  const isDevelopment = process.env.REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS === 'true';
   const loadAccounts = useCallback(() => {
     const asyncLoadAccounts = async () => {
       setKeyringStatus(KeyringStatuses.LOADING);
       try {
         const extExists = await web3Enable('Substrate Bridges UI');
-        if (extExists.length === 0) {
+        if (extExists.length === 0 && !isDevelopment) {
           return;
         } else {
           setExtensionExists(true);

@@ -29,19 +29,21 @@ const ExtensionAccountCheck = ({ component }: Props): JSX.Element => {
   const { extensionExists, accountExists } = useKeyringContext();
   // TODO #176: Move this to a more generic error-show component
   const { sourceReady, targetReady } = useLoadingApi();
+  const isDevelopment = process.env.REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS === 'true';
 
   let msg: string = '';
-  if (!extensionExists) {
-    msg = 'Connect to a wallet. Install polkadotjs extension';
-  } else if (!accountExists) {
-    msg = 'There are no accounts in the extension. Please create one';
-    // TODO #176: Move this to a more generic error-show component
-  } else if (!sourceReady || !targetReady) {
-    msg = `${!sourceReady ? statusFunc('Source', sourceReady) : ''} ${
-      !targetReady ? statusFunc('Target', targetReady) : ''
-    }`;
+  if (!isDevelopment) {
+    if (!extensionExists) {
+      msg = 'Connect to a wallet. Install polkadotjs extension';
+    } else if (!accountExists) {
+      msg = 'There are no accounts in the extension. Please create one';
+      // TODO #176: Move this to a more generic error-show component
+    } else if (!sourceReady || !targetReady) {
+      msg = `${!sourceReady ? statusFunc('Source', sourceReady) : ''} ${
+        !targetReady ? statusFunc('Target', targetReady) : ''
+      }`;
+    }
   }
-
   return <>{msg ? <Alert severity="error">{msg}</Alert> : component}</>;
 };
 
