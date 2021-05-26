@@ -29,7 +29,12 @@ interface Source {
 type Output = OnChainValues & Source;
 
 const useOnChainValues = (ChainDetail: ChainDetails): Output => {
-  const { api, target, source, isApiReady, polkadotjsUrl } = useChainProfile(ChainDetail);
+  const {
+    apiConnection: { api, isApiReady },
+    target,
+    source,
+    polkadotjsUrl
+  } = useChainProfile(ChainDetail);
 
   const blockInfo = useBlocksInfo({ api, chain: source, isApiReady });
   const bridgedBlocks = useBridgedBlocks({ api, chain: target, isApiReady });

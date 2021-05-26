@@ -19,9 +19,11 @@ import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { ChainDetails } from '../types/sourceTargetTypes';
 
 const emptyProfile = {
-  api: {} as ApiPromise,
+  apiConnection: {
+    api: {} as ApiPromise,
+    isApiReady: false
+  },
   target: '',
-  isApiReady: false,
   source: '',
   polkadotjsUrl: ''
 };
@@ -33,29 +35,16 @@ export default function useChainProfile(chainDetail: ChainDetails) {
     return emptyProfile;
   }
 
-  const {
-    apiConnection: { isApiReady: isSourceApiReady, api: sourceApi },
-    chain: sourceChain,
-    polkadotjsUrl: sourcePolkadotjsUrl
-  } = sourceChainDetails;
-  const {
-    apiConnection: { isApiReady: isTargetApiReady, api: targetApi },
-    chain: targetChain,
-    polkadotjsUrl: targetPolkadotjsUrl
-  } = targetChainDetails;
+  const { chain: sourceChain, ...restSource } = sourceChainDetails;
+  const { chain: targetChain, ...restTarget } = targetChainDetails;
 
   let source = sourceChain;
   let target = targetChain;
-  let api = sourceApi;
-  let isApiReady = isSourceApiReady;
-  let polkadotjsUrl = sourcePolkadotjsUrl;
   if (chainDetail === ChainDetails.TARGET) {
     source = targetChain;
     target = sourceChain;
-    api = targetApi;
-    isApiReady = isTargetApiReady;
-    polkadotjsUrl = targetPolkadotjsUrl;
+    return { source, target, ...restTarget };
   }
 
-  return { source, target, api, isApiReady, polkadotjsUrl };
+  return { source, target, ...restSource };
 }
