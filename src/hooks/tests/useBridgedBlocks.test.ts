@@ -24,8 +24,8 @@ jest.mock('../../util/getSubstrateDynamicNames', () => () => ({ bridgedGrandpaCh
 
 describe('useBridgedBlocks', () => {
   const bridgedGrandpaChain = chain2;
-  let bestFinalizedMock = jest.fn() as jest.MockedFunction<any>;
-  let importedHeadersMock = jest.fn() as jest.MockedFunction<any>;
+  const bestFinalizedMock = jest.fn() as jest.MockedFunction<any>;
+  const importedHeadersMock = jest.fn() as jest.MockedFunction<any>;
   const unsubBestFinalized = jest.fn();
   const unsubImportedHeaders = jest.fn();
 
@@ -41,10 +41,8 @@ describe('useBridgedBlocks', () => {
   let props = {};
 
   beforeEach(() => {
-    bestFinalizedMock = api.query[bridgedGrandpaChain].bestFinalized = jest.fn().mockResolvedValue(unsubBestFinalized);
-    importedHeadersMock = api.query[bridgedGrandpaChain].importedHeaders = jest
-      .fn()
-      .mockResolvedValue(unsubImportedHeaders);
+    bestFinalizedMock.mockResolvedValue(unsubBestFinalized);
+    importedHeadersMock.mockResolvedValue(unsubImportedHeaders);
 
     props = {
       api,
@@ -67,11 +65,6 @@ describe('useBridgedBlocks', () => {
       const { unmount } = await renderHook(() => useBridgedBlocks(props));
       unmount();
       expect(unsubBestFinalized).toHaveBeenCalled();
-    });
-
-    it('should call the query api.query.chain2.bestFinalized with expected callback function', () => {
-      renderHook(() => useBridgedBlocks(props));
-      expect(bestFinalizedMock).toHaveBeenCalledWith(expect.any(Function));
     });
 
     it('should NOT call the query api.query.chain2.bestFinalized because the api is not ready', () => {
