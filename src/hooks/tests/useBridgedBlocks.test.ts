@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { renderHook, act } from '@testing-library/react-hooks';
 import useBridgedBlocks from '../useBridgedBlocks';
 
@@ -26,14 +24,16 @@ jest.mock('../../util/getSubstrateDynamicNames', () => () => ({ bridgedGrandpaCh
 
 describe('useBridgedBlocks', () => {
   const bridgedGrandpaChain = chain2;
-  const bestFinalized = jest.fn() as jest.MockedFunction<any>;
-  const importedHeaders = jest.fn() as jest.MockedFunction<any>;
+  let bestFinalizedMock = jest.fn() as jest.MockedFunction<any>;
+  let importedHeadersMock = jest.fn() as jest.MockedFunction<any>;
+  const unsubBestFinalized = jest.fn();
+  const unsubImportedHeaders = jest.fn();
 
   const api = {
     query: {
       [bridgedGrandpaChain]: {
-        bestFinalized,
-        importedHeaders
+        bestFinalized: bestFinalizedMock,
+        importedHeaders: importedHeadersMock
       }
     }
   };
@@ -41,6 +41,11 @@ describe('useBridgedBlocks', () => {
   let props = {};
 
   beforeEach(() => {
+    bestFinalizedMock = api.query[bridgedGrandpaChain].bestFinalized = jest.fn().mockResolvedValue(unsubBestFinalized);
+    importedHeadersMock = api.query[bridgedGrandpaChain].importedHeaders = jest
+      .fn()
+      .mockResolvedValue(unsubImportedHeaders);
+
     props = {
       api,
       isApiReady: true,
@@ -52,36 +57,57 @@ describe('useBridgedBlocks', () => {
     jest.clearAllMocks();
   });
 
-  it('should call the query api.query.chain2.bestFinalized with expected callback function', () => {
-    renderHook(() => useBridgedBlocks(props));
-
-    expect(api.query[bridgedGrandpaChain].bestFinalized).toHaveBeenCalledWith(expect.any(Function));
-  });
-
-  it('should NOT call the query api.query.chain2.bestFinalized because loader is not ready', () => {
-    props.isApiReady = false;
-    renderHook(() => useBridgedBlocks(props));
-
-    expect(api.query[bridgedGrandpaChain].bestFinalized).not.toHaveBeenCalled();
-  });
-
-  it('should NOT call the query api.query.chain2.useBridgedBlocks because bestFinalizedBlock was not yet set', () => {
-    renderHook(() => useBridgedBlocks(props));
-
-    expect(api.query[bridgedGrandpaChain].importedHeaders).not.toHaveBeenCalled();
-  });
-
-  it('should call the query api.query.chain2.importedHeaders with the value of setBestFinalizedBlock & callback', () => {
-    const bestFinalizedBlock = '546';
-    const { result } = renderHook(() => useBridgedBlocks(props));
-
-    act(() => {
-      result.current.setBestFinalizedBlock(bestFinalizedBlock);
+  describe('bestFinalized', () => {
+    it('should call the query api.query.chain2.bestFinalized with expected callback function', () => {
+      renderHook(() => useBridgedBlocks(props));
+      expect(bestFinalizedMock).toHaveBeenCalledWith(expect.any(Function));
     });
 
-    expect(api.query[bridgedGrandpaChain].importedHeaders).toHaveBeenCalledWith(
-      bestFinalizedBlock,
-      expect.any(Function)
-    );
+    it('should unsubscribe when useEffect gets unmounted', async () => {
+      const { unmount } = await renderHook(() => useBridgedBlocks(props));
+      unmount();
+      expect(unsubBestFinalized).toHaveBeenCalled();
+    });
+
+    it('should call the query api.query.chain2.bestFinalized with expected callback function', () => {
+      renderHook(() => useBridgedBlocks(props));
+      expect(bestFinalizedMock).toHaveBeenCalledWith(expect.any(Function));
+    });
+
+    it('should NOT call the query api.query.chain2.bestFinalized because the api is not ready', () => {
+      props.isApiReady = false;
+      renderHook(() => useBridgedBlocks(props));
+      expect(bestFinalizedMock).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('importedHeaders', () => {
+    it('should call the query api.query.chain2.importedHeaders with the value of setBestFinalizedBlock & callback', async () => {
+      const bestFinalizedBlock = '546';
+      const { result } = await renderHook(() => useBridgedBlocks(props));
+
+      act(() => {
+        result.current.setBestFinalizedBlock(bestFinalizedBlock);
+      });
+
+      expect(importedHeadersMock).toHaveBeenCalledWith(bestFinalizedBlock, expect.any(Function));
+    });
+
+    it('should unsubscribe when useEffect gets unmounted', async () => {
+      const bestFinalizedBlock = '546';
+      const { result, unmount } = await renderHook(() => useBridgedBlocks(props));
+
+      act(() => {
+        result.current.setBestFinalizedBlock(bestFinalizedBlock);
+      });
+      unmount();
+      expect(unsubImportedHeaders).toHaveBeenCalled();
+    });
+
+    it('should NOT call the query api.query.chain2.importedHeaders because the api is not ready', () => {
+      props.isApiReady = false;
+      renderHook(() => useBridgedBlocks(props));
+      expect(importedHeadersMock).not.toHaveBeenCalled();
+    });
   });
 });

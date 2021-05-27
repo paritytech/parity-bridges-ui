@@ -15,7 +15,6 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import { VoidFn } from '@polkadot/api/types';
 import { Hash } from '@polkadot/types/interfaces';
 import { Codec } from '@polkadot/types/types';
 import BN from 'bn.js';
@@ -41,36 +40,42 @@ const useBridgedBlocks = ({ isApiReady, api, chain }: Props) => {
   const { bridgedGrandpaChain } = getSubstrateDynamicNames(chain);
 
   useEffect((): (() => void) | undefined => {
+    let unsubBestFinalized: (() => void) | undefined;
+
     const shouldProceed: boolean = !!(api && isApiReady && chain);
     if (!shouldProceed) return;
 
-    const unsubBestFinalized: Promise<VoidFn> | null = api.query[bridgedGrandpaChain].bestFinalized(
-      async (res: CodecHeaderId) => {
+    api.query[bridgedGrandpaChain]
+      .bestFinalized((res: CodecHeaderId) => {
         const bestFinalized = res.toString();
         setBestFinalizedBlock(bestFinalized);
-      }
-    );
+      })
+      .then((_unsub) => {
+        unsubBestFinalized = _unsub;
+      });
 
-    return async (): Promise<void> => {
-      unsubBestFinalized && (await unsubBestFinalized)();
+    return () => {
+      unsubBestFinalized && unsubBestFinalized();
     };
   }, [isApiReady, chain, api, bridgedGrandpaChain]);
 
   useEffect((): (() => void) | undefined => {
-    const shouldProceed: boolean = !!(api && isApiReady && chain && bestFinalizedBlock);
+    let unsubImportedHeaders: (() => void) | undefined;
+    const shouldProceed: boolean = !!(api && isApiReady && chain);
     if (!shouldProceed) return;
 
-    const unsubImportedHeaders: Promise<VoidFn> | null = api.query[bridgedGrandpaChain].importedHeaders(
-      bestFinalizedBlock,
-      async (res: any) => {
+    api.query[bridgedGrandpaChain]
+      .importedHeaders(bestFinalizedBlock, (res: any) => {
         if (res.toJSON()) {
           setBestBridgedFinalizedBlock(res.toJSON().number);
         }
-      }
-    );
+      })
+      .then((_unsub) => {
+        unsubImportedHeaders = _unsub;
+      });
 
-    return async (): Promise<void> => {
-      unsubImportedHeaders && (await unsubImportedHeaders)();
+    return () => {
+      unsubImportedHeaders && unsubImportedHeaders();
     };
   }, [isApiReady, chain, api, bridgedGrandpaChain, bestFinalizedBlock]);
 
