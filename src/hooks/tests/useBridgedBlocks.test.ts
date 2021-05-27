@@ -14,8 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import { ApiPromise } from '@polkadot/api';
 import { renderHook, act } from '@testing-library/react-hooks';
 import useBridgedBlocks from '../useBridgedBlocks';
+
+interface Props {
+  chain: string;
+  api: jest.Mocked<ApiPromise>;
+  isApiReady: boolean;
+}
 
 const chain1 = 'chain1';
 const chain2 = 'chain2';
@@ -29,7 +36,8 @@ describe('useBridgedBlocks', () => {
   const unsubBestFinalized = jest.fn();
   const unsubImportedHeaders = jest.fn();
 
-  const api = {
+  const api: jest.Mocked<ApiPromise> = {
+    // @ts-ignore
     query: {
       [bridgedGrandpaChain]: {
         bestFinalized: bestFinalizedMock,
@@ -38,7 +46,7 @@ describe('useBridgedBlocks', () => {
     }
   };
 
-  let props = {};
+  let props = {} as Props;
 
   beforeEach(() => {
     bestFinalizedMock.mockResolvedValue(unsubBestFinalized);

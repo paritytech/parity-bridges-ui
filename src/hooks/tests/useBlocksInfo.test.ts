@@ -14,10 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { renderHook, act } from '@testing-library/react-hooks';
+import { ApiPromise } from '@polkadot/api';
+import { renderHook } from '@testing-library/react-hooks';
 import useBlocksInfo from '../useBlocksInfo';
 
 const chain = 'chain';
+
+interface Props {
+  chain: string;
+  api: jest.Mocked<ApiPromise>;
+  isApiReady: boolean;
+}
 
 describe('useBlocksInfo', () => {
   const bestNumberMock = jest.fn() as jest.MockedFunction<any>;
@@ -25,8 +32,9 @@ describe('useBlocksInfo', () => {
   const unsubBestNumber = jest.fn();
   const unsubNumberFinalized = jest.fn();
 
-  const api = {
+  const api: jest.Mocked<ApiPromise> = {
     derive: {
+      // @ts-ignore
       [chain]: {
         bestNumber: bestNumberMock,
         bestNumberFinalized: bestNumberFinalizedMock
@@ -34,17 +42,15 @@ describe('useBlocksInfo', () => {
     }
   };
 
-  let props = {};
+  const props: Props = {
+    api,
+    isApiReady: true,
+    chain
+  };
 
   beforeEach(() => {
     bestNumberMock.mockResolvedValue(unsubBestNumber);
     bestNumberFinalizedMock.mockResolvedValue(unsubNumberFinalized);
-
-    props = {
-      api,
-      isApiReady: true,
-      chain
-    };
   });
 
   afterEach(() => {
