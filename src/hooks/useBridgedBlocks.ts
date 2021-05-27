@@ -57,7 +57,7 @@ const useBridgedBlocks = ({ isApiReady, api, chain }: Props) => {
   }, [isApiReady, chain, api, bridgedGrandpaChain]);
 
   useEffect((): (() => void) | undefined => {
-    const shouldProceed: boolean = !!(api && isApiReady && chain);
+    const shouldProceed: boolean = !!(api && isApiReady && chain && bestFinalizedBlock);
     if (!shouldProceed) return;
 
     const unsubImportedHeaders: Promise<VoidFn> | null = api.query[bridgedGrandpaChain].importedHeaders(
@@ -74,7 +74,7 @@ const useBridgedBlocks = ({ isApiReady, api, chain }: Props) => {
     };
   }, [isApiReady, chain, api, bridgedGrandpaChain, bestFinalizedBlock]);
 
-  return { bestBridgedFinalizedBlock };
+  return { bestBridgedFinalizedBlock, setBestFinalizedBlock };
 };
 
 export default useBridgedBlocks;

@@ -27,8 +27,6 @@ const targetChain = 'targetChain';
 const valueSource = 'valueSource';
 const valueTarget = 'valueTarget';
 
-console.log('ChainDetails.SOURCE', ChainDetails.SOURCE);
-
 const state = {
   [ChainDetails.SOURCE]: {
     chain: sourceChain,

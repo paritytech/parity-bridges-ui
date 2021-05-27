@@ -37,10 +37,10 @@ const useOnChainValues = (ChainDetail: ChainDetails): Output => {
   } = useChainProfile(ChainDetail);
 
   const blockInfo = useBlocksInfo({ api, chain: source, isApiReady });
-  const bridgedBlocks = useBridgedBlocks({ api, chain: target, isApiReady });
+  const { bestBridgedFinalizedBlock } = useBridgedBlocks({ api, chain: target, isApiReady });
   const messagesLane = useMessagesLane({ api, chain: target, isApiReady });
 
-  return { ...blockInfo, ...bridgedBlocks, ...messagesLane, source, polkadotjsUrl };
+  return { ...blockInfo, bestBridgedFinalizedBlock, ...messagesLane, source, polkadotjsUrl };
 };
 
 export default useOnChainValues;
