@@ -23,8 +23,6 @@ const chromeOptions = {
 
 (async function main() {
   try {
-    // const pathToExtension = require('path').join(__dirname);
-    // console.log('----- ', pathToExtension);
     const browser = await puppeteer.launch(chromeOptions);
     const page = await browser.newPage();
     page.emulate({

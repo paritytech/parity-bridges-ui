@@ -17,6 +17,5 @@ const { teardown: teardownPuppeteer } = require('jest-environment-puppeteer');
 
 module.exports = async function globalTeardown(globalConfig) {
   // Your global teardown
-  console.log('log teardown()');
   await teardownPuppeteer(globalConfig);
 };
