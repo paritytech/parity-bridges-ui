@@ -19,7 +19,7 @@ import { Box, Divider, IconButton, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useOnChainValuesContext } from '../contexts/OnChainValuesContextProvider';
+import { useSubscriptionsContext } from '../contexts/SubscriptionsContextProvider';
 
 import useLoadingApi from '../hooks/useLoadingApi';
 import { IconApiStatus } from './Icons';
@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const NetworkSides = () => {
   const classes = useStyles();
-  const { sourceChainValues, targetChainValues } = useOnChainValuesContext();
+  const { sourceSubscriptions, targetSubscriptions } = useSubscriptionsContext();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   const { sourceReady, targetReady } = useLoadingApi();
 
@@ -75,7 +75,7 @@ export const NetworkSides = () => {
             {sourceChainDetails.chain}
           </a>
         </Typography>
-        <span># {sourceChainValues.bestBlock}</span>
+        <span># {sourceSubscriptions.bestBlock}</span>
       </Box>
       <Divider />
       <IconButton size="small">
@@ -88,7 +88,7 @@ export const NetworkSides = () => {
             {targetChainDetails.chain}
           </a>
         </Typography>
-        <span style={{ opacity: 0.4 }}># {targetChainValues.bestBlock}</span>
+        <span style={{ opacity: 0.4 }}># {targetSubscriptions.bestBlock}</span>
       </Box>
     </Box>
   );
@@ -96,23 +96,23 @@ export const NetworkSides = () => {
 
 export const NetworkStats = () => {
   const classes = useStyles();
-  const { sourceChainValues, targetChainValues } = useOnChainValuesContext();
+  const { sourceSubscriptions, targetSubscriptions } = useSubscriptionsContext();
 
   return (
     <>
       <Box className={classes.statsEntry}>
         Relayed blocks:
         <span>
-          {targetChainValues?.bestBridgedFinalizedBlock} / {sourceChainValues?.bestBlockFinalized}
+          {targetSubscriptions?.bestBridgedFinalizedBlock} / {sourceSubscriptions?.bestBlockFinalized}
         </span>
       </Box>
       <Box className={classes.statsEntry}>
         Delivered messages:
-        <span>{sourceChainValues?.outboundLanes.totalMessages}</span>
+        <span>{sourceSubscriptions?.outboundLanes.totalMessages}</span>
       </Box>
       <Box className={classes.statsEntry}>
         Awaiting messages:
-        <span>{sourceChainValues?.outboundLanes.pendingMessages}</span>
+        <span>{sourceSubscriptions?.outboundLanes.pendingMessages}</span>
       </Box>
     </>
   );

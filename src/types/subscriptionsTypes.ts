@@ -14,11 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-export enum ChainValues {
-  SOURCE = 'sourceChainValues',
-  TARGET = 'targetChainValues'
+export enum ChainSubscriptions {
+  SOURCE = 'sourceSubscriptions',
+  TARGET = 'targetSubscriptions'
 }
-export interface OnChainValues {
+export interface Subscriptions {
   bestBlock: string;
   bestBlockFinalized: string;
   bestBridgedFinalizedBlock: string;
@@ -30,7 +30,7 @@ export interface OnChainValues {
   };
 }
 
-export interface OnChainValuesContextType {
-  [ChainValues.SOURCE]: OnChainValues;
-  [ChainValues.TARGET]: OnChainValues;
+export interface SubscriptionsContextType {
+  [ChainSubscriptions.SOURCE]: Subscriptions;
+  [ChainSubscriptions.TARGET]: Subscriptions;
 }

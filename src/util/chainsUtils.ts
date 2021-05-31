@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ChainValues } from '../types/onChainValueTypes';
+import { ChainSubscriptions } from '../types/subscriptionsTypes';
 import { SourceTargetState } from '../types/sourceTargetTypes';
 
 interface Input {
@@ -30,8 +30,8 @@ export function getSourceTargetRole({ useSourceTarget, sourceChain }: Input) {
 
   const sourceChainsMatch = sourceChain === currentSourceChain;
 
-  const sourceRole = sourceChainsMatch ? ChainValues.SOURCE : ChainValues.TARGET;
-  const targetRole = sourceChainsMatch ? ChainValues.TARGET : ChainValues.SOURCE;
+  const sourceRole = sourceChainsMatch ? ChainSubscriptions.SOURCE : ChainSubscriptions.TARGET;
+  const targetRole = sourceChainsMatch ? ChainSubscriptions.TARGET : ChainSubscriptions.SOURCE;
 
   return { sourceRole, targetRole, sourceChainsMatch };
 }

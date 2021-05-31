@@ -15,7 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ChainDetails } from '../types/sourceTargetTypes';
-import { OnChainValues } from '../types/onChainValueTypes';
+import { Subscriptions } from '../types/subscriptionsTypes';
 import useBlocksInfo from './useBlocksInfo';
 import useBridgedBlocks from './useBridgedBlocks';
 import useChainProfile from './useChainProfile';
@@ -26,9 +26,9 @@ interface Source {
   polkadotjsUrl: string;
 }
 
-type Output = OnChainValues & Source;
+type Output = Subscriptions & Source;
 
-const useOnChainValues = (ChainDetail: ChainDetails): Output => {
+const useSubscriptions = (ChainDetail: ChainDetails): Output => {
   const {
     apiConnection: { api, isApiReady },
     target,
@@ -43,4 +43,4 @@ const useOnChainValues = (ChainDetail: ChainDetails): Output => {
   return { ...blockInfo, bestBridgedFinalizedBlock, ...messagesLane, source, polkadotjsUrl };
 };
 
-export default useOnChainValues;
+export default useSubscriptions;
