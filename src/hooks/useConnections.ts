@@ -18,7 +18,7 @@ import { useState, useEffect } from 'react';
 import { useApiConnection } from './useApiConnection';
 import isEmpty from 'lodash/isEmpty';
 import { SourceTargetState, ChainDetails, ConnectionChainInformation } from '../types/sourceTargetTypes';
-import { OnChainValues } from '../types/onChainValueTypes';
+import { Subscriptions } from '../types/subscriptionsTypes';
 
 export function useConnections(chainsConnections: ConnectionChainInformation[]) {
   const [connectionDetails1, connectionDetails2] = chainsConnections;
@@ -43,14 +43,14 @@ export function useConnections(chainsConnections: ConnectionChainInformation[]) 
             apiConnection: apiConnection1,
             chain: chainName1,
             polkadotjsUrl: polkadotjsUrl1,
-            onChainValues: {} as OnChainValues
+            subscriptions: {} as Subscriptions
           },
           [ChainDetails.TARGET]: {
             configs: chain2Configs,
             apiConnection: apiConnection2,
             chain: chainName2,
             polkadotjsUrl: polkadotjsUrl2,
-            onChainValues: {} as OnChainValues
+            subscriptions: {} as Subscriptions
           }
         };
         setConnections(connections);

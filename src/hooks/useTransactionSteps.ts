@@ -18,7 +18,7 @@ import BN from 'bn.js';
 import { useEffect, useState } from 'react';
 import useTransactionNonces from '../hooks/useTransactionNonces';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useOnChainValuesContext } from '../contexts/OnChainValuesContextProvider';
+import { useSubscriptionsContext } from '../contexts/SubscriptionsContextProvider';
 
 import useLoadingApi from '../hooks/useLoadingApi';
 import { getSourceTargetRole } from '../util/chainsUtils';
@@ -33,7 +33,7 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
   const [steps, setSteps] = useState<Array<Step>>([]);
   const [deliveryBlock, setDeliveryBlock] = useState<string | null>();
   const [finished, setFinished] = useState(false);
-  const onChainValues = useOnChainValuesContext();
+  const subscriptions = useSubscriptionsContext();
   const { nonceOfBestTargetBlock, nonceOfFinalTargetBlock } = useTransactionNonces({
     transaction
   });
@@ -49,12 +49,12 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
   const {
     bestBlockFinalized,
     outboundLanes: { latestReceivedNonce: latestReceivedNonceOnSource }
-  } = onChainValues[sourceRole];
+  } = subscriptions[sourceRole];
   const {
     bestBridgedFinalizedBlock: bestBridgedFinalizedBlockOnTarget,
     bestBlockFinalized: bestBlockFinalizedOnTarget,
     bestBlock: bestBlockOnTarget
-  } = onChainValues[targetRole];
+  } = subscriptions[targetRole];
 
   useEffect(() => {
     if (!areApiReady || !transaction || finished) {

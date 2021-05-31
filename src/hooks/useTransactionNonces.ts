@@ -19,7 +19,7 @@ import { Codec } from '@polkadot/types/types';
 import { useEffect } from 'react';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useOnChainValuesContext } from '../contexts/OnChainValuesContextProvider';
+import { useSubscriptionsContext } from '../contexts/SubscriptionsContextProvider';
 
 import useLaneId from './useLaneId';
 import useLoadingApi from './useLoadingApi';
@@ -37,7 +37,7 @@ interface Props {
 const useTransactionNonces = ({ transaction }: Props) => {
   const [nonceOfBestTargetBlock, setNonceOfBestTargetBlock] = useMountedState<null | number>(null);
   const [nonceOfFinalTargetBlock, setNonceOfFinalTargetBlock] = useMountedState<null | number>(null);
-  const onChainValues = useOnChainValuesContext();
+  const subscriptions = useSubscriptionsContext();
 
   const { getValuesByChain } = useChainGetters();
 
@@ -49,7 +49,7 @@ const useTransactionNonces = ({ transaction }: Props) => {
     sourceChain
   });
 
-  const { bestBlockFinalized, bestBlock } = onChainValues[targetRole];
+  const { bestBlockFinalized, bestBlock } = subscriptions[targetRole];
 
   const { latestReceivedNonceMethodName } = getSubstrateDynamicNames(sourceChain);
   const { api: targetApi } = getValuesByChain(targetChain);
