@@ -25,7 +25,7 @@ import { useUpdateMessageContext } from '../contexts/MessageContext';
 import logger from '../util/logger';
 
 import useLaneId from '../hooks/useLaneId';
-import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
+import { getSubstrateDynamicNames } from '../util/getSubstrateDynamicNames';
 interface Props {
   chain: string;
   api: ApiPromise;

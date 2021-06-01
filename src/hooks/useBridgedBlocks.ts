@@ -21,7 +21,7 @@ import BN from 'bn.js';
 import { useEffect } from 'react';
 import { useMountedState } from '../hooks/useMountedState';
 import { useIsMounted } from './useIsMounted';
-import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
+import { getSubstrateDynamicNames } from '../util/getSubstrateDynamicNames';
 interface HeaderId {
   number: BN;
   hash: Hash;

@@ -14,30 +14,68 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
-import { ChainDetails } from '../types/sourceTargetTypes';
-import { TransactionState } from '../types/transactionTypes';
+import { useCallback } from 'react';
+import { Codec } from '@polkadot/types/types';
+import { ApiCallsContextType } from '../types/apiCallsTypes';
+import useChainGetters from '../hooks/useChainGetters';
 
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
+const useApiCalls = (): ApiCallsContextType => {
+  const { getValuesByChain } = useChainGetters();
+  const getChainValues = useCallback((chain) => getValuesByChain(chain), [getValuesByChain]);
 
-const useApiCalls = () => {
-  const {
-    sourceChainDetails: {
-      apiConnection: { api: sourceApi },
-      chain: sourceChain
+  const sendBridgeMessage = useCallback(
+    (chain, laneId, payload, estimatedFee) => {
+      const {
+        api,
+        substrateValues: { bridgedMessages }
+      } = getChainValues(chain);
+      return api.tx[bridgedMessages].sendMessage(laneId, payload, estimatedFee);
     },
-    targetChainDetails: {
-      apiConnection: { api: targetApi },
-      chain: targetChain
-    }
-  } = useSourceTarget();
+    [getChainValues]
+  );
 
-  const bridgeMessage = (laneId: string, payload: Object, estimatedFee: TransactionState['estimatedFee']) => {
-    const { bridgedMessages } = getSubstrateDynamicNames(targetChain);
-    return sourceApi.tx[bridgedMessages].sendMessage(laneId, payload, estimatedFee);
-  };
+  const getBlock = useCallback(
+    (chain, asInBlock) => {
+      const { api } = getChainValues(chain);
+      return api.rpc.chain.getBlock(asInBlock);
+    },
+    [getChainValues]
+  );
 
-  return { bridgeMessage };
+  const getBlockHash = useCallback(
+    (chain, blockNumber) => {
+      const { api } = getChainValues(chain);
+      return api.rpc.chain.getBlockHash(blockNumber);
+    },
+    [getChainValues]
+  );
+
+  const createType = useCallback(
+    (chain, type, data) => {
+      const { api } = getChainValues(chain);
+      return api.registry.createType(type, data);
+    },
+    [getChainValues]
+  );
+
+  const stateCall = useCallback(
+    (chain, data, at) => {
+      const {
+        api,
+        substrateValues: { estimatedFeeMethodName }
+      } = getChainValues(chain);
+
+      const params = [estimatedFeeMethodName, data];
+      if (at) {
+        params.push(at);
+      }
+      // @ts-ignore
+      return api.rpc.state.call<Codec>(...params);
+    },
+    [getChainValues]
+  );
+
+  return { sendBridgeMessage, getBlock, createType, stateCall, getBlockHash };
 };
 
 export default useApiCalls;

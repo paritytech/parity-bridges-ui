@@ -15,8 +15,10 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
+import { useCallback } from 'react';
 import { GENERIC, GENERIC_SUBSTRATE_PREFIX } from '../constants';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
+import { getSubstrateDynamicNames, SubstrateDynamicNames } from '../util/getSubstrateDynamicNames';
 
 const useChainGetters = () => {
   const {
@@ -32,18 +34,33 @@ const useChainGetters = () => {
     }
   } = useSourceTarget();
 
-  const getValuesByChain = (chain: string) => {
-    switch (chain) {
-      case sourceChain:
-        return { ss58Format: sourceSS58Format, api: sourceApi };
-      case targetChain:
-        return { ss58Format: targetSS58Format, api: targetApi };
-      case GENERIC:
-        return { ss58Format: GENERIC_SUBSTRATE_PREFIX, api: {} as ApiPromise };
-      default:
-        throw new Error(`Unknown type: ${chain}`);
-    }
-  };
+  const getValuesByChain = useCallback(
+    (chain: string) => {
+      switch (chain) {
+        case sourceChain:
+          return {
+            ss58Format: sourceSS58Format,
+            api: sourceApi,
+            substrateValues: getSubstrateDynamicNames(targetChain)
+          };
+        case targetChain:
+          return {
+            ss58Format: targetSS58Format,
+            api: targetApi,
+            substrateValues: getSubstrateDynamicNames(sourceChain)
+          };
+        case GENERIC:
+          return {
+            ss58Format: GENERIC_SUBSTRATE_PREFIX,
+            api: {} as ApiPromise,
+            substrateValues: {} as SubstrateDynamicNames
+          };
+        default:
+          throw new Error(`Unknown type: ${chain}`);
+      }
+    },
+    [sourceApi, sourceChain, sourceSS58Format, targetApi, targetChain, targetSS58Format]
+  );
 
   const getChainBySS58Prefix = (prefix: string) => {
     const intPrefix: number = parseInt(prefix, 10);

@@ -13,17 +13,18 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
-import { Codec } from '@polkadot/types/types';
+
 import { compactAddLength } from '@polkadot/util';
 import { useEffect, useState } from 'react';
 import { TransactionActionCreators } from '../actions/transactionActions';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useUpdateTransactionContext } from '../contexts/TransactionContext';
+import { useApiCallsContext } from '../contexts/ApiCallsContextProvider';
 import useLaneId from '../hooks/useLaneId';
 import useLoadingApi from '../hooks/useLoadingApi';
 import useTransactionType from '../hooks/useTransactionType';
-import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
+import { getSubstrateDynamicNames } from '../util/getSubstrateDynamicNames';
 import logger from '../util/logger';
 
 interface Props {
@@ -46,9 +47,7 @@ export default function useTransactionPreparation({
   const areApiReady = useLoadingApi();
   const laneId = useLaneId();
   const {
-    sourceChainDetails: {
-      apiConnection: { api: sourceApi }
-    },
+    sourceChainDetails: { chain: sourceChain },
     targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
   const { account } = useAccountContext();
@@ -57,6 +56,7 @@ export default function useTransactionPreparation({
   const { call, weight } = useTransactionType({ input, type, weightInput });
 
   const { dispatchTransaction } = useUpdateTransactionContext();
+  const { createType, stateCall } = useApiCallsContext();
   const { estimatedFeeMethodName } = getSubstrateDynamicNames(targetChain);
 
   useEffect(() => {
@@ -64,17 +64,17 @@ export default function useTransactionPreparation({
       // Ignoring custom types missed for TS for now.
       // Need to apply: https://polkadot.js.org/docs/api/start/typescript.user
       // @ts-ignore
-      const payloadType = sourceApi.registry.createType('OutboundPayload', payload);
+      const payloadType = createType(sourceChain, 'OutboundPayload', payload);
       // @ts-ignore
-      const messageFeeType = sourceApi.registry.createType('MessageFeeData', {
+      const messageFeeType = createType(sourceChain, 'MessageFeeData', {
         lane_id: laneId,
         payload: payloadType.toHex()
       });
 
-      const estimatedFeeCall = await sourceApi.rpc.state.call<Codec>(estimatedFeeMethodName, messageFeeType.toHex());
+      const estimatedFeeCall = await stateCall(sourceChain, messageFeeType.toHex());
 
       // @ts-ignore
-      const estimatedFeeType = sourceApi.registry.createType('Option<Balance>', estimatedFeeCall);
+      const estimatedFeeType = createType(sourceChain, 'Option<Balance>', estimatedFeeCall);
       const estimatedFee = estimatedFeeType.toString();
 
       dispatchTransaction(TransactionActionCreators.estimateFee(estimatedFee));
@@ -85,12 +85,13 @@ export default function useTransactionPreparation({
     }
   }, [
     areApiReady,
+    createType,
     dispatchTransaction,
     estimatedFeeMethodName,
     laneId,
     payload,
-    sourceApi.registry,
-    sourceApi.rpc.state,
+    sourceChain,
+    stateCall,
     targetChain
   ]);
 
@@ -109,11 +110,11 @@ export default function useTransactionPreparation({
       weight
     };
     // @ts-ignore
-    const payloadType = sourceApi.registry.createType('OutboundPayload', payload);
+    const payloadType = createType(sourceChain, 'OutboundPayload', payload);
     logger.info(`OutboundPayload: ${JSON.stringify(payload)}`);
     logger.info(`OutboundPayload.toHex(): ${payloadType.toHex()}`);
     setPayload(payload);
-  }, [account, call, isValidCall, type, weight, sourceApi.registry]);
+  }, [account, call, isValidCall, type, weight, createType, sourceChain]);
 
   return {
     payload
