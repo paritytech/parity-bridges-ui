@@ -18,16 +18,18 @@ export enum ChainSubscriptions {
   SOURCE = 'sourceSubscriptions',
   TARGET = 'targetSubscriptions'
 }
+
+interface OutboundLanes {
+  latestReceivedNonce: string;
+  pendingMessages: string;
+  totalMessages: string;
+}
 export interface Subscriptions {
   bestBlock: string;
   bestBlockFinalized: string;
   bestBridgedFinalizedBlock: string;
   bridgeReceivedMessages: string;
-  outboundLanes: {
-    latestReceivedNonce: string;
-    pendingMessages: string;
-    totalMessages: string;
-  };
+  outboundLanes: OutboundLanes;
 }
 
 export interface SubscriptionsContextType {
