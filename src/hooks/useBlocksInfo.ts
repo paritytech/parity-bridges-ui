@@ -33,7 +33,7 @@ const useBlocksInfo = ({ isApiReady, api, chain }: Props) => {
   useEffect(() => {
     let unsubscribeBestNumber: Promise<VoidFn>;
     let unsubscribeBestNumberFinalized: Promise<VoidFn>;
-    if (api && isApiReady && chain) {
+    if (isApiReady && chain) {
       try {
         unsubscribeBestNumber = api.derive.chain.bestNumber((res) => {
           setBestBlock(res.toString());

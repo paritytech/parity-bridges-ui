@@ -58,7 +58,7 @@ const useMessagesLane = ({ isApiReady, api, chain }: Props): Output => {
     let unsubscribeInboundLanes: Promise<VoidFn>;
 
     try {
-      if (api && isApiReady && api.query[bridgedMessages] && chain) {
+      if (isApiReady && api.query[bridgedMessages] && chain) {
         unsubscribeOutboundLanes = api.query[bridgedMessages].outboundLanes(laneId, (res: any) => {
           const latest_generated_nonce = res.get('latest_generated_nonce').toString();
           const latest_received_nonce = res.get('latest_received_nonce').toString();

@@ -44,7 +44,7 @@ const useBridgedBlocks = ({ isApiReady, api, chain }: Props) => {
   useEffect((): (() => void) | undefined => {
     let unsubBestFinalized: Promise<VoidFn>;
 
-    const shouldProceed: boolean = !!(api && isApiReady && chain);
+    const shouldProceed: boolean = !!(isApiReady && chain);
     if (shouldProceed) {
       unsubBestFinalized = api.query[bridgedGrandpaChain].bestFinalized((res: CodecHeaderId) => {
         const bestFinalized = res.toString();
