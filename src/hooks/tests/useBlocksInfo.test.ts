@@ -17,6 +17,9 @@
 import { ApiPromise } from '@polkadot/api';
 import { renderHook } from '@testing-library/react-hooks';
 import useBlocksInfo from '../useBlocksInfo';
+import logger from '../../util/logger';
+
+jest.spyOn(logger, 'error');
 
 const chain = 'chain';
 
@@ -65,10 +68,11 @@ describe('useBlocksInfo', () => {
     });
 
     it('should unsubscribe both subscriptions when useEffect gets unmounted', async () => {
-      const { unmount } = await renderHook(() => useBlocksInfo(props));
-      unmount();
-      expect(unsubBestNumber).toHaveBeenCalled();
-      expect(unsubNumberFinalized).toHaveBeenCalled();
+      const { waitFor } = renderHook(() => useBlocksInfo(props));
+      waitFor(() => {
+        expect(unsubBestNumber).toHaveBeenCalled();
+        expect(unsubNumberFinalized).toHaveBeenCalled();
+      });
     });
 
     it('should NOT call the query api.query.chain2.bestFinalized because the api is not ready', () => {

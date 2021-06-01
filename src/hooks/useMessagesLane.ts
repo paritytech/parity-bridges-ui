@@ -15,13 +15,11 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-
+import { VoidFn } from '@polkadot/api/types';
 import BN from 'bn.js';
 import { useEffect } from 'react';
 import { useIsMounted } from './useIsMounted';
 import { useMountedState } from '../hooks/useMountedState';
-import { MessageActionsCreators } from '../actions/messageActions';
-import { useUpdateMessageContext } from '../contexts/MessageContext';
 import logger from '../util/logger';
 
 import useLaneId from '../hooks/useLaneId';
@@ -43,7 +41,6 @@ interface Output {
 
 const useMessagesLane = ({ isApiReady, api, chain }: Props): Output => {
   const isMounted = useIsMounted();
-  const { dispatchMessage } = useUpdateMessageContext();
   const [outboundLanes, setOutboudLanes] = useMountedState({
     latestReceivedNonce: '0',
     pendingMessages: '0',
@@ -57,12 +54,12 @@ const useMessagesLane = ({ isApiReady, api, chain }: Props): Output => {
   const { bridgedMessages } = getSubstrateDynamicNames(chain);
 
   useEffect(() => {
-    let unsubscribeOutboundLanes: () => void;
-    let unsubscribeInboundLanes: () => void;
+    let unsubscribeOutboundLanes: Promise<VoidFn>;
+    let unsubscribeInboundLanes: Promise<VoidFn>;
 
-    if (api && isApiReady && api.query[bridgedMessages] && chain && isMounted()) {
-      api.query[bridgedMessages]
-        .outboundLanes(laneId, (res: any) => {
+    try {
+      if (isApiReady && api.query[bridgedMessages] && chain) {
+        unsubscribeOutboundLanes = api.query[bridgedMessages].outboundLanes(laneId, (res: any) => {
           const latest_generated_nonce = res.get('latest_generated_nonce').toString();
           const latest_received_nonce = res.get('latest_received_nonce').toString();
           const pendingMessages = new BN(latest_generated_nonce).sub(new BN(latest_received_nonce));
@@ -72,43 +69,25 @@ const useMessagesLane = ({ isApiReady, api, chain }: Props): Output => {
             pendingMessages: pendingMessages.isNeg() ? '0' : pendingMessages.toString(),
             totalMessages: latest_generated_nonce
           });
-        })
-        .then((unsub) => {
-          unsubscribeOutboundLanes = unsub;
-        })
-        .catch((message) => {
-          dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message }));
-          logger.error(message);
         });
 
-      api.query[bridgedMessages]
-        .inboundLanes(laneId, (res: any) => {
+        unsubscribeInboundLanes = api.query[bridgedMessages].inboundLanes(laneId, (res: any) => {
           setBridgesReceivedMessages(res.get('last_confirmed_nonce').toString());
-        })
-        .then((unsub) => {
-          unsubscribeInboundLanes = unsub;
-        })
-        .catch((message) => {
-          dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message }));
-          logger.error(message);
         });
+      }
+    } catch (message) {
+      logger.error(message);
     }
 
     return function cleanup() {
-      unsubscribeOutboundLanes && unsubscribeOutboundLanes();
-      unsubscribeInboundLanes && unsubscribeInboundLanes();
+      unsubscribeOutboundLanes
+        .then((u) => {
+          u();
+        })
+        .catch((e) => logger.error('error unsubscribing OutboundLanes', e));
+      unsubscribeInboundLanes.then((u) => u()).catch((e) => logger.error('error unsubscribing InboundLane', e));
     };
-  }, [
-    api,
-    isApiReady,
-    chain,
-    bridgedMessages,
-    laneId,
-    setOutboudLanes,
-    setBridgesReceivedMessages,
-    dispatchMessage,
-    isMounted
-  ]);
+  }, [api, isApiReady, chain, bridgedMessages, laneId, setOutboudLanes, setBridgesReceivedMessages, isMounted]);
 
   return { bridgeReceivedMessages, outboundLanes };
 };
