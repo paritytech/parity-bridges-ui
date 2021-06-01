@@ -16,7 +16,6 @@
 
 import { useCallback, useState } from 'react';
 import { useIsMounted } from './useIsMounted';
-import logger from '../util/logger';
 
 /**
  * Like React's [useState](https://reactjs.org/docs/hooks-reference.html#usestate)
@@ -38,8 +37,6 @@ export const useMountedState = <D>(initialState: D | (() => D)) => {
     (value: D) => {
       if (isMounted()) {
         setState(value);
-      } else {
-        logger.warn('Warning: Trying to update the state of unmounted component.');
       }
     },
     [isMounted]
