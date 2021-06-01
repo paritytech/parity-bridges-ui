@@ -71,10 +71,11 @@ describe('useMessagesLane', () => {
   });
 
   it('should unsubscribe both subscriptions when useEffect gets unmounted', async () => {
-    const { unmount } = await renderHook(() => useMessagesLane(props));
-    unmount();
-    expect(unsubOutboundLanes).toHaveBeenCalled();
-    expect(unsubInboundLanes).toHaveBeenCalled();
+    const { waitFor } = renderHook(() => useMessagesLane(props));
+    waitFor(() => {
+      expect(unsubOutboundLanes).toHaveBeenCalled();
+      expect(unsubInboundLanes).toHaveBeenCalled();
+    });
   });
 
   it('should NOT call the query api.query.chain2.outboundLanes & api.query.chain2.importedHeaders because the api is not ready', () => {
