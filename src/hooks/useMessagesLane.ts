@@ -58,23 +58,25 @@ const useMessagesLane = ({ isApiReady, api, chain }: Props): Output => {
     let unsubscribeInboundLanes: Promise<VoidFn>;
 
     try {
-      if (isApiReady && api.query[bridgedMessages] && chain) {
-        unsubscribeOutboundLanes = api.query[bridgedMessages].outboundLanes(laneId, (res: any) => {
-          const latest_generated_nonce = res.get('latest_generated_nonce').toString();
-          const latest_received_nonce = res.get('latest_received_nonce').toString();
-          const pendingMessages = new BN(latest_generated_nonce).sub(new BN(latest_received_nonce));
-
-          setOutboudLanes({
-            latestReceivedNonce: latest_received_nonce.toString(),
-            pendingMessages: pendingMessages.isNeg() ? '0' : pendingMessages.toString(),
-            totalMessages: latest_generated_nonce
-          });
-        });
-
-        unsubscribeInboundLanes = api.query[bridgedMessages].inboundLanes(laneId, (res: any) => {
-          setBridgesReceivedMessages(res.get('last_confirmed_nonce').toString());
-        });
+      if (!isApiReady || !api.query[bridgedMessages] || !chain) {
+        return;
       }
+
+      unsubscribeOutboundLanes = api.query[bridgedMessages].outboundLanes(laneId, (res: any) => {
+        const latest_generated_nonce = res.get('latest_generated_nonce').toString();
+        const latest_received_nonce = res.get('latest_received_nonce').toString();
+        const pendingMessages = new BN(latest_generated_nonce).sub(new BN(latest_received_nonce));
+
+        setOutboudLanes({
+          latestReceivedNonce: latest_received_nonce.toString(),
+          pendingMessages: pendingMessages.isNeg() ? '0' : pendingMessages.toString(),
+          totalMessages: latest_generated_nonce
+        });
+      });
+
+      unsubscribeInboundLanes = api.query[bridgedMessages].inboundLanes(laneId, (res: any) => {
+        setBridgesReceivedMessages(res.get('last_confirmed_nonce').toString());
+      });
     } catch (message) {
       logger.error(message);
     }

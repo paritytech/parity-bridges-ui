@@ -21,7 +21,7 @@ import logger from '../../util/logger';
 
 jest.spyOn(logger, 'error');
 
-const chain = 'chain';
+const CHAIN = 'chain';
 
 interface Props {
   chain: string;
@@ -38,7 +38,7 @@ describe('useBlocksInfo', () => {
   const api: jest.Mocked<ApiPromise> = {
     derive: {
       // @ts-ignore
-      [chain]: {
+      [CHAIN]: {
         bestNumber: bestNumberMock,
         bestNumberFinalized: bestNumberFinalizedMock
       }
@@ -48,7 +48,7 @@ describe('useBlocksInfo', () => {
   const props: Props = {
     api,
     isApiReady: true,
-    chain
+    chain: CHAIN
   };
 
   beforeEach(() => {

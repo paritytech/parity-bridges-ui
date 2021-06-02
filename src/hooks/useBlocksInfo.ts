@@ -33,19 +33,23 @@ const useBlocksInfo = ({ isApiReady, api, chain }: Props) => {
   useEffect(() => {
     let unsubscribeBestNumber: Promise<VoidFn>;
     let unsubscribeBestNumberFinalized: Promise<VoidFn>;
-    if (isApiReady && chain) {
-      try {
-        unsubscribeBestNumber = api.derive.chain.bestNumber((res) => {
-          setBestBlock(res.toString());
-        });
 
-        unsubscribeBestNumberFinalized = api.derive.chain.bestNumberFinalized((res) => {
-          setBestBlockFinalized(res.toString());
-        });
-      } catch (e) {
-        logger.error('error reading blocks', e);
-      }
+    if (!api || !isApiReady || !chain) {
+      return;
     }
+
+    try {
+      unsubscribeBestNumber = api.derive.chain.bestNumber((res) => {
+        setBestBlock(res.toString());
+      });
+
+      unsubscribeBestNumberFinalized = api.derive.chain.bestNumberFinalized((res) => {
+        setBestBlockFinalized(res.toString());
+      });
+    } catch (e) {
+      logger.error('error reading blocks', e);
+    }
+
     return function cleanup() {
       unsubscribeBestNumber
         .then((u) => {

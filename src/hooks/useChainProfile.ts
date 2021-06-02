@@ -38,13 +38,8 @@ export default function useChainProfile(chainDetail: ChainDetails) {
   const { chain: sourceChain, ...restSource } = sourceChainDetails;
   const { chain: targetChain, ...restTarget } = targetChainDetails;
 
-  let source = sourceChain;
-  let target = targetChain;
   if (chainDetail === ChainDetails.TARGET) {
-    source = targetChain;
-    target = sourceChain;
-    return { source, target, ...restTarget };
+    return { source: targetChain, target: sourceChain, ...restTarget };
   }
-
-  return { source, target, ...restSource };
+  return { source: sourceChain, target: targetChain, ...restSource };
 }
