@@ -75,7 +75,15 @@ const useApiCalls = (): ApiCallsContextType => {
     [getChainValues]
   );
 
-  return { sendBridgeMessage, getBlock, createType, stateCall, getBlockHash };
+  const derive = useCallback(
+    (chain) => {
+      const { api } = getChainValues(chain);
+      return api.derive.chain;
+    },
+    [getChainValues]
+  );
+
+  return { sendBridgeMessage, getBlock, getBlockHash, createType, stateCall, derive };
 };
 
 export default useApiCalls;

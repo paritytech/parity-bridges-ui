@@ -18,6 +18,7 @@ import { VoidFn } from '@polkadot/api/types';
 import { ApiPromise } from '@polkadot/api';
 import { useEffect } from 'react';
 import { useMountedState } from '../hooks/useMountedState';
+import useApiCalls from '../hooks/useApiCalls';
 import logger from '../util/logger';
 
 interface Props {
@@ -26,20 +27,22 @@ interface Props {
   isApiReady: boolean;
 }
 
-const useBlocksInfo = ({ isApiReady, api, chain }: Props) => {
+const useBlocksInfo = ({ isApiReady, chain }: Props) => {
   const [bestBlock, setBestBlock] = useMountedState('');
   const [bestBlockFinalized, setBestBlockFinalized] = useMountedState('');
+  const { derive } = useApiCalls();
+  const chainDerive = derive(chain);
 
   useEffect(() => {
     let unsubscribeBestNumber: Promise<VoidFn>;
     let unsubscribeBestNumberFinalized: Promise<VoidFn>;
     if (isApiReady && chain) {
       try {
-        unsubscribeBestNumber = api.derive.chain.bestNumber((res) => {
+        unsubscribeBestNumber = chainDerive.bestNumber((res: any) => {
           setBestBlock(res.toString());
         });
 
-        unsubscribeBestNumberFinalized = api.derive.chain.bestNumberFinalized((res) => {
+        unsubscribeBestNumberFinalized = chainDerive.bestNumberFinalized((res: any) => {
           setBestBlockFinalized(res.toString());
         });
       } catch (e) {
@@ -56,7 +59,7 @@ const useBlocksInfo = ({ isApiReady, api, chain }: Props) => {
         .then((u) => u())
         .catch((e) => logger.error('error unsubscribing bestNumberFinalized', e));
     };
-  }, [api, isApiReady, chain, setBestBlock, setBestBlockFinalized]);
+  }, [isApiReady, chain, setBestBlock, setBestBlockFinalized, derive, chainDerive]);
 
   return { bestBlock, bestBlockFinalized };
 };

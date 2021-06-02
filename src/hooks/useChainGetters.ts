@@ -23,12 +23,12 @@ import { getSubstrateDynamicNames, SubstrateDynamicNames } from '../util/getSubs
 const useChainGetters = () => {
   const {
     sourceChainDetails: {
-      apiConnection: { api: sourceApi },
+      apiConnection: { api: sourceApi, isApiReady: sourceIsApiReady },
       chain: sourceChain,
       configs: { ss58Format: sourceSS58Format }
     },
     targetChainDetails: {
-      apiConnection: { api: targetApi },
+      apiConnection: { api: targetApi, isApiReady: targetIsApiReady },
       chain: targetChain,
       configs: { ss58Format: targetSS58Format }
     }
@@ -41,25 +41,37 @@ const useChainGetters = () => {
           return {
             ss58Format: sourceSS58Format,
             api: sourceApi,
+            isApiReady: sourceIsApiReady,
             substrateValues: getSubstrateDynamicNames(targetChain)
           };
         case targetChain:
           return {
             ss58Format: targetSS58Format,
             api: targetApi,
+            isApiReady: targetIsApiReady,
             substrateValues: getSubstrateDynamicNames(sourceChain)
           };
         case GENERIC:
           return {
             ss58Format: GENERIC_SUBSTRATE_PREFIX,
             api: {} as ApiPromise,
+            isApiReady: false,
             substrateValues: {} as SubstrateDynamicNames
           };
         default:
           throw new Error(`Unknown type: ${chain}`);
       }
     },
-    [sourceApi, sourceChain, sourceSS58Format, targetApi, targetChain, targetSS58Format]
+    [
+      sourceApi,
+      sourceChain,
+      sourceIsApiReady,
+      sourceSS58Format,
+      targetApi,
+      targetChain,
+      targetIsApiReady,
+      targetSS58Format
+    ]
   );
 
   const getChainBySS58Prefix = (prefix: string) => {

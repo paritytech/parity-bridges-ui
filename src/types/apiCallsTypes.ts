@@ -41,10 +41,13 @@ export type StateCall = (
 
 type GetBlockHash = (chain: string, blockNumber?: BlockNumber | AnyNumber | Uint8Array) => Promise<BlockHash>;
 
+type Derive = (chain: string) => any; // To find correct type
+
 export interface ApiCallsContextType {
   sendBridgeMessage: SendBridgeMessage;
   getBlock: GetBlock;
   getBlockHash: GetBlockHash;
   createType: CreateType;
   stateCall: StateCall;
+  derive: Derive;
 }
