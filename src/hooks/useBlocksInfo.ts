@@ -30,21 +30,18 @@ const useBlocksInfo = ({ isApiReady, api, chain }: Props) => {
   const [bestBlock, setBestBlock] = useMountedState('');
   const [bestBlockFinalized, setBestBlockFinalized] = useMountedState('');
 
+  const isReady = !!(isApiReady && chain);
+
   useEffect(() => {
     let unsubscribeBestNumber: Promise<VoidFn>;
-    let unsubscribeBestNumberFinalized: Promise<VoidFn>;
 
-    if (!api || !isApiReady || !chain) {
+    if (!isReady) {
       return;
     }
 
     try {
       unsubscribeBestNumber = api.derive.chain.bestNumber((res) => {
         setBestBlock(res.toString());
-      });
-
-      unsubscribeBestNumberFinalized = api.derive.chain.bestNumberFinalized((res) => {
-        setBestBlockFinalized(res.toString());
       });
     } catch (e) {
       logger.error('error reading blocks', e);
@@ -56,11 +53,30 @@ const useBlocksInfo = ({ isApiReady, api, chain }: Props) => {
           u();
         })
         .catch((e) => logger.error('error unsubscribing bestNumber', e));
+    };
+  }, [chain, setBestBlock, isReady, api.derive.chain]);
+
+  useEffect(() => {
+    let unsubscribeBestNumberFinalized: Promise<VoidFn>;
+
+    if (!isReady) {
+      return;
+    }
+
+    try {
+      unsubscribeBestNumberFinalized = api.derive.chain.bestNumberFinalized((res) => {
+        setBestBlockFinalized(res.toString());
+      });
+    } catch (e) {
+      logger.error('error reading blocks', e);
+    }
+
+    return function cleanup() {
       unsubscribeBestNumberFinalized
         .then((u) => u())
         .catch((e) => logger.error('error unsubscribing bestNumberFinalized', e));
     };
-  }, [api, isApiReady, chain, setBestBlock, setBestBlockFinalized]);
+  }, [chain, setBestBlockFinalized, isReady, api.derive.chain]);
 
   return { bestBlock, bestBlockFinalized };
 };

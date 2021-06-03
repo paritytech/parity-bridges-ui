@@ -18,7 +18,6 @@ import { ApiPromise } from '@polkadot/api';
 import { VoidFn } from '@polkadot/api/types';
 import BN from 'bn.js';
 import { useEffect } from 'react';
-import { useIsMounted } from './useIsMounted';
 import { useMountedState } from '../hooks/useMountedState';
 import logger from '../util/logger';
 
@@ -40,7 +39,6 @@ interface Output {
 }
 
 const useMessagesLane = ({ isApiReady, api, chain }: Props): Output => {
-  const isMounted = useIsMounted();
   const [outboundLanes, setOutboudLanes] = useMountedState({
     latestReceivedNonce: '0',
     pendingMessages: '0',
@@ -53,12 +51,13 @@ const useMessagesLane = ({ isApiReady, api, chain }: Props): Output => {
 
   const { bridgedMessages } = getSubstrateDynamicNames(chain);
 
+  const isReady = !!(isApiReady && api.query[bridgedMessages] && chain);
+
   useEffect(() => {
-    let unsubscribeOutboundLanes: Promise<VoidFn>;
-    let unsubscribeInboundLanes: Promise<VoidFn>;
+    let unsubscribeOutboundLanes: Promise<VoidFn> | null = null;
 
     try {
-      if (!isApiReady || !api.query[bridgedMessages] || !chain) {
+      if (!isReady) {
         return;
       }
 
@@ -73,6 +72,27 @@ const useMessagesLane = ({ isApiReady, api, chain }: Props): Output => {
           totalMessages: latest_generated_nonce
         });
       });
+    } catch (message) {
+      logger.error(message);
+    }
+
+    return function cleanup() {
+      unsubscribeOutboundLanes &&
+        unsubscribeOutboundLanes
+          .then((u) => {
+            u();
+          })
+          .catch((e) => logger.error('error unsubscribing OutboundLanes', e));
+    };
+  }, [api, chain, bridgedMessages, laneId, setOutboudLanes, isReady]);
+
+  useEffect(() => {
+    let unsubscribeInboundLanes: Promise<VoidFn> | null = null;
+
+    try {
+      if (!isReady) {
+        return;
+      }
 
       unsubscribeInboundLanes = api.query[bridgedMessages].inboundLanes(laneId, (res: any) => {
         setBridgesReceivedMessages(res.get('last_confirmed_nonce').toString());
@@ -82,14 +102,10 @@ const useMessagesLane = ({ isApiReady, api, chain }: Props): Output => {
     }
 
     return function cleanup() {
-      unsubscribeOutboundLanes
-        .then((u) => {
-          u();
-        })
-        .catch((e) => logger.error('error unsubscribing OutboundLanes', e));
-      unsubscribeInboundLanes.then((u) => u()).catch((e) => logger.error('error unsubscribing InboundLane', e));
+      unsubscribeInboundLanes &&
+        unsubscribeInboundLanes.then((u) => u()).catch((e) => logger.error('error unsubscribing InboundLane', e));
     };
-  }, [api, isApiReady, chain, bridgedMessages, laneId, setOutboudLanes, setBridgesReceivedMessages, isMounted]);
+  }, [api, chain, bridgedMessages, laneId, setBridgesReceivedMessages, isReady]);
 
   return { bridgeReceivedMessages, outboundLanes };
 };
