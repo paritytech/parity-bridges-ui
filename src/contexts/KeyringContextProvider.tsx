@@ -42,7 +42,7 @@ export function KeyringContextProvider(props: KeyringContextProviderProps): Reac
   const [extensionExists, setExtensionExists] = useState<boolean>(false);
   const [accountExists, setAccountExists] = useState<boolean>(false);
 
-  const isDevelopment = process.env.REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS === 'true';
+  const isDevelopment = process.env.REACT_APP_IS_DEVELOPMENT === 'true';
   const loadAccounts = useCallback(() => {
     const asyncLoadAccounts = async () => {
       setKeyringStatus(KeyringStatuses.LOADING);

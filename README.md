@@ -18,6 +18,7 @@ REACT_APP_CHAIN_2_SUBSTRATE_PROVIDER=wss://wss.millau.brucke.link
 
 REACT_APP_LANE_ID=0x00000000
 REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS=false
+REACT_APP_IS_DEVELOPMENT=false
 ```
 
 | ℹ️  | In case you need to overwrite any of the variables defined, please do so creating a new `.env.local`. |

@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 const puppeteer = require('puppeteer');
-const SERVER_URL = 'http://localhost:3001';
+const { globals } = require('./jest.config');
 
 const chromeOptions = {
   executablePath:process.env.chrome,
@@ -27,12 +27,12 @@ const chromeOptions = {
     const page = await browser.newPage();
     page.emulate({
       viewport: {
-        width: 1280,
-        height: 1024
+        width: 1920,
+        height: 1080
       },
       userAgent: ''
     });
-    await page.goto(SERVER_URL, { waitUntil: 'domcontentloaded' });
+    await page.goto(globals.SERVER_URL, { waitUntil: 'domcontentloaded' });
 
     // Run happy path test for submitting a transaction
     await page.waitForSelector('#test_sender_component');
@@ -45,10 +45,10 @@ const chromeOptions = {
         await aliceOption.click().then(() => console.log('-- Click on an account from the dropdown'));
     }
     await page.waitForTimeout(500);
-    await page.focus('#test_amount_send').then(() => console.log('-- Focus on amount input field.'));
+    await page.focus('#test-amount-send').then(() => console.log('-- Focus on amount input field.'));
     await page.keyboard.type('10').then(() => console.log('-- add 10 MLAU'));;
     await page.waitForTimeout(500);
-    await page.focus('#receiver_input').then(() => console.log('-- Focus on receiver input field'));
+    await page.focus('#test-receiver-input').then(() => console.log('-- Focus on receiver input field'));
     await page.keyboard.type('74YBVK9EJ4uSzokqewqmBcecAWq6tosB2xujX5Lf8jKg2gze').then(() => console.log('-- Add a receiver address'));
     await page.waitForTimeout(500);
     await page.click('#test-button-submit').then(() => console.log('-- Click send button to initiate the transaction'));

@@ -15,16 +15,6 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 // @ts-ignore due to isolatedModules flag - no import so this needed
-describe('Google', () => {
-  beforeAll(async () => {
-    await page.goto('https://google.com', { waitUntil: 'domcontentloaded' });
-  });
-
-  it('sanity check, test Google server by checking "google" text on page', async () => {
-    await expect(page).toMatch('google');
-  });
-});
-
 describe('<App />', () => {
   beforeAll(async () => {
     await page.goto(SERVER_URL, { waitUntil: 'domcontentloaded' });

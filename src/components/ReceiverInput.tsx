@@ -138,7 +138,7 @@ function ReceiverInput({ setError }: Props) {
       <Box display="flex" alignItems="center">
         <AccountIdenticon address={addressInput} formatFound={formatFound} />
         <InputBase
-          id="receiver_input"
+          id="test-receiver-input"
           className={classes.address}
           fullWidth
           onChange={onChange}
