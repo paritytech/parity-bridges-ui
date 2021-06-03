@@ -16,7 +16,7 @@
 import React from 'react';
 import { Alert } from '.';
 import { useKeyringContext } from '../contexts/KeyringContextProvider';
-import useLoadingApi from '../hooks/useLoadingApi';
+import useLoadingApi from '../hooks/api/useLoadingApi';
 
 interface Props {
   component: JSX.Element;

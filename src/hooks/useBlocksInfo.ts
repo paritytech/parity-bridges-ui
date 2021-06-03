@@ -18,7 +18,7 @@ import { VoidFn } from '@polkadot/api/types';
 import { ApiPromise } from '@polkadot/api';
 import { useEffect } from 'react';
 import { useMountedState } from '../hooks/useMountedState';
-import useApiCalls from '../hooks/useApiCalls';
+import useApiCalls from './api/useApiCalls';
 import logger from '../util/logger';
 
 interface Props {

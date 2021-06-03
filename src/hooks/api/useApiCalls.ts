@@ -16,8 +16,8 @@
 
 import { useCallback } from 'react';
 import { Codec } from '@polkadot/types/types';
-import { ApiCallsContextType } from '../types/apiCallsTypes';
-import useChainGetters from '../hooks/useChainGetters';
+import { ApiCallsContextType } from '../../types/apiCallsTypes';
+import useChainGetters from '../useChainGetters';
 
 const useApiCalls = (): ApiCallsContextType => {
   const { getValuesByChain } = useChainGetters();

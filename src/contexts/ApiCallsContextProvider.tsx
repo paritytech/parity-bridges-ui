@@ -16,7 +16,7 @@
 
 import React, { useContext } from 'react';
 import { ApiCallsContextType } from '../types/apiCallsTypes';
-import useApiCalls from '../hooks/useApiCalls';
+import useApiCalls from '../hooks/api/useApiCalls';
 
 interface ApiCallsContextProviderProps {
   children: React.ReactElement;

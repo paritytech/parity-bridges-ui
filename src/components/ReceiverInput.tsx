@@ -22,7 +22,7 @@ import { TransactionActionCreators } from '../actions/transactionActions';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
-import useApiBalance from '../hooks/useApiBalance';
+import useApiBalance from '../hooks/api/useApiBalance';
 import useBalance from '../hooks/useBalance';
 import usePrevious from '../hooks/usePrevious';
 

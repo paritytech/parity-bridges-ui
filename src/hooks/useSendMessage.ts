@@ -31,7 +31,7 @@ import useLaneId from '../hooks/useLaneId';
 import useTransactionPreparation from '../hooks/useTransactionPreparation';
 import { TransactionStatusEnum, TransactionTypes } from '../types/transactionTypes';
 import logger from '../util/logger';
-import useLoadingApi from '../hooks/useLoadingApi';
+import useLoadingApi from './api/useLoadingApi';
 
 interface Props {
   isValidCall?: boolean;

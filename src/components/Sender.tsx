@@ -22,7 +22,7 @@ import React, { useEffect, useState } from 'react';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useAccounts from '../hooks/useAccounts';
 import useReceiver from '../hooks/useReceiver';
-import useLoadingApi from '../hooks/useLoadingApi';
+import useLoadingApi from '../hooks/api/useLoadingApi';
 import { Account as AccountType } from '../types/accountTypes';
 import formatAccounts from '../util/formatAccounts';
 import Account from './Account';

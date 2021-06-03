@@ -20,7 +20,7 @@ import { useEffect, useState } from 'react';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
-import useLoadingApi from '../hooks/useLoadingApi';
+import useLoadingApi from './api/useLoadingApi';
 import { TransactionTypes } from '../types/transactionTypes';
 import logger from '../util/logger';
 interface TransactionFunction {

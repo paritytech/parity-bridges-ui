@@ -21,7 +21,7 @@ import { useSubscriptionsContext } from '../contexts/SubscriptionsContextProvide
 import { useApiCallsContext } from '../contexts/ApiCallsContextProvider';
 
 import useLaneId from './useLaneId';
-import useLoadingApi from './useLoadingApi';
+import useLoadingApi from './api/useLoadingApi';
 import { useMountedState } from './useMountedState';
 
 import { isTransactionCompleted } from '../util/transactionUtils';

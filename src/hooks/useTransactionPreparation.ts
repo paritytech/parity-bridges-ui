@@ -22,7 +22,7 @@ import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import { useApiCallsContext } from '../contexts/ApiCallsContextProvider';
 import useLaneId from '../hooks/useLaneId';
-import useLoadingApi from '../hooks/useLoadingApi';
+import useLoadingApi from './api/useLoadingApi';
 import useTransactionType from '../hooks/useTransactionType';
 import { getSubstrateDynamicNames } from '../util/getSubstrateDynamicNames';
 import logger from '../util/logger';

@@ -20,7 +20,7 @@ import useTransactionNonces from '../hooks/useTransactionNonces';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useSubscriptionsContext } from '../contexts/SubscriptionsContextProvider';
 
-import useLoadingApi from '../hooks/useLoadingApi';
+import useLoadingApi from './api/useLoadingApi';
 import { getSourceTargetRole } from '../util/chainsUtils';
 import { Step, TransactionStatusEnum, TransactionStatusType } from '../types/transactionTypes';
 
