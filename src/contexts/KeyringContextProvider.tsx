@@ -28,6 +28,8 @@ interface KeyringContextProviderProps {
 }
 
 export const KeyringContext: React.Context<KeyringContextType> = React.createContext({} as KeyringContextType);
+const isDevelopment = process.env.REACT_APP_IS_DEVELOPMENT === 'true';
+const loadDevAccounts = process.env.REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS === 'true';
 
 export function useKeyringContext() {
   return useContext(KeyringContext);
@@ -42,7 +44,6 @@ export function KeyringContextProvider(props: KeyringContextProviderProps): Reac
   const [extensionExists, setExtensionExists] = useState<boolean>(false);
   const [accountExists, setAccountExists] = useState<boolean>(false);
 
-  const isDevelopment = process.env.REACT_APP_IS_DEVELOPMENT === 'true';
   const loadAccounts = useCallback(() => {
     const asyncLoadAccounts = async () => {
       setKeyringStatus(KeyringStatuses.LOADING);
@@ -60,7 +61,7 @@ export function KeyringContextProvider(props: KeyringContextProviderProps): Reac
           meta: { ...meta, name: `${meta.name}` }
         }));
 
-        keyring.loadAll({ isDevelopment }, allAccounts);
+        keyring.loadAll({ isDevelopment: loadDevAccounts }, allAccounts);
         setKeyringStatus(KeyringStatuses.READY);
       } catch (e) {
         dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e }));
@@ -72,7 +73,7 @@ export function KeyringContextProvider(props: KeyringContextProviderProps): Reac
     if (keyringStatus === KeyringStatuses.LOADING || keyringStatus === KeyringStatuses.READY) return;
 
     asyncLoadAccounts();
-  }, [dispatchMessage, isDevelopment, keyringStatus]);
+  }, [dispatchMessage, keyringStatus]);
 
   useEffect(() => {
     if (keyringStatus === KeyringStatuses.INIT) {
