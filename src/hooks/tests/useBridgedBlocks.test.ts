@@ -63,7 +63,7 @@ describe('useBridgedBlocks', () => {
     jest.clearAllMocks();
   });
 
-  /*   describe('bestFinalized', () => {
+  describe('bestFinalized', () => {
     it('should call the query api.query.chain2.bestFinalized with expected callback function', () => {
       renderHook(() => useBridgedBlocks(props));
       expect(bestFinalizedMock).toHaveBeenCalledWith(expect.any(Function));
@@ -81,7 +81,7 @@ describe('useBridgedBlocks', () => {
       renderHook(() => useBridgedBlocks(props));
       expect(bestFinalizedMock).not.toHaveBeenCalled();
     });
-  }); */
+  });
 
   describe('importedHeaders', () => {
     it('should call the query api.query.chain2.importedHeaders with the value of setBestFinalizedBlock & callback', async () => {

@@ -16,10 +16,12 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { renderHook } from '@testing-library/react-hooks';
+import { useMakesSubscription } from '../useMakeSubscription';
 import useBlocksInfo from '../useBlocksInfo';
 import logger from '../../util/logger';
 
 jest.spyOn(logger, 'error');
+jest.mock('../useMakeSubscription');
 
 const CHAIN = 'chain';
 
@@ -32,13 +34,12 @@ interface Props {
 describe('useBlocksInfo', () => {
   const bestNumberMock = jest.fn() as jest.MockedFunction<any>;
   const bestNumberFinalizedMock = jest.fn() as jest.MockedFunction<any>;
-  const unsubBestNumber = jest.fn();
-  const unsubNumberFinalized = jest.fn();
+  const bestNumberMockName = 'bestNumberMock';
+  const bestNumberFinalizedMockName = 'bestNumberFinalizedMock';
 
   const api: jest.Mocked<ApiPromise> = {
     derive: {
-      // @ts-ignore
-      [CHAIN]: {
+      chain: {
         bestNumber: bestNumberMock,
         bestNumberFinalized: bestNumberFinalizedMock
       }
@@ -52,8 +53,8 @@ describe('useBlocksInfo', () => {
   };
 
   beforeEach(() => {
-    bestNumberMock.mockResolvedValue(unsubBestNumber);
-    bestNumberFinalizedMock.mockResolvedValue(unsubNumberFinalized);
+    bestNumberMock.mockReturnValue(bestNumberMockName);
+    bestNumberFinalizedMock.mockReturnValue(bestNumberFinalizedMockName);
   });
 
   afterEach(() => {
@@ -61,25 +62,27 @@ describe('useBlocksInfo', () => {
   });
 
   describe('bestNumber', () => {
-    it('should call the query api.derive.chain.bestNumber & api.derive.chain.bestNumberFinalized with expected callback function', () => {
+    it('should call hook useMakesSubscription with callbacks api.derive.chain.bestNumber & api.derive.chain.bestNumberFinalized', () => {
       renderHook(() => useBlocksInfo(props));
-      expect(bestNumberMock).toHaveBeenCalledWith(expect.any(Function));
-      expect(bestNumberFinalizedMock).toHaveBeenCalledWith(expect.any(Function));
+      expect(useMakesSubscription).toHaveBeenCalledTimes(2);
+
+      expect(useMakesSubscription.mock.calls[0][0]).toBe(bestNumberMockName);
+      expect(useMakesSubscription.mock.calls[0][1]).toBe(true);
+
+      expect(useMakesSubscription.mock.calls[1][0]).toBe(bestNumberFinalizedMockName);
+      expect(useMakesSubscription.mock.calls[1][1]).toBe(true);
     });
 
-    it('should unsubscribe both subscriptions when useEffect gets unmounted', async () => {
-      const { waitFor } = renderHook(() => useBlocksInfo(props));
-      waitFor(() => {
-        expect(unsubBestNumber).toHaveBeenCalled();
-        expect(unsubNumberFinalized).toHaveBeenCalled();
-      });
-    });
-
-    it('should NOT call the query api.query.chain2.bestFinalized because the api is not ready', () => {
+    it('should NOT call hook useMakesSubscription with callbacks api.derive.chain.bestNumber & api.derive.chain.bestNumberFinalized with isReady to false', () => {
       props.isApiReady = false;
       renderHook(() => useBlocksInfo(props));
-      expect(bestNumberMock).not.toHaveBeenCalled();
-      expect(bestNumberFinalizedMock).not.toHaveBeenCalled();
+      expect(useMakesSubscription).toHaveBeenCalledTimes(2);
+
+      expect(useMakesSubscription.mock.calls[0][0]).toBe(bestNumberMockName);
+      expect(useMakesSubscription.mock.calls[0][1]).toBe(false);
+
+      expect(useMakesSubscription.mock.calls[1][0]).toBe(bestNumberFinalizedMockName);
+      expect(useMakesSubscription.mock.calls[1][1]).toBe(false);
     });
   });
 });

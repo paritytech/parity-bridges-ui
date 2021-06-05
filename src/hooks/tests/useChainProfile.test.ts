@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { renderHook } from '@testing-library/react-hooks';
 import useChainProfile from '../useChainProfile';
 import { ChainDetails } from '../../types/sourceTargetTypes';

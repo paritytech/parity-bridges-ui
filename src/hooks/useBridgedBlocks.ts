@@ -14,15 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { VoidFn } from '@polkadot/api/types';
-import { ApiPromise } from '@polkadot/api';
+import { useCallback } from 'react';
+import { SubscriptionInput } from '../types/subscriptionsTypes';
 import { Hash } from '@polkadot/types/interfaces';
 import { Codec } from '@polkadot/types/types';
 import BN from 'bn.js';
-import { useEffect } from 'react';
 import { useMountedState } from '../hooks/useMountedState';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
-import logger from '../util/logger';
+import { useMakesSubscription } from '../hooks/useMakeSubscription';
 interface HeaderId {
   number: BN;
   hash: Hash;
@@ -30,59 +29,32 @@ interface HeaderId {
 
 type CodecHeaderId = Codec & HeaderId;
 
-interface Props {
-  chain: string;
-  api: ApiPromise;
-  isApiReady: boolean;
-}
-
-const useBridgedBlocks = ({ isApiReady, api, chain }: Props) => {
+const useBridgedBlocks = ({ isApiReady, api, chain }: SubscriptionInput) => {
   const [bestBridgedFinalizedBlock, setBestBridgedFinalizedBlock] = useMountedState('');
   const [bestFinalizedBlock, setBestFinalizedBlock] = useMountedState('');
   const { bridgedGrandpaChain } = getSubstrateDynamicNames(chain);
+  const isReady: boolean = !!(isApiReady && chain);
 
-  useEffect((): (() => void) | undefined => {
-    let unsubBestFinalized: Promise<VoidFn>;
-
-    const shouldProceed: boolean = !!(isApiReady && chain);
-    if (shouldProceed) {
-      unsubBestFinalized = api.query[bridgedGrandpaChain].bestFinalized((res: CodecHeaderId) => {
+  const getBestBridgedFinalizedBlock = useCallback(
+    () =>
+      api.query[bridgedGrandpaChain].bestFinalized((res: CodecHeaderId) => {
         const bestFinalized = res.toString();
         setBestFinalizedBlock(bestFinalized);
-      });
-    }
+      }),
+    [api.query, bridgedGrandpaChain, setBestFinalizedBlock]
+  );
 
-    return () => {
-      unsubBestFinalized
-        .then((u) => {
-          u();
-        })
-        .catch((e) => logger.error('error unsubscribing unsubBestFinalized', e));
-    };
-  }, [isApiReady, chain, api, bridgedGrandpaChain, setBestFinalizedBlock]);
+  const getBestFinalizedBlock = useCallback(
+    () =>
+      api.query[bridgedGrandpaChain].importedHeaders(bestFinalizedBlock, (res: any) => {
+        const importedHeader = res.toJSON().number;
+        setBestBridgedFinalizedBlock(importedHeader);
+      }),
+    [api.query, bestFinalizedBlock, bridgedGrandpaChain, setBestBridgedFinalizedBlock]
+  );
 
-  useEffect((): (() => void) | undefined => {
-    let unsubImportedHeaders: Promise<VoidFn> | null = null;
-    const isReady: boolean = !!(api && isApiReady && chain && bestFinalizedBlock);
-
-    if (!isReady) {
-      return;
-    }
-
-    unsubImportedHeaders = api.query[bridgedGrandpaChain].importedHeaders(bestFinalizedBlock, (res: any) => {
-      const importedHeader = res.toJSON().number;
-      setBestBridgedFinalizedBlock(importedHeader);
-    });
-
-    return () => {
-      unsubImportedHeaders &&
-        unsubImportedHeaders
-          .then((u) => {
-            u();
-          })
-          .catch((e) => logger.error('error unsubscribing unsubImportedHeaders', e));
-    };
-  }, [isApiReady, chain, api, bridgedGrandpaChain, bestFinalizedBlock, setBestBridgedFinalizedBlock]);
+  useMakesSubscription(getBestBridgedFinalizedBlock, isReady);
+  useMakesSubscription(getBestFinalizedBlock, isReady && Boolean(bestFinalizedBlock));
 
   return { bestBridgedFinalizedBlock, setBestFinalizedBlock };
 };
