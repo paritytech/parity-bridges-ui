@@ -52,6 +52,17 @@ Runs the test suite.
 
 Runs the linter & formatter.
 
+## Execute E2E test
+
+[Puppeteer](https://developers.google.com/web/tools/puppeteer/) is used for running E2E test for bridges (Only chrome for now).
+##### Requirements:
+a) Have chrome installed on your computer. (This test requires it and will not download it when running);
+b) ensure that in your `env.local` file the `REACT_APP_IS_DEVELOPMENT` and `REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS` are true;
+c) Make sure all steps mentioned above have run in a seperate terminal (`yarn` - `yarn start`) and the application of bridges is running;
+d) In a different terminal window run the following command:
+#### `yarn run test:e2e-alone`
+
+
 ## customTypes config files process.
 
 There is an automated process that downloads all the required types<CHAIN>.json files available in the deployments section of [parity-bridges-common](https://github.com/paritytech/parity-bridges-common/tree/master/deployments) repository.
