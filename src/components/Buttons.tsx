@@ -96,7 +96,14 @@ export const ButtonSubmit = ({
   const classes = useStyles();
   return (
     <Box mt={2} mb={2}>
-      <Button className={classes.submit} color={color} variant={variant} fullWidth={fullWidth} {...props}>
+      <Button
+        id="test-button-submit"
+        className={classes.submit}
+        color={color}
+        variant={variant}
+        fullWidth={fullWidth}
+        {...props}
+      >
         {children}
       </Button>
     </Box>
