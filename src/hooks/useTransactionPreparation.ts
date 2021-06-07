@@ -13,13 +13,14 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
+
 import { Codec } from '@polkadot/types/types';
 import { compactAddLength } from '@polkadot/util';
 import { useEffect, useState } from 'react';
 import { TransactionActionCreators } from '../actions/transactionActions';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useUpdateTransactionContext } from '../contexts/TransactionContext';
+import { useUpdateTransactionContext, useTransactionContext } from '../contexts/TransactionContext';
 import useLaneId from '../hooks/useLaneId';
 import useLoadingApi from '../hooks/useLoadingApi';
 import useTransactionType from '../hooks/useTransactionType';
@@ -55,7 +56,7 @@ export default function useTransactionPreparation({
 
   const [payload, setPayload] = useState<null | {}>(null);
   const { call, weight } = useTransactionType({ input, type, weightInput });
-
+  const { estimatedFee: globalEstimatedFee } = useTransactionContext();
   const { dispatchTransaction } = useUpdateTransactionContext();
   const { estimatedFeeMethodName } = getSubstrateDynamicNames(targetChain);
 
@@ -77,16 +78,17 @@ export default function useTransactionPreparation({
       const estimatedFeeType = sourceApi.registry.createType('Option<Balance>', estimatedFeeCall);
       const estimatedFee = estimatedFeeType.toString();
 
-      dispatchTransaction(TransactionActionCreators.estimateFee(estimatedFee));
+      dispatchTransaction(TransactionActionCreators.setEstimateFee(estimatedFee));
     };
 
-    if (areApiReady && payload) {
+    if (areApiReady && payload && !globalEstimatedFee) {
       calculateFee();
     }
   }, [
     areApiReady,
     dispatchTransaction,
     estimatedFeeMethodName,
+    globalEstimatedFee,
     laneId,
     payload,
     sourceApi.registry,

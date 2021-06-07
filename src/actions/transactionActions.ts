@@ -28,7 +28,7 @@ enum TransactionActionTypes {
   SET_GENERIC_RECEIVER_ACCOUNT = 'SET_GENERIC_RECEIVER_ACCOUNT'
 }
 
-const estimateFee = (estimatedFee: string) => ({
+const setEstimateFee = (estimatedFee: string) => ({
   payload: { estimatedFee },
   type: TransactionActionTypes.SET_ESTIMATED_FEE
 });
@@ -69,7 +69,7 @@ const setDerivedAccount = (derivedReceiverAccount: string | null) => ({
 
 const TransactionActionCreators = {
   createTransactionStatus,
-  estimateFee,
+  setEstimateFee,
   setReceiverAddress,
   setUnformattedReceiverAddress,
   updateTransactionStatus,
