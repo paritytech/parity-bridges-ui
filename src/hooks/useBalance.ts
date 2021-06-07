@@ -15,13 +15,12 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import { VoidFn } from '@polkadot/api/types';
 import { Balance } from '@polkadot/types/interfaces';
 import { formatBalance } from '@polkadot/util';
 import BN from 'bn.js';
-import { useEffect } from 'react';
-
-import logger from '../util/logger';
+import { useCallback } from 'react';
+import useLoadingApi from '../hooks/useLoadingApi';
+import { useApiSubscription } from './useApiSubscription';
 import { useMountedState } from './useMountedState';
 
 type State = {
@@ -40,31 +39,25 @@ const initValues = {
 
 const useBalance = (api: ApiPromise, address: string, providedSi: boolean = false): State => {
   const [state, setState] = useMountedState<State>(initValues);
+  const areReady = useLoadingApi();
 
-  useEffect((): (() => void) => {
-    let unsubscribe: Promise<VoidFn>;
-    if (address) {
-      try {
-        unsubscribe = api.query.system.account(address, ({ data }): void => {
-          setState({
-            chainTokens: data.registry.chainTokens[0],
-            formattedBalance: formatBalance(data.free, {
-              decimals: api.registry.chainDecimals[0],
-              withUnit: api.registry.chainTokens[0],
-              withSi: providedSi
-            }),
-            free: data.free
-          });
+  const getBalanceCall = useCallback(
+    () =>
+      api.query.system.account(address, ({ data }): void => {
+        setState({
+          chainTokens: data.registry.chainTokens[0],
+          formattedBalance: formatBalance(data.free, {
+            decimals: api.registry.chainDecimals[0],
+            withUnit: api.registry.chainTokens[0],
+            withSi: providedSi
+          }),
+          free: data.free
         });
-      } catch (e) {
-        logger.error(e.message);
-      }
-    }
+      }),
+    [address, api, providedSi, setState]
+  );
 
-    return function cleanup() {
-      unsubscribe && unsubscribe.then((u) => u());
-    };
-  }, [address, providedSi, api, setState]);
+  useApiSubscription(getBalanceCall, areReady && Boolean(address));
 
   return state as State;
 };

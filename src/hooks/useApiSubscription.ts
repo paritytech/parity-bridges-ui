@@ -18,9 +18,9 @@ import { UnsubscribePromise } from '@polkadot/api/types';
 import { useEffect } from 'react';
 import logger from '../util/logger';
 
-export function useApiSubscription(fn: () => UnsubscribePromise, isReady: boolean): void {
+export function useApiSubscription(fn: () => UnsubscribePromise | undefined, isReady: boolean): void {
   useEffect(() => {
-    if (!isReady) {
+    if (!isReady || !fn) {
       return;
     }
 
