@@ -42,7 +42,7 @@ const useMessagesLane = ({ isApiReady, api, chain }: SubscriptionInput): Output 
   const { bridgedMessages } = getSubstrateDynamicNames(chain);
   const isReady = !!(isApiReady && api.query[bridgedMessages] && chain);
 
-  const getBestBlockFinalized = useCallback(
+  const getOutboundLaneData = useCallback(
     () =>
       api.query[bridgedMessages].outboundLanes(laneId, (res: any) => {
         const latest_generated_nonce = res.get('latest_generated_nonce').toString();
@@ -58,7 +58,7 @@ const useMessagesLane = ({ isApiReady, api, chain }: SubscriptionInput): Output 
     [api.query, bridgedMessages, laneId, setOutboudLanes]
   );
 
-  const getBridgedReceivedMessages = useCallback(
+  const getInboundLaneData = useCallback(
     () =>
       api.query[bridgedMessages].inboundLanes(laneId, (res: any) => {
         setBridgesReceivedMessages(res.get('last_confirmed_nonce').toString());
@@ -66,9 +66,9 @@ const useMessagesLane = ({ isApiReady, api, chain }: SubscriptionInput): Output 
     [api.query, bridgedMessages, laneId, setBridgesReceivedMessages]
   );
 
-  useApiSubscription(getBestBlockFinalized, isReady);
+  useApiSubscription(getOutboundLaneData, isReady);
 
-  useApiSubscription(getBridgedReceivedMessages, isReady);
+  useApiSubscription(getInboundLaneData, isReady);
 
   return { bridgeReceivedMessages, outboundLanes };
 };

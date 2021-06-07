@@ -16,26 +16,29 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { renderHook } from '@testing-library/react-hooks';
+import { useApiSubscription } from '../useApiSubscription';
 import useMessagesLane from '../useMessagesLane';
+import logger from '../../util/logger';
 
 const chain1 = 'chain1';
 const chain2 = 'chain2';
-
 interface Props {
   chain: string;
   api: jest.Mocked<ApiPromise>;
   isApiReady: boolean;
 }
 
+jest.spyOn(logger, 'error');
+jest.mock('../useApiSubscription');
 jest.mock('../../util/getSubstrateDynamicNames', () => () => ({
   bridgedMessages: chain2
 }));
 
+const useMockApiSubscription = useApiSubscription as jest.MockedFunction<any>;
+
 describe('useMessagesLane', () => {
   const outboundLanesMock = jest.fn() as jest.MockedFunction<any>;
   const inboundLanesMock = jest.fn() as jest.MockedFunction<any>;
-  const unsubOutboundLanes = jest.fn();
-  const unsubInboundLanes = jest.fn();
 
   const api: jest.Mocked<ApiPromise> = {
     // @ts-ignore
@@ -50,38 +53,31 @@ describe('useMessagesLane', () => {
   let props = {} as Props;
 
   beforeEach(() => {
-    outboundLanesMock.mockResolvedValue(unsubOutboundLanes);
-    inboundLanesMock.mockResolvedValue(unsubInboundLanes);
-
     props = {
       api,
       isApiReady: true,
       chain: chain1
     };
-  });
-
-  afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should call the query api.query.chain2.outboundLanes & api.query.chain2.importedHeaders with expected callback function', () => {
+  it('should call hook useApiSubscription with callbacks api.query[bridgedMessages].outboundLanes & api.query[bridgedMessages].inboundLanes and isReady on true', () => {
     renderHook(() => useMessagesLane(props));
-    expect(outboundLanesMock).toHaveBeenCalledWith(expect.any(String), expect.any(Function));
-    expect(inboundLanesMock).toHaveBeenCalledWith(expect.any(String), expect.any(Function));
+    expect(useMockApiSubscription).toHaveBeenCalledTimes(2);
+
+    expect(useMockApiSubscription.mock.calls[0][0]).toEqual(expect.any(Function));
+    expect(useMockApiSubscription.mock.calls[0][1]).toBe(true);
+
+    expect(useMockApiSubscription.mock.calls[1][0]).toEqual(expect.any(Function));
+    expect(useMockApiSubscription.mock.calls[1][1]).toBe(true);
   });
 
-  it('should unsubscribe both subscriptions when useEffect gets unmounted', async () => {
-    const { waitFor } = renderHook(() => useMessagesLane(props));
-    waitFor(() => {
-      expect(unsubOutboundLanes).toHaveBeenCalled();
-      expect(unsubInboundLanes).toHaveBeenCalled();
-    });
-  });
-
-  it('should NOT call the query api.query.chain2.outboundLanes & api.query.chain2.importedHeaders because the api is not ready', () => {
+  it('should call hook useApiSubscription with callbacks api.query[bridgedMessages].outboundLanes & api.query[bridgedMessages].inboundLanes and isReady on false beacause isApiReady is false', () => {
     props.isApiReady = false;
     renderHook(() => useMessagesLane(props));
-    expect(outboundLanesMock).not.toHaveBeenCalled();
-    expect(inboundLanesMock).not.toHaveBeenCalled();
+    expect(useMockApiSubscription).toHaveBeenCalledTimes(2);
+
+    expect(useMockApiSubscription.mock.calls[0][1]).toBe(false);
+    expect(useMockApiSubscription.mock.calls[1][1]).toBe(false);
   });
 });

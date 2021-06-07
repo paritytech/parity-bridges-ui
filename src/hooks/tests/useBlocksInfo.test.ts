@@ -21,7 +21,8 @@ import useBlocksInfo from '../useBlocksInfo';
 import logger from '../../util/logger';
 
 jest.spyOn(logger, 'error');
-jest.mock('../useMakeSubscription');
+jest.mock('../useApiSubscription');
+const useMockApiSubscription = useApiSubscription as jest.MockedFunction<any>;
 
 const CHAIN = 'chain';
 
@@ -37,6 +38,7 @@ describe('useBlocksInfo', () => {
 
   const api: jest.Mocked<ApiPromise> = {
     derive: {
+      // @ts-ignore
       chain: {
         bestNumber: bestNumberMock,
         bestNumberFinalized: bestNumberFinalizedMock
@@ -50,29 +52,29 @@ describe('useBlocksInfo', () => {
     chain: CHAIN
   };
 
-  afterEach(() => {
+  beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  describe('bestNumber', () => {
-    it('should call hook useApiSubscription with callbacks api.derive.chain.bestNumber & api.derive.chain.bestNumberFinalized', () => {
+  describe('bestBlockFinalized & bestBlock', () => {
+    it('should call hook useApiSubscription with callbacks api.derive.chain.bestNumber & api.derive.chain.bestNumberFinalized and isReady on true', () => {
       renderHook(() => useBlocksInfo(props));
-      expect(useApiSubscription).toHaveBeenCalledTimes(2);
+      expect(useMockApiSubscription).toHaveBeenCalledTimes(2);
 
-      expect(useApiSubscription.mock.calls[0][0]).toEqual(expect.any(Function));
-      expect(useApiSubscription.mock.calls[0][1]).toBe(true);
+      expect(useMockApiSubscription.mock.calls[0][0]).toEqual(expect.any(Function));
+      expect(useMockApiSubscription.mock.calls[0][1]).toBe(true);
 
-      expect(useApiSubscription.mock.calls[1][0]).toEqual(expect.any(Function));
-      expect(useApiSubscription.mock.calls[1][1]).toBe(true);
+      expect(useMockApiSubscription.mock.calls[1][0]).toEqual(expect.any(Function));
+      expect(useMockApiSubscription.mock.calls[1][1]).toBe(true);
     });
 
-    it('should NOT call hook useApiSubscription with callbacks api.derive.chain.bestNumber & api.derive.chain.bestNumberFinalized with isReady to false', () => {
+    it('should call hook useApiSubscription with callbacks api.derive.chain.bestNumber & api.derive.chain.bestNumberFinalized and isReady on false beacause isApiReady is false', () => {
       props.isApiReady = false;
       renderHook(() => useBlocksInfo(props));
-      expect(useApiSubscription).toHaveBeenCalledTimes(2);
+      expect(useMockApiSubscription).toHaveBeenCalledTimes(2);
 
-      expect(useApiSubscription.mock.calls[0][1]).toBe(false);
-      expect(useApiSubscription.mock.calls[1][1]).toBe(false);
+      expect(useMockApiSubscription.mock.calls[0][1]).toBe(false);
+      expect(useMockApiSubscription.mock.calls[1][1]).toBe(false);
     });
   });
 });
