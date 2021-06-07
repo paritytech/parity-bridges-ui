@@ -22,7 +22,7 @@ interface Input {
   sourceChain: string;
 }
 
-export function getSourceTargetRole({ useSourceTarget, sourceChain }: Input) {
+export function getChainSubscriptionsKey({ useSourceTarget, sourceChain }: Input) {
   const {
     sourceChainDetails: { chain: currentSourceChain }
     // eslint-disable-next-line react-hooks/rules-of-hooks

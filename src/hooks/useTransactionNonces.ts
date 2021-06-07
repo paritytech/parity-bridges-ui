@@ -27,7 +27,7 @@ import useChainGetters from './useChainGetters';
 import { useMountedState } from './useMountedState';
 
 import { isTransactionCompleted } from '../util/transactionUtils';
-import { getSourceTargetRole } from '../util/chainsUtils';
+import { getChainSubscriptionsKey } from '../util/chainsUtils';
 import { TransactionStatusType } from '../types/transactionTypes';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
 interface Props {
@@ -44,7 +44,7 @@ const useTransactionNonces = ({ transaction }: Props) => {
   const laneId = useLaneId();
   const { areApiReady } = useLoadingApi();
   const { sourceChain, targetChain } = transaction;
-  const { targetRole } = getSourceTargetRole({
+  const { targetRole } = getChainSubscriptionsKey({
     useSourceTarget,
     sourceChain
   });

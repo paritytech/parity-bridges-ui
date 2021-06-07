@@ -21,7 +21,7 @@ import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useSubscriptionsContext } from '../contexts/SubscriptionsContextProvider';
 
 import useLoadingApi from '../hooks/useLoadingApi';
-import { getSourceTargetRole } from '../util/chainsUtils';
+import { getChainSubscriptionsKey } from '../util/chainsUtils';
 import { Step, TransactionStatusEnum, TransactionStatusType } from '../types/transactionTypes';
 
 interface Props {
@@ -41,7 +41,7 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
   const { areApiReady } = useLoadingApi();
 
   const { sourceChain, targetChain } = transaction;
-  const { sourceRole, targetRole } = getSourceTargetRole({
+  const { sourceRole, targetRole } = getChainSubscriptionsKey({
     useSourceTarget,
     sourceChain
   });
