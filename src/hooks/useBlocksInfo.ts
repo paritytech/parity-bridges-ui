@@ -16,7 +16,7 @@
 
 import { SubscriptionInput } from '../types/subscriptionsTypes';
 import { useMountedState } from '../hooks/useMountedState';
-import { useMakesSubscription } from '../hooks/useMakeSubscription';
+import { useApiSubscription } from './useApiSubscription';
 import { useCallback } from 'react';
 
 const useBlocksInfo = ({ isApiReady, api, chain }: SubscriptionInput) => {
@@ -40,8 +40,8 @@ const useBlocksInfo = ({ isApiReady, api, chain }: SubscriptionInput) => {
     [api.derive.chain, setBestBlockFinalized]
   );
 
-  useMakesSubscription(getBestNumber, isReady);
-  useMakesSubscription(getBestBlockFinalized, isReady);
+  useApiSubscription(getBestNumber, isReady);
+  useApiSubscription(getBestBlockFinalized, isReady);
 
   return { bestBlock, bestBlockFinalized };
 };

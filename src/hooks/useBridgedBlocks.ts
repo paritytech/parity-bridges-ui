@@ -21,7 +21,7 @@ import { Codec } from '@polkadot/types/types';
 import BN from 'bn.js';
 import { useMountedState } from '../hooks/useMountedState';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
-import { useMakesSubscription } from '../hooks/useMakeSubscription';
+import { useApiSubscription } from './useApiSubscription';
 interface HeaderId {
   number: BN;
   hash: Hash;
@@ -53,8 +53,8 @@ const useBridgedBlocks = ({ isApiReady, api, chain }: SubscriptionInput) => {
     [api.query, bestFinalizedBlock, bridgedGrandpaChain, setBestBridgedFinalizedBlock]
   );
 
-  useMakesSubscription(getBestFinalizedBlock, isReady);
-  useMakesSubscription(getBestBridgedFinalizedBlock, isReady && Boolean(bestFinalizedBlock));
+  useApiSubscription(getBestFinalizedBlock, isReady);
+  useApiSubscription(getBestBridgedFinalizedBlock, isReady && Boolean(bestFinalizedBlock));
 
   return { bestBridgedFinalizedBlock, setBestFinalizedBlock };
 };

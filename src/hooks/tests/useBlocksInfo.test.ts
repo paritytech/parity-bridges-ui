@@ -16,7 +16,7 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { renderHook } from '@testing-library/react-hooks';
-import { useMakesSubscription } from '../useMakeSubscription';
+import { useApiSubscription } from '../useApiSubscription';
 import useBlocksInfo from '../useBlocksInfo';
 import logger from '../../util/logger';
 
@@ -55,24 +55,24 @@ describe('useBlocksInfo', () => {
   });
 
   describe('bestNumber', () => {
-    it('should call hook useMakesSubscription with callbacks api.derive.chain.bestNumber & api.derive.chain.bestNumberFinalized', () => {
+    it('should call hook useApiSubscription with callbacks api.derive.chain.bestNumber & api.derive.chain.bestNumberFinalized', () => {
       renderHook(() => useBlocksInfo(props));
-      expect(useMakesSubscription).toHaveBeenCalledTimes(2);
+      expect(useApiSubscription).toHaveBeenCalledTimes(2);
 
-      expect(useMakesSubscription.mock.calls[0][0]).toEqual(expect.any(Function));
-      expect(useMakesSubscription.mock.calls[0][1]).toBe(true);
+      expect(useApiSubscription.mock.calls[0][0]).toEqual(expect.any(Function));
+      expect(useApiSubscription.mock.calls[0][1]).toBe(true);
 
-      expect(useMakesSubscription.mock.calls[1][0]).toEqual(expect.any(Function));
-      expect(useMakesSubscription.mock.calls[1][1]).toBe(true);
+      expect(useApiSubscription.mock.calls[1][0]).toEqual(expect.any(Function));
+      expect(useApiSubscription.mock.calls[1][1]).toBe(true);
     });
 
-    it('should NOT call hook useMakesSubscription with callbacks api.derive.chain.bestNumber & api.derive.chain.bestNumberFinalized with isReady to false', () => {
+    it('should NOT call hook useApiSubscription with callbacks api.derive.chain.bestNumber & api.derive.chain.bestNumberFinalized with isReady to false', () => {
       props.isApiReady = false;
       renderHook(() => useBlocksInfo(props));
-      expect(useMakesSubscription).toHaveBeenCalledTimes(2);
+      expect(useApiSubscription).toHaveBeenCalledTimes(2);
 
-      expect(useMakesSubscription.mock.calls[0][1]).toBe(false);
-      expect(useMakesSubscription.mock.calls[1][1]).toBe(false);
+      expect(useApiSubscription.mock.calls[0][1]).toBe(false);
+      expect(useApiSubscription.mock.calls[1][1]).toBe(false);
     });
   });
 });

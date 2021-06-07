@@ -15,7 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { renderHook } from '@testing-library/react-hooks';
-import { useMakesSubscription } from '../useMakeSubscription';
+import { useApiSubscription } from '../useApiSubscription';
 import logger from '../../util/logger';
 
 jest.mock('../../util/logger', () => ({
@@ -24,7 +24,7 @@ jest.mock('../../util/logger', () => ({
 
 const unsubMessage = 'unsubscribed';
 
-describe('useMakesSubscription', () => {
+describe('useApiSubscription', () => {
   const cbMock = jest.fn() as jest.MockedFunction<any>;
   const unsubMock = jest.fn().mockResolvedValue(unsubMessage);
 
@@ -37,12 +37,12 @@ describe('useMakesSubscription', () => {
   });
 
   it('should call callback function and unsubscribe', () => {
-    renderHook(() => useMakesSubscription(cbMock, true));
+    renderHook(() => useApiSubscription(cbMock, true));
     expect(cbMock).toHaveBeenCalled();
   });
 
   it('should NOT call unsubscription in cleanup function if api is not ready', () => {
-    const { unmount } = renderHook(() => useMakesSubscription(cbMock, false));
+    const { unmount } = renderHook(() => useApiSubscription(cbMock, false));
     unmount();
     expect(unsubMock).not.toHaveBeenCalled();
   });
@@ -50,7 +50,7 @@ describe('useMakesSubscription', () => {
   it('should catch error because api failure', () => {
     const error = new Error('Async error');
     renderHook(() =>
-      useMakesSubscription(() => {
+      useApiSubscription(() => {
         throw error;
       }, true)
     );

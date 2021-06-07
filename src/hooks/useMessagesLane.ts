@@ -18,7 +18,7 @@ import BN from 'bn.js';
 import { useCallback } from 'react';
 import { SubscriptionInput } from '../types/subscriptionsTypes';
 import { useMountedState } from '../hooks/useMountedState';
-import { useMakesSubscription } from '../hooks/useMakeSubscription';
+import { useApiSubscription } from './useApiSubscription';
 import useLaneId from '../hooks/useLaneId';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
 
@@ -66,9 +66,9 @@ const useMessagesLane = ({ isApiReady, api, chain }: SubscriptionInput): Output 
     [api.query, bridgedMessages, laneId, setBridgesReceivedMessages]
   );
 
-  useMakesSubscription(getBestBlockFinalized, isReady);
+  useApiSubscription(getBestBlockFinalized, isReady);
 
-  useMakesSubscription(getBridgedReceivedMessages, isReady);
+  useApiSubscription(getBridgedReceivedMessages, isReady);
 
   return { bridgeReceivedMessages, outboundLanes };
 };
