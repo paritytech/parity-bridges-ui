@@ -14,69 +14,34 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { VoidFn } from '@polkadot/api/types';
-import { ApiPromise } from '@polkadot/api';
-import { useEffect } from 'react';
+import { SubscriptionInput } from '../types/subscriptionsTypes';
 import { useMountedState } from '../hooks/useMountedState';
-import logger from '../util/logger';
+import { useApiSubscription } from './useApiSubscription';
+import { useCallback } from 'react';
 
-interface Props {
-  chain: string;
-  api: ApiPromise;
-  isApiReady: boolean;
-}
-
-const useBlocksInfo = ({ isApiReady, api, chain }: Props) => {
+const useBlocksInfo = ({ isApiReady, api, chain }: SubscriptionInput) => {
   const [bestBlock, setBestBlock] = useMountedState('');
   const [bestBlockFinalized, setBestBlockFinalized] = useMountedState('');
-
   const isReady = !!(isApiReady && chain);
 
-  useEffect(() => {
-    let unsubscribeBestNumber: Promise<VoidFn>;
-
-    if (!isReady) {
-      return;
-    }
-
-    try {
-      unsubscribeBestNumber = api.derive.chain.bestNumber((res) => {
+  const getBestNumber = useCallback(
+    () =>
+      api.derive.chain.bestNumber((res) => {
         setBestBlock(res.toString());
-      });
-    } catch (e) {
-      logger.error('error reading blocks', e);
-    }
+      }),
+    [api.derive.chain, setBestBlock]
+  );
 
-    return function cleanup() {
-      unsubscribeBestNumber
-        .then((u) => {
-          u();
-        })
-        .catch((e) => logger.error('error unsubscribing bestNumber', e));
-    };
-  }, [chain, setBestBlock, isReady, api.derive.chain]);
-
-  useEffect(() => {
-    let unsubscribeBestNumberFinalized: Promise<VoidFn>;
-
-    if (!isReady) {
-      return;
-    }
-
-    try {
-      unsubscribeBestNumberFinalized = api.derive.chain.bestNumberFinalized((res) => {
+  const getBestBlockFinalized = useCallback(
+    () =>
+      api.derive.chain.bestNumberFinalized((res) => {
         setBestBlockFinalized(res.toString());
-      });
-    } catch (e) {
-      logger.error('error reading blocks', e);
-    }
+      }),
+    [api.derive.chain, setBestBlockFinalized]
+  );
 
-    return function cleanup() {
-      unsubscribeBestNumberFinalized
-        .then((u) => u())
-        .catch((e) => logger.error('error unsubscribing bestNumberFinalized', e));
-    };
-  }, [chain, setBestBlockFinalized, isReady, api.derive.chain]);
+  useApiSubscription(getBestNumber, isReady);
+  useApiSubscription(getBestBlockFinalized, isReady);
 
   return { bestBlock, bestBlockFinalized };
 };
