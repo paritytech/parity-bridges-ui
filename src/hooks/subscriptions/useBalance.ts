@@ -21,8 +21,8 @@ import { formatBalance } from '@polkadot/util';
 import BN from 'bn.js';
 import { useEffect } from 'react';
 
-import logger from '../util/logger';
-import { useMountedState } from './useMountedState';
+import logger from '../../util/logger';
+import { useMountedState } from '../react/useMountedState';
 
 type State = {
   chainTokens: string;

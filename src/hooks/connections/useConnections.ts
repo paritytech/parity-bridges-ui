@@ -17,8 +17,8 @@
 import { useState, useEffect } from 'react';
 import { useApiConnection } from './useApiConnection';
 import isEmpty from 'lodash/isEmpty';
-import { SourceTargetState, ChainDetails, ConnectionChainInformation } from '../types/sourceTargetTypes';
-import { Subscriptions } from '../types/subscriptionsTypes';
+import { SourceTargetState, ChainDetails, ConnectionChainInformation } from '../../types/sourceTargetTypes';
+import { Subscriptions } from '../../types/subscriptionsTypes';
 
 export function useConnections(chainsConnections: ConnectionChainInformation[]) {
   const [connectionDetails1, connectionDetails2] = chainsConnections;

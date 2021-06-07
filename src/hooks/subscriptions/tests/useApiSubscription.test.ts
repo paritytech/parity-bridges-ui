@@ -16,9 +16,9 @@
 
 import { renderHook } from '@testing-library/react-hooks';
 import { useApiSubscription } from '../useApiSubscription';
-import logger from '../../util/logger';
+import logger from '../../../util/logger';
 
-jest.mock('../../util/logger', () => ({
+jest.mock('../../../util/logger', () => ({
   error: jest.fn().mockImplementation((message, e) => console.error(`${message} ${e}`))
 }));
 

@@ -21,7 +21,7 @@ import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useSubscriptionsContext } from '../contexts/SubscriptionsContextProvider';
 
-import useLoadingApi from '../hooks/useLoadingApi';
+import useLoadingApi from '../hooks/connections/useLoadingApi';
 import { IconApiStatus } from './Icons';
 
 // As this is placed as a child in the Material UI Select component, for some reason style components classes are not working.

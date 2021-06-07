@@ -16,13 +16,13 @@
 
 import BN from 'bn.js';
 import { useEffect, useState } from 'react';
-import useTransactionNonces from '../hooks/useTransactionNonces';
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useSubscriptionsContext } from '../contexts/SubscriptionsContextProvider';
+import useTransactionNonces from './useTransactionNonces';
+import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
+import { useSubscriptionsContext } from '../../contexts/SubscriptionsContextProvider';
 
-import useLoadingApi from '../hooks/useLoadingApi';
-import { getChainSubscriptionsKey } from '../util/chainsUtils';
-import { Step, TransactionStatusEnum, TransactionStatusType } from '../types/transactionTypes';
+import useLoadingApi from '../connections/useLoadingApi';
+import { getChainSubscriptionsKey } from '../../util/chainsUtils';
+import { Step, TransactionStatusEnum, TransactionStatusType } from '../../types/transactionTypes';
 
 interface Props {
   transaction: TransactionStatusType;

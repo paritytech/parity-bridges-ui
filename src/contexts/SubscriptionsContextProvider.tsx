@@ -17,7 +17,7 @@
 import React, { useContext } from 'react';
 import { ChainDetails } from '../types/sourceTargetTypes';
 import { ChainSubscriptions, SubscriptionsContextType } from '../types/subscriptionsTypes';
-import useSubscriptions from '../hooks/useSubscriptions';
+import useSubscriptions from '../hooks/subscriptions/useSubscriptions';
 
 interface SubscriptionsContextProviderProps {
   children: React.ReactElement;

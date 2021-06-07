@@ -15,8 +15,8 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import { GENERIC, GENERIC_SUBSTRATE_PREFIX } from '../constants';
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
+import { GENERIC, GENERIC_SUBSTRATE_PREFIX } from '../../constants';
+import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 
 const useChainGetters = () => {
   const {

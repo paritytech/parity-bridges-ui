@@ -18,7 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { renderHook } from '@testing-library/react-hooks';
 import { useApiSubscription } from '../useApiSubscription';
 import useBlocksInfo from '../useBlocksInfo';
-import logger from '../../util/logger';
+import logger from '../../../util/logger';
 
 jest.spyOn(logger, 'error');
 jest.mock('../useApiSubscription');

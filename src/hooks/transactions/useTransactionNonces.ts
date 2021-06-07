@@ -18,18 +18,18 @@ import { Codec } from '@polkadot/types/types';
 
 import { useEffect } from 'react';
 
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useSubscriptionsContext } from '../contexts/SubscriptionsContextProvider';
+import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
+import { useSubscriptionsContext } from '../../contexts/SubscriptionsContextProvider';
 
-import useLaneId from './useLaneId';
-import useLoadingApi from './useLoadingApi';
-import useChainGetters from './useChainGetters';
-import { useMountedState } from './useMountedState';
+import useLaneId from '../chain/useLaneId';
+import useLoadingApi from '../connections/useLoadingApi';
+import useChainGetters from '../chain/useChainGetters';
+import { useMountedState } from '../react/useMountedState';
 
-import { isTransactionCompleted } from '../util/transactionUtils';
-import { getChainSubscriptionsKey } from '../util/chainsUtils';
-import { TransactionStatusType } from '../types/transactionTypes';
-import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
+import { isTransactionCompleted } from '../../util/transactionUtils';
+import { getChainSubscriptionsKey } from '../../util/chainsUtils';
+import { TransactionStatusType } from '../../types/transactionTypes';
+import getSubstrateDynamicNames from '../../util/getSubstrateDynamicNames';
 interface Props {
   transaction: TransactionStatusType;
 }
