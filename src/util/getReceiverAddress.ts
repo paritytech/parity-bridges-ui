@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 import { checkAddress } from '@polkadot/util-crypto';
-import { SourceState, TargetState } from '../types/sourceTargetTypes';
+import { ChainState } from '../types/sourceTargetTypes';
 import { INCORRECT_FORMAT } from '../constants';
 import getDeriveAccount from './getDeriveAccount';
 import { getBridgeId } from './getConfigs';
@@ -22,8 +22,8 @@ import { getBridgeId } from './getConfigs';
 interface Props {
   getChainBySS58Prefix: (prefix: string) => string;
   receiverAddress: string;
-  targetChainDetails: TargetState;
-  sourceChainDetails: SourceState;
+  targetChainDetails: ChainState;
+  sourceChainDetails: ChainState;
 }
 const getReceiverAddress = ({
   getChainBySS58Prefix,
@@ -31,8 +31,8 @@ const getReceiverAddress = ({
   sourceChainDetails,
   receiverAddress
 }: Props) => {
-  const { sourceConfigs } = sourceChainDetails;
-  const { targetChain, targetConfigs } = targetChainDetails;
+  const { configs: sourceConfigs } = sourceChainDetails;
+  const { chain: targetChain, configs: targetConfigs } = targetChainDetails;
 
   const targetSS58Format = targetConfigs.ss58Format;
   const bridgeId = getBridgeId(targetConfigs, sourceConfigs.chainName);

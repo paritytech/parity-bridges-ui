@@ -19,8 +19,8 @@ import { Box, Divider, IconButton, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import useDashboard from '../hooks/useDashboard';
-import { ChainDetails } from '../types/sourceTargetTypes';
+import { useSubscriptionsContext } from '../contexts/SubscriptionsContextProvider';
+
 import useLoadingApi from '../hooks/useLoadingApi';
 import { IconApiStatus } from './Icons';
 
@@ -62,9 +62,8 @@ const useStyles = makeStyles((theme) => ({
 
 export const NetworkSides = () => {
   const classes = useStyles();
+  const { sourceSubscriptions, targetSubscriptions } = useSubscriptionsContext();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
-  const dbSource = useDashboard(ChainDetails.SOURCE);
-  const dbTarget = useDashboard(ChainDetails.TARGET);
   const { sourceReady, targetReady } = useLoadingApi();
 
   return (
@@ -72,11 +71,11 @@ export const NetworkSides = () => {
       <Box p={1} className={classes.statsEntry}>
         <Typography variant="h4">
           <IconApiStatus className={classes.svg} status={sourceReady} />
-          <a target="_blank" rel="noreferrer" href={sourceChainDetails.sourcePolkadotjsUrl}>
-            {sourceChainDetails.sourceChain}
+          <a target="_blank" rel="noreferrer" href={sourceChainDetails.polkadotjsUrl}>
+            {sourceChainDetails.chain}
           </a>
         </Typography>
-        <span># {dbSource.bestBlock}</span>
+        <span># {sourceSubscriptions.bestBlock}</span>
       </Box>
       <Divider />
       <IconButton size="small">
@@ -85,11 +84,11 @@ export const NetworkSides = () => {
       <Box p={1} className={classes.statsEntry}>
         <Typography variant="h4">
           <IconApiStatus className={classes.svg} status={targetReady} />
-          <a target="_blank" rel="noreferrer" href={targetChainDetails.targetPolkadotjsUrl}>
-            {targetChainDetails.targetChain}
+          <a target="_blank" rel="noreferrer" href={targetChainDetails.polkadotjsUrl}>
+            {targetChainDetails.chain}
           </a>
         </Typography>
-        <span style={{ opacity: 0.4 }}># {dbTarget.bestBlock}</span>
+        <span style={{ opacity: 0.4 }}># {targetSubscriptions.bestBlock}</span>
       </Box>
     </Box>
   );
@@ -97,24 +96,23 @@ export const NetworkSides = () => {
 
 export const NetworkStats = () => {
   const classes = useStyles();
-  const dbSource = useDashboard(ChainDetails.SOURCE);
-  const dbTarget = useDashboard(ChainDetails.TARGET);
+  const { sourceSubscriptions, targetSubscriptions } = useSubscriptionsContext();
 
   return (
     <>
       <Box className={classes.statsEntry}>
         Relayed blocks:
         <span>
-          {dbTarget?.bestBridgedFinalizedBlock} / {dbSource?.bestBlockFinalized}
+          {targetSubscriptions?.bestBridgedFinalizedBlock} / {sourceSubscriptions?.bestBlockFinalized}
         </span>
       </Box>
       <Box className={classes.statsEntry}>
         Delivered messages:
-        <span>{dbSource?.outboundLanes.totalMessages}</span>
+        <span>{sourceSubscriptions?.outboundLanes.totalMessages}</span>
       </Box>
       <Box className={classes.statsEntry}>
         Awaiting messages:
-        <span>{dbSource?.outboundLanes.pendingMessages}</span>
+        <span>{sourceSubscriptions?.outboundLanes.pendingMessages}</span>
       </Box>
     </>
   );

@@ -60,10 +60,10 @@ const GenericAccount = ({ value }: Props) => {
 
   const { dispatchTransaction } = useUpdateTransactionContext();
   const {
-    sourceChainDetails: { sourceConfigs },
+    sourceChainDetails: { configs: sourceConfigs },
     targetChainDetails: {
-      targetConfigs,
-      targetApiConnection: { api: targetApi }
+      configs: targetConfigs,
+      apiConnection: { api: targetApi }
     }
   } = useSourceTarget();
 

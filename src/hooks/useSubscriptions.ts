@@ -15,19 +15,32 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ChainDetails } from '../types/sourceTargetTypes';
+import { Subscriptions } from '../types/subscriptionsTypes';
 import useBlocksInfo from './useBlocksInfo';
 import useBridgedBlocks from './useBridgedBlocks';
-import useDashboardProfile from './useDashboardProfile';
+import useChainProfile from './useChainProfile';
 import useMessagesLane from './useMessagesLane';
 
-const useDashboard = (ChainDetail: ChainDetails) => {
-  const { api, destination, local, isApiReady, polkadotjsUrl } = useDashboardProfile(ChainDetail);
+interface Source {
+  source: string;
+  polkadotjsUrl: string;
+}
 
-  const blockInfo = useBlocksInfo({ api, chain: local, isApiReady });
-  const bridgedBlocks = useBridgedBlocks({ api, chain: destination, isApiReady });
-  const messagesLane = useMessagesLane({ api, chain: destination, isApiReady });
+type Output = Subscriptions & Source;
 
-  return { ...blockInfo, ...bridgedBlocks, ...messagesLane, local, polkadotjsUrl };
+const useSubscriptions = (ChainDetail: ChainDetails): Output => {
+  const {
+    apiConnection: { api, isApiReady },
+    target,
+    source,
+    polkadotjsUrl
+  } = useChainProfile(ChainDetail);
+
+  const blockInfo = useBlocksInfo({ api, chain: source, isApiReady });
+  const { bestBridgedFinalizedBlock } = useBridgedBlocks({ api, chain: target, isApiReady });
+  const messagesLane = useMessagesLane({ api, chain: target, isApiReady });
+
+  return { ...blockInfo, bestBridgedFinalizedBlock, ...messagesLane, source, polkadotjsUrl };
 };
 
-export default useDashboard;
+export default useSubscriptions;

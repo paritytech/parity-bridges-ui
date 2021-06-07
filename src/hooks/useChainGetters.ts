@@ -21,14 +21,14 @@ import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 const useChainGetters = () => {
   const {
     sourceChainDetails: {
-      sourceApiConnection: { api: sourceApi },
-      sourceChain,
-      sourceConfigs: { ss58Format: sourceSS58Format }
+      apiConnection: { api: sourceApi },
+      chain: sourceChain,
+      configs: { ss58Format: sourceSS58Format }
     },
     targetChainDetails: {
-      targetApiConnection: { api: targetApi },
-      targetChain,
-      targetConfigs: { ss58Format: targetSS58Format }
+      apiConnection: { api: targetApi },
+      chain: targetChain,
+      configs: { ss58Format: targetSS58Format }
     }
   } = useSourceTarget();
 

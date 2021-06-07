@@ -14,18 +14,33 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React from 'react';
-import { InputAdornment } from '@material-ui/core';
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
+import { ApiPromise } from '@polkadot/api';
 
-interface Props {
-  position?: 'start' | 'end';
+export enum ChainSubscriptions {
+  SOURCE = 'sourceSubscriptions',
+  TARGET = 'targetSubscriptions'
 }
 
-export const TokenSymbol = ({ position = 'start' }: Props): React.ReactElement => {
-  const { targetChainDetails } = useSourceTarget();
+interface OutboundLanes {
+  latestReceivedNonce: string;
+  pendingMessages: string;
+  totalMessages: string;
+}
+export interface Subscriptions {
+  bestBlock: string;
+  bestBlockFinalized: string;
+  bestBridgedFinalizedBlock: string;
+  bridgeReceivedMessages: string;
+  outboundLanes: OutboundLanes;
+}
 
-  return (
-    <InputAdornment position={position}>{targetChainDetails.apiConnection.api.registry.chainTokens}</InputAdornment>
-  );
-};
+export interface SubscriptionsContextType {
+  [ChainSubscriptions.SOURCE]: Subscriptions;
+  [ChainSubscriptions.TARGET]: Subscriptions;
+}
+
+export interface SubscriptionInput {
+  chain: string;
+  api: ApiPromise;
+  isApiReady: boolean;
+}

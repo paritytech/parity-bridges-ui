@@ -18,10 +18,10 @@ import BN from 'bn.js';
 import { useEffect, useState } from 'react';
 import useTransactionNonces from '../hooks/useTransactionNonces';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import useDashboard from '../hooks/useDashboard';
+import { useSubscriptionsContext } from '../contexts/SubscriptionsContextProvider';
 
 import useLoadingApi from '../hooks/useLoadingApi';
-import { getSourceTargetRole } from '../util/chainsUtils';
+import { getChainSubscriptionsKey } from '../util/chainsUtils';
 import { Step, TransactionStatusEnum, TransactionStatusType } from '../types/transactionTypes';
 
 interface Props {
@@ -33,7 +33,7 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
   const [steps, setSteps] = useState<Array<Step>>([]);
   const [deliveryBlock, setDeliveryBlock] = useState<string | null>();
   const [finished, setFinished] = useState(false);
-
+  const subscriptions = useSubscriptionsContext();
   const { nonceOfBestTargetBlock, nonceOfFinalTargetBlock } = useTransactionNonces({
     transaction
   });
@@ -41,7 +41,7 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
   const { areApiReady } = useLoadingApi();
 
   const { sourceChain, targetChain } = transaction;
-  const { sourceRole, targetRole } = getSourceTargetRole({
+  const { sourceRole, targetRole } = getChainSubscriptionsKey({
     useSourceTarget,
     sourceChain
   });
@@ -49,12 +49,12 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
   const {
     bestBlockFinalized,
     outboundLanes: { latestReceivedNonce: latestReceivedNonceOnSource }
-  } = useDashboard(sourceRole);
+  } = subscriptions[sourceRole];
   const {
     bestBridgedFinalizedBlock: bestBridgedFinalizedBlockOnTarget,
     bestBlockFinalized: bestBlockFinalizedOnTarget,
     bestBlock: bestBlockOnTarget
-  } = useDashboard(targetRole);
+  } = subscriptions[targetRole];
 
   useEffect(() => {
     if (!areApiReady || !transaction || finished) {

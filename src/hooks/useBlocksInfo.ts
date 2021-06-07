@@ -14,53 +14,34 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
-import { useEffect, useState } from 'react';
+import { SubscriptionInput } from '../types/subscriptionsTypes';
+import { useMountedState } from '../hooks/useMountedState';
+import { useApiSubscription } from './useApiSubscription';
+import { useCallback } from 'react';
 
-import logger from '../util/logger';
+const useBlocksInfo = ({ isApiReady, api, chain }: SubscriptionInput) => {
+  const [bestBlock, setBestBlock] = useMountedState('');
+  const [bestBlockFinalized, setBestBlockFinalized] = useMountedState('');
+  const isReady = !!(isApiReady && chain);
 
-interface Props {
-  chain: string;
-  api: ApiPromise;
-  isApiReady: boolean;
-}
-
-const useBlocksInfo = ({ isApiReady, api, chain }: Props) => {
-  const [bestBlock, setBestBlock] = useState('');
-  const [bestBlockFinalized, setBestBlockFinalized] = useState('');
-
-  useEffect(() => {
-    if (!api || !isApiReady || !chain) {
-      setBestBlock('');
-      setBestBlockFinalized('');
-      return;
-    }
-
-    let unsubscribeBestNumber: () => void;
-    api.derive.chain
-      .bestNumber((res) => {
+  const getBestNumber = useCallback(
+    () =>
+      api.derive.chain.bestNumber((res) => {
         setBestBlock(res.toString());
-      })
-      .then((unsub) => {
-        unsubscribeBestNumber = unsub;
-      })
-      .catch((e) => logger.error('error reading blocks', e));
+      }),
+    [api.derive.chain, setBestBlock]
+  );
 
-    let unsubscribeBestNumberFinalized: () => void;
-    api.derive.chain
-      .bestNumberFinalized((res) => {
+  const getBestBlockFinalized = useCallback(
+    () =>
+      api.derive.chain.bestNumberFinalized((res) => {
         setBestBlockFinalized(res.toString());
-      })
-      .then((unsub) => {
-        unsubscribeBestNumberFinalized = unsub;
-      })
-      .catch((e) => logger.error('error reading blocks', e));
+      }),
+    [api.derive.chain, setBestBlockFinalized]
+  );
 
-    return function cleanup() {
-      unsubscribeBestNumberFinalized && unsubscribeBestNumberFinalized();
-      unsubscribeBestNumber && unsubscribeBestNumber();
-    };
-  }, [api, isApiReady, chain]);
+  useApiSubscription(getBestNumber, isReady);
+  useApiSubscription(getBestBlockFinalized, isReady);
 
   return { bestBlock, bestBlockFinalized };
 };

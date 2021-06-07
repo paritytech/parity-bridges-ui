@@ -21,8 +21,6 @@ import { formatBalance } from '@polkadot/util';
 import BN from 'bn.js';
 import { useEffect } from 'react';
 
-import { MessageActionsCreators } from '../actions/messageActions';
-import { useUpdateMessageContext } from '../contexts/MessageContext';
 import logger from '../util/logger';
 import { useMountedState } from './useMountedState';
 
@@ -41,13 +39,13 @@ const initValues = {
 };
 
 const useBalance = (api: ApiPromise, address: string, providedSi: boolean = false): State => {
-  const { dispatchMessage } = useUpdateMessageContext();
   const [state, setState] = useMountedState<State>(initValues);
 
   useEffect((): (() => void) => {
-    const getBalance = async (api: ApiPromise, address: string, setState: any): Promise<VoidFn> => {
+    let unsubscribe: Promise<VoidFn>;
+    if (address) {
       try {
-        const u = await api.query.system.account(address, ({ data }): void => {
+        unsubscribe = api.query.system.account(address, ({ data }): void => {
           setState({
             chainTokens: data.registry.chainTokens[0],
             formattedBalance: formatBalance(data.free, {
@@ -58,20 +56,15 @@ const useBalance = (api: ApiPromise, address: string, providedSi: boolean = fals
             free: data.free
           });
         });
-        return Promise.resolve(u);
       } catch (e) {
-        dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e.message }));
         logger.error(e.message);
-        return Promise.reject();
       }
-    };
+    }
 
-    const unsubscribe: Promise<VoidFn> | null = address ? getBalance(api, address, setState) : null;
-
-    return async (): Promise<void> => {
-      unsubscribe && (await unsubscribe)();
+    return function cleanup() {
+      unsubscribe && unsubscribe.then((u) => u());
     };
-  }, [address, providedSi, dispatchMessage, api, setState]);
+  }, [address, providedSi, api, setState]);
 
   return state as State;
 };

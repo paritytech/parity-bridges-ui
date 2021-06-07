@@ -60,21 +60,15 @@ export enum ChainDetails {
   SOURCE = 'sourceChainDetails',
   TARGET = 'targetChainDetails'
 }
-export interface SourceState {
-  sourceConfigs: Configs;
-  sourceApiConnection: ApiPromiseConnectionType;
-  sourceChain: string;
-  sourcePolkadotjsUrl: string;
-}
 
-export interface TargetState {
-  targetConfigs: Configs;
-  targetApiConnection: ApiPromiseConnectionType;
-  targetChain: string;
-  targetPolkadotjsUrl: string;
+export interface ChainState {
+  configs: Configs;
+  apiConnection: ApiPromiseConnectionType;
+  chain: string;
+  polkadotjsUrl: string;
 }
 
 export interface SourceTargetState {
-  [ChainDetails.SOURCE]: SourceState;
-  [ChainDetails.TARGET]: TargetState;
+  [ChainDetails.SOURCE]: ChainState;
+  [ChainDetails.TARGET]: ChainState;
 }

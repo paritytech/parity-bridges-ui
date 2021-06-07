@@ -56,9 +56,9 @@ function Transfer() {
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   const { account } = useAccounts();
 
-  const planck = 10 ** targetChainDetails.targetApiConnection.api.registry.chainDecimals[0];
+  const planck = 10 ** targetChainDetails.apiConnection.api.registry.chainDecimals[0];
   const { estimatedFee, receiverAddress } = useTransactionContext();
-  const { api, isApiReady } = sourceChainDetails.sourceApiConnection;
+  const { api, isApiReady } = sourceChainDetails.apiConnection;
   const balance = useBalance(api, account?.address || '');
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
@@ -106,7 +106,7 @@ function Transfer() {
       </Box>
       <Receiver />
       <ButtonSubmit disabled={isButtonDisabled() || amountNotCorrect} onClick={sendLaneMessage}>
-        Send bridge transfer from {sourceChainDetails.sourceChain} to {targetChainDetails.targetChain}
+        Send bridge transfer from {sourceChainDetails.chain} to {targetChainDetails.chain}
       </ButtonSubmit>
       {amountNotCorrect ? (
         <Alert severity="error">

@@ -21,9 +21,9 @@ import getDeriveAccount from '../util/getDeriveAccount';
 
 const useDerivedAccount = () => {
   const {
-    targetChainDetails: { targetConfigs },
+    targetChainDetails: { configs },
     sourceChainDetails: {
-      sourceConfigs: { chainName }
+      configs: { chainName }
     }
   } = useSourceTarget();
   const { account } = useAccountContext();
@@ -33,9 +33,9 @@ const useDerivedAccount = () => {
   }
 
   const toDerive = {
-    ss58Format: targetConfigs.ss58Format,
+    ss58Format: configs.ss58Format,
     address: account.address,
-    bridgeId: getBridgeId(targetConfigs, chainName)
+    bridgeId: getBridgeId(configs, chainName)
   };
   return getDeriveAccount(toDerive);
 };

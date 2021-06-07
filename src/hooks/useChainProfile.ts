@@ -14,18 +14,32 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React from 'react';
-import { InputAdornment } from '@material-ui/core';
+import { ApiPromise } from '@polkadot/api';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
+import { ChainDetails } from '../types/sourceTargetTypes';
 
-interface Props {
-  position?: 'start' | 'end';
-}
-
-export const TokenSymbol = ({ position = 'start' }: Props): React.ReactElement => {
-  const { targetChainDetails } = useSourceTarget();
-
-  return (
-    <InputAdornment position={position}>{targetChainDetails.apiConnection.api.registry.chainTokens}</InputAdornment>
-  );
+const emptyProfile = {
+  apiConnection: {
+    api: {} as ApiPromise,
+    isApiReady: false
+  },
+  target: '',
+  source: '',
+  polkadotjsUrl: ''
 };
+
+export default function useChainProfile(chainDetail: ChainDetails) {
+  const { sourceChainDetails, targetChainDetails } = useSourceTarget();
+
+  if (!sourceChainDetails || !targetChainDetails) {
+    return emptyProfile;
+  }
+
+  const { chain: sourceChain, ...restSource } = sourceChainDetails;
+  const { chain: targetChain, ...restTarget } = targetChainDetails;
+
+  if (chainDetail === ChainDetails.TARGET) {
+    return { source: targetChain, target: sourceChain, ...restTarget };
+  }
+  return { source: sourceChain, target: targetChain, ...restSource };
+}

@@ -47,9 +47,9 @@ export default function useTransactionPreparation({
   const laneId = useLaneId();
   const {
     sourceChainDetails: {
-      sourceApiConnection: { api: sourceApi }
+      apiConnection: { api: sourceApi }
     },
-    targetChainDetails: { targetChain }
+    targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
   const { account } = useAccountContext();
 

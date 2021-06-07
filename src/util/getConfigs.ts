@@ -28,12 +28,12 @@ export const getConfigs = async (apiPromise: ApiPromise): Promise<Configs> => {
   return { bridgeIds, chainName, ss58Format: parseInt(ss58Format.toString()) };
 };
 
-export const getBridgeId = (targetConfigs: Configs, chainName: string): number[] => {
-  const bridgeId = targetConfigs?.bridgeIds[chainName];
+export const getBridgeId = (configs: Configs, chainName: string): number[] => {
+  const bridgeId = configs?.bridgeIds[chainName];
 
   if (!bridgeId) {
     throw new Error(
-      `Missing bridgeId for ${chainName} in bridge configuration of ${targetConfigs.chainName}. Add 'bridgeIds' to the chain spec.`
+      `Missing bridgeId for ${chainName} in bridge configuration of ${configs.chainName}. Add 'bridgeIds' to the chain spec.`
     );
   }
 

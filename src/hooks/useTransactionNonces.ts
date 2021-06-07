@@ -19,14 +19,15 @@ import { Codec } from '@polkadot/types/types';
 import { useEffect } from 'react';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import useDashboard from './useDashboard';
+import { useSubscriptionsContext } from '../contexts/SubscriptionsContextProvider';
+
 import useLaneId from './useLaneId';
 import useLoadingApi from './useLoadingApi';
 import useChainGetters from './useChainGetters';
 import { useMountedState } from './useMountedState';
 
 import { isTransactionCompleted } from '../util/transactionUtils';
-import { getSourceTargetRole } from '../util/chainsUtils';
+import { getChainSubscriptionsKey } from '../util/chainsUtils';
 import { TransactionStatusType } from '../types/transactionTypes';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
 interface Props {
@@ -36,17 +37,19 @@ interface Props {
 const useTransactionNonces = ({ transaction }: Props) => {
   const [nonceOfBestTargetBlock, setNonceOfBestTargetBlock] = useMountedState<null | number>(null);
   const [nonceOfFinalTargetBlock, setNonceOfFinalTargetBlock] = useMountedState<null | number>(null);
+  const subscriptions = useSubscriptionsContext();
+
   const { getValuesByChain } = useChainGetters();
 
   const laneId = useLaneId();
   const { areApiReady } = useLoadingApi();
   const { sourceChain, targetChain } = transaction;
-  const { targetRole } = getSourceTargetRole({
+  const { targetRole } = getChainSubscriptionsKey({
     useSourceTarget,
     sourceChain
   });
 
-  const { bestBlockFinalized, bestBlock } = useDashboard(targetRole);
+  const { bestBlockFinalized, bestBlock } = subscriptions[targetRole];
 
   const { latestReceivedNonceMethodName } = getSubstrateDynamicNames(sourceChain);
   const { api: targetApi } = getValuesByChain(targetChain);

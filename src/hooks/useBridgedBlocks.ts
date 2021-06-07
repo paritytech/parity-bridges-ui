@@ -14,14 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
-import { VoidFn } from '@polkadot/api/types';
+import { useCallback } from 'react';
+import { SubscriptionInput } from '../types/subscriptionsTypes';
 import { Hash } from '@polkadot/types/interfaces';
 import { Codec } from '@polkadot/types/types';
 import BN from 'bn.js';
-import { useEffect, useState } from 'react';
-
+import { useMountedState } from '../hooks/useMountedState';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
+import { useApiSubscription } from './useApiSubscription';
 interface HeaderId {
   number: BN;
   hash: Hash;
@@ -29,39 +29,34 @@ interface HeaderId {
 
 type CodecHeaderId = Codec & HeaderId;
 
-interface Props {
-  chain: string;
-  api: ApiPromise;
-  isApiReady: boolean;
-}
-
-const useBridgedBlocks = ({ isApiReady, api, chain }: Props) => {
-  const [bestBridgedFinalizedBlock, setBestBridgedFinalizedBlock] = useState('');
-
+const useBridgedBlocks = ({ isApiReady, api, chain }: SubscriptionInput) => {
+  const [bestBridgedFinalizedBlock, setBestBridgedFinalizedBlock] = useMountedState('');
+  const [bestFinalizedBlock, setBestFinalizedBlock] = useMountedState('');
   const { bridgedGrandpaChain } = getSubstrateDynamicNames(chain);
-  useEffect((): (() => void) | undefined => {
-    const shouldProceed: boolean = !!(api && isApiReady && chain);
-    if (!shouldProceed) return;
+  const isReady: boolean = !!(isApiReady && chain);
 
-    let unsubImportedHeaders: Promise<VoidFn> | null;
-    const unsubBestFinalized: Promise<VoidFn> | null = api.query[bridgedGrandpaChain].bestFinalized(
-      (res: CodecHeaderId) => {
-        const bestBridgedFinalizedBlock = res.toString();
-        unsubImportedHeaders = api.query[bridgedGrandpaChain].importedHeaders(bestBridgedFinalizedBlock, (res: any) => {
-          if (res.toJSON()) {
-            setBestBridgedFinalizedBlock(res.toJSON().number);
-          }
-        });
-      }
-    );
+  const getBestFinalizedBlock = useCallback(
+    () =>
+      api.query[bridgedGrandpaChain].bestFinalized((res: CodecHeaderId) => {
+        const bestFinalized = res.toString();
+        setBestFinalizedBlock(bestFinalized);
+      }),
+    [api.query, bridgedGrandpaChain, setBestFinalizedBlock]
+  );
 
-    return async (): Promise<void> => {
-      unsubBestFinalized && (await unsubBestFinalized)();
-      unsubImportedHeaders && (await unsubImportedHeaders)();
-    };
-  }, [isApiReady, chain, api, bridgedGrandpaChain]);
+  const getBestBridgedFinalizedBlock = useCallback(
+    () =>
+      api.query[bridgedGrandpaChain].importedHeaders(bestFinalizedBlock, (res: any) => {
+        const importedHeader = res.toJSON().number;
+        setBestBridgedFinalizedBlock(importedHeader);
+      }),
+    [api.query, bestFinalizedBlock, bridgedGrandpaChain, setBestBridgedFinalizedBlock]
+  );
 
-  return { bestBridgedFinalizedBlock };
+  useApiSubscription(getBestFinalizedBlock, isReady);
+  useApiSubscription(getBestBridgedFinalizedBlock, isReady && Boolean(bestFinalizedBlock));
+
+  return { bestBridgedFinalizedBlock, setBestFinalizedBlock };
 };
 
 export default useBridgedBlocks;

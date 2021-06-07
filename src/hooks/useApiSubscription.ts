@@ -14,18 +14,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React from 'react';
-import { InputAdornment } from '@material-ui/core';
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
+import { UnsubscribePromise } from '@polkadot/api/types';
+import { useEffect } from 'react';
+import logger from '../util/logger';
 
-interface Props {
-  position?: 'start' | 'end';
+export function useApiSubscription(fn: () => UnsubscribePromise, isReady: boolean): void {
+  useEffect(() => {
+    if (!isReady) {
+      return;
+    }
+
+    try {
+      const unsub = fn();
+      return () => {
+        isReady &&
+          unsub &&
+          unsub
+            .then((u) => u())
+            .catch((e) => {
+              logger.error('error unsubscribing', e);
+            });
+      };
+    } catch (e) {
+      logger.error('error executing subscription', e);
+    }
+  }, [fn, isReady]);
 }
-
-export const TokenSymbol = ({ position = 'start' }: Props): React.ReactElement => {
-  const { targetChainDetails } = useSourceTarget();
-
-  return (
-    <InputAdornment position={position}>{targetChainDetails.apiConnection.api.registry.chainTokens}</InputAdornment>
-  );
-};

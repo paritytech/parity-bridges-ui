@@ -73,8 +73,8 @@ function ReceiverInput({ setError }: Props) {
   const state = useBalance(api, address, true);
 
   const {
-    targetChainDetails: { targetChain },
-    sourceChainDetails: { sourceChain }
+    targetChainDetails: { chain: targetChain },
+    sourceChainDetails: { chain: sourceChain }
   } = useSourceTarget();
   const prevTargetChain = usePrevious(targetChain);
 

@@ -72,10 +72,10 @@ const Sender = () => {
   const { account, accounts, derivedAccount, setCurrentAccount } = useAccounts();
   const {
     sourceChainDetails: {
-      sourceChain,
-      sourceConfigs: { ss58Format }
+      chain: sourceChain,
+      configs: { ss58Format }
     },
-    targetChainDetails: { targetChain }
+    targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
   const { setReceiver } = useReceiver();
   const { getValuesByChain } = useChainGetters();
