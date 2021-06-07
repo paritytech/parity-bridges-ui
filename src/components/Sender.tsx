@@ -136,6 +136,7 @@ const Sender = () => {
   return (
     <>
       <Select
+        id="test_sender_component"
         disableUnderline
         fullWidth
         disabled={!areApiReady}

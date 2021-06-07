@@ -91,6 +91,7 @@ function Transfer() {
     <>
       <Box mb={2}>
         <TextField
+          id="test-amount-send"
           onChange={onChange}
           value={transferInput}
           placeholder={'0'}
