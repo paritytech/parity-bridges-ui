@@ -35,7 +35,7 @@ const useBridgedBlocks = ({ isApiReady, api, chain }: SubscriptionInput) => {
   const { bridgedGrandpaChain } = getSubstrateDynamicNames(chain);
   const isReady: boolean = !!(isApiReady && chain);
 
-  const getBestBridgedFinalizedBlock = useCallback(
+  const getBestFinalizedBlock = useCallback(
     () =>
       api.query[bridgedGrandpaChain].bestFinalized((res: CodecHeaderId) => {
         const bestFinalized = res.toString();
@@ -44,7 +44,7 @@ const useBridgedBlocks = ({ isApiReady, api, chain }: SubscriptionInput) => {
     [api.query, bridgedGrandpaChain, setBestFinalizedBlock]
   );
 
-  const getBestFinalizedBlock = useCallback(
+  const getBestBridgedFinalizedBlock = useCallback(
     () =>
       api.query[bridgedGrandpaChain].importedHeaders(bestFinalizedBlock, (res: any) => {
         const importedHeader = res.toJSON().number;
@@ -53,8 +53,8 @@ const useBridgedBlocks = ({ isApiReady, api, chain }: SubscriptionInput) => {
     [api.query, bestFinalizedBlock, bridgedGrandpaChain, setBestBridgedFinalizedBlock]
   );
 
-  useMakesSubscription(getBestBridgedFinalizedBlock, isReady);
-  useMakesSubscription(getBestFinalizedBlock, isReady && Boolean(bestFinalizedBlock));
+  useMakesSubscription(getBestFinalizedBlock, isReady);
+  useMakesSubscription(getBestBridgedFinalizedBlock, isReady && Boolean(bestFinalizedBlock));
 
   return { bestBridgedFinalizedBlock, setBestFinalizedBlock };
 };

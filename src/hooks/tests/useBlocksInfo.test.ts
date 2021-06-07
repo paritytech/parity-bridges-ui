@@ -34,8 +34,6 @@ interface Props {
 describe('useBlocksInfo', () => {
   const bestNumberMock = jest.fn() as jest.MockedFunction<any>;
   const bestNumberFinalizedMock = jest.fn() as jest.MockedFunction<any>;
-  const bestNumberMockName = 'bestNumberMock';
-  const bestNumberFinalizedMockName = 'bestNumberFinalizedMock';
 
   const api: jest.Mocked<ApiPromise> = {
     derive: {
@@ -52,11 +50,6 @@ describe('useBlocksInfo', () => {
     chain: CHAIN
   };
 
-  beforeEach(() => {
-    bestNumberMock.mockReturnValue(bestNumberMockName);
-    bestNumberFinalizedMock.mockReturnValue(bestNumberFinalizedMockName);
-  });
-
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -66,10 +59,10 @@ describe('useBlocksInfo', () => {
       renderHook(() => useBlocksInfo(props));
       expect(useMakesSubscription).toHaveBeenCalledTimes(2);
 
-      expect(useMakesSubscription.mock.calls[0][0]).toBe(bestNumberMockName);
+      expect(useMakesSubscription.mock.calls[0][0]).toEqual(expect.any(Function));
       expect(useMakesSubscription.mock.calls[0][1]).toBe(true);
 
-      expect(useMakesSubscription.mock.calls[1][0]).toBe(bestNumberFinalizedMockName);
+      expect(useMakesSubscription.mock.calls[1][0]).toEqual(expect.any(Function));
       expect(useMakesSubscription.mock.calls[1][1]).toBe(true);
     });
 
@@ -78,10 +71,7 @@ describe('useBlocksInfo', () => {
       renderHook(() => useBlocksInfo(props));
       expect(useMakesSubscription).toHaveBeenCalledTimes(2);
 
-      expect(useMakesSubscription.mock.calls[0][0]).toBe(bestNumberMockName);
       expect(useMakesSubscription.mock.calls[0][1]).toBe(false);
-
-      expect(useMakesSubscription.mock.calls[1][0]).toBe(bestNumberFinalizedMockName);
       expect(useMakesSubscription.mock.calls[1][1]).toBe(false);
     });
   });

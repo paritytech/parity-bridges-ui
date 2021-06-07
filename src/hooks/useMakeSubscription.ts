@@ -26,14 +26,14 @@ export function useMakesSubscription(fn: () => UnsubscribePromise, isReady: bool
 
     try {
       const unsub = fn();
-
       return () => {
-        unsub &&
+        isReady &&
+          unsub &&
           unsub
-            .then((unsub) => {
-              unsub();
-            })
-            .catch((e) => logger.error('error unsubscribing', e));
+            .then((u) => u())
+            .catch((e) => {
+              logger.error('error unsubscribing', e);
+            });
       };
     } catch (e) {
       logger.error('error executing subscription', e);

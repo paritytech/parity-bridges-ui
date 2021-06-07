@@ -14,51 +14,47 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react-hooks';
 import { useMakesSubscription } from '../useMakeSubscription';
+import logger from '../../util/logger';
+
+jest.mock('../../util/logger', () => ({
+  error: jest.fn().mockImplementation((message, e) => console.error(`${message} ${e}`))
+}));
 
 const unsubMessage = 'unsubscribed';
 
-describe('useBridgedBlocks', () => {
+describe('useMakesSubscription', () => {
   const cbMock = jest.fn() as jest.MockedFunction<any>;
-  const unsubMock = jest.fn().mockReturnValue(unsubMessage);
+  const unsubMock = jest.fn().mockResolvedValue(unsubMessage);
 
   beforeEach(() => {
-    //cbMock.mockResolvedValue(unsubMock);
-    cbMock.mockReturnValue('alalalal');
+    cbMock.mockResolvedValue(unsubMock);
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  describe('bestFinalized', () => {
-    it('should call callback function and unsubscribe', async () => {
-      cbMock.mockRejectedValue(new Error('Async error'));
-      const { unmount } = await renderHook(() => useMakesSubscription(cbMock, true));
+  it('should call callback function and unsubscribe', () => {
+    renderHook(() => useMakesSubscription(cbMock, true));
+    expect(cbMock).toHaveBeenCalled();
+  });
 
-      unmount();
-      act(() => expect(unsubMock).toHaveBeenCalled());
+  it('should NOT call unsubscription in cleanup function if api is not ready', () => {
+    const { unmount } = renderHook(() => useMakesSubscription(cbMock, false));
+    unmount();
+    expect(unsubMock).not.toHaveBeenCalled();
+  });
 
-      /*
-      console.log('unsubMock.mock.calls', unsubMock.mock.calls);
-
-      expect(cbMock).toHaveBeenCalled();
-      expect(unsubMock).toHaveBeenCalled(); */
-    });
-
-    /*     it('should not call unsubscribe both subscriptions when useEffect gets unmounted', async () => {
-      const { waitFor } = renderHook(() => useMakesSubscription(cbMock, false));
-
-      waitFor(() => {
-        expect(cbMock).toHaveBeenCalled();
-        expect(unsubMock).not.toHaveBeenCalled();
-      });
-    }); */
-
-    /*     it('should NOT call the query api.query.chain2.bestFinalized because the api is not ready', () => {
-      renderHook(() => useBridgedBlocks(props));
-      expect(bestFinalizedMock).not.toHaveBeenCalled();
-    }); */
+  it('should catch error because api failure', () => {
+    const error = new Error('Async error');
+    renderHook(() =>
+      useMakesSubscription(() => {
+        throw error;
+      }, true)
+    );
+    expect(logger.error).toHaveBeenCalledWith('error executing subscription', error);
+    expect(unsubMock).not.toHaveBeenCalled();
   });
 });

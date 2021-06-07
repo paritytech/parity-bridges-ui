@@ -41,7 +41,6 @@ const useBlocksInfo = ({ isApiReady, api, chain }: SubscriptionInput) => {
   );
 
   useMakesSubscription(getBestNumber, isReady);
-
   useMakesSubscription(getBestBlockFinalized, isReady);
 
   return { bestBlock, bestBlockFinalized };
