@@ -42,7 +42,7 @@ describe('useBalance', () => {
   };
 
   beforeEach(() => {
-    (useLoadingApi as jest.Mock).mockReturnValue(true);
+    (useLoadingApi as jest.Mock).mockReturnValue({ areApiReady: true });
   });
 
   afterEach(() => {
@@ -66,7 +66,7 @@ describe('useBalance', () => {
     });
 
     it('should call hook useApiSubscription with api.query.system.account and isReady parameter on false because api are not loaded yet', () => {
-      (useLoadingApi as jest.Mock).mockReturnValue(false);
+      (useLoadingApi as jest.Mock).mockReturnValue({ areApiReady: false });
       renderHook(() => useBalance(api, address, providedSi));
       expect(useMockApiSubscription).toHaveBeenCalledTimes(1);
 
@@ -74,7 +74,7 @@ describe('useBalance', () => {
     });
 
     it('should call hook useApiSubscription with api.query.system.account and isReady parameter on false because api are not loaded yet and there is not account provided', () => {
-      (useLoadingApi as jest.Mock).mockReturnValue(false);
+      (useLoadingApi as jest.Mock).mockReturnValue({ areApiReady: false });
       renderHook(() => useBalance(api, '', providedSi));
       expect(useMockApiSubscription).toHaveBeenCalledTimes(1);
 

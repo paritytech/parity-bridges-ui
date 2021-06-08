@@ -39,7 +39,7 @@ const initValues = {
 
 const useBalance = (api: ApiPromise, address: string, providedSi: boolean = false): State => {
   const [state, setState] = useMountedState<State>(initValues);
-  const areReady = useLoadingApi();
+  const { areApiReady } = useLoadingApi();
 
   const getBalanceCall = useCallback(
     () =>
@@ -57,7 +57,7 @@ const useBalance = (api: ApiPromise, address: string, providedSi: boolean = fals
     [address, api, providedSi, setState]
   );
 
-  useApiSubscription(getBalanceCall, areReady && Boolean(address));
+  useApiSubscription(getBalanceCall, areApiReady && Boolean(address));
 
   return state as State;
 };
