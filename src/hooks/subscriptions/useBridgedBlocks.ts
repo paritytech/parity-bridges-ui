@@ -47,8 +47,8 @@ const useBridgedBlocks = ({ isApiReady, api, chain }: SubscriptionInput) => {
   const getBestBridgedFinalizedBlock = useCallback(
     () =>
       api.query[bridgedGrandpaChain].importedHeaders(bestFinalizedBlock, (res: any) => {
-        const importedHeader = res.toJSON().number;
-        setBestBridgedFinalizedBlock(importedHeader);
+        const importedHeader = res?.toJSON()?.number;
+        importedHeader && setBestBridgedFinalizedBlock(importedHeader);
       }),
     [api.query, bestFinalizedBlock, bridgedGrandpaChain, setBestBridgedFinalizedBlock]
   );
