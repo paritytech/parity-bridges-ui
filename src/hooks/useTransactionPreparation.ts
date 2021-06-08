@@ -25,6 +25,8 @@ import useLaneId from '../hooks/useLaneId';
 import useLoadingApi from '../hooks/useLoadingApi';
 import useTransactionType from '../hooks/useTransactionType';
 import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
+import usePrevious from '../hooks/usePrevious';
+
 import logger from '../util/logger';
 
 interface Props {
@@ -56,9 +58,10 @@ export default function useTransactionPreparation({
 
   const [payload, setPayload] = useState<null | {}>(null);
   const { call, weight } = useTransactionType({ input, type, weightInput });
-  const { estimatedFee: globalEstimatedFee } = useTransactionContext();
+
   const { dispatchTransaction } = useUpdateTransactionContext();
   const { estimatedFeeMethodName } = getSubstrateDynamicNames(targetChain);
+  const prevPayload = usePrevious(payload);
 
   useEffect(() => {
     const calculateFee = async () => {
@@ -77,20 +80,22 @@ export default function useTransactionPreparation({
       // @ts-ignore
       const estimatedFeeType = sourceApi.registry.createType('Option<Balance>', estimatedFeeCall);
       const estimatedFee = estimatedFeeType.toString();
-
+      console.log('calculating fee', estimatedFee);
       dispatchTransaction(TransactionActionCreators.setEstimateFee(estimatedFee));
     };
 
-    if (areApiReady && payload && !globalEstimatedFee) {
+    const shouldCalculate = areApiReady && payload && prevPayload !== payload;
+
+    if (shouldCalculate) {
       calculateFee();
     }
   }, [
     areApiReady,
     dispatchTransaction,
     estimatedFeeMethodName,
-    globalEstimatedFee,
     laneId,
     payload,
+    prevPayload,
     sourceApi.registry,
     sourceApi.rpc.state,
     targetChain
