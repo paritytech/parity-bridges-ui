@@ -20,7 +20,7 @@ import { useEffect, useState } from 'react';
 import { TransactionActionCreators } from '../actions/transactionActions';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useUpdateTransactionContext, useTransactionContext } from '../contexts/TransactionContext';
+import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import useLaneId from '../hooks/useLaneId';
 import useLoadingApi from '../hooks/useLoadingApi';
 import useTransactionType from '../hooks/useTransactionType';
@@ -80,7 +80,6 @@ export default function useTransactionPreparation({
       // @ts-ignore
       const estimatedFeeType = sourceApi.registry.createType('Option<Balance>', estimatedFeeCall);
       const estimatedFee = estimatedFeeType.toString();
-      console.log('calculating fee', estimatedFee);
       dispatchTransaction(TransactionActionCreators.setEstimateFee(estimatedFee));
     };
 
