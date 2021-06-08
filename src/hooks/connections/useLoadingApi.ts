@@ -13,31 +13,27 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
+import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 
-import { useAccountContext } from '../contexts/AccountContextProvider';
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { getBridgeId } from '../util/getConfigs';
-import getDeriveAccount from '../util/getDeriveAccount';
+interface LoadingStates {
+  areApiReady: boolean;
+  sourceReady: boolean;
+  targetReady: boolean;
+}
 
-const useDerivedAccount = () => {
+export default function useLoadingApi(): LoadingStates {
   const {
-    targetChainDetails: { configs },
     sourceChainDetails: {
-      configs: { chainName }
+      apiConnection: { isApiReady: isSourceApiReady }
+    },
+    targetChainDetails: {
+      apiConnection: { isApiReady: isTargetApiReady }
     }
   } = useSourceTarget();
-  const { account } = useAccountContext();
 
-  if (!account) {
-    return null;
-  }
-
-  const toDerive = {
-    ss58Format: configs.ss58Format,
-    address: account.address,
-    bridgeId: getBridgeId(configs, chainName)
+  return {
+    areApiReady: isSourceApiReady && isTargetApiReady,
+    sourceReady: isSourceApiReady,
+    targetReady: isTargetApiReady
   };
-  return getDeriveAccount(toDerive);
-};
-
-export default useDerivedAccount;
+}

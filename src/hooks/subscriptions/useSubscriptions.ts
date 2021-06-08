@@ -14,11 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ChainDetails } from '../types/sourceTargetTypes';
-import { Subscriptions } from '../types/subscriptionsTypes';
+import { ChainDetails } from '../../types/sourceTargetTypes';
+import { Subscriptions } from '../../types/subscriptionsTypes';
 import useBlocksInfo from './useBlocksInfo';
 import useBridgedBlocks from './useBridgedBlocks';
-import useChainProfile from './useChainProfile';
+import useChainProfile from '../chain/useChainProfile';
 import useMessagesLane from './useMessagesLane';
 
 interface Source {

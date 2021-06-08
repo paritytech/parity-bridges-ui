@@ -16,15 +16,15 @@
 import { Codec } from '@polkadot/types/types';
 import { compactAddLength } from '@polkadot/util';
 import { useEffect, useState } from 'react';
-import { TransactionActionCreators } from '../actions/transactionActions';
-import { useAccountContext } from '../contexts/AccountContextProvider';
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useUpdateTransactionContext } from '../contexts/TransactionContext';
-import useLaneId from '../hooks/useLaneId';
-import useLoadingApi from '../hooks/useLoadingApi';
-import useTransactionType from '../hooks/useTransactionType';
-import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
-import logger from '../util/logger';
+import { TransactionActionCreators } from '../../actions/transactionActions';
+import { useAccountContext } from '../../contexts/AccountContextProvider';
+import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
+import { useUpdateTransactionContext } from '../../contexts/TransactionContext';
+import useLaneId from '../chain/useLaneId';
+import useLoadingApi from '../connections/useLoadingApi';
+import useTransactionType from './useTransactionType';
+import getSubstrateDynamicNames from '../../util/getSubstrateDynamicNames';
+import logger from '../../util/logger';
 
 interface Props {
   input: string;

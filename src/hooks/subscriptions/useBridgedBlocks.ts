@@ -15,12 +15,12 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { useCallback } from 'react';
-import { SubscriptionInput } from '../types/subscriptionsTypes';
+import { SubscriptionInput } from '../../types/subscriptionsTypes';
 import { Hash } from '@polkadot/types/interfaces';
 import { Codec } from '@polkadot/types/types';
 import BN from 'bn.js';
-import { useMountedState } from '../hooks/useMountedState';
-import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
+import { useMountedState } from '../react/useMountedState';
+import getSubstrateDynamicNames from '../../util/getSubstrateDynamicNames';
 import { useApiSubscription } from './useApiSubscription';
 interface HeaderId {
   number: BN;

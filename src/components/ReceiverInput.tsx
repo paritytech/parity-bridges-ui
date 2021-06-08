@@ -22,11 +22,11 @@ import { TransactionActionCreators } from '../actions/transactionActions';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
-import useApiBalance from '../hooks/useApiBalance';
-import useBalance from '../hooks/useBalance';
-import usePrevious from '../hooks/usePrevious';
+import useApiBalance from '../hooks/subscriptions/useApiBalance';
+import useBalance from '../hooks/subscriptions/useBalance';
+import usePrevious from '../hooks/react/usePrevious';
 
-import useReceiver from '../hooks/useReceiver';
+import useReceiver from '../hooks/transactions/useReceiver';
 import AccountIdenticon from './AccountIdenticon';
 import { SelectLabel } from '../components';
 import Balance from './Balance';
