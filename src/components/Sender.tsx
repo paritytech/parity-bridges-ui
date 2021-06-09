@@ -20,15 +20,15 @@ import { encodeAddress } from '@polkadot/util-crypto';
 import React, { useEffect, useState } from 'react';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import useAccounts from '../hooks/useAccounts';
-import useReceiver from '../hooks/useReceiver';
-import useLoadingApi from '../hooks/api/useLoadingApi';
+import useAccounts from '../hooks/accounts/useAccounts';
+import useReceiver from '../hooks/transactions/useReceiver';
+import useLoadingApi from '../hooks/connections/useLoadingApi';
 import { Account as AccountType } from '../types/accountTypes';
 import formatAccounts from '../util/formatAccounts';
 import Account from './Account';
 import AccountDisplay, { AddressKind } from './AccountDisplay';
 import { SelectLabel, styleAccountCompanion } from '../components';
-import useChainGetters from '../hooks/useChainGetters';
+import useChainGetters from '../hooks/chain/useChainGetters';
 
 // TODO replace MUI Select with MUI Popover it wraps around or Autocomplete to have more control over appearance
 
@@ -136,6 +136,7 @@ const Sender = () => {
   return (
     <>
       <Select
+        id="test_sender_component"
         disableUnderline
         fullWidth
         disabled={!areApiReady}

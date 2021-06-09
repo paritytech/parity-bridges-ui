@@ -13,25 +13,27 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
+import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 
-import { ChainSubscriptions } from '../types/subscriptionsTypes';
-import { SourceTargetState } from '../types/sourceTargetTypes';
-
-interface Input {
-  useSourceTarget: () => SourceTargetState;
-  sourceChain: string;
+interface LoadingStates {
+  areApiReady: boolean;
+  sourceReady: boolean;
+  targetReady: boolean;
 }
 
-export function getChainSubscriptionsKey({ useSourceTarget, sourceChain }: Input) {
+export default function useLoadingApi(): LoadingStates {
   const {
-    sourceChainDetails: { chain: currentSourceChain }
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+    sourceChainDetails: {
+      apiConnection: { isApiReady: isSourceApiReady }
+    },
+    targetChainDetails: {
+      apiConnection: { isApiReady: isTargetApiReady }
+    }
   } = useSourceTarget();
 
-  const sourceChainsMatch = sourceChain === currentSourceChain;
-
-  const sourceRole = sourceChainsMatch ? ChainSubscriptions.SOURCE : ChainSubscriptions.TARGET;
-  const targetRole = sourceChainsMatch ? ChainSubscriptions.TARGET : ChainSubscriptions.SOURCE;
-
-  return { sourceRole, targetRole, sourceChainsMatch };
+  return {
+    areApiReady: isSourceApiReady && isTargetApiReady,
+    sourceReady: isSourceApiReady,
+    targetReady: isTargetApiReady
+  };
 }

@@ -15,20 +15,33 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
+<<<<<<< HEAD:src/hooks/useChainGetters.ts
 import { useCallback } from 'react';
 import { GENERIC, GENERIC_SUBSTRATE_PREFIX } from '../constants';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { getSubstrateDynamicNames, SubstrateDynamicNames } from '../util/getSubstrateDynamicNames';
+=======
+import { GENERIC, GENERIC_SUBSTRATE_PREFIX } from '../../constants';
+import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
+>>>>>>> master:src/hooks/chain/useChainGetters.ts
 
 const useChainGetters = () => {
   const {
     sourceChainDetails: {
+<<<<<<< HEAD:src/hooks/useChainGetters.ts
       apiConnection: { api: sourceApi, isApiReady: sourceIsApiReady },
+=======
+      apiConnection: { api: sourceApi },
+>>>>>>> master:src/hooks/chain/useChainGetters.ts
       chain: sourceChain,
       configs: { ss58Format: sourceSS58Format }
     },
     targetChainDetails: {
+<<<<<<< HEAD:src/hooks/useChainGetters.ts
       apiConnection: { api: targetApi, isApiReady: targetIsApiReady },
+=======
+      apiConnection: { api: targetApi },
+>>>>>>> master:src/hooks/chain/useChainGetters.ts
       chain: targetChain,
       configs: { ss58Format: targetSS58Format }
     }

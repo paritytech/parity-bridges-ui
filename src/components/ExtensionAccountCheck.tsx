@@ -16,7 +16,7 @@
 import React from 'react';
 import { Alert } from '.';
 import { useKeyringContext } from '../contexts/KeyringContextProvider';
-import useLoadingApi from '../hooks/api/useLoadingApi';
+import useLoadingApi from '../hooks/connections/useLoadingApi';
 
 interface Props {
   component: JSX.Element;
@@ -29,8 +29,13 @@ const ExtensionAccountCheck = ({ component }: Props): JSX.Element => {
   const { extensionExists, accountExists } = useKeyringContext();
   // TODO #176: Move this to a more generic error-show component
   const { sourceReady, targetReady } = useLoadingApi();
+  const isDevelopment = process.env.REACT_APP_IS_DEVELOPMENT === 'true';
 
   let msg: string = '';
+  if (isDevelopment) {
+    return component;
+  }
+
   if (!extensionExists) {
     msg = 'Connect to a wallet. Install polkadotjs extension';
   } else if (!accountExists) {

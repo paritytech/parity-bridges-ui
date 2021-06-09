@@ -14,39 +14,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-<<<<<<< HEAD
-=======
-import { ApiPromise } from '@polkadot/api';
+import { UnsubscribePromise } from '@polkadot/api/types';
+import { useEffect } from 'react';
+import logger from '../../util/logger';
 
->>>>>>> master
-export enum ChainSubscriptions {
-  SOURCE = 'sourceSubscriptions',
-  TARGET = 'targetSubscriptions'
-}
+export function useApiSubscription(fn: () => UnsubscribePromise, isReady: boolean): void {
+  useEffect(() => {
+    if (!isReady) {
+      return;
+    }
 
-interface OutboundLanes {
-  latestReceivedNonce: string;
-  pendingMessages: string;
-  totalMessages: string;
+    try {
+      const unsub = fn();
+      return () => {
+        isReady &&
+          unsub &&
+          unsub
+            .then((u) => u())
+            .catch((e) => {
+              logger.error('error unsubscribing', e);
+            });
+      };
+    } catch (e) {
+      logger.error('error executing subscription', e);
+    }
+  }, [fn, isReady]);
 }
-export interface Subscriptions {
-  bestBlock: string;
-  bestBlockFinalized: string;
-  bestBridgedFinalizedBlock: string;
-  bridgeReceivedMessages: string;
-  outboundLanes: OutboundLanes;
-}
-
-export interface SubscriptionsContextType {
-  [ChainSubscriptions.SOURCE]: Subscriptions;
-  [ChainSubscriptions.TARGET]: Subscriptions;
-}
-<<<<<<< HEAD
-=======
-
-export interface SubscriptionInput {
-  chain: string;
-  api: ApiPromise;
-  isApiReady: boolean;
-}
->>>>>>> master

@@ -27,7 +27,7 @@ import { SourceTargetContextProvider } from './contexts/SourceTargetContextProvi
 import { TransactionContextProvider } from './contexts/TransactionContext';
 import { SubscriptionsContextProvider } from './contexts/SubscriptionsContextProvider';
 import { ApiCallsContextProvider } from './contexts/ApiCallsContextProvider';
-import { useConnections } from './hooks/api/useConnections';
+import { useConnections } from './hooks/connections/useConnections';
 import Main from './screens/Main';
 import { isEmpty } from 'lodash';
 

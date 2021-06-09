@@ -13,40 +13,18 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
+const PuppeteerEnvironment = require('jest-environment-puppeteer');
 
-<<<<<<< HEAD
-=======
-import { ApiPromise } from '@polkadot/api';
+class CustomEnvironment extends PuppeteerEnvironment {
+  async setup() {
+    await super.setup();
+    // Your setup
+  }
 
->>>>>>> master
-export enum ChainSubscriptions {
-  SOURCE = 'sourceSubscriptions',
-  TARGET = 'targetSubscriptions'
+  async teardown() {
+    // Your teardown
+    await super.teardown();
+  }
 }
 
-interface OutboundLanes {
-  latestReceivedNonce: string;
-  pendingMessages: string;
-  totalMessages: string;
-}
-export interface Subscriptions {
-  bestBlock: string;
-  bestBlockFinalized: string;
-  bestBridgedFinalizedBlock: string;
-  bridgeReceivedMessages: string;
-  outboundLanes: OutboundLanes;
-}
-
-export interface SubscriptionsContextType {
-  [ChainSubscriptions.SOURCE]: Subscriptions;
-  [ChainSubscriptions.TARGET]: Subscriptions;
-}
-<<<<<<< HEAD
-=======
-
-export interface SubscriptionInput {
-  chain: string;
-  api: ApiPromise;
-  isApiReady: boolean;
-}
->>>>>>> master
+module.exports = CustomEnvironment;

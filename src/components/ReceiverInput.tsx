@@ -22,11 +22,11 @@ import { TransactionActionCreators } from '../actions/transactionActions';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
-import useApiBalance from '../hooks/api/useApiBalance';
-import useBalance from '../hooks/useBalance';
-import usePrevious from '../hooks/usePrevious';
+import useApiBalance from '../hooks/subscriptions/useApiBalance';
+import useBalance from '../hooks/subscriptions/useBalance';
+import usePrevious from '../hooks/react/usePrevious';
 
-import useReceiver from '../hooks/useReceiver';
+import useReceiver from '../hooks/transactions/useReceiver';
 import AccountIdenticon from './AccountIdenticon';
 import { SelectLabel } from '../components';
 import Balance from './Balance';
@@ -82,6 +82,8 @@ function ReceiverInput({ setError }: Props) {
     dispatchTransaction(TransactionActionCreators.setGenericAccount(null));
     dispatchTransaction(TransactionActionCreators.setDerivedAccount(null));
     dispatchTransaction(TransactionActionCreators.setReceiverAddress(null));
+    dispatchTransaction(TransactionActionCreators.setEstimateFee(''));
+
     setShowBalance(false);
     setError('');
   }, [dispatchTransaction, setError]);
@@ -138,6 +140,7 @@ function ReceiverInput({ setError }: Props) {
       <Box display="flex" alignItems="center">
         <AccountIdenticon address={addressInput} formatFound={formatFound} />
         <InputBase
+          id="test-receiver-input"
           className={classes.address}
           fullWidth
           onChange={onChange}

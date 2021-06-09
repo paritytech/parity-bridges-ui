@@ -19,9 +19,9 @@ import { Box, makeStyles, TextField, Typography } from '@material-ui/core';
 import BN from 'bn.js';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
-import useAccounts from '../hooks/useAccounts';
-import useBalance from '../hooks/useBalance';
-import useSendMessage from '../hooks/useSendMessage';
+import useAccounts from '../hooks/accounts/useAccounts';
+import useBalance from '../hooks/subscriptions/useBalance';
+import useSendMessage from '../hooks/chain/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
 import { TokenSymbol } from './TokenSymbol';
 import Receiver from './Receiver';
@@ -91,6 +91,7 @@ function Transfer() {
     <>
       <Box mb={2}>
         <TextField
+          id="test-amount-send"
           onChange={onChange}
           value={transferInput}
           placeholder={'0'}

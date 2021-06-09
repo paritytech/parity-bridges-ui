@@ -19,6 +19,7 @@ import { web3FromSource } from '@polkadot/extension-dapp';
 import type { KeyringPair } from '@polkadot/keyring/types';
 import moment from 'moment';
 
+<<<<<<< HEAD:src/hooks/useSendMessage.ts
 import { MessageActionsCreators } from '../actions/messageActions';
 import { TransactionActionCreators } from '../actions/transactionActions';
 import { useAccountContext } from '../contexts/AccountContextProvider';
@@ -32,6 +33,20 @@ import useTransactionPreparation from '../hooks/useTransactionPreparation';
 import { TransactionStatusEnum, TransactionTypes } from '../types/transactionTypes';
 import logger from '../util/logger';
 import useLoadingApi from './api/useLoadingApi';
+=======
+import { MessageActionsCreators } from '../../actions/messageActions';
+import { TransactionActionCreators } from '../../actions/transactionActions';
+import { useAccountContext } from '../../contexts/AccountContextProvider';
+import { useUpdateMessageContext } from '../../contexts/MessageContext';
+import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
+import { useTransactionContext, useUpdateTransactionContext } from '../../contexts/TransactionContext';
+import useLaneId from './useLaneId';
+import useTransactionPreparation from '../transactions/useTransactionPreparation';
+import { TransactionStatusEnum, TransactionTypes } from '../../types/transactionTypes';
+import getSubstrateDynamicNames from '../../util/getSubstrateDynamicNames';
+import logger from '../../util/logger';
+import useLoadingApi from '../connections/useLoadingApi';
+>>>>>>> master:src/hooks/chain/useSendMessage.ts
 
 interface Props {
   isValidCall?: boolean;
@@ -48,7 +63,14 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
   const { sendBridgeMessage, getBlock } = useApiCallsContext();
   const laneId = useLaneId();
   const {
+<<<<<<< HEAD:src/hooks/useSendMessage.ts
     sourceChainDetails: { chain: sourceChain },
+=======
+    sourceChainDetails: {
+      apiConnection: { api: sourceApi },
+      chain: sourceChain
+    },
+>>>>>>> master:src/hooks/chain/useSendMessage.ts
     targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
   const { account } = useAccountContext();

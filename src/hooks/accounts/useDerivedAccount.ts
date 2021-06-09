@@ -14,24 +14,30 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ChainSubscriptions } from '../types/subscriptionsTypes';
-import { SourceTargetState } from '../types/sourceTargetTypes';
+import { useAccountContext } from '../../contexts/AccountContextProvider';
+import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
+import { getBridgeId } from '../../util/getConfigs';
+import getDeriveAccount from '../../util/getDeriveAccount';
 
-interface Input {
-  useSourceTarget: () => SourceTargetState;
-  sourceChain: string;
-}
-
-export function getChainSubscriptionsKey({ useSourceTarget, sourceChain }: Input) {
+const useDerivedAccount = () => {
   const {
-    sourceChainDetails: { chain: currentSourceChain }
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+    targetChainDetails: { configs },
+    sourceChainDetails: {
+      configs: { chainName }
+    }
   } = useSourceTarget();
+  const { account } = useAccountContext();
 
-  const sourceChainsMatch = sourceChain === currentSourceChain;
+  if (!account) {
+    return null;
+  }
 
-  const sourceRole = sourceChainsMatch ? ChainSubscriptions.SOURCE : ChainSubscriptions.TARGET;
-  const targetRole = sourceChainsMatch ? ChainSubscriptions.TARGET : ChainSubscriptions.SOURCE;
+  const toDerive = {
+    ss58Format: configs.ss58Format,
+    address: account.address,
+    bridgeId: getBridgeId(configs, chainName)
+  };
+  return getDeriveAccount(toDerive);
+};
 
-  return { sourceRole, targetRole, sourceChainsMatch };
-}
+export default useDerivedAccount;

@@ -16,6 +16,7 @@
 
 import { compactAddLength } from '@polkadot/util';
 import { useEffect, useState } from 'react';
+<<<<<<< HEAD:src/hooks/useTransactionPreparation.ts
 import { TransactionActionCreators } from '../actions/transactionActions';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
@@ -26,6 +27,17 @@ import useLoadingApi from './api/useLoadingApi';
 import useTransactionType from '../hooks/useTransactionType';
 import { getSubstrateDynamicNames } from '../util/getSubstrateDynamicNames';
 import logger from '../util/logger';
+=======
+import { TransactionActionCreators } from '../../actions/transactionActions';
+import { useAccountContext } from '../../contexts/AccountContextProvider';
+import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
+import { useUpdateTransactionContext } from '../../contexts/TransactionContext';
+import useLaneId from '../chain/useLaneId';
+import useLoadingApi from '../connections/useLoadingApi';
+import useTransactionType from './useTransactionType';
+import getSubstrateDynamicNames from '../../util/getSubstrateDynamicNames';
+import logger from '../../util/logger';
+>>>>>>> master:src/hooks/transactions/useTransactionPreparation.ts
 
 interface Props {
   input: string;
@@ -44,10 +56,16 @@ export default function useTransactionPreparation({
   weightInput,
   isValidCall = true
 }: Props): FeeAndPayload {
-  const areApiReady = useLoadingApi();
+  const { areApiReady } = useLoadingApi();
   const laneId = useLaneId();
   const {
+<<<<<<< HEAD:src/hooks/useTransactionPreparation.ts
     sourceChainDetails: { chain: sourceChain },
+=======
+    sourceChainDetails: {
+      apiConnection: { api: sourceApi }
+    },
+>>>>>>> master:src/hooks/transactions/useTransactionPreparation.ts
     targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
   const { account } = useAccountContext();
@@ -77,7 +95,7 @@ export default function useTransactionPreparation({
       const estimatedFeeType = createType(sourceChain, 'Option<Balance>', estimatedFeeCall);
       const estimatedFee = estimatedFeeType.toString();
 
-      dispatchTransaction(TransactionActionCreators.estimateFee(estimatedFee));
+      dispatchTransaction(TransactionActionCreators.setEstimateFee(estimatedFee));
     };
 
     if (areApiReady && payload) {

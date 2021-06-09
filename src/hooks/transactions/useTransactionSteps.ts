@@ -16,6 +16,7 @@
 
 import BN from 'bn.js';
 import { useEffect, useState } from 'react';
+<<<<<<< HEAD:src/hooks/useTransactionSteps.ts
 import useTransactionNonces from '../hooks/useTransactionNonces';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useSubscriptionsContext } from '../contexts/SubscriptionsContextProvider';
@@ -23,6 +24,15 @@ import { useSubscriptionsContext } from '../contexts/SubscriptionsContextProvide
 import useLoadingApi from './api/useLoadingApi';
 import { getSourceTargetRole } from '../util/chainsUtils';
 import { Step, TransactionStatusEnum, TransactionStatusType } from '../types/transactionTypes';
+=======
+import useTransactionNonces from './useTransactionNonces';
+import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
+import { useSubscriptionsContext } from '../../contexts/SubscriptionsContextProvider';
+
+import useLoadingApi from '../connections/useLoadingApi';
+import { getChainSubscriptionsKey } from '../../util/chainsUtils';
+import { Step, TransactionStatusEnum, TransactionStatusType } from '../../types/transactionTypes';
+>>>>>>> master:src/hooks/transactions/useTransactionSteps.ts
 
 interface Props {
   transaction: TransactionStatusType;
@@ -41,7 +51,7 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
   const { areApiReady } = useLoadingApi();
 
   const { sourceChain, targetChain } = transaction;
-  const { sourceRole, targetRole } = getSourceTargetRole({
+  const { sourceRole, targetRole } = getChainSubscriptionsKey({
     useSourceTarget,
     sourceChain
   });

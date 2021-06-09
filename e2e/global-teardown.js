@@ -13,31 +13,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
+const { teardown: teardownPuppeteer } = require('jest-environment-puppeteer');
 
-import { useAccountContext } from '../contexts/AccountContextProvider';
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { getBridgeId } from '../util/getConfigs';
-import getDeriveAccount from '../util/getDeriveAccount';
-
-const useDerivedAccount = () => {
-  const {
-    targetChainDetails: { configs },
-    sourceChainDetails: {
-      configs: { chainName }
-    }
-  } = useSourceTarget();
-  const { account } = useAccountContext();
-
-  if (!account) {
-    return null;
-  }
-
-  const toDerive = {
-    ss58Format: configs.ss58Format,
-    address: account.address,
-    bridgeId: getBridgeId(configs, chainName)
-  };
-  return getDeriveAccount(toDerive);
+module.exports = async function globalTeardown(globalConfig) {
+  // Your global teardown
+  await teardownPuppeteer(globalConfig);
 };
-
-export default useDerivedAccount;

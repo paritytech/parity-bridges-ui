@@ -50,6 +50,9 @@
     "prestart": "yarn downloadCustomTypes",
     "start": "PORT=3001 react-app-rewired start",
     "build": "react-app-rewired build",
+    "test:e2e": "jest -c e2e/jest.config.js",
+    "test:e2e-w": "jest -c e2e/jest.config.js --watch",
+    "test:e2e-alone": "node e2e/puppeteer_standalone.js",
     "test": "react-app-rewired test --transformIgnorePatterns 'node_modules/(?!@codemirror)/'",
     "eject": "react-app-rewired eject",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
@@ -88,6 +91,9 @@
   },
   "devDependencies": {
     "@testing-library/react-hooks": "^7.0.0",
+    "@types/expect-puppeteer": "^4.4.5",
+    "@types/jest-environment-puppeteer": "^4.4.1",
+    "@types/puppeteer": "^5.4.3",
     "@typescript-eslint/eslint-plugin": "^4.14.1",
     "@typescript-eslint/parser": "^4.14.1",
     "eslint": "^7.18.0",
@@ -105,8 +111,10 @@
     "eslint-plugin-sort-keys-fix": "^1.1.1",
     "eslint-plugin-standard": "^5.0.0",
     "husky": "^5.1.3",
+    "jest-puppeteer": "^5.0.4",
     "lint-staged": "^10.5.4",
     "prettier": "2.2.1",
+    "puppeteer": "^9.1.1",
     "ts-jest": "^26.5.4"
   }
 }
