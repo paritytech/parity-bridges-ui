@@ -20,7 +20,7 @@ import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import { TransactionActionCreators } from '../actions/transactionActions';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import useBalance from '../hooks/useBalance';
+import useBalance from '../hooks/subscriptions/useBalance';
 import getDeriveAccount from '../util/getDeriveAccount';
 import shorterItem from '../util/shortenItem';
 import { getBridgeId } from '../util/getConfigs';

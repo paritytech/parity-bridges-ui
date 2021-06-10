@@ -16,9 +16,9 @@
 
 import { renderHook } from '@testing-library/react-hooks';
 import useChainProfile from '../useChainProfile';
-import { ChainDetails } from '../../types/sourceTargetTypes';
+import { ChainDetails } from '../../../types/sourceTargetTypes';
 
-import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
+import { useSourceTarget } from '../../../contexts/SourceTargetContextProvider';
 
 const sourceChain = 'sourceChain';
 const targetChain = 'targetChain';
@@ -36,7 +36,7 @@ const state = {
   }
 };
 
-jest.mock('../../contexts/SourceTargetContextProvider', () => ({
+jest.mock('../../../contexts/SourceTargetContextProvider', () => ({
   useSourceTarget: jest.fn()
 }));
 

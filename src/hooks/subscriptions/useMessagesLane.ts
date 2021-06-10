@@ -16,11 +16,11 @@
 
 import BN from 'bn.js';
 import { useCallback } from 'react';
-import { SubscriptionInput } from '../types/subscriptionsTypes';
-import { useMountedState } from '../hooks/useMountedState';
+import { SubscriptionInput } from '../../types/subscriptionsTypes';
+import { useMountedState } from '../react/useMountedState';
 import { useApiSubscription } from './useApiSubscription';
-import useLaneId from '../hooks/useLaneId';
-import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
+import useLaneId from '../chain/useLaneId';
+import getSubstrateDynamicNames from '../../util/getSubstrateDynamicNames';
 
 interface Output {
   bridgeReceivedMessages: string;

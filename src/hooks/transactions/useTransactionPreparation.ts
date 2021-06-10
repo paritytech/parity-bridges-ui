@@ -16,15 +16,15 @@
 import { Codec } from '@polkadot/types/types';
 import { compactAddLength } from '@polkadot/util';
 import { useEffect, useState } from 'react';
-import { TransactionActionCreators } from '../actions/transactionActions';
-import { useAccountContext } from '../contexts/AccountContextProvider';
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useUpdateTransactionContext } from '../contexts/TransactionContext';
-import useLaneId from '../hooks/useLaneId';
-import useLoadingApi from '../hooks/useLoadingApi';
-import useTransactionType from '../hooks/useTransactionType';
-import getSubstrateDynamicNames from '../util/getSubstrateDynamicNames';
-import logger from '../util/logger';
+import { TransactionActionCreators } from '../../actions/transactionActions';
+import { useAccountContext } from '../../contexts/AccountContextProvider';
+import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
+import { useUpdateTransactionContext } from '../../contexts/TransactionContext';
+import useLaneId from '../chain/useLaneId';
+import useLoadingApi from '../connections/useLoadingApi';
+import useTransactionType from './useTransactionType';
+import getSubstrateDynamicNames from '../../util/getSubstrateDynamicNames';
+import logger from '../../util/logger';
 
 interface Props {
   input: string;
@@ -43,7 +43,7 @@ export default function useTransactionPreparation({
   weightInput,
   isValidCall = true
 }: Props): FeeAndPayload {
-  const areApiReady = useLoadingApi();
+  const { areApiReady } = useLoadingApi();
   const laneId = useLaneId();
   const {
     sourceChainDetails: {
@@ -77,7 +77,7 @@ export default function useTransactionPreparation({
       const estimatedFeeType = sourceApi.registry.createType('Option<Balance>', estimatedFeeCall);
       const estimatedFee = estimatedFeeType.toString();
 
-      dispatchTransaction(TransactionActionCreators.estimateFee(estimatedFee));
+      dispatchTransaction(TransactionActionCreators.setEstimateFee(estimatedFee));
     };
 
     if (areApiReady && payload) {

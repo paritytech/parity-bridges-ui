@@ -16,8 +16,8 @@
 
 import React from 'react';
 
-import useApiBalance from '../hooks/useApiBalance';
-import useBalance from '../hooks/useBalance';
+import useApiBalance from '../hooks/subscriptions/useApiBalance';
+import useBalance from '../hooks/subscriptions/useBalance';
 import AccountDisplay, { AddressKind, Props as AccountDisplayProps } from './AccountDisplay';
 
 interface Props extends AccountDisplayProps {

@@ -16,7 +16,7 @@
 
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import React, { useContext } from 'react';
-import useLocalStorage from '../hooks/useLocalStorage';
+import useLocalStorage from '../hooks/transactions/useLocalStorage';
 import { light } from '../components';
 
 interface DrawerContextProps {

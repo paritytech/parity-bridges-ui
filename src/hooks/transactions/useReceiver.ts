@@ -14,13 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { TransactionActionCreators } from '../actions/transactionActions';
-import { INCORRECT_FORMAT } from '../constants';
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useUpdateTransactionContext } from '../contexts/TransactionContext';
-import useChainGetters from '../hooks/useChainGetters';
-import getReceiverAddress from '../util/getReceiverAddress';
-import logger from '../util/logger';
+import { TransactionActionCreators } from '../../actions/transactionActions';
+import { INCORRECT_FORMAT } from '../../constants';
+import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
+import { useUpdateTransactionContext } from '../../contexts/TransactionContext';
+import useChainGetters from '../chain/useChainGetters';
+import getReceiverAddress from '../../util/getReceiverAddress';
+import logger from '../../util/logger';
 
 export default function useReceiver() {
   const { dispatchTransaction } = useUpdateTransactionContext();

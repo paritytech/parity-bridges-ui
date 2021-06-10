@@ -15,8 +15,8 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { ChainDetails } from '../types/sourceTargetTypes';
+import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
+import { ChainDetails } from '../../types/sourceTargetTypes';
 
 const emptyProfile = {
   apiConnection: {

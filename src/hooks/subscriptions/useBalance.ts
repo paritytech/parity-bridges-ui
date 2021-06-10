@@ -19,9 +19,9 @@ import { Balance } from '@polkadot/types/interfaces';
 import { formatBalance } from '@polkadot/util';
 import BN from 'bn.js';
 import { useCallback } from 'react';
-import useLoadingApi from '../hooks/useLoadingApi';
+import useLoadingApi from '../connections/useLoadingApi';
 import { useApiSubscription } from './useApiSubscription';
-import { useMountedState } from './useMountedState';
+import { useMountedState } from '../react/useMountedState';
 
 type State = {
   chainTokens: string;

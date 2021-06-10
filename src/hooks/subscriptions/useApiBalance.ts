@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 import { ApiPromise } from '@polkadot/api';
-import { INCORRECT_FORMAT, GENERIC } from '../constants';
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { getBridgeId } from '../util/getConfigs';
-import getDeriveAccount from '../util/getDeriveAccount';
+import { INCORRECT_FORMAT, GENERIC } from '../../constants';
+import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
+import { getBridgeId } from '../../util/getConfigs';
+import getDeriveAccount from '../../util/getDeriveAccount';
 
 type State = {
   address: string;

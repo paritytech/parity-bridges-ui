@@ -17,12 +17,12 @@
 import { hexToU8a, isHex, u8aToHex } from '@polkadot/util';
 import { useEffect, useState } from 'react';
 
-import { useAccountContext } from '../contexts/AccountContextProvider';
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useTransactionContext } from '../contexts/TransactionContext';
-import useLoadingApi from '../hooks/useLoadingApi';
-import { TransactionTypes } from '../types/transactionTypes';
-import logger from '../util/logger';
+import { useAccountContext } from '../../contexts/AccountContextProvider';
+import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
+import { useTransactionContext } from '../../contexts/TransactionContext';
+import useLoadingApi from '../connections/useLoadingApi';
+import { TransactionTypes } from '../../types/transactionTypes';
+import logger from '../../util/logger';
 interface TransactionFunction {
   call: Uint8Array | null;
   weight: number | null;

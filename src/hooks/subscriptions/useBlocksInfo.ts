@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { SubscriptionInput } from '../types/subscriptionsTypes';
-import { useMountedState } from '../hooks/useMountedState';
+import { SubscriptionInput } from '../../types/subscriptionsTypes';
+import { useMountedState } from '../react/useMountedState';
 import { useApiSubscription } from './useApiSubscription';
 import { useCallback } from 'react';
 

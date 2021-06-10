@@ -18,7 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { renderHook } from '@testing-library/react-hooks';
 import { useApiSubscription } from '../useApiSubscription';
 import useMessagesLane from '../useMessagesLane';
-import logger from '../../util/logger';
+import logger from '../../../util/logger';
 
 const chain1 = 'chain1';
 const chain2 = 'chain2';
@@ -30,7 +30,7 @@ interface Props {
 
 jest.spyOn(logger, 'error');
 jest.mock('../useApiSubscription');
-jest.mock('../../util/getSubstrateDynamicNames', () => () => ({
+jest.mock('../../../util/getSubstrateDynamicNames', () => () => ({
   bridgedMessages: chain2
 }));
 

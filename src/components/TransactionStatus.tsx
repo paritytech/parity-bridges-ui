@@ -18,7 +18,7 @@ import React from 'react';
 import { Box, Card, makeStyles, Typography } from '@material-ui/core';
 import { ButtonSwitchMode } from './Buttons';
 import { IconTxStatus } from './Icons';
-import useTransactionSteps from '../hooks/useTransactionSteps';
+import useTransactionSteps from '../hooks/transactions/useTransactionSteps';
 import { TransactionStatusType } from '../types/transactionTypes';
 export interface TransactionDisplayProps {
   size?: 'sm';
