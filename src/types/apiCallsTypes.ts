@@ -13,41 +13,23 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
-import { SubmittableExtrinsic } from '@polkadot/api/types';
-import type { Registry, AnyNumber } from '@polkadot/types/types';
+
+import type { Registry } from '@polkadot/types/types';
 import type { Bytes } from '@polkadot/types/primitive';
 
-import type { SignedBlock, BlockHash, BlockNumber } from '@polkadot/types/interfaces';
+import type { BlockHash } from '@polkadot/types/interfaces';
 import { Codec } from '@polkadot/types/types';
-
-import { TransactionState } from '../types/transactionTypes';
-
-export type SendBridgeMessage = (
-  chain: string,
-  laneId: string,
-  payload: Object,
-  estimatedFee: TransactionState['estimatedFee']
-) => SubmittableExtrinsic<'promise'>;
-
-export type GetBlock = (chain: string, asInBlock?: BlockHash | string | Uint8Array) => Promise<SignedBlock>;
 
 export type CreateType = Registry['createType'];
 
 export type StateCall = (
   chain: string,
+  methodName: string,
   data: Bytes | string | Uint8Array,
   at?: BlockHash | string | Uint8Array
 ) => Promise<Codec>;
 
-type GetBlockHash = (chain: string, blockNumber?: BlockNumber | AnyNumber | Uint8Array) => Promise<BlockHash>;
-
-type Derive = (chain: string) => any; // To find correct type
-
 export interface ApiCallsContextType {
-  sendBridgeMessage: SendBridgeMessage;
-  getBlock: GetBlock;
-  getBlockHash: GetBlockHash;
   createType: CreateType;
   stateCall: StateCall;
-  derive: Derive;
 }

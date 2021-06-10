@@ -16,16 +16,13 @@
 
 import { compactAddLength } from '@polkadot/util';
 import { useEffect, useState } from 'react';
-import { TransactionActionCreators } from '../../actions/transactionActions';
 import { useAccountContext } from '../../contexts/AccountContextProvider';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
-import { useUpdateTransactionContext } from '../../contexts/TransactionContext';
-import useLaneId from '../chain/useLaneId';
 import useLoadingApi from '../connections/useLoadingApi';
 import useTransactionType from './useTransactionType';
-import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
 import logger from '../../util/logger';
 import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
+import { useEstimateFee } from './useEstimateFee';
 
 interface Props {
   input: string;
@@ -45,55 +42,24 @@ export default function useTransactionPreparation({
   isValidCall = true
 }: Props): FeeAndPayload {
   const { areApiReady } = useLoadingApi();
-  const laneId = useLaneId();
+
   const {
-    sourceChainDetails: { chain: sourceChain },
-    targetChainDetails: { chain: targetChain }
+    sourceChainDetails: { chain: sourceChain }
   } = useSourceTarget();
   const { account } = useAccountContext();
 
   const [payload, setPayload] = useState<null | {}>(null);
   const { call, weight } = useTransactionType({ input, type, weightInput });
 
-  const { dispatchTransaction } = useUpdateTransactionContext();
-  const { createType, stateCall } = useApiCallsContext();
-  const { estimatedFeeMethodName } = getSubstrateDynamicNames(targetChain);
+  const { createType } = useApiCallsContext();
+  const calculateFee = useEstimateFee();
 
   useEffect(() => {
-    const calculateFee = async () => {
-      // Ignoring custom types missed for TS for now.
-      // Need to apply: https://polkadot.js.org/docs/api/start/typescript.user
-      // @ts-ignore
-      const payloadType = createType(sourceChain, 'OutboundPayload', payload);
-      // @ts-ignore
-      const messageFeeType = createType(sourceChain, 'MessageFeeData', {
-        lane_id: laneId,
-        payload: payloadType.toHex()
-      });
-
-      const estimatedFeeCall = await stateCall(sourceChain, messageFeeType.toHex());
-
-      // @ts-ignore
-      const estimatedFeeType = createType(sourceChain, 'Option<Balance>', estimatedFeeCall);
-      const estimatedFee = estimatedFeeType.toString();
-
-      dispatchTransaction(TransactionActionCreators.setEstimateFee(estimatedFee));
-    };
-
+    const asyncCalculateFee = () => calculateFee;
     if (areApiReady && payload) {
-      calculateFee();
+      asyncCalculateFee();
     }
-  }, [
-    areApiReady,
-    createType,
-    dispatchTransaction,
-    estimatedFeeMethodName,
-    laneId,
-    payload,
-    sourceChain,
-    stateCall,
-    targetChain
-  ]);
+  }, [areApiReady, calculateFee, payload]);
 
   useEffect(() => {
     if (!(isValidCall && account && call && weight)) {

@@ -23,33 +23,6 @@ const useApiCalls = (): ApiCallsContextType => {
   const { getValuesByChain } = useChainGetters();
   const getChainValues = useCallback((chain) => getValuesByChain(chain), [getValuesByChain]);
 
-  const sendBridgeMessage = useCallback(
-    (chain, laneId, payload, estimatedFee) => {
-      const {
-        api,
-        substrateValues: { bridgedMessages }
-      } = getChainValues(chain);
-      return api.tx[bridgedMessages].sendMessage(laneId, payload, estimatedFee);
-    },
-    [getChainValues]
-  );
-
-  const getBlock = useCallback(
-    (chain, asInBlock) => {
-      const { api } = getChainValues(chain);
-      return api.rpc.chain.getBlock(asInBlock);
-    },
-    [getChainValues]
-  );
-
-  const getBlockHash = useCallback(
-    (chain, blockNumber) => {
-      const { api } = getChainValues(chain);
-      return api.rpc.chain.getBlockHash(blockNumber);
-    },
-    [getChainValues]
-  );
-
   const createType = useCallback(
     (chain, type, data) => {
       const { api } = getChainValues(chain);
@@ -59,13 +32,10 @@ const useApiCalls = (): ApiCallsContextType => {
   );
 
   const stateCall = useCallback(
-    (chain, data, at) => {
-      const {
-        api,
-        substrateValues: { estimatedFeeMethodName }
-      } = getChainValues(chain);
+    (chain, methodName, data, at) => {
+      const { api } = getChainValues(chain);
 
-      const params = [estimatedFeeMethodName, data];
+      const params = [methodName, data];
       if (at) {
         params.push(at);
       }
@@ -75,15 +45,7 @@ const useApiCalls = (): ApiCallsContextType => {
     [getChainValues]
   );
 
-  const derive = useCallback(
-    (chain) => {
-      const { api } = getChainValues(chain);
-      return api.derive.chain;
-    },
-    [getChainValues]
-  );
-
-  return { sendBridgeMessage, getBlock, getBlockHash, createType, stateCall, derive };
+  return { createType, stateCall };
 };
 
 export default useApiCalls;

@@ -18,6 +18,7 @@ import { SignerOptions } from '@polkadot/api/types';
 import { web3FromSource } from '@polkadot/extension-dapp';
 import type { KeyringPair } from '@polkadot/keyring/types';
 import moment from 'moment';
+
 import { MessageActionsCreators } from '../../actions/messageActions';
 import { TransactionActionCreators } from '../../actions/transactionActions';
 import { useAccountContext } from '../../contexts/AccountContextProvider';
@@ -27,9 +28,9 @@ import { useTransactionContext, useUpdateTransactionContext } from '../../contex
 import useLaneId from './useLaneId';
 import useTransactionPreparation from '../transactions/useTransactionPreparation';
 import { TransactionStatusEnum, TransactionTypes } from '../../types/transactionTypes';
+import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
 import logger from '../../util/logger';
 import useLoadingApi from '../connections/useLoadingApi';
-import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
 
 interface Props {
   isValidCall?: boolean;
@@ -43,10 +44,12 @@ interface Props {
 function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, weightInput }: Props) {
   const { estimatedFee, receiverAddress } = useTransactionContext();
   const { dispatchTransaction } = useUpdateTransactionContext();
-  const { sendBridgeMessage, getBlock } = useApiCallsContext();
   const laneId = useLaneId();
   const {
-    sourceChainDetails: { chain: sourceChain },
+    sourceChainDetails: {
+      apiConnection: { api: sourceApi },
+      chain: sourceChain
+    },
     targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
   const { account } = useAccountContext();
@@ -68,8 +71,9 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
         return;
       }
 
-      const sendMessage = sendBridgeMessage(sourceChain, laneId, payload, estimatedFee);
-      logger.info(`bridge::sendMessage ${sendMessage.toHex()}`);
+      const { bridgedMessages } = getSubstrateDynamicNames(targetChain);
+      const bridgeMessage = sourceApi.tx[bridgedMessages].sendMessage(laneId, payload, estimatedFee);
+      logger.info(`bridge::sendMessage ${bridgeMessage.toHex()}`);
       const options: Partial<SignerOptions> = {
         nonce: -1
       };
@@ -79,7 +83,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
         options.signer = injector.signer;
         sourceAccount = account.address;
       }
-      const unsub = await sendMessage.signAndSend(sourceAccount, { ...options }, ({ events = [], status }) => {
+      const unsub = await bridgeMessage.signAndSend(sourceAccount, { ...options }, ({ events = [], status }) => {
         if (status.isReady) {
           dispatchTransaction(
             TransactionActionCreators.createTransactionStatus({
@@ -104,7 +108,8 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
           events.forEach(({ event: { data, method } }) => {
             if (method.toString() === 'MessageAccepted') {
               const messageNonce = data.toArray()[1].toString();
-              getBlock(sourceChain, status.asInBlock)
+              sourceApi.rpc.chain
+                .getBlock(status.asInBlock)
                 .then((res) => {
                   const block = res.block.header.number.toString();
                   dispatchTransaction(

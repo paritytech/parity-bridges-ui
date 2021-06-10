@@ -25,12 +25,24 @@ enum TransactionActionTypes {
   SET_TRANSACTION_COMPLETED = 'SET_TRANSACTION_COMPLETED',
   SET_RECEIVER_VALIDATION = 'SET_RECEIVER_VALIDATION',
   SET_DERIVED_RECEIVER_ACCOUNT = 'SET_DERIVED_RECEIVER_ACCOUNT',
-  SET_GENERIC_RECEIVER_ACCOUNT = 'SET_GENERIC_RECEIVER_ACCOUNT'
+  SET_GENERIC_RECEIVER_ACCOUNT = 'SET_GENERIC_RECEIVER_ACCOUNT',
+  SET_ERROR = 'SET_ERROR',
+  SET_CALCULATING_FEE = 'SET_CALCULATING_FEE'
 }
 
 const setEstimateFee = (estimatedFee: string) => ({
   payload: { estimatedFee },
   type: TransactionActionTypes.SET_ESTIMATED_FEE
+});
+
+const setCalculatingFee = (isCalculatingFee: boolean) => ({
+  payload: { isCalculatingFee },
+  type: TransactionActionTypes.SET_CALCULATING_FEE
+});
+
+const setTransactionError = (error: string) => ({
+  payload: { error },
+  type: TransactionActionTypes.SET_ERROR
 });
 
 const setReceiverAddress = (receiverAddress: string | null) => ({
@@ -74,7 +86,9 @@ const TransactionActionCreators = {
   setUnformattedReceiverAddress,
   updateTransactionStatus,
   setGenericAccount,
-  setDerivedAccount
+  setDerivedAccount,
+  setTransactionError,
+  setCalculatingFee
 };
 
 export { TransactionActionCreators, TransactionActionTypes };

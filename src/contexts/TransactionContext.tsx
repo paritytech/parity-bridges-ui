@@ -17,7 +17,7 @@
 import React, { useContext, useReducer } from 'react';
 
 import transactionReducer from '../reducers/transactionReducer';
-import { TransactionContextType, TransactionsActionType } from '../types/transactionTypes';
+import { TransactionState, TransactionsActionType } from '../types/transactionTypes';
 
 interface TransactionContextProviderProps {
   children: React.ReactElement;
@@ -27,9 +27,7 @@ export interface UpdateTransactionContext {
   dispatchTransaction: React.Dispatch<TransactionsActionType>;
 }
 
-export const TransactionContext: React.Context<TransactionContextType> = React.createContext(
-  {} as TransactionContextType
-);
+export const TransactionContext: React.Context<TransactionState> = React.createContext({} as TransactionState);
 
 export const UpdateTransactionContext: React.Context<UpdateTransactionContext> = React.createContext(
   {} as UpdateTransactionContext
@@ -52,7 +50,9 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     genericReceiverAccount: null,
     receiverAddress: null,
     unformattedReceiverAddress: null,
-    transactions: []
+    transactions: [],
+    error: null,
+    isCalculatingFee: false
   });
 
   return (
