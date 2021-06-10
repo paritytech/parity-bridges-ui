@@ -20,7 +20,7 @@ import { SubscriptionInput } from '../../types/subscriptionsTypes';
 import { useMountedState } from '../react/useMountedState';
 import { useApiSubscription } from './useApiSubscription';
 import useLaneId from '../chain/useLaneId';
-import getSubstrateDynamicNames from '../../util/getSubstrateDynamicNames';
+import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
 
 interface Output {
   bridgeReceivedMessages: string;

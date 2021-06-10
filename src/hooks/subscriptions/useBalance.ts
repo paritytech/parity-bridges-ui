@@ -20,14 +20,8 @@ import { Balance } from '@polkadot/types/interfaces';
 import { formatBalance } from '@polkadot/util';
 import BN from 'bn.js';
 import { useEffect } from 'react';
-
-<<<<<<< HEAD:src/hooks/useBalance.ts
-import logger from '../util/logger';
-import { useMountedState } from './useMountedState';
-=======
 import logger from '../../util/logger';
 import { useMountedState } from '../react/useMountedState';
->>>>>>> master:src/hooks/subscriptions/useBalance.ts
 
 type State = {
   chainTokens: string;

@@ -15,34 +15,19 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { useEffect } from 'react';
-
-<<<<<<< HEAD:src/hooks/useTransactionNonces.ts
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useSubscriptionsContext } from '../contexts/SubscriptionsContextProvider';
-import { useApiCallsContext } from '../contexts/ApiCallsContextProvider';
-
-import useLaneId from './useLaneId';
-import useLoadingApi from './api/useLoadingApi';
-import { useMountedState } from './useMountedState';
-
-import { isTransactionCompleted } from '../util/transactionUtils';
-import { getSourceTargetRole } from '../util/chainsUtils';
-import { TransactionStatusType } from '../types/transactionTypes';
-import { getSubstrateDynamicNames } from '../util/getSubstrateDynamicNames';
-=======
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import { useSubscriptionsContext } from '../../contexts/SubscriptionsContextProvider';
 
 import useLaneId from '../chain/useLaneId';
 import useLoadingApi from '../connections/useLoadingApi';
-import useChainGetters from '../chain/useChainGetters';
 import { useMountedState } from '../react/useMountedState';
 
 import { isTransactionCompleted } from '../../util/transactionUtils';
 import { getChainSubscriptionsKey } from '../../util/chainsUtils';
 import { TransactionStatusType } from '../../types/transactionTypes';
-import getSubstrateDynamicNames from '../../util/getSubstrateDynamicNames';
->>>>>>> master:src/hooks/transactions/useTransactionNonces.ts
+import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
+import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
+
 interface Props {
   transaction: TransactionStatusType;
 }
@@ -51,11 +36,6 @@ const useTransactionNonces = ({ transaction }: Props) => {
   const [nonceOfBestTargetBlock, setNonceOfBestTargetBlock] = useMountedState<null | number>(null);
   const [nonceOfFinalTargetBlock, setNonceOfFinalTargetBlock] = useMountedState<null | number>(null);
   const subscriptions = useSubscriptionsContext();
-<<<<<<< HEAD:src/hooks/useTransactionNonces.ts
-=======
-
-  const { getValuesByChain } = useChainGetters();
->>>>>>> master:src/hooks/transactions/useTransactionNonces.ts
 
   const laneId = useLaneId();
   const { areApiReady } = useLoadingApi();

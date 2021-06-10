@@ -14,19 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-<<<<<<< HEAD:src/hooks/useSubscriptions.ts
-import { ChainDetails } from '../types/sourceTargetTypes';
-import { Subscriptions } from '../types/subscriptionsTypes';
-import useBlocksInfo from './useBlocksInfo';
-import useBridgedBlocks from './useBridgedBlocks';
-import useChainProfile from './useChainProfile';
-=======
 import { ChainDetails } from '../../types/sourceTargetTypes';
 import { Subscriptions } from '../../types/subscriptionsTypes';
 import useBlocksInfo from './useBlocksInfo';
 import useBridgedBlocks from './useBridgedBlocks';
 import useChainProfile from '../chain/useChainProfile';
->>>>>>> master:src/hooks/subscriptions/useSubscriptions.ts
 import useMessagesLane from './useMessagesLane';
 
 interface Source {

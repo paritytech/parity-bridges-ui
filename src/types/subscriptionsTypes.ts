@@ -14,11 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-<<<<<<< HEAD
-=======
 import { ApiPromise } from '@polkadot/api';
 
->>>>>>> master
 export enum ChainSubscriptions {
   SOURCE = 'sourceSubscriptions',
   TARGET = 'targetSubscriptions'
@@ -41,12 +38,9 @@ export interface SubscriptionsContextType {
   [ChainSubscriptions.SOURCE]: Subscriptions;
   [ChainSubscriptions.TARGET]: Subscriptions;
 }
-<<<<<<< HEAD
-=======
 
 export interface SubscriptionInput {
   chain: string;
   api: ApiPromise;
   isApiReady: boolean;
 }
->>>>>>> master
