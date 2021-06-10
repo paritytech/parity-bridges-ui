@@ -55,7 +55,9 @@ export default function useTransactionPreparation({
   const calculateFee = useEstimateFee();
 
   useEffect(() => {
-    const asyncCalculateFee = () => calculateFee;
+    const asyncCalculateFee = async () => {
+      await calculateFee(payload);
+    };
     if (areApiReady && payload) {
       asyncCalculateFee();
     }

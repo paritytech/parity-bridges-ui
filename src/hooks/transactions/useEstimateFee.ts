@@ -32,16 +32,10 @@ export const useEstimateFee = () => {
   } = useSourceTarget();
   const { dispatchTransaction } = useUpdateTransactionContext();
 
-  const { execute } = useApiGenericCall({
-    customSetIsLoading: (isCalculatingFee: boolean) =>
-      dispatchTransaction(TransactionActionCreators.setCalculatingFee(isCalculatingFee)),
-    customSetError: (error: string) => dispatchTransaction(TransactionActionCreators.setTransactionError(error)),
-    customSetData: (estimatedFee: any) => dispatchTransaction(TransactionActionCreators.setEstimateFee(estimatedFee))
-  });
+  const { estimatedFeeMethodName } = getSubstrateDynamicNames(targetChain);
 
   const getEstimateFeeCall = useCallback(
     async (payload) => {
-      const { estimatedFeeMethodName } = getSubstrateDynamicNames(targetChain);
       // Ignoring custom types missed for TS for now.
       // Need to apply: https://polkadot.js.org/docs/api/start/typescript.user
       // @ts-ignore
@@ -58,12 +52,34 @@ export const useEstimateFee = () => {
       const estimatedFeeType = createType(sourceChain, 'Option<Balance>', estimatedFeeCall);
       const estimatedFee = estimatedFeeType.toString();
 
-      dispatchTransaction(TransactionActionCreators.setEstimateFee(estimatedFee));
+      return estimatedFee;
     },
-    [createType, dispatchTransaction, laneId, sourceChain, stateCall, targetChain]
+    [createType, estimatedFeeMethodName, laneId, sourceChain, stateCall]
   );
 
-  return execute(getEstimateFeeCall);
+  const customSetIsLoading = useCallback(
+    (isCalculatingFee: boolean) => dispatchTransaction(TransactionActionCreators.setCalculatingFee(isCalculatingFee)),
+    [dispatchTransaction]
+  );
+
+  const customSetError = useCallback(
+    (error: string) => dispatchTransaction(TransactionActionCreators.setTransactionError(error)),
+    [dispatchTransaction]
+  );
+
+  const customSetData = useCallback(
+    (estimatedFee: any) => dispatchTransaction(TransactionActionCreators.setEstimateFee(estimatedFee)),
+    [dispatchTransaction]
+  );
+
+  const { data, isLoading, execute } = useApiGenericCall(getEstimateFeeCall, {
+    customSetIsLoading,
+    customSetError,
+    customSetData
+  });
+  console.log('data', data);
+  console.log('isLoading', isLoading);
+  return execute;
 };
 
 export default useEstimateFee;

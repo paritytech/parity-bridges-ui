@@ -23,7 +23,7 @@ interface CustomStatusCall {
   customSetData: (data: unknown) => void | unknown;
 }
 
-export const useApiGenericCall = (customStatusCalls?: CustomStatusCall) => {
+export const useApiGenericCall = (getStateCall: Function, customStatusCalls?: CustomStatusCall) => {
   const [isLoading, setIsLoading] = useMountedState<boolean>(false);
   const [error, setError] = useMountedState<unknown>(null);
   const [data, setData] = useMountedState<unknown>(null);
@@ -45,13 +45,17 @@ export const useApiGenericCall = (customStatusCalls?: CustomStatusCall) => {
     };
   }, [customStatusCalls]);
 
+  const { customSetIsLoading, customSetData, customSetError } = getCustomStatusCalls();
+
   const execute = useCallback(
-    async (getStateCall) => {
-      const { customSetIsLoading, customSetData, customSetError } = getCustomStatusCalls();
+    async (...params) => {
+      console.log('...params', ...params);
+
       try {
         setIsLoading(true);
         customSetIsLoading(true);
-        const stateCall = await getStateCall();
+        const stateCall = await getStateCall(...params);
+        console.log('stateCall', stateCall);
         setData(stateCall);
         customSetData(stateCall);
         return stateCall;
@@ -60,9 +64,12 @@ export const useApiGenericCall = (customStatusCalls?: CustomStatusCall) => {
         customSetError(e);
         setIsLoading(false);
         customSetIsLoading(false);
+      } finally {
+        setIsLoading(false);
+        customSetIsLoading(false);
       }
     },
-    [getCustomStatusCalls, setIsLoading, setData, setError]
+    [setIsLoading, customSetIsLoading, getStateCall, setData, customSetData, setError, customSetError]
   );
 
   return {
