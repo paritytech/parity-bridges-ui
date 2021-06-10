@@ -18,13 +18,13 @@ import { ApiPromise } from '@polkadot/api';
 import { renderHook } from '@testing-library/react-hooks';
 import { useApiSubscription } from '../useApiSubscription';
 import useBalance from '../useBalance';
-import useLoadingApi from '../useLoadingApi';
+import useLoadingApi from '../../connections/useLoadingApi';
 
-import logger from '../../util/logger';
+import logger from '../../../util/logger';
 
 jest.spyOn(logger, 'error');
 jest.mock('../useApiSubscription');
-jest.mock('../useLoadingApi');
+jest.mock('../../connections/useLoadingApi');
 const useMockApiSubscription = useApiSubscription as jest.MockedFunction<any>;
 
 describe('useBalance', () => {
