@@ -37,9 +37,12 @@ const useMessagesLane = ({ isApiReady, api, chain }: SubscriptionInput): Output 
     pendingMessages: '0',
     totalMessages: '0'
   });
+
   const [bridgeReceivedMessages, setBridgesReceivedMessages] = useMountedState('0');
   const laneId = useLaneId();
+
   const { bridgedMessages } = getSubstrateDynamicNames(chain);
+
   const isReady = !!(isApiReady && api.query[bridgedMessages] && chain);
 
   const getOutboundLaneData = useCallback(
