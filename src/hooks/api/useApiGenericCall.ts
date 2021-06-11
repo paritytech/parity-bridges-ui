@@ -17,59 +17,26 @@
 import { useCallback } from 'react';
 import { useMountedState } from '../react/useMountedState';
 
-interface CustomStatusCall {
-  customSetIsLoading: (isCalculatingFee: boolean) => void | boolean;
-  customSetError: (error: string) => void | string;
-  customSetData: (data: unknown) => void | unknown;
-}
-
-export const useApiGenericCall = (getStateCall: Function, customStatusCalls?: CustomStatusCall) => {
+export const useApiGenericCall = (getStateCall: Function) => {
   const [isLoading, setIsLoading] = useMountedState<boolean>(false);
   const [error, setError] = useMountedState<unknown>(null);
   const [data, setData] = useMountedState<unknown>(null);
 
-  const getCustomStatusCalls = useCallback(() => {
-    if (customStatusCalls) {
-      const { customSetIsLoading, customSetError, customSetData } = customStatusCalls;
-      return {
-        customSetIsLoading,
-        customSetError,
-        customSetData
-      };
-    }
-
-    return {
-      customSetIsLoading: (isCalculatingFee: boolean) => isCalculatingFee,
-      customSetError: (error: string) => error,
-      customSetData: (data: any) => data
-    };
-  }, [customStatusCalls]);
-
-  const { customSetIsLoading, customSetData, customSetError } = getCustomStatusCalls();
-
   const execute = useCallback(
     async (...params) => {
-      console.log('...params', ...params);
-
       try {
         setIsLoading(true);
-        customSetIsLoading(true);
         const stateCall = await getStateCall(...params);
-        console.log('stateCall', stateCall);
         setData(stateCall);
-        customSetData(stateCall);
         return stateCall;
       } catch (e) {
         setError(e);
-        customSetError(e);
         setIsLoading(false);
-        customSetIsLoading(false);
       } finally {
         setIsLoading(false);
-        customSetIsLoading(false);
       }
     },
-    [setIsLoading, customSetIsLoading, getStateCall, setData, customSetData, setError, customSetError]
+    [setIsLoading, getStateCall, setData, setError]
   );
 
   return {

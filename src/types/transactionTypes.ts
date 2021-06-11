@@ -50,6 +50,7 @@ export interface TransactionState {
   transactions: Array<TransactionStatusType>;
   error: string | null;
   isCalculatingFee: boolean;
+  payload: Object;
 }
 
 export type TransactionsActionType = { type: TransactionActionTypes; payload: Payload };

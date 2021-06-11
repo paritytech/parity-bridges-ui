@@ -14,15 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { compactAddLength } from '@polkadot/util';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useAccountContext } from '../../contexts/AccountContextProvider';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import useLoadingApi from '../connections/useLoadingApi';
 import useTransactionType from './useTransactionType';
-import logger from '../../util/logger';
-import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
 import { useEstimateFee } from './useEstimateFee';
+import { usePayload } from './usePayload';
 
 interface Props {
   input: string;
@@ -31,60 +29,31 @@ interface Props {
   isValidCall?: boolean;
 }
 
-interface FeeAndPayload {
-  payload: any;
-}
-
-export default function useTransactionPreparation({
-  input,
-  type,
-  weightInput,
-  isValidCall = true
-}: Props): FeeAndPayload {
+export default function useTransactionPreparation({ input, type, weightInput, isValidCall = true }: Props) {
   const { areApiReady } = useLoadingApi();
 
   const {
     sourceChainDetails: { chain: sourceChain }
   } = useSourceTarget();
   const { account } = useAccountContext();
-
-  const [payload, setPayload] = useState<null | {}>(null);
   const { call, weight } = useTransactionType({ input, type, weightInput });
 
-  const { createType } = useApiCallsContext();
   const calculateFee = useEstimateFee();
+  const getPayload = usePayload();
 
   useEffect(() => {
     const asyncCalculateFee = async () => {
-      await calculateFee(payload);
+      await calculateFee();
     };
-    if (areApiReady && payload) {
+    if (areApiReady) {
       asyncCalculateFee();
     }
-  }, [areApiReady, calculateFee, payload]);
+  }, [areApiReady, calculateFee]);
 
   useEffect(() => {
-    if (!(isValidCall && account && call && weight)) {
+    if (!isValidCall) {
       return;
     }
-
-    const payload = {
-      call: compactAddLength(call),
-      origin: {
-        SourceAccount: account.addressRaw
-      },
-      // TODO [#122] This must not be hardcoded.
-      spec_version: 1,
-      weight
-    };
-    // @ts-ignore
-    const payloadType = createType(sourceChain, 'OutboundPayload', payload);
-    logger.info(`OutboundPayload: ${JSON.stringify(payload)}`);
-    logger.info(`OutboundPayload.toHex(): ${payloadType.toHex()}`);
-    setPayload(payload);
-  }, [account, call, isValidCall, type, weight, createType, sourceChain]);
-
-  return {
-    payload
-  };
+    getPayload(call, weight);
+  }, [account, call, isValidCall, type, weight, sourceChain, getPayload]);
 }

@@ -32,7 +32,7 @@ const CustomCall = () => {
   const [error, setError] = useState<string | null>();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
-  const { estimatedFee } = useTransactionContext();
+  const { estimatedFee, isCalculatingFee } = useTransactionContext();
   const {
     targetChainDetails: {
       apiConnection: { api: targetApi }
@@ -84,7 +84,7 @@ const CustomCall = () => {
         Send custom call from {sourceChainDetails.chain} to {targetChainDetails.chain}
       </ButtonSubmit>
       <Typography variant="body1" color="secondary">
-        {estimatedFee && `Estimated source Fee: ${estimatedFee}`}
+        {!isCalculatingFee && estimatedFee && `Estimated source Fee: ${estimatedFee}`}
       </Typography>
       <div>
         {decoded && (

@@ -42,7 +42,7 @@ interface Props {
 }
 
 function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, weightInput }: Props) {
-  const { estimatedFee, receiverAddress } = useTransactionContext();
+  const { estimatedFee, receiverAddress, payload } = useTransactionContext();
   const { dispatchTransaction } = useUpdateTransactionContext();
   const laneId = useLaneId();
   const {
@@ -53,7 +53,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
     targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
   const { account } = useAccountContext();
-  const { payload } = useTransactionPreparation({ input, isValidCall, type, weightInput });
+  useTransactionPreparation({ input, isValidCall, type, weightInput });
   const { dispatchMessage } = useUpdateMessageContext();
 
   const sendLaneMessage = async () => {

@@ -18,8 +18,7 @@ import { useCallback } from 'react';
 import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import { TransactionActionCreators } from '../../actions/transactionActions';
-import { useUpdateTransactionContext } from '../../contexts/TransactionContext';
-import { useApiGenericCall } from '../api/useApiGenericCall';
+import { useUpdateTransactionContext, useTransactionContext } from '../../contexts/TransactionContext';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
 import useLaneId from '../chain/useLaneId';
 
@@ -31,11 +30,15 @@ export const useEstimateFee = () => {
     targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
   const { dispatchTransaction } = useUpdateTransactionContext();
-
   const { estimatedFeeMethodName } = getSubstrateDynamicNames(targetChain);
+  const { payload } = useTransactionContext();
 
-  const getEstimateFeeCall = useCallback(
-    async (payload) => {
+  const getEstimateFeeCall = useCallback(async () => {
+    if (!payload) {
+      return;
+    }
+    try {
+      dispatchTransaction(TransactionActionCreators.setCalculatingFee(true));
       // Ignoring custom types missed for TS for now.
       // Need to apply: https://polkadot.js.org/docs/api/start/typescript.user
       // @ts-ignore
@@ -51,35 +54,15 @@ export const useEstimateFee = () => {
       // @ts-ignore
       const estimatedFeeType = createType(sourceChain, 'Option<Balance>', estimatedFeeCall);
       const estimatedFee = estimatedFeeType.toString();
+      dispatchTransaction(TransactionActionCreators.setEstimateFee(estimatedFee));
+    } catch (error) {
+      dispatchTransaction(TransactionActionCreators.setTransactionError(error, 'esstimateFee'));
+    } finally {
+      dispatchTransaction(TransactionActionCreators.setCalculatingFee(false));
+    }
+  }, [createType, dispatchTransaction, estimatedFeeMethodName, laneId, payload, sourceChain, stateCall]);
 
-      return estimatedFee;
-    },
-    [createType, estimatedFeeMethodName, laneId, sourceChain, stateCall]
-  );
-
-  const customSetIsLoading = useCallback(
-    (isCalculatingFee: boolean) => dispatchTransaction(TransactionActionCreators.setCalculatingFee(isCalculatingFee)),
-    [dispatchTransaction]
-  );
-
-  const customSetError = useCallback(
-    (error: string) => dispatchTransaction(TransactionActionCreators.setTransactionError(error)),
-    [dispatchTransaction]
-  );
-
-  const customSetData = useCallback(
-    (estimatedFee: any) => dispatchTransaction(TransactionActionCreators.setEstimateFee(estimatedFee)),
-    [dispatchTransaction]
-  );
-
-  const { data, isLoading, execute } = useApiGenericCall(getEstimateFeeCall, {
-    customSetIsLoading,
-    customSetError,
-    customSetData
-  });
-  console.log('data', data);
-  console.log('isLoading', isLoading);
-  return execute;
+  return getEstimateFeeCall;
 };
 
 export default useEstimateFee;
