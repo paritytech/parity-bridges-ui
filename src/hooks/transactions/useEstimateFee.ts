@@ -38,7 +38,7 @@ export const useEstimateFee = () => {
       return;
     }
     try {
-      dispatchTransaction(TransactionActionCreators.setCalculatingFee(true));
+      dispatchTransaction(TransactionActionCreators.resetEstimatedFee());
       // Ignoring custom types missed for TS for now.
       // Need to apply: https://polkadot.js.org/docs/api/start/typescript.user
       // @ts-ignore
@@ -54,11 +54,9 @@ export const useEstimateFee = () => {
       // @ts-ignore
       const estimatedFeeType = createType(sourceChain, 'Option<Balance>', estimatedFeeCall);
       const estimatedFee = estimatedFeeType.toString();
-      dispatchTransaction(TransactionActionCreators.setEstimateFee(estimatedFee));
+      dispatchTransaction(TransactionActionCreators.setEstimatedFee(estimatedFee, null));
     } catch (error) {
-      dispatchTransaction(TransactionActionCreators.setTransactionError(error, 'esstimateFee'));
-    } finally {
-      dispatchTransaction(TransactionActionCreators.setCalculatingFee(false));
+      dispatchTransaction(TransactionActionCreators.setEstimatedFee(null, error));
     }
   }, [createType, dispatchTransaction, estimatedFeeMethodName, laneId, payload, sourceChain, stateCall]);
 

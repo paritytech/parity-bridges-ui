@@ -82,7 +82,8 @@ function ReceiverInput({ setError }: Props) {
     dispatchTransaction(TransactionActionCreators.setGenericAccount(null));
     dispatchTransaction(TransactionActionCreators.setDerivedAccount(null));
     dispatchTransaction(TransactionActionCreators.setReceiverAddress(null));
-    dispatchTransaction(TransactionActionCreators.setEstimateFee(''));
+    dispatchTransaction(TransactionActionCreators.resetEstimatedFee());
+    dispatchTransaction(TransactionActionCreators.resetPayload());
 
     setShowBalance(false);
     setError('');

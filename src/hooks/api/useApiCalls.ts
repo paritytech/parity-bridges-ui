@@ -21,19 +21,18 @@ import useChainGetters from '../chain/useChainGetters';
 
 const useApiCalls = (): ApiCallsContextType => {
   const { getValuesByChain } = useChainGetters();
-  const getChainValues = useCallback((chain) => getValuesByChain(chain), [getValuesByChain]);
 
   const createType = useCallback(
     (chain, type, data) => {
-      const { api } = getChainValues(chain);
+      const { api } = getValuesByChain(chain);
       return api.registry.createType(type, data);
     },
-    [getChainValues]
+    [getValuesByChain]
   );
 
   const stateCall = useCallback(
     (chain, methodName, data, at) => {
-      const { api } = getChainValues(chain);
+      const { api } = getValuesByChain(chain);
 
       const params = [methodName, data];
       if (at) {
@@ -42,7 +41,7 @@ const useApiCalls = (): ApiCallsContextType => {
       // @ts-ignore
       return api.rpc.state.call<Codec>(...params);
     },
-    [getChainValues]
+    [getValuesByChain]
   );
 
   return { createType, stateCall };

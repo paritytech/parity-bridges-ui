@@ -42,7 +42,7 @@ const useAccounts = (): Accounts => {
   const { dispatchChangeSourceTarget } = useUpdateSourceTarget();
   const derivedAccount = useDerivedAccount();
   const { account } = useAccountContext();
-  const { getValuesByChain } = useChainGetters();
+  const { getSS58PrefixByChain } = useChainGetters();
   const { dispatchTransaction } = useUpdateTransactionContext();
 
   useEffect(() => {
@@ -52,7 +52,7 @@ const useAccounts = (): Accounts => {
   }, [keyringPairsReady, keyringPairs, setAccounts]);
 
   const setCurrentAccount = (value: string, chain: string) => {
-    const { ss58Format } = getValuesByChain(chain);
+    const ss58Format = getSS58PrefixByChain(chain);
 
     const account = accounts.find(({ address }) => encodeAddress(address, ss58Format) === value);
     if (account) {

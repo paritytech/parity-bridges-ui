@@ -43,14 +43,14 @@ export interface TransactionStatusType extends UpdatedTransactionStatusType {
 }
 export interface TransactionState {
   estimatedFee: string | null;
+  estimatedFeeError: string | null;
   receiverAddress: string | null;
   unformattedReceiverAddress: string | null;
   derivedReceiverAccount: string | null;
   genericReceiverAccount: string | null;
   transactions: Array<TransactionStatusType>;
-  error: string | null;
-  isCalculatingFee: boolean;
-  payload: Object;
+  payload: Object | null;
+  payloadError: string | null;
 }
 
 export type TransactionsActionType = { type: TransactionActionTypes; payload: Payload };

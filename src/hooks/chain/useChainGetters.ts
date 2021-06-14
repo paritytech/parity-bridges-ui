@@ -14,11 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
 import { useCallback } from 'react';
 import { GENERIC, GENERIC_SUBSTRATE_PREFIX } from '../../constants';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
-import { getSubstrateDynamicNames, SubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
+import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
 
 const useChainGetters = () => {
   const {
@@ -51,13 +50,6 @@ const useChainGetters = () => {
             isApiReady: targetIsApiReady,
             substrateValues: getSubstrateDynamicNames(sourceChain)
           };
-        case GENERIC:
-          return {
-            ss58Format: GENERIC_SUBSTRATE_PREFIX,
-            api: {} as ApiPromise,
-            isApiReady: false,
-            substrateValues: {} as SubstrateDynamicNames
-          };
         default:
           throw new Error(`Unknown type: ${chain}`);
       }
@@ -74,6 +66,19 @@ const useChainGetters = () => {
     ]
   );
 
+  const getSS58PrefixByChain = (chain: string) => {
+    switch (chain) {
+      case GENERIC:
+        return GENERIC_SUBSTRATE_PREFIX;
+      case targetChain:
+        return targetSS58Format;
+      case sourceChain:
+        return sourceSS58Format;
+      default:
+        return GENERIC_SUBSTRATE_PREFIX;
+    }
+  };
+
   const getChainBySS58Prefix = (prefix: string) => {
     const intPrefix: number = parseInt(prefix, 10);
     switch (intPrefix) {
@@ -88,7 +93,7 @@ const useChainGetters = () => {
     }
   };
 
-  return { getValuesByChain, getChainBySS58Prefix };
+  return { getValuesByChain, getChainBySS58Prefix, getSS58PrefixByChain };
 };
 
 export default useChainGetters;

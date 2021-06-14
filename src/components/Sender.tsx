@@ -78,7 +78,7 @@ const Sender = () => {
     targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
   const { setReceiver } = useReceiver();
-  const { getValuesByChain } = useChainGetters();
+  const { getSS58PrefixByChain } = useChainGetters();
 
   const { areApiReady } = useLoadingApi();
 
@@ -100,7 +100,7 @@ const Sender = () => {
 
   const renderAccounts = (chains: string[]) => {
     const [source, target] = chains;
-    const { ss58Format } = getValuesByChain(source);
+    const ss58Format = getSS58PrefixByChain(source);
     const formatedAccounts = formatAccounts(accounts, ss58Format);
     const items = formatedAccounts.map(({ text, value, key }: any) => (
       <MenuItem

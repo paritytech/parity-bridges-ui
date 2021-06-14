@@ -47,13 +47,13 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
   const [transaction, dispatchTransaction] = useReducer(transactionReducer, {
     derivedReceiverAccount: null,
     estimatedFee: null,
+    estimatedFeeError: null,
     genericReceiverAccount: null,
     receiverAddress: null,
     unformattedReceiverAddress: null,
     transactions: [],
-    error: null,
-    isCalculatingFee: false,
-    payload: {}
+    payload: null,
+    payloadError: null
   });
 
   return (

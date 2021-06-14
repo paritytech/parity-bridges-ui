@@ -44,10 +44,30 @@ const createTransaction = (state: TransactionState, initialTransaction: Transact
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
   switch (action.type) {
-    case TransactionActionTypes.SET_ESTIMATED_FEE:
-      return { ...state, estimatedFee: action.payload.estimatedFee };
-    case TransactionActionTypes.SET_CALCULATING_FEE:
-      return { ...state, isCalculatingFee: action.payload.isCalculatingFee };
+    case TransactionActionTypes.CLEAR_ESTIMATED_FEE:
+      return {
+        ...state,
+        estimatedFee: action.payload.estimatedFeeError ? null : action.payload.estimatedFee,
+        estimatedFeeError: action.payload.estimatedFeeError
+      };
+    case TransactionActionTypes.RESET_ESTIMATED_FEE:
+      return {
+        ...state,
+        payloadError: null,
+        payload: null
+      };
+    case TransactionActionTypes.SET_PAYLOAD:
+      return {
+        ...state,
+        payloadError: action.payload.payloadError ? null : action.payload.payload,
+        payload: action.payload.payload
+      };
+    case TransactionActionTypes.CLEAR_PAYLOAD:
+      return {
+        ...state,
+        payloadError: null,
+        payload: null
+      };
     case TransactionActionTypes.SET_RECEIVER_ADDRESS:
       return { ...state, receiverAddress: action.payload.receiverAddress };
     case TransactionActionTypes.SET_UNFORMATTED_RECEIVER_ADDRESS:
@@ -60,10 +80,6 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return { ...state, derivedReceiverAccount: action.payload.derivedReceiverAccount };
     case TransactionActionTypes.SET_GENERIC_RECEIVER_ACCOUNT:
       return { ...state, genericReceiverAccount: action.payload.genericReceiverAccount };
-    case TransactionActionTypes.SET_PAYLOAD:
-      return { ...state, payload: action.payload.payload };
-    case TransactionActionTypes.SET_ERROR:
-      return { ...state, error: action.payload.error };
     default:
       throw new Error(`Unknown type: ${action.type}`);
   }

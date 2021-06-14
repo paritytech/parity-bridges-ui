@@ -27,7 +27,7 @@ const Remark = () => {
   const [remarkInput, setRemarkInput] = useState('0x');
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
-  const { estimatedFee, isCalculatingFee } = useTransactionContext();
+  const { estimatedFee } = useTransactionContext();
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
     input: remarkInput,
@@ -54,7 +54,7 @@ const Remark = () => {
         Send bridge remark from {sourceChainDetails.chain} to {targetChainDetails.chain}
       </ButtonSubmit>
       <Typography variant="body1" color="secondary">
-        {!isCalculatingFee && estimatedFee && `Estimated source Fee: ${estimatedFee}`}
+        {estimatedFee && `Estimated source Fee: ${estimatedFee}`}
       </Typography>
     </>
   );

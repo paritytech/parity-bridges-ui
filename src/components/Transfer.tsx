@@ -57,7 +57,7 @@ function Transfer() {
   const { account } = useAccounts();
 
   const planck = 10 ** targetChainDetails.apiConnection.api.registry.chainDecimals[0];
-  const { estimatedFee, isCalculatingFee, receiverAddress } = useTransactionContext();
+  const { estimatedFee, receiverAddress } = useTransactionContext();
   const { api, isApiReady } = sourceChainDetails.apiConnection;
   const balance = useBalance(api, account?.address || '');
 
@@ -82,11 +82,10 @@ function Transfer() {
   }, [isRunning]);
 
   useEffect((): void => {
-    !isCalculatingFee &&
-      estimatedFee &&
+    estimatedFee &&
       actualInput &&
       setAmountNotCorrect(new BN(balance.free).sub(new BN(actualInput).add(new BN(estimatedFee))).toNumber() < 0);
-  }, [actualInput, estimatedFee, balance, isApiReady, isCalculatingFee]);
+  }, [actualInput, estimatedFee, balance, isApiReady]);
 
   return (
     <>
@@ -115,7 +114,7 @@ function Transfer() {
         </Alert>
       ) : (
         <Typography variant="body1" color="secondary">
-          {receiverAddress && !isCalculatingFee && estimatedFee && `Estimated source Fee: ${estimatedFee}`}
+          {receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}
         </Typography>
       )}
     </>

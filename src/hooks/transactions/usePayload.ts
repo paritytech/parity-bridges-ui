@@ -33,6 +33,7 @@ export const usePayload = () => {
 
   const getPayload = useCallback(
     (call, weight) => {
+      dispatchTransaction(TransactionActionCreators.resetPayload());
       if (!(account && call && weight)) {
         return;
       }
@@ -53,9 +54,9 @@ export const usePayload = () => {
         const payloadType = createType(sourceChain, 'OutboundPayload', payload);
         logger.info(`OutboundPayload: ${JSON.stringify(payload)}`);
         logger.info(`OutboundPayload.toHex(): ${payloadType.toHex()}`);
-        dispatchTransaction(TransactionActionCreators.setPayload(payload));
+        dispatchTransaction(TransactionActionCreators.setPayload(payload, null));
       } catch (error) {
-        dispatchTransaction(TransactionActionCreators.setTransactionError(error, 'getPayload'));
+        dispatchTransaction(TransactionActionCreators.setPayload(null, error));
       }
     },
     [account, createType, dispatchTransaction, sourceChain]

@@ -18,29 +18,25 @@ import { useCallback } from 'react';
 import { useMountedState } from '../react/useMountedState';
 
 export const useApiGenericCall = (getStateCall: Function) => {
-  const [isLoading, setIsLoading] = useMountedState<boolean>(false);
   const [error, setError] = useMountedState<unknown>(null);
   const [data, setData] = useMountedState<unknown>(null);
 
   const execute = useCallback(
     async (...params) => {
+      setData(null);
+      setError(null);
       try {
-        setIsLoading(true);
         const stateCall = await getStateCall(...params);
         setData(stateCall);
-        return stateCall;
       } catch (e) {
+        setData(null);
         setError(e);
-        setIsLoading(false);
-      } finally {
-        setIsLoading(false);
       }
     },
-    [setIsLoading, getStateCall, setData, setError]
+    [getStateCall, setData, setError]
   );
 
   return {
-    isLoading,
     error,
     data,
     execute
