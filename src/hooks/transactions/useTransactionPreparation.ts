@@ -39,7 +39,7 @@ export default function useTransactionPreparation({ input, type, weightInput, is
   const { call, weight } = useTransactionType({ input, type, weightInput });
 
   const calculateFee = useEstimateFee();
-  const getPayload = usePayload();
+  const updatePayload = usePayload();
 
   useEffect(() => {
     const asyncCalculateFee = async () => {
@@ -54,6 +54,6 @@ export default function useTransactionPreparation({ input, type, weightInput, is
     if (!isValidCall) {
       return;
     }
-    getPayload(call, weight);
-  }, [account, call, isValidCall, type, weight, sourceChain, getPayload]);
+    updatePayload(call, weight);
+  }, [account, call, isValidCall, type, weight, sourceChain, updatePayload]);
 }

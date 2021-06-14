@@ -31,7 +31,7 @@ export const usePayload = () => {
   const { dispatchTransaction } = useUpdateTransactionContext();
   const { account } = useAccountContext();
 
-  const getPayload = useCallback(
+  const updatePayload = useCallback(
     (call, weight) => {
       dispatchTransaction(TransactionActionCreators.resetPayload());
       if (!(account && call && weight)) {
@@ -62,7 +62,7 @@ export const usePayload = () => {
     [account, createType, dispatchTransaction, sourceChain]
   );
 
-  return getPayload;
+  return updatePayload;
 };
 
 export default usePayload;
