@@ -25,12 +25,31 @@ enum TransactionActionTypes {
   SET_TRANSACTION_COMPLETED = 'SET_TRANSACTION_COMPLETED',
   SET_RECEIVER_VALIDATION = 'SET_RECEIVER_VALIDATION',
   SET_DERIVED_RECEIVER_ACCOUNT = 'SET_DERIVED_RECEIVER_ACCOUNT',
-  SET_GENERIC_RECEIVER_ACCOUNT = 'SET_GENERIC_RECEIVER_ACCOUNT'
+  SET_GENERIC_RECEIVER_ACCOUNT = 'SET_GENERIC_RECEIVER_ACCOUNT',
+  SET_ERROR = 'SET_ERROR',
+  SET_PAYLOAD = 'SET_PAYLOAD',
+  SET_PAYLOAD_ERROR = 'SET_PAYLOAD_ERROR',
+  SET_VALIDATION_ERROR = 'SET_VALIDATION_ERROR'
 }
 
 const setEstimateFee = (estimatedFee: string) => ({
   payload: { estimatedFee },
   type: TransactionActionTypes.SET_ESTIMATED_FEE
+});
+
+const setTransactionError = (error: string, source: string) => ({
+  payload: { error, source },
+  type: TransactionActionTypes.SET_ERROR
+});
+
+const setValidationError = (error: string) => ({
+  payload: { error },
+  type: TransactionActionTypes.SET_VALIDATION_ERROR
+});
+
+const setPayload = (payload: Object) => ({
+  payload: { payload },
+  type: TransactionActionTypes.SET_PAYLOAD
 });
 
 const setReceiverAddress = (receiverAddress: string | null) => ({
@@ -74,7 +93,14 @@ const TransactionActionCreators = {
   setUnformattedReceiverAddress,
   updateTransactionStatus,
   setGenericAccount,
+<<<<<<< HEAD
   setDerivedAccount
+=======
+  setDerivedAccount,
+  setTransactionError,
+  setPayload,
+  setValidationError
+>>>>>>> 8261f4f (Draf)
 };
 
 export { TransactionActionCreators, TransactionActionTypes };

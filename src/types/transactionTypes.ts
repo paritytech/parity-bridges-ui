@@ -57,6 +57,9 @@ export interface TransactionState {
   derivedReceiverAccount: string | null;
   genericReceiverAccount: string | null;
   transactions: Array<TransactionStatusType>;
+  error: string | null;
+  validationError: string | null;
+  payload: Object;
 }
 
 export type TransactionsActionType = { type: TransactionActionTypes; payload: Payload };

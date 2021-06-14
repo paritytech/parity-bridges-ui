@@ -14,26 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import React from 'react';
 import { Box, InputBase } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useCallback, useEffect, useState } from 'react';
-import { INCORRECT_FORMAT, GENERIC } from '../constants';
-import { TransactionActionCreators } from '../actions/transactionActions';
-
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
+import { useTransactionContext } from '../contexts/TransactionContext';
 import useApiBalance from '../hooks/subscriptions/useApiBalance';
 import useBalance from '../hooks/subscriptions/useBalance';
-import usePrevious from '../hooks/react/usePrevious';
-
 import useReceiver from '../hooks/transactions/useReceiver';
 import AccountIdenticon from './AccountIdenticon';
 import { SelectLabel } from '../components';
 import Balance from './Balance';
-
-interface Props {
-  setError: (value: string) => void;
-}
 
 const useStyles = makeStyles((theme) => ({
   accountMain: {
@@ -58,80 +48,12 @@ const useStyles = makeStyles((theme) => ({
 
 // TODO: To refactor state management for this component #160
 
-function ReceiverInput({ setError }: Props) {
+function ReceiverInput() {
   const classes = useStyles();
-  const [formatFound, setFormatFound] = useState('');
-  const [showBalance, setShowBalance] = useState(false);
-
-  const { setReceiver, setUnformattedReceiver, validateAccount } = useReceiver();
-
-  const { dispatchTransaction } = useUpdateTransactionContext();
-  const { receiverAddress, unformattedReceiverAddress } = useTransactionContext();
-
+  const { onReceiverChange, showBalance, formatFound } = useReceiver();
+  const { unformattedReceiverAddress } = useTransactionContext();
   const { api, address } = useApiBalance(unformattedReceiverAddress, formatFound, false);
-
   const state = useBalance(api, address, true);
-
-  const {
-    targetChainDetails: { chain: targetChain },
-    sourceChainDetails: { chain: sourceChain }
-  } = useSourceTarget();
-  const prevTargetChain = usePrevious(targetChain);
-
-  const reset = useCallback(() => {
-    dispatchTransaction(TransactionActionCreators.setGenericAccount(null));
-    dispatchTransaction(TransactionActionCreators.setDerivedAccount(null));
-    dispatchTransaction(TransactionActionCreators.setReceiverAddress(null));
-    dispatchTransaction(TransactionActionCreators.setEstimateFee(''));
-
-    setShowBalance(false);
-    setError('');
-  }, [dispatchTransaction, setError]);
-
-  useEffect(() => {
-    if (prevTargetChain !== targetChain) {
-      reset();
-      setUnformattedReceiver(null);
-    }
-    if (!unformattedReceiverAddress) {
-      setShowBalance(false);
-    }
-  }, [unformattedReceiverAddress, setUnformattedReceiver, prevTargetChain, receiverAddress, reset, targetChain]);
-
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const receiver = event.target.value;
-    reset();
-    setUnformattedReceiver(receiver);
-    if (!receiver) {
-      return;
-    }
-
-    const { formattedAccount, formatFound } = validateAccount(receiver)!;
-    setFormatFound(formatFound);
-    if (formatFound === INCORRECT_FORMAT) {
-      setError('Invalid address');
-      return;
-    }
-
-    if (formatFound === GENERIC) {
-      dispatchTransaction(TransactionActionCreators.setGenericAccount(receiver));
-      return;
-    }
-
-    if (formatFound === targetChain) {
-      setReceiver(formattedAccount);
-      setShowBalance(true);
-      return;
-    }
-
-    if (formatFound === sourceChain) {
-      dispatchTransaction(TransactionActionCreators.setDerivedAccount(formattedAccount));
-      setReceiver(receiver);
-      return;
-    }
-
-    setError(`Unsupported address SS58 prefix: ${formatFound}`);
-  };
 
   const addressInput = unformattedReceiverAddress || '';
   return (
@@ -143,7 +65,7 @@ function ReceiverInput({ setError }: Props) {
           id="test-receiver-input"
           className={classes.address}
           fullWidth
-          onChange={onChange}
+          onChange={onReceiverChange}
           value={addressInput}
           placeholder="Recipient address"
         />

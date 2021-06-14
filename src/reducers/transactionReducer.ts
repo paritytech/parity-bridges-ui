@@ -58,6 +58,12 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return { ...state, derivedReceiverAccount: action.payload.derivedReceiverAccount };
     case TransactionActionTypes.SET_GENERIC_RECEIVER_ACCOUNT:
       return { ...state, genericReceiverAccount: action.payload.genericReceiverAccount };
+    case TransactionActionTypes.SET_PAYLOAD:
+      return { ...state, payload: action.payload.payload };
+    case TransactionActionTypes.SET_VALIDATION_ERROR:
+      return { ...state, validationError: action.payload.validationError };
+    case TransactionActionTypes.SET_ERROR:
+      return { ...state, error: action.payload.error };
     default:
       throw new Error(`Unknown type: ${action.type}`);
   }
