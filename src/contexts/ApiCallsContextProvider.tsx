@@ -30,7 +30,6 @@ export function useApiCallsContext() {
 
 export function ApiCallsContextProvider(props: ApiCallsContextProviderProps): React.ReactElement {
   const apiCalls = useApiCalls();
-  console.log('apiCalls', apiCalls);
   const { children = null } = props;
 
   return <ApiCallsContext.Provider value={apiCalls}>{children}</ApiCallsContext.Provider>;
