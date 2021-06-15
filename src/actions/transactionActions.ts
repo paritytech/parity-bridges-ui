@@ -18,7 +18,9 @@ import { TransactionStatusType, UpdatedTransactionStatusType } from '../types/tr
 
 enum TransactionActionTypes {
   RESET_ESTIMATED_FEE = 'RESET_ESTIMATED_FEE',
-  CLEAR_ESTIMATED_FEE = 'CLEAR_ESTIMATED_FEE',
+  SET_ESTIMATED_FEE = 'SET_ESTIMATED_FEE',
+  SET_PAYLOAD = 'SET_PAYLOAD',
+  RESET_PAYLOAD = 'RESET_PAYLOAD',
   SET_RECEIVER_ADDRESS = 'SET_RECEIVER_ADDRESS',
   SET_UNFORMATTED_RECEIVER_ADDRESS = 'SET_UNFORMATTED_RECEIVER_ADDRESS',
   CREATE_TRANSACTION_STATUS = 'CREATE_TRANSACTION_STATUS',
@@ -26,9 +28,7 @@ enum TransactionActionTypes {
   SET_TRANSACTION_COMPLETED = 'SET_TRANSACTION_COMPLETED',
   SET_RECEIVER_VALIDATION = 'SET_RECEIVER_VALIDATION',
   SET_DERIVED_RECEIVER_ACCOUNT = 'SET_DERIVED_RECEIVER_ACCOUNT',
-  SET_GENERIC_RECEIVER_ACCOUNT = 'SET_GENERIC_RECEIVER_ACCOUNT',
-  SET_PAYLOAD = 'SET_PAYLOAD',
-  CLEAR_PAYLOAD = 'CLEAR_PAYLOAD'
+  SET_GENERIC_RECEIVER_ACCOUNT = 'SET_GENERIC_RECEIVER_ACCOUNT'
 }
 
 const resetEstimatedFee = () => ({
@@ -38,7 +38,7 @@ const resetEstimatedFee = () => ({
 
 const setEstimatedFee = (estimatedFee: string | null, estimatedFeeError: string | null) => ({
   payload: { estimatedFee, estimatedFeeError },
-  type: TransactionActionTypes.CLEAR_ESTIMATED_FEE
+  type: TransactionActionTypes.SET_ESTIMATED_FEE
 });
 
 const setPayload = (payload: Object | null, payloadError: string | null) => ({
@@ -48,7 +48,7 @@ const setPayload = (payload: Object | null, payloadError: string | null) => ({
 
 const resetPayload = () => ({
   payload: {},
-  type: TransactionActionTypes.SET_PAYLOAD
+  type: TransactionActionTypes.RESET_PAYLOAD
 });
 
 const setReceiverAddress = (receiverAddress: string | null) => ({
