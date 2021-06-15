@@ -17,7 +17,8 @@
 import { TransactionStatusType, UpdatedTransactionStatusType } from '../types/transactionTypes';
 
 enum TransactionActionTypes {
-  SET_ESTIMATED_FEE = 'SET_ESTIMATED_FEE',
+  RESET_ESTIMATED_FEE = 'RESET_ESTIMATED_FEE',
+  CLEAR_ESTIMATED_FEE = 'CLEAR_ESTIMATED_FEE',
   SET_RECEIVER_ADDRESS = 'SET_RECEIVER_ADDRESS',
   SET_UNFORMATTED_RECEIVER_ADDRESS = 'SET_UNFORMATTED_RECEIVER_ADDRESS',
   CREATE_TRANSACTION_STATUS = 'CREATE_TRANSACTION_STATUS',
@@ -27,14 +28,30 @@ enum TransactionActionTypes {
   SET_DERIVED_RECEIVER_ACCOUNT = 'SET_DERIVED_RECEIVER_ACCOUNT',
   SET_GENERIC_RECEIVER_ACCOUNT = 'SET_GENERIC_RECEIVER_ACCOUNT',
   SET_ERROR = 'SET_ERROR',
-  SET_PAYLOAD = 'SET_PAYLOAD',
   SET_PAYLOAD_ERROR = 'SET_PAYLOAD_ERROR',
-  SET_VALIDATION_ERROR = 'SET_VALIDATION_ERROR'
+  SET_VALIDATION_ERROR = 'SET_VALIDATION_ERROR',
+  SET_PAYLOAD = 'SET_PAYLOAD',
+  CLEAR_PAYLOAD = 'CLEAR_PAYLOAD'
 }
 
-const setEstimateFee = (estimatedFee: string) => ({
-  payload: { estimatedFee },
-  type: TransactionActionTypes.SET_ESTIMATED_FEE
+const resetEstimatedFee = () => ({
+  payload: {},
+  type: TransactionActionTypes.RESET_ESTIMATED_FEE
+});
+
+const setEstimatedFee = (estimatedFee: string | null, estimatedFeeError: string | null) => ({
+  payload: { estimatedFee, estimatedFeeError },
+  type: TransactionActionTypes.CLEAR_ESTIMATED_FEE
+});
+
+const setPayload = (payload: Object | null, payloadError: string | null) => ({
+  payload: { payload, payloadError },
+  type: TransactionActionTypes.SET_PAYLOAD
+});
+
+const resetPayload = () => ({
+  payload: {},
+  type: TransactionActionTypes.SET_PAYLOAD
 });
 
 const setTransactionError = (error: string, source: string) => ({
@@ -47,10 +64,6 @@ const setValidationError = (error: string) => ({
   type: TransactionActionTypes.SET_VALIDATION_ERROR
 });
 
-const setPayload = (payload: Object) => ({
-  payload: { payload },
-  type: TransactionActionTypes.SET_PAYLOAD
-});
 
 const setReceiverAddress = (receiverAddress: string | null) => ({
   payload: { receiverAddress },
@@ -87,12 +100,15 @@ const setDerivedAccount = (derivedReceiverAccount: string | null) => ({
 });
 
 const TransactionActionCreators = {
+  resetPayload,
+  setEstimatedFee,
   createTransactionStatus,
-  setEstimateFee,
+  resetEstimatedFee,
   setReceiverAddress,
   setUnformattedReceiverAddress,
   updateTransactionStatus,
   setGenericAccount,
+<<<<<<< HEAD
 <<<<<<< HEAD
   setDerivedAccount
 =======
@@ -101,6 +117,10 @@ const TransactionActionCreators = {
   setPayload,
   setValidationError
 >>>>>>> 8261f4f (Draf)
+=======
+  setDerivedAccount,
+  setPayload
+>>>>>>> hb-wrap-api-calls-context
 };
 
 export { TransactionActionCreators, TransactionActionTypes };

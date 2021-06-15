@@ -14,34 +14,68 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ApiPromise } from '@polkadot/api';
+import { useCallback } from 'react';
 import { GENERIC, GENERIC_SUBSTRATE_PREFIX } from '../../constants';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
+import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
 
 const useChainGetters = () => {
   const {
     sourceChainDetails: {
-      apiConnection: { api: sourceApi },
+      apiConnection: { api: sourceApi, isApiReady: sourceIsApiReady },
       chain: sourceChain,
       configs: { ss58Format: sourceSS58Format }
     },
     targetChainDetails: {
-      apiConnection: { api: targetApi },
+      apiConnection: { api: targetApi, isApiReady: targetIsApiReady },
       chain: targetChain,
       configs: { ss58Format: targetSS58Format }
     }
   } = useSourceTarget();
 
-  const getValuesByChain = (chain: string) => {
+  const getValuesByChain = useCallback(
+    (chain: string) => {
+      switch (chain) {
+        case sourceChain:
+          return {
+            ss58Format: sourceSS58Format,
+            api: sourceApi,
+            isApiReady: sourceIsApiReady,
+            substrateValues: getSubstrateDynamicNames(targetChain)
+          };
+        case targetChain:
+          return {
+            ss58Format: targetSS58Format,
+            api: targetApi,
+            isApiReady: targetIsApiReady,
+            substrateValues: getSubstrateDynamicNames(sourceChain)
+          };
+        default:
+          throw new Error(`Unknown type: ${chain}`);
+      }
+    },
+    [
+      sourceApi,
+      sourceChain,
+      sourceIsApiReady,
+      sourceSS58Format,
+      targetApi,
+      targetChain,
+      targetIsApiReady,
+      targetSS58Format
+    ]
+  );
+
+  const getSS58PrefixByChain = (chain: string) => {
     switch (chain) {
-      case sourceChain:
-        return { ss58Format: sourceSS58Format, api: sourceApi };
-      case targetChain:
-        return { ss58Format: targetSS58Format, api: targetApi };
       case GENERIC:
-        return { ss58Format: GENERIC_SUBSTRATE_PREFIX, api: {} as ApiPromise };
+        return GENERIC_SUBSTRATE_PREFIX;
+      case targetChain:
+        return targetSS58Format;
+      case sourceChain:
+        return sourceSS58Format;
       default:
-        throw new Error(`Unknown type: ${chain}`);
+        return GENERIC_SUBSTRATE_PREFIX;
     }
   };
 
@@ -59,7 +93,7 @@ const useChainGetters = () => {
     }
   };
 
-  return { getValuesByChain, getChainBySS58Prefix };
+  return { getValuesByChain, getChainBySS58Prefix, getSS58PrefixByChain };
 };
 
 export default useChainGetters;

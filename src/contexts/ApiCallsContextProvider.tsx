@@ -14,11 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-enum ActionsTypes {
-  CHANGE_SOURCE = 'CHANGE_SOURCE',
-  CHANGE_TARGET = 'CHANGE_TARGET',
-  SWAP_CHAINS = 'SWAP_CHAINS',
-  CLEAR_ESTIMATED_FEE = 'CLEAR_ESTIMATED_FEE',
-  SET_RECEIVER_ADDRESS = 'SET_RECEIVER_ADDRESS'
+import React, { useContext } from 'react';
+import { ApiCallsContextType } from '../types/apiCallsTypes';
+import useApiCalls from '../hooks/api/useApiCalls';
+
+interface ApiCallsContextProviderProps {
+  children: React.ReactElement;
 }
-export default ActionsTypes;
+
+export const ApiCallsContext: React.Context<ApiCallsContextType> = React.createContext({} as ApiCallsContextType);
+
+export function useApiCallsContext() {
+  return useContext(ApiCallsContext);
+}
+
+export function ApiCallsContextProvider(props: ApiCallsContextProviderProps): React.ReactElement {
+  const apiCalls = useApiCalls();
+  const { children = null } = props;
+
+  return <ApiCallsContext.Provider value={apiCalls}>{children}</ApiCallsContext.Provider>;
+}

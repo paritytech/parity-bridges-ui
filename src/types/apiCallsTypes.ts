@@ -14,11 +14,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-enum ActionsTypes {
-  CHANGE_SOURCE = 'CHANGE_SOURCE',
-  CHANGE_TARGET = 'CHANGE_TARGET',
-  SWAP_CHAINS = 'SWAP_CHAINS',
-  CLEAR_ESTIMATED_FEE = 'CLEAR_ESTIMATED_FEE',
-  SET_RECEIVER_ADDRESS = 'SET_RECEIVER_ADDRESS'
+import type { Registry } from '@polkadot/types/types';
+import type { Bytes } from '@polkadot/types/primitive';
+
+import type { BlockHash } from '@polkadot/types/interfaces';
+import { Codec } from '@polkadot/types/types';
+
+export type CreateType = Registry['createType'];
+
+export type StateCall = (
+  chain: string,
+  methodName: string,
+  data: Bytes | string | Uint8Array,
+  at?: BlockHash | string | Uint8Array
+) => Promise<Codec>;
+
+export interface ApiCallsContextType {
+  createType: CreateType;
+  stateCall: StateCall;
 }
-export default ActionsTypes;

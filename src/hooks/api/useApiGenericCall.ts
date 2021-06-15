@@ -14,11 +14,33 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-enum ActionsTypes {
-  CHANGE_SOURCE = 'CHANGE_SOURCE',
-  CHANGE_TARGET = 'CHANGE_TARGET',
-  SWAP_CHAINS = 'SWAP_CHAINS',
-  CLEAR_ESTIMATED_FEE = 'CLEAR_ESTIMATED_FEE',
-  SET_RECEIVER_ADDRESS = 'SET_RECEIVER_ADDRESS'
-}
-export default ActionsTypes;
+import { useCallback } from 'react';
+import { useMountedState } from '../react/useMountedState';
+
+export const useApiGenericCall = (getStateCall: Function) => {
+  const [error, setError] = useMountedState<unknown>(null);
+  const [data, setData] = useMountedState<unknown>(null);
+
+  const execute = useCallback(
+    async (...params) => {
+      setData(null);
+      setError(null);
+      try {
+        const stateCall = await getStateCall(...params);
+        setData(stateCall);
+      } catch (e) {
+        setData(null);
+        setError(e);
+      }
+    },
+    [getStateCall, setData, setError]
+  );
+
+  return {
+    error,
+    data,
+    execute
+  };
+};
+
+export default useApiGenericCall;

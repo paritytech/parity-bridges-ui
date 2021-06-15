@@ -16,15 +16,6 @@
 
 import { TransactionActionTypes } from '../actions/transactionActions';
 
-export interface TransactionContextType {
-  estimatedFee: string | null;
-  receiverAddress: string | null;
-  unformattedReceiverAddress: string | null;
-  transactions: Array<TransactionStatusType>;
-  derivedReceiverAccount: string | null;
-  genericReceiverAccount: string | null;
-}
-
 export interface Payload {
   [propName: string]: any;
 }
@@ -52,14 +43,15 @@ export interface TransactionStatusType extends UpdatedTransactionStatusType {
 }
 export interface TransactionState {
   estimatedFee: string | null;
+  estimatedFeeError: string | null;
   receiverAddress: string | null;
   unformattedReceiverAddress: string | null;
   derivedReceiverAccount: string | null;
   genericReceiverAccount: string | null;
   transactions: Array<TransactionStatusType>;
-  error: string | null;
   validationError: string | null;
-  payload: Object;
+  payload: Object | null;
+  payloadError: string | null;
 }
 
 export type TransactionsActionType = { type: TransactionActionTypes; payload: Payload };
