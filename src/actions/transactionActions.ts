@@ -31,7 +31,8 @@ enum TransactionActionTypes {
   SET_PAYLOAD_ERROR = 'SET_PAYLOAD_ERROR',
   SET_VALIDATION_ERROR = 'SET_VALIDATION_ERROR',
   SET_PAYLOAD = 'SET_PAYLOAD',
-  CLEAR_PAYLOAD = 'CLEAR_PAYLOAD'
+  CLEAR_PAYLOAD = 'CLEAR_PAYLOAD',
+  RESET = 'RESET'
 }
 
 const resetEstimatedFee = () => ({
@@ -63,7 +64,6 @@ const setValidationError = (error: string) => ({
   payload: { error },
   type: TransactionActionTypes.SET_VALIDATION_ERROR
 });
-
 
 const setReceiverAddress = (receiverAddress: string | null) => ({
   payload: { receiverAddress },
@@ -99,6 +99,11 @@ const setDerivedAccount = (derivedReceiverAccount: string | null) => ({
   type: TransactionActionTypes.SET_DERIVED_RECEIVER_ACCOUNT
 });
 
+const reset = () => ({
+  payload: {},
+  type: TransactionActionTypes.RESET
+});
+
 const TransactionActionCreators = {
   resetPayload,
   setEstimatedFee,
@@ -108,19 +113,11 @@ const TransactionActionCreators = {
   setUnformattedReceiverAddress,
   updateTransactionStatus,
   setGenericAccount,
-<<<<<<< HEAD
-<<<<<<< HEAD
-  setDerivedAccount
-=======
   setDerivedAccount,
   setTransactionError,
   setPayload,
-  setValidationError
->>>>>>> 8261f4f (Draf)
-=======
-  setDerivedAccount,
-  setPayload
->>>>>>> hb-wrap-api-calls-context
+  setValidationError,
+  reset
 };
 
 export { TransactionActionCreators, TransactionActionTypes };

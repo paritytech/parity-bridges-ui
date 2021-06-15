@@ -69,12 +69,8 @@ export default function useReceiver() {
   );
 
   const reset = useCallback(() => {
-    dispatchTransaction(TransactionActionCreators.setGenericAccount(null));
-    dispatchTransaction(TransactionActionCreators.setDerivedAccount(null));
-    dispatchTransaction(TransactionActionCreators.setReceiverAddress(null));
-    dispatchTransaction(TransactionActionCreators.setEstimateFee(''));
+    dispatchTransaction(TransactionActionCreators.reset());
     setShowBalance(false);
-    dispatchTransaction(TransactionActionCreators.setValidationError(''));
   }, [dispatchTransaction]);
 
   const onReceiverChange = useCallback(
@@ -120,10 +116,6 @@ export default function useReceiver() {
   useEffect(() => {
     if (prevTargetChain !== targetChain) {
       reset();
-      setUnformattedReceiver(null);
-    }
-    if (!unformattedReceiverAddress) {
-      setShowBalance(false);
     }
   }, [unformattedReceiverAddress, setUnformattedReceiver, prevTargetChain, reset, targetChain]);
 

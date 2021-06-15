@@ -33,3 +33,8 @@ export interface AccountState {
 }
 
 export type AccountsActionType = { type: AccountActionsTypes; payload: Payload };
+
+export enum AddressKind {
+  NATIVE = 'native',
+  COMPANION = 'companion'
+}

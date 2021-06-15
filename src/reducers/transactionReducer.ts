@@ -44,17 +44,17 @@ const createTransaction = (state: TransactionState, initialTransaction: Transact
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
   switch (action.type) {
-    case TransactionActionTypes.CLEAR_ESTIMATED_FEE:
+    case TransactionActionTypes.RESET_ESTIMATED_FEE:
       return {
         ...state,
         estimatedFee: action.payload.estimatedFeeError ? null : action.payload.estimatedFee,
         estimatedFeeError: action.payload.estimatedFeeError
       };
-    case TransactionActionTypes.RESET_ESTIMATED_FEE:
+    case TransactionActionTypes.CLEAR_ESTIMATED_FEE:
       return {
         ...state,
-        payloadError: null,
-        payload: null
+        estimatedFee: null,
+        estimatedFeeError: null
       };
     case TransactionActionTypes.SET_PAYLOAD:
       return {
@@ -68,6 +68,19 @@ export default function transactionReducer(state: TransactionState, action: Tran
         payloadError: null,
         payload: null
       };
+    case TransactionActionTypes.RESET:
+      return {
+        ...state,
+        derivedReceiverAccount: null,
+        estimatedFee: null,
+        estimatedFeeError: null,
+        genericReceiverAccount: null,
+        receiverAddress: null,
+        unformattedReceiverAddress: null,
+        validationError: null,
+        payload: null,
+        payloadError: null
+      };
     case TransactionActionTypes.SET_RECEIVER_ADDRESS:
       return { ...state, receiverAddress: action.payload.receiverAddress };
     case TransactionActionTypes.SET_UNFORMATTED_RECEIVER_ADDRESS:
@@ -80,12 +93,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return { ...state, derivedReceiverAccount: action.payload.derivedReceiverAccount };
     case TransactionActionTypes.SET_GENERIC_RECEIVER_ACCOUNT:
       return { ...state, genericReceiverAccount: action.payload.genericReceiverAccount };
-    case TransactionActionTypes.SET_PAYLOAD:
-      return { ...state, payload: action.payload.payload };
     case TransactionActionTypes.SET_VALIDATION_ERROR:
       return { ...state, validationError: action.payload.validationError };
-    case TransactionActionTypes.SET_ERROR:
-      return { ...state, error: action.payload.error };
     default:
       throw new Error(`Unknown type: ${action.type}`);
   }
