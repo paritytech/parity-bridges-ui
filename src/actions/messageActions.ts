@@ -18,7 +18,7 @@ import type { Payload } from '../types/messageTypes';
 
 enum MessageActionsTypes {
   TRIGGER_MESSAGE = 'TRIGGER_MESSAGE',
-  CLEAR_MESSAGE = 'CLEAR_MESSAGE'
+  RESET_MESSAGE = 'RESET_MESSAGE'
 }
 
 const triggerInfoMessage = (payload: Payload) => ({
@@ -43,7 +43,7 @@ const triggerWarningMessage = (payload: Payload) => ({
 
 const clearMessage = () => ({
   payload: {},
-  type: MessageActionsTypes.CLEAR_MESSAGE
+  type: MessageActionsTypes.RESET_MESSAGE
 });
 
 const MessageActionsCreators = {

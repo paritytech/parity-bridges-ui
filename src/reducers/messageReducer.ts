@@ -19,7 +19,7 @@ import type { MessagesActionType, MessageState } from '../types/messageTypes';
 
 export default function messageReducer(state: MessageState, action: MessagesActionType): MessageState {
   switch (action.type) {
-    case MessageActionsTypes.CLEAR_MESSAGE:
+    case MessageActionsTypes.RESET_MESSAGE:
       return { ...state, message: null, variant: null };
     case MessageActionsTypes.TRIGGER_MESSAGE:
       return { ...state, message: action.payload.message, variant: action.payload.variant };

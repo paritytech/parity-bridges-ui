@@ -44,13 +44,13 @@ const createTransaction = (state: TransactionState, initialTransaction: Transact
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
   switch (action.type) {
-    case TransactionActionTypes.RESET_ESTIMATED_FEE:
+    case TransactionActionTypes.SET_ESTIMATED_FEE:
       return {
         ...state,
         estimatedFee: action.payload.estimatedFeeError ? null : action.payload.estimatedFee,
         estimatedFeeError: action.payload.estimatedFeeError
       };
-    case TransactionActionTypes.CLEAR_ESTIMATED_FEE:
+    case TransactionActionTypes.RESET_ESTIMATED_FEE:
       return {
         ...state,
         estimatedFee: null,
@@ -62,7 +62,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
         payloadError: action.payload.payloadError ? null : action.payload.payload,
         payload: action.payload.payload
       };
-    case TransactionActionTypes.CLEAR_PAYLOAD:
+    case TransactionActionTypes.RESET_PAYLOAD:
       return {
         ...state,
         payloadError: null,
