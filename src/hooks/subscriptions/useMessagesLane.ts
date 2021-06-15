@@ -14,13 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import BN from 'bn.js';
-import { useCallback } from 'react';
 import { SubscriptionInput } from '../../types/subscriptionsTypes';
 import { useMountedState } from '../react/useMountedState';
-import { useApiSubscription } from './useApiSubscription';
 import useLaneId from '../chain/useLaneId';
 import getSubstrateDynamicNames from '../../util/getSubstrateDynamicNames';
+import { getLaneData } from '../../api/getLaneData';
+import { useApiSubscription } from './useApiSubscription';
+import { useCallback } from 'react';
 
 interface Output {
   bridgeReceivedMessages: string;
@@ -41,33 +41,31 @@ const useMessagesLane = ({ isApiReady, api, chain }: SubscriptionInput): Output 
   const laneId = useLaneId();
   const { bridgedMessages } = getSubstrateDynamicNames(chain);
   const isReady = !!(isApiReady && api.query[bridgedMessages] && chain);
-
   const getOutboundLaneData = useCallback(
     () =>
-      api.query[bridgedMessages].outboundLanes(laneId, (res: any) => {
-        const latest_generated_nonce = res.get('latest_generated_nonce').toString();
-        const latest_received_nonce = res.get('latest_received_nonce').toString();
-        const pendingMessages = new BN(latest_generated_nonce).sub(new BN(latest_received_nonce));
-
-        setOutboudLanes({
-          latestReceivedNonce: latest_received_nonce.toString(),
-          pendingMessages: pendingMessages.isNeg() ? '0' : pendingMessages.toString(),
-          totalMessages: latest_generated_nonce
-        });
+      getLaneData({
+        api,
+        apiMethod: bridgedMessages,
+        separator: 'outbound',
+        arg1: laneId,
+        setter: setOutboudLanes
       }),
-    [api.query, bridgedMessages, laneId, setOutboudLanes]
+    [api, bridgedMessages, laneId, setOutboudLanes]
   );
 
   const getInboundLaneData = useCallback(
     () =>
-      api.query[bridgedMessages].inboundLanes(laneId, (res: any) => {
-        setBridgesReceivedMessages(res.get('last_confirmed_nonce').toString());
+      getLaneData({
+        api,
+        apiMethod: bridgedMessages,
+        separator: 'inbound',
+        arg1: laneId,
+        setter: setBridgesReceivedMessages
       }),
-    [api.query, bridgedMessages, laneId, setBridgesReceivedMessages]
+    [api, bridgedMessages, laneId, setBridgesReceivedMessages]
   );
 
   useApiSubscription(getOutboundLaneData, isReady);
-
   useApiSubscription(getInboundLaneData, isReady);
 
   return { bridgeReceivedMessages, outboundLanes };
