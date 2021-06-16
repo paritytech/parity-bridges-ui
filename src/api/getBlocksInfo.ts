@@ -13,40 +13,31 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
+import { ApiPromise } from '@polkadot/api';
 import { VoidFn } from '@polkadot/api/types';
-import { useState, useCallback } from 'react';
+import { useGetApi, ReturnApi } from './useGetApi';
 
-export interface ReturnApi {
-  isLoading: boolean;
-  error: unknown;
-  data: unknown;
-  execute: () => any;
-  executeCb: () => Promise<VoidFn>;
+interface DataType {
+  api: ApiPromise;
+  apiMethod?: string;
+  separator: string;
+  setter: any;
+  arg1?: any;
 }
 
-export const useGetApi = <T>(apiCall: any, args: T): ReturnApi => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<unknown>(null);
-  const [data, setData] = useState<unknown>(null);
+export const getBlocksInfo = async ({ api, separator, setter }: DataType): Promise<VoidFn> => {
+  if (separator === 'bestNumber') {
+    return await api.derive.chain[separator]((res) => {
+      setter(res.toString());
+    });
+  } else if (separator === 'bestNumberFinalized') {
+    return await api.derive.chain[separator]((res) => {
+      setter(res.toString());
+    });
+  }
+  return {} as Promise<VoidFn>;
+};
 
-  const execute = async () => {
-    try {
-      setIsLoading(true);
-      const ret = await apiCall(args);
-      setData(ret);
-      return ret;
-    } catch (e) {
-      setError(e);
-      setIsLoading(false);
-      throw e;
-    }
-  };
-
-  return {
-    isLoading,
-    error,
-    data,
-    execute,
-    executeCb: useCallback(execute, [apiCall, args])
-  };
+export const useGetBlocksInfo = (options: DataType): ReturnApi => {
+  return useGetApi<DataType>(getBlocksInfo, options);
 };

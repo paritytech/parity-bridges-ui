@@ -17,6 +17,17 @@ import { ApiPromise } from '@polkadot/api';
 import { VoidFn } from '@polkadot/api/types';
 import { useGetApi, ReturnApi } from './useGetApi';
 
+import { Hash } from '@polkadot/types/interfaces';
+import { Codec } from '@polkadot/types/types';
+import BN from 'bn.js';
+
+interface HeaderId {
+  number: BN;
+  hash: Hash;
+}
+
+type CodecHeaderId = Codec & HeaderId;
+
 interface DataType {
   api: ApiPromise;
   apiMethod: string;
@@ -27,7 +38,7 @@ interface DataType {
 
 export const getBridgedBlocks = async ({ api, apiMethod, separator, setter, arg1 }: DataType): Promise<VoidFn> => {
   if (separator === 'bestFinalized') {
-    return await api.query[apiMethod][separator]((res) => {
+    return await api.query[apiMethod][separator]((res: CodecHeaderId) => {
       setter(res.toString());
     });
   } else if (separator === 'importedHeaders') {

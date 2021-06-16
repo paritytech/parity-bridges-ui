@@ -16,20 +16,10 @@
 
 import { useCallback } from 'react';
 import { SubscriptionInput } from '../../types/subscriptionsTypes';
-// import { Hash } from '@polkadot/types/interfaces';
-// import { Codec } from '@polkadot/types/types';
-// import BN from 'bn.js';
 import { useMountedState } from '../react/useMountedState';
 import getSubstrateDynamicNames from '../../util/getSubstrateDynamicNames';
 import { useApiSubscription } from './useApiSubscription';
 import { getBridgedBlocks } from '../../api/getBridgedBlocks';
-
-// interface HeaderId {
-//   number: BN;
-//   hash: Hash;
-// }
-
-// type CodecHeaderId = Codec & HeaderId;
 
 const useBridgedBlocks = ({ isApiReady, api, chain }: SubscriptionInput) => {
   const [bestBridgedFinalizedBlock, setBestBridgedFinalizedBlock] = useMountedState('');
@@ -59,28 +49,10 @@ const useBridgedBlocks = ({ isApiReady, api, chain }: SubscriptionInput) => {
     [api, bridgedGrandpaChain, setBestBridgedFinalizedBlock]
   );
 
-  // const getBestFinalizedBlock = useCallback(
-  //   () =>
-  //     api.query[bridgedGrandpaChain].bestFinalized((res: CodecHeaderId) => {
-  //       const bestFinalized = res.toString();
-  //       setBestFinalizedBlock(bestFinalized);
-  //     }),
-  //   [api.query, bridgedGrandpaChain, setBestFinalizedBlock]
-  // );
-
-  // const getBestBridgedFinalizedBlock = useCallback(
-  //   () =>
-  //     api.query[bridgedGrandpaChain].importedHeaders(bestFinalizedBlock, (res: any) => {
-  //       const importedHeader = res?.toJSON()?.number;
-  //       importedHeader && setBestBridgedFinalizedBlock(importedHeader);
-  //     }),
-  //   [api.query, bestFinalizedBlock, bridgedGrandpaChain, setBestBridgedFinalizedBlock]
-  // );
-
   useApiSubscription(getBestFinalizedBlock, isReady);
   useApiSubscription(getBestBridgedFinalizedBlock, isReady && Boolean(bestFinalizedBlock));
 
-  return { bestBridgedFinalizedBlock, setBestFinalizedBlock };
+  return { bestBridgedFinalizedBlock };
 };
 
 export default useBridgedBlocks;
