@@ -54,6 +54,15 @@ export const useApiCallAndSubscriptions = ({ isApiReady, api, chain, apiFunc, se
 
   useEffect(() => {
     const isReady = !!(isApiReady && chain);
+    const unsubscribe = (unsub: Promise<VoidFn>, isReady: boolean) => {
+      isReady &&
+        unsub &&
+        unsub
+          .then((u) => typeof u === 'function' && u())
+          .catch((e) => {
+            logger.error('error unsubscribing', e);
+          });
+    };
 
     if (!isReady) {
       return;
@@ -63,20 +72,8 @@ export const useApiCallAndSubscriptions = ({ isApiReady, api, chain, apiFunc, se
       const unsub1 = getstate1();
       const unsub2 = getstate2();
       return () => {
-        isReady &&
-          unsub1 &&
-          unsub1
-            .then((u) => u())
-            .catch((e) => {
-              logger.error('error unsubscribing', e);
-            });
-        isReady &&
-          unsub2 &&
-          unsub2
-            .then((u) => u())
-            .catch((e) => {
-              logger.error('error unsubscribing', e);
-            });
+        unsubscribe(unsub1, isReady);
+        unsubscribe(unsub2, isReady);
       };
     } catch (e) {
       logger.error('error executing subscription', e);
