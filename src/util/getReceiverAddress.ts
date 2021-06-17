@@ -47,8 +47,6 @@ const getReceiverAddress = ({ targetChainDetails, sourceChainDetails, receiverAd
 
   try {
     const [validatedDerivedAcccount, rest] = checkAddress(receiverAddress, targetSS58Format);
-    console.log('validatedDerivedAcccount', validatedDerivedAcccount);
-    console.log('rest', rest);
 
     if (validatedDerivedAcccount) {
       return { address: receiverAddress, formatFound: targetChain };

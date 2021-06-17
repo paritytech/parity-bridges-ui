@@ -93,9 +93,6 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
     targetChainDetails
   )!;
 
-  console.log('formatFound', formatFound);
-  console.log('receiverAddress', receiverAddress);
-
   const { chain: targetChain } = targetChainDetails;
   const { chain: sourceChain } = sourceChainDetails;
 
@@ -139,7 +136,8 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
     return {
       ...state,
       unformattedReceiverAddress,
-      receiverAddress,
+      receiverAddress: unformattedReceiverAddress,
+      derivedReceiverAccount: receiverAddress,
       genericReceiverAccount: null,
       validationError: null,
       showBalance: true,
@@ -213,8 +211,6 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return { ...state, genericReceiverAccount: action.payload.genericReceiverAccount };
     case TransactionActionTypes.SET_RECEIVER:
       return setReceiver(state, action.payload.receiverPayload);
-    case TransactionActionTypes.SET_VALIDATION_ERROR:
-      return { ...state, validationError: action.payload.validationError };
     default:
       throw new Error(`Unknown type: ${action.type}`);
   }
