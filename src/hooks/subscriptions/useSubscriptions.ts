@@ -41,7 +41,7 @@ const useSubscriptions = (ChainDetail: ChainDetails): Output => {
     api,
     chain: source,
     apiFunc: getBlocksInfo,
-    separators: ['bestNumber', 'bestNumberinalized']
+    separators: ['bestNumber', 'bestNumberFinalized']
   });
 
   const bestBlock = blocks.state1;
