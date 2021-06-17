@@ -53,7 +53,7 @@ const useBridgedBlocks = ({ isApiReady, api, chain }: SubscriptionInput) => {
   useApiSubscription(getBestFinalizedBlock, isReady);
   useApiSubscription(getBestBridgedFinalizedBlock, isReady && Boolean(bestFinalizedBlock));
 
-  return { bestBridgedFinalizedBlock };
+  return { bestBridgedFinalizedBlock, setBestFinalizedBlock };
 };
 
 export default useBridgedBlocks;
