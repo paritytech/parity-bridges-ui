@@ -26,31 +26,56 @@ export interface Inputs {
   isApiReady: boolean;
   apiFunc: (options: DataType) => Promise<VoidFn>;
   separators: string[];
+  apiMethod?: string;
+  arg1?: unknown;
 }
 
-export const useApiCallAndSubscriptions = ({ isApiReady, api, chain, apiFunc, separators }: Inputs) => {
+export const useApiCallAndSubscriptions = ({
+  isApiReady,
+  api,
+  chain,
+  apiFunc,
+  apiMethod,
+  separators,
+  arg1
+}: Inputs) => {
   const [state1, setstate1] = useMountedState('');
   const [state2, setstate2] = useMountedState('');
 
-  const getstate1 = useCallback(
-    () =>
-      apiFunc({
-        api,
-        separator: separators[0],
-        setter: setstate1
-      }),
-    [api, apiFunc, separators, setstate1]
-  );
+  const enrichOptions = (options: any, apiMethod: string | undefined, arg1: any) => {
+    if (apiMethod) {
+      options = Object.assign({}, options, { apiMethod });
+    }
+    if (arg1) {
+      options = Object.assign({}, options, { arg1 });
+    }
+    return options;
+  };
 
-  const getstate2 = useCallback(
-    () =>
-      apiFunc({
-        api,
-        separator: separators[1],
-        setter: setstate2
-      }),
-    [api, apiFunc, separators, setstate2]
-  );
+  const getstate1 = useCallback(() => {
+    let options = {
+      api,
+      separator: separators[0],
+      setter: setstate1
+    };
+    options = enrichOptions(options, apiMethod, arg1);
+    return apiFunc(options);
+  }, [api, separators, setstate1, apiMethod, arg1, apiFunc]);
+
+  const getstate2 = useCallback(() => {
+    let options = {
+      api,
+      separator: separators[1],
+      setter: setstate2
+    };
+    if (apiMethod) {
+      options = Object.assign({}, options, { apiMethod });
+    }
+    if (arg1) {
+      options = Object.assign({}, options, { arg1 });
+    }
+    return apiFunc(options);
+  }, [api, separators, setstate2, apiMethod, arg1, apiFunc]);
 
   useEffect(() => {
     const isReady = !!(isApiReady && chain);

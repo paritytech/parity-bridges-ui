@@ -17,17 +17,10 @@
 import { ChainDetails } from '../../types/sourceTargetTypes';
 import { Subscriptions } from '../../types/subscriptionsTypes';
 import useChainProfile from '../chain/useChainProfile';
-import { getBlocksInfo } from '../../api/getBlocksInfo';
-import { getBridgedBlocks } from '../../api/getBridgedBlocks';
-// import { getLaneData } from '../../api/getLaneData';
-import { useApiCallAndSubscriptions } from '../../api/useApiCallAndSubscriptions';
-
-/**
- * These are needed in case I want to roll back to previews solutions of `useBlocksInfo` style
- */
-// import useBlocksInfo from './useBlocksInfo';
-// import useBridgedBlocks from './useBridgedBlocks';
+import { useApiCallAndSubscriptions, getBlocksInfo } from '../../api';
 import useMessagesLane from './useMessagesLane';
+import useBridgedBlocks from './useBridgedBlocks';
+
 interface Source {
   source: string;
   polkadotjsUrl: string;
@@ -43,13 +36,6 @@ const useSubscriptions = (ChainDetail: ChainDetails): Output => {
     polkadotjsUrl
   } = useChainProfile(ChainDetail);
 
-  /**
-   * These are needed in case I want to roll back to previews solutions of `useBlocksInfo` style
-   */
-  // const blockInfo = useBlocksInfo({ api, chain: source, isApiReady });
-  // const { bestBridgedFinalizedBlock } = useBridgedBlocks({ api, chain: target, isApiReady });
-  // const messagesLane = useMessagesLane({ api, chain: target, isApiReady });
-
   const blocks = useApiCallAndSubscriptions({
     isApiReady,
     api,
@@ -61,35 +47,14 @@ const useSubscriptions = (ChainDetail: ChainDetails): Output => {
   const bestBlock = blocks.state1;
   const bestBlockFinalized = blocks.state2;
 
-  const bridgedBlocks = useApiCallAndSubscriptions({
-    isApiReady,
-    api,
-    chain: target,
-    apiFunc: getBridgedBlocks,
-    separators: ['bestFinalized', 'bestFinalizedBlock']
-  });
-
-  const bestBridgedFinalizedBlock = bridgedBlocks.state2;
-
+  const { bestBridgedFinalizedBlock } = useBridgedBlocks({ api, chain: target, isApiReady });
   const messagesLane = useMessagesLane({ api, chain: target, isApiReady });
-  const { outboundLanes, bridgeReceivedMessages } = messagesLane;
-  // const msgLane = useApiCallAndSubscriptions({
-  //   isApiReady,
-  //   api,
-  //   chain: target,
-  //   apiFunc: getLaneData,
-  //   separators: ['outbound', 'inbound']
-  // });
-
-  // const outboundLanes = JSON.parse(msgLane.state1);
-  // const bridgeReceivedMessages = msgLane.state2;
 
   return {
     bestBlock,
     bestBlockFinalized,
     bestBridgedFinalizedBlock,
-    bridgeReceivedMessages,
-    outboundLanes,
+    ...messagesLane,
     source,
     polkadotjsUrl
   };

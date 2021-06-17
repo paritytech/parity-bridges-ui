@@ -43,10 +43,11 @@ const useBridgedBlocks = ({ isApiReady, api, chain }: SubscriptionInput) => {
       getBridgedBlocks({
         api,
         apiMethod: bridgedGrandpaChain,
-        separator: 'bestFinalizedBlock',
-        setter: setBestBridgedFinalizedBlock
+        separator: 'importedHeaders',
+        setter: setBestBridgedFinalizedBlock,
+        arg1: bestFinalizedBlock
       }),
-    [api, bridgedGrandpaChain, setBestBridgedFinalizedBlock]
+    [api, bestFinalizedBlock, bridgedGrandpaChain, setBestBridgedFinalizedBlock]
   );
 
   useApiSubscription(getBestFinalizedBlock, isReady);
