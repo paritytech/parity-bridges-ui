@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { TransactionStatusType, UpdatedTransactionStatusType } from '../types/transactionTypes';
+import { TransactionStatusType, UpdatedTransactionStatusType, ReceiverPayload } from '../types/transactionTypes';
 
 enum TransactionActionTypes {
   RESET_ESTIMATED_FEE = 'RESET_ESTIMATED_FEE',
@@ -22,6 +22,7 @@ enum TransactionActionTypes {
   SET_PAYLOAD = 'SET_PAYLOAD',
   RESET_PAYLOAD = 'RESET_PAYLOAD',
   SET_RECEIVER_ADDRESS = 'SET_RECEIVER_ADDRESS',
+  SET_RECEIVER = 'SET_RECEIVER',
   SET_UNFORMATTED_RECEIVER_ADDRESS = 'SET_UNFORMATTED_RECEIVER_ADDRESS',
   CREATE_TRANSACTION_STATUS = 'CREATE_TRANSACTION_STATUS',
   UPDATE_CURRENT_TRANSACTION_STATUS = 'UPDATE_CURRENT_TRANSACTION_STATUS',
@@ -64,6 +65,11 @@ const setReceiverAddress = (receiverAddress: string | null) => ({
   type: TransactionActionTypes.SET_RECEIVER_ADDRESS
 });
 
+const setReceiver = (receiverPayload: ReceiverPayload) => ({
+  payload: { receiverPayload },
+  type: TransactionActionTypes.SET_RECEIVER
+});
+
 const setUnformattedReceiverAddress = (unformattedReceiverAddress: string | null) => ({
   payload: { unformattedReceiverAddress },
   type: TransactionActionTypes.SET_UNFORMATTED_RECEIVER_ADDRESS
@@ -104,6 +110,7 @@ const TransactionActionCreators = {
   createTransactionStatus,
   resetEstimatedFee,
   setReceiverAddress,
+  setReceiver,
   setUnformattedReceiverAddress,
   updateTransactionStatus,
   setGenericAccount,

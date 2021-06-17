@@ -54,7 +54,9 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     transactions: [],
     validationError: null,
     payload: null,
-    payloadError: null
+    payloadError: null,
+    showBalance: false,
+    formatFound: null
   });
 
   return (

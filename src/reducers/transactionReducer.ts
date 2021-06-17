@@ -14,8 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import { INCORRECT_FORMAT, GENERIC } from '../constants';
 import { TransactionActionTypes } from '../actions/transactionActions';
-import { Payload, TransactionsActionType, TransactionState, TransactionStatusType } from '../types/transactionTypes';
+import getReceiverAddress from '../util/getReceiverAddress';
+import {
+  Payload,
+  TransactionsActionType,
+  TransactionState,
+  TransactionStatusType,
+  ReceiverPayload
+} from '../types/transactionTypes';
+import { ChainState } from '../types/sourceTargetTypes';
+import logger from '../util/logger';
 
 const updateTransaction = (state: TransactionState, payload: Payload): TransactionState => {
   if (state.transactions) {
@@ -40,6 +50,112 @@ const createTransaction = (state: TransactionState, initialTransaction: Transact
   const newState = { ...state };
   newState.transactions.unshift(initialTransaction);
   return newState;
+};
+
+const validateAccount = (receiver: string, sourceChainDetails: ChainState, targetChainDetails: ChainState) => {
+  try {
+    if (!receiver) {
+      return { formatFound: null, receiverAddress: null };
+    }
+    const { address, formatFound } = getReceiverAddress({
+      targetChainDetails,
+      sourceChainDetails,
+      receiverAddress: receiver
+    });
+
+    return { formatFound, receiverAddress: address };
+  } catch (e) {
+    logger.error(e.message);
+    if (e.message === INCORRECT_FORMAT) {
+      return { formatFound: e.message, receiverAddress: receiver };
+    }
+  }
+};
+
+const setReceiver = (state: TransactionState, payload: ReceiverPayload): TransactionState => {
+  const { unformattedReceiverAddress, sourceChainDetails, targetChainDetails } = payload;
+
+  if (!unformattedReceiverAddress) {
+    return {
+      ...state,
+      validationError: null,
+      showBalance: false,
+      unformattedReceiverAddress,
+      receiverAddress: null,
+      genericReceiverAccount: null,
+      formatFound: null
+    };
+  }
+
+  const { receiverAddress, formatFound } = validateAccount(
+    unformattedReceiverAddress,
+    sourceChainDetails,
+    targetChainDetails
+  )!;
+
+  console.log('formatFound', formatFound);
+  console.log('receiverAddress', receiverAddress);
+
+  const { chain: targetChain } = targetChainDetails;
+  const { chain: sourceChain } = sourceChainDetails;
+
+  if (formatFound === INCORRECT_FORMAT) {
+    return {
+      ...state,
+      validationError: 'Invalid address',
+      showBalance: false,
+      unformattedReceiverAddress,
+      receiverAddress: null,
+      genericReceiverAccount: null,
+      formatFound
+    };
+  }
+
+  if (formatFound === GENERIC) {
+    return {
+      ...state,
+      unformattedReceiverAddress,
+      receiverAddress: null,
+      genericReceiverAccount: unformattedReceiverAddress,
+      validationError: null,
+      showBalance: false,
+      formatFound
+    };
+  }
+
+  if (formatFound === targetChain) {
+    return {
+      ...state,
+      unformattedReceiverAddress,
+      receiverAddress,
+      genericReceiverAccount: null,
+      validationError: null,
+      showBalance: true,
+      formatFound
+    };
+  }
+
+  if (formatFound === sourceChain) {
+    return {
+      ...state,
+      unformattedReceiverAddress,
+      receiverAddress,
+      genericReceiverAccount: null,
+      validationError: null,
+      showBalance: true,
+      formatFound
+    };
+  }
+
+  return {
+    ...state,
+    validationError: `Unsupported address SS58 prefix: ${formatFound}`,
+    showBalance: false,
+    unformattedReceiverAddress,
+    receiverAddress: null,
+    genericReceiverAccount: null,
+    formatFound
+  };
 };
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
@@ -79,7 +195,9 @@ export default function transactionReducer(state: TransactionState, action: Tran
         unformattedReceiverAddress: null,
         validationError: null,
         payload: null,
-        payloadError: null
+        payloadError: null,
+        showBalance: false,
+        formatFound: null
       };
     case TransactionActionTypes.SET_RECEIVER_ADDRESS:
       return { ...state, receiverAddress: action.payload.receiverAddress };
@@ -93,6 +211,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return { ...state, derivedReceiverAccount: action.payload.derivedReceiverAccount };
     case TransactionActionTypes.SET_GENERIC_RECEIVER_ACCOUNT:
       return { ...state, genericReceiverAccount: action.payload.genericReceiverAccount };
+    case TransactionActionTypes.SET_RECEIVER:
+      return setReceiver(state, action.payload.receiverPayload);
     case TransactionActionTypes.SET_VALIDATION_ERROR:
       return { ...state, validationError: action.payload.validationError };
     default:

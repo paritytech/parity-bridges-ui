@@ -24,7 +24,7 @@ type State = {
   api: ApiPromise;
 };
 
-const useApiBalance = (address: string | null, chain: string | undefined, isDerived: boolean): State => {
+const useApiBalance = (address: string | null, chain: string | undefined | null, isDerived: boolean): State => {
   const {
     sourceChainDetails: {
       apiConnection: { api: sourceApi },

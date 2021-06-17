@@ -25,7 +25,7 @@ import React, { useCallback } from 'react';
 import { IdentityProps } from '@polkadot/react-identicon/types';
 interface Props extends IdentityProps {
   address?: string;
-  formatFound?: string;
+  formatFound?: string | null;
 }
 const useStyles = makeStyles(() => ({
   placeholder: {

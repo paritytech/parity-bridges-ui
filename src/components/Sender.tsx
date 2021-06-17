@@ -18,10 +18,10 @@ import { MenuItem, Select } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { encodeAddress } from '@polkadot/util-crypto';
 import React, { useEffect, useState } from 'react';
-
+import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useAccounts from '../hooks/accounts/useAccounts';
-import useReceiver from '../hooks/transactions/useReceiver';
+import { TransactionActionCreators } from '../actions/transactionActions';
 import useLoadingApi from '../hooks/connections/useLoadingApi';
 import { Account as AccountType } from '../types/accountTypes';
 import formatAccounts from '../util/formatAccounts';
@@ -78,7 +78,7 @@ const Sender = () => {
     },
     targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
-  const { setReceiver } = useReceiver();
+  const { dispatchTransaction } = useUpdateTransactionContext();
   const { getSS58PrefixByChain } = useChainGetters();
 
   const { areApiReady } = useLoadingApi();
@@ -96,7 +96,7 @@ const Sender = () => {
 
   const onChange = (value: string, chain: string) => {
     setCurrentAccount(value, chain);
-    setReceiver(null);
+    dispatchTransaction(TransactionActionCreators.reset());
   };
 
   const renderAccounts = (chains: string[]) => {

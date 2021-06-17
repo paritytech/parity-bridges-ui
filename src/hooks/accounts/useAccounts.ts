@@ -57,7 +57,7 @@ const useAccounts = (): Accounts => {
     const account = accounts.find(({ address }) => encodeAddress(address, ss58Format) === value);
     if (account) {
       dispatchChangeSourceTarget(SourceTargetActionsCreators.switchChains(chain));
-      dispatchTransaction(TransactionActionCreators.setUnformattedReceiverAddress(null));
+      dispatchTransaction(TransactionActionCreators.reset());
       dispatchAccount(AccountActionCreators.setAccount(account));
     }
   };

@@ -15,6 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { TransactionActionTypes } from '../actions/transactionActions';
+import { ChainState } from './sourceTargetTypes';
 
 export interface Payload {
   [propName: string]: any;
@@ -52,6 +53,8 @@ export interface TransactionState {
   validationError: string | null;
   payload: Object | null;
   payloadError: string | null;
+  showBalance: boolean;
+  formatFound: string | null;
 }
 
 export type TransactionsActionType = { type: TransactionActionTypes; payload: Payload };
@@ -67,4 +70,12 @@ export interface Step {
   label: string;
   labelOnChain?: string;
   status: keyof typeof TransactionStatusEnum;
+}
+
+export interface ReceiverPayload {
+  unformattedReceiverAddress: string | null;
+  receiverAddress: string | null;
+  formatFound: string | null;
+  sourceChainDetails: ChainState;
+  targetChainDetails: ChainState;
 }

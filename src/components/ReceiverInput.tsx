@@ -50,8 +50,8 @@ const useStyles = makeStyles((theme) => ({
 
 function ReceiverInput() {
   const classes = useStyles();
-  const { onReceiverChange, showBalance, formatFound } = useReceiver();
-  const { unformattedReceiverAddress } = useTransactionContext();
+  const { onReceiverChange } = useReceiver();
+  const { unformattedReceiverAddress, formatFound, showBalance } = useTransactionContext();
   const { api, address } = useApiBalance(unformattedReceiverAddress, formatFound, false);
   const state = useBalance(api, address, true);
 
