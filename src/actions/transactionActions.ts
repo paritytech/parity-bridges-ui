@@ -24,10 +24,7 @@ enum TransactionActionTypes {
   SET_PAYLOAD_ERROR = 'SET_PAYLOAD_ERROR',
   SET_RECEIVER = 'SET_RECEIVER',
   SET_RECEIVER_ADDRESS = 'SET_RECEIVER_ADDRESS',
-  SET_UNFORMATTED_RECEIVER_ADDRESS = 'SET_UNFORMATTED_RECEIVER_ADDRESS',
-  SET_DERIVED_RECEIVER_ACCOUNT = 'SET_DERIVED_RECEIVER_ACCOUNT',
   SET_RECEIVER_VALIDATION = 'SET_RECEIVER_VALIDATION',
-  SET_GENERIC_RECEIVER_ACCOUNT = 'SET_GENERIC_RECEIVER_ACCOUNT',
   CREATE_TRANSACTION_STATUS = 'CREATE_TRANSACTION_STATUS',
   UPDATE_CURRENT_TRANSACTION_STATUS = 'UPDATE_CURRENT_TRANSACTION_STATUS',
   SET_TRANSACTION_COMPLETED = 'SET_TRANSACTION_COMPLETED',
@@ -64,11 +61,6 @@ const setReceiver = (receiverPayload: ReceiverPayload) => ({
   type: TransactionActionTypes.SET_RECEIVER
 });
 
-const setUnformattedReceiverAddress = (unformattedReceiverAddress: string | null) => ({
-  payload: { unformattedReceiverAddress },
-  type: TransactionActionTypes.SET_UNFORMATTED_RECEIVER_ADDRESS
-});
-
 const createTransactionStatus = (initialTransaction: TransactionStatusType) => {
   return {
     payload: { initialTransaction },
@@ -83,16 +75,6 @@ const updateTransactionStatus = (updatedValues: UpdatedTransactionStatusType, id
   };
 };
 
-const setGenericAccount = (genericReceiverAccount: string | null) => ({
-  payload: { genericReceiverAccount },
-  type: TransactionActionTypes.SET_GENERIC_RECEIVER_ACCOUNT
-});
-
-const setDerivedAccount = (derivedReceiverAccount: string | null) => ({
-  payload: { derivedReceiverAccount },
-  type: TransactionActionTypes.SET_DERIVED_RECEIVER_ACCOUNT
-});
-
 const reset = () => ({
   payload: {},
   type: TransactionActionTypes.RESET
@@ -105,10 +87,7 @@ const TransactionActionCreators = {
   resetEstimatedFee,
   setReceiverAddress,
   setReceiver,
-  setUnformattedReceiverAddress,
   updateTransactionStatus,
-  setGenericAccount,
-  setDerivedAccount,
   setPayload,
   reset
 };

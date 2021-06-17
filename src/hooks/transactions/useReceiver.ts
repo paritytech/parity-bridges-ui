@@ -30,11 +30,6 @@ export default function useReceiver() {
   const { chain: targetChain } = targetChainDetails;
   const prevTargetChain = usePrevious(targetChain);
 
-  const setUnformattedReceiver = useCallback(
-    (address: string | null) => dispatchTransaction(TransactionActionCreators.setUnformattedReceiverAddress(address)),
-    [dispatchTransaction]
-  );
-
   const onReceiverChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const unformattedReceiverAddress = event.target.value;
@@ -55,7 +50,7 @@ export default function useReceiver() {
     if (prevTargetChain !== targetChain) {
       dispatchTransaction(TransactionActionCreators.reset());
     }
-  }, [unformattedReceiverAddress, setUnformattedReceiver, prevTargetChain, targetChain, dispatchTransaction]);
+  }, [unformattedReceiverAddress, prevTargetChain, targetChain, dispatchTransaction]);
 
   return { onReceiverChange };
 }

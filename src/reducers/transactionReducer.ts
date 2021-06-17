@@ -199,16 +199,10 @@ export default function transactionReducer(state: TransactionState, action: Tran
       };
     case TransactionActionTypes.SET_RECEIVER_ADDRESS:
       return { ...state, receiverAddress: action.payload.receiverAddress };
-    case TransactionActionTypes.SET_UNFORMATTED_RECEIVER_ADDRESS:
-      return { ...state, unformattedReceiverAddress: action.payload.unformattedReceiverAddress };
     case TransactionActionTypes.CREATE_TRANSACTION_STATUS:
       return createTransaction(state, action.payload.initialTransaction);
     case TransactionActionTypes.UPDATE_CURRENT_TRANSACTION_STATUS:
       return updateTransaction(state, action.payload);
-    case TransactionActionTypes.SET_DERIVED_RECEIVER_ACCOUNT:
-      return { ...state, derivedReceiverAccount: action.payload.derivedReceiverAccount };
-    case TransactionActionTypes.SET_GENERIC_RECEIVER_ACCOUNT:
-      return { ...state, genericReceiverAccount: action.payload.genericReceiverAccount };
     case TransactionActionTypes.SET_RECEIVER:
       return setReceiver(state, action.payload.receiverPayload);
     default:
