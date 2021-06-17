@@ -78,7 +78,7 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
   if (!unformattedReceiverAddress) {
     return {
       ...state,
-      validationError: null,
+      addressValidationError: null,
       showBalance: false,
       unformattedReceiverAddress,
       receiverAddress: null,
@@ -99,7 +99,7 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
   if (formatFound === INCORRECT_FORMAT) {
     return {
       ...state,
-      validationError: 'Invalid address',
+      addressValidationError: 'Invalid address',
       showBalance: false,
       unformattedReceiverAddress,
       receiverAddress: null,
@@ -114,7 +114,7 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
       unformattedReceiverAddress,
       receiverAddress: null,
       genericReceiverAccount: unformattedReceiverAddress,
-      validationError: null,
+      addressValidationError: null,
       showBalance: false,
       formatFound
     };
@@ -126,7 +126,7 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
       unformattedReceiverAddress,
       receiverAddress,
       genericReceiverAccount: null,
-      validationError: null,
+      addressValidationError: null,
       showBalance: true,
       formatFound
     };
@@ -139,7 +139,7 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
       receiverAddress: unformattedReceiverAddress,
       derivedReceiverAccount: receiverAddress,
       genericReceiverAccount: null,
-      validationError: null,
+      addressValidationError: null,
       showBalance: true,
       formatFound
     };
@@ -147,7 +147,7 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
 
   return {
     ...state,
-    validationError: `Unsupported address SS58 prefix: ${formatFound}`,
+    addressValidationError: `Unsupported address SS58 prefix: ${formatFound}`,
     showBalance: false,
     unformattedReceiverAddress,
     receiverAddress: null,
@@ -191,7 +191,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
         genericReceiverAccount: null,
         receiverAddress: null,
         unformattedReceiverAddress: null,
-        validationError: null,
+        addressValidationError: null,
         payload: null,
         payloadError: null,
         showBalance: false,

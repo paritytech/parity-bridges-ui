@@ -50,7 +50,7 @@ export interface TransactionState {
   derivedReceiverAccount: string | null;
   genericReceiverAccount: string | null;
   transactions: Array<TransactionStatusType>;
-  validationError: string | null;
+  addressValidationError: string | null;
   payload: Object | null;
   payloadError: string | null;
   showBalance: boolean;

@@ -21,13 +21,13 @@ import { useTransactionContext } from '../contexts/TransactionContext';
 import { Typography } from '@material-ui/core';
 
 const Receiver = () => {
-  const { validationError } = useTransactionContext();
+  const { addressValidationError } = useTransactionContext();
   return (
     <>
       <ReceiverInput />
       <ReceiverDerivedAccount />
       <Typography variant="body2" color="error">
-        {validationError}
+        {addressValidationError}
       </Typography>
     </>
   );

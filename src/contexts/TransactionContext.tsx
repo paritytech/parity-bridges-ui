@@ -52,7 +52,7 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     receiverAddress: null,
     unformattedReceiverAddress: null,
     transactions: [],
-    validationError: null,
+    addressValidationError: null,
     payload: null,
     payloadError: null,
     showBalance: false,
