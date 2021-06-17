@@ -13,36 +13,32 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
-import { ApiPromise } from '@polkadot/api';
 import { VoidFn } from '@polkadot/api/types';
+import { DataType } from './types';
 import { useGetApi, ReturnApi } from './useGetApi';
 import BN from 'bn.js';
 
-interface DataType {
-  api: ApiPromise;
-  apiMethod: string;
-  separator: string;
-  setter: any;
-  arg1?: any;
-}
-
 export const getLaneData = async ({ api, apiMethod, separator, arg1, setter }: DataType): Promise<VoidFn> => {
   if (separator === 'outbound') {
-    return await api.query[apiMethod].outboundLanes(arg1, (res: any) => {
-      const latest_generated_nonce = res.get('latest_generated_nonce').toString();
-      const latest_received_nonce = res.get('latest_received_nonce').toString();
-      const pendingMessages = new BN(latest_generated_nonce).sub(new BN(latest_received_nonce));
+    return apiMethod
+      ? await api.query[apiMethod].outboundLanes(arg1, (res: any) => {
+          const latest_generated_nonce = res.get('latest_generated_nonce').toString();
+          const latest_received_nonce = res.get('latest_received_nonce').toString();
+          const pendingMessages = new BN(latest_generated_nonce).sub(new BN(latest_received_nonce));
 
-      setter({
-        latestReceivedNonce: latest_received_nonce.toString(),
-        pendingMessages: pendingMessages.isNeg() ? '0' : pendingMessages.toString(),
-        totalMessages: latest_generated_nonce
-      });
-    });
+          setter({
+            latestReceivedNonce: latest_received_nonce.toString(),
+            pendingMessages: pendingMessages.isNeg() ? '0' : pendingMessages.toString(),
+            totalMessages: latest_generated_nonce
+          });
+        })
+      : ({} as Promise<VoidFn>);
   } else if (separator === 'inbound') {
-    return await api.query[apiMethod].inboundLanes(arg1, (res: any) => {
-      setter(res.get('last_confirmed_nonce').toString());
-    });
+    return apiMethod
+      ? await api.query[apiMethod].inboundLanes(arg1, (res: any) => {
+          setter(res.get('last_confirmed_nonce').toString());
+        })
+      : ({} as Promise<VoidFn>);
   }
   return {} as Promise<VoidFn>;
 };

@@ -13,14 +13,13 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
-import { ApiPromise } from '@polkadot/api';
 import { VoidFn } from '@polkadot/api/types';
-import { useGetApi, ReturnApi } from './useGetApi';
 
 import { Hash } from '@polkadot/types/interfaces';
 import { Codec } from '@polkadot/types/types';
 import BN from 'bn.js';
-
+import { useGetApi, ReturnApi } from './useGetApi';
+import { DataType } from './types';
 interface HeaderId {
   number: BN;
   hash: Hash;
@@ -28,24 +27,20 @@ interface HeaderId {
 
 type CodecHeaderId = Codec & HeaderId;
 
-interface DataType {
-  api: ApiPromise;
-  apiMethod: string;
-  separator: string;
-  setter: any;
-  arg1?: any;
-}
-
 export const getBridgedBlocks = async ({ api, apiMethod, separator, setter, arg1 }: DataType): Promise<VoidFn> => {
   if (separator === 'bestFinalized') {
-    return await api.query[apiMethod][separator]((res: CodecHeaderId) => {
-      setter(res.toString());
-    });
+    return apiMethod
+      ? await api.query[apiMethod][separator]((res: CodecHeaderId) => {
+          setter(res.toString());
+        })
+      : ({} as Promise<VoidFn>);
   } else if (separator === 'importedHeaders') {
-    return await api.query[apiMethod][separator](arg1, (res: any) => {
-      const importedHeader = res?.toJSON()?.number;
-      importedHeader && setter(importedHeader);
-    });
+    return apiMethod
+      ? await api.query[apiMethod][separator](arg1, (res: any) => {
+          const importedHeader = res?.toJSON()?.number;
+          importedHeader && setter(importedHeader);
+        })
+      : ({} as Promise<VoidFn>);
   }
   return {} as Promise<VoidFn>;
 };
