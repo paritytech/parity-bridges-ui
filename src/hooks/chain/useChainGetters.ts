@@ -75,7 +75,7 @@ const useChainGetters = () => {
       case sourceChain:
         return sourceSS58Format;
       default:
-        return GENERIC_SUBSTRATE_PREFIX;
+        throw new Error(`Unknown type: ${chain}`);
     }
   };
 
