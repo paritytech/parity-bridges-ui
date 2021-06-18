@@ -33,11 +33,11 @@ export const useDispatchGenericCall = ({ call, dispatch, shouldExecute = true }:
         dispatch(null, null);
         data = await call(...params);
         if (data) {
-          dispatch(data, null);
+          dispatch(null, data);
         }
       } catch (e) {
         error = e;
-        dispatch(null, e);
+        dispatch(e, null);
       }
       return { data, error };
     },

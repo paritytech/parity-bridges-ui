@@ -55,7 +55,7 @@ export const usePayload = ({ call, weight }: Input) => {
   }, [account, call, createType, sourceChain, weight]);
 
   const dispatch = useCallback(
-    (data: any, error: string) => dispatchTransaction(TransactionActionCreators.setPayload(data, error)),
+    (error: string, data: any) => dispatchTransaction(TransactionActionCreators.setPayload(error, data)),
     [dispatchTransaction]
   );
 

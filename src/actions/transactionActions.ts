@@ -29,14 +29,14 @@ enum TransactionActionTypes {
   SET_GENERIC_RECEIVER_ACCOUNT = 'SET_GENERIC_RECEIVER_ACCOUNT'
 }
 
-const setEstimatedFee = (estimatedFee: string | null, estimatedFeeError: string | null) => {
+const setEstimatedFee = (estimatedFeeError: string | null, estimatedFee: string | null) => {
   return {
     payload: { estimatedFee, estimatedFeeError },
     type: TransactionActionTypes.SET_ESTIMATED_FEE
   };
 };
 
-const setPayload = (payload: Object | null, payloadError: string | null) => ({
+const setPayload = (payloadError: string | null, payload: Object | null) => ({
   payload: { payload, payloadError },
   type: TransactionActionTypes.SET_PAYLOAD
 });

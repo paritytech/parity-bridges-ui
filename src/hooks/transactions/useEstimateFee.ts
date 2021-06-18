@@ -35,14 +35,14 @@ export const useEstimateFee = () => {
   const { estimatedFeeMethodName } = getSubstrateDynamicNames(targetChain);
 
   const estimateFeeCallback = useCallback(
-    async (payload: Object | null) => {
-      if (!payload) {
+    async (payloadInput: Object | null) => {
+      if (!payloadInput) {
         return;
       }
       // Ignoring custom types missed for TS for now.
       // Need to apply: https://polkadot.js.org/docs/api/start/typescript.user
       // @ts-ignore
-      const payloadType = createType(sourceChain, 'OutboundPayload', payload);
+      const payloadType = createType(sourceChain, 'OutboundPayload', payloadInput);
       // @ts-ignore
       const messageFeeType = createType(sourceChain, 'MessageFeeData', {
         lane_id: laneId,
@@ -60,7 +60,7 @@ export const useEstimateFee = () => {
   );
 
   const dispatch = useCallback(
-    (data: any, error: string) => dispatchTransaction(TransactionActionCreators.setEstimatedFee(data, error)),
+    (error: string, data: any) => dispatchTransaction(TransactionActionCreators.setEstimatedFee(error, data)),
     [dispatchTransaction]
   );
 
