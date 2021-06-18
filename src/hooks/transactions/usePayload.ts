@@ -21,9 +21,15 @@ import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import { TransactionActionCreators } from '../../actions/transactionActions';
 import { useUpdateTransactionContext } from '../../contexts/TransactionContext';
+import useDispatchGenericCall from '../api/useDispatchGenericCall';
 import logger from '../../util/logger';
 
-export const usePayload = () => {
+interface Input {
+  call: Uint8Array | null;
+  weight: number | null;
+}
+
+export const usePayload = ({ call, weight }: Input) => {
   const { createType } = useApiCallsContext();
   const {
     sourceChainDetails: { chain: sourceChain }
@@ -31,38 +37,35 @@ export const usePayload = () => {
   const { dispatchTransaction } = useUpdateTransactionContext();
   const { account } = useAccountContext();
 
-  const updatePayload = useCallback(
-    (call, weight) => {
-      dispatchTransaction(TransactionActionCreators.resetPayload());
-      if (!(account && call && weight)) {
-        return;
-      }
-      try {
-        // Ignoring custom types missed for TS for now.
-        // Need to apply: https://polkadot.js.org/docs/api/start/typescript.user
-        // @ts-ignore
-        const payload = {
-          call: compactAddLength(call),
-          origin: {
-            SourceAccount: account.addressRaw
-          },
-          // TODO [#122] This must not be hardcoded.
-          spec_version: 1,
-          weight
-        };
-        // @ts-ignore
-        const payloadType = createType(sourceChain, 'OutboundPayload', payload);
-        logger.info(`OutboundPayload: ${JSON.stringify(payload)}`);
-        logger.info(`OutboundPayload.toHex(): ${payloadType.toHex()}`);
-        dispatchTransaction(TransactionActionCreators.setPayload(payload, null));
-      } catch (error) {
-        dispatchTransaction(TransactionActionCreators.setPayload(null, error));
-      }
-    },
-    [account, createType, dispatchTransaction, sourceChain]
+  const payloadCallback = useCallback(() => {
+    const payload = {
+      call: compactAddLength(call!),
+      origin: {
+        SourceAccount: account!.addressRaw
+      },
+      // TODO [#122] This must not be hardcoded.
+      spec_version: 1,
+      weight
+    };
+    // @ts-ignore
+    const payloadType = createType(sourceChain, 'OutboundPayload', payload);
+    logger.info(`OutboundPayload: ${JSON.stringify(payload)}`);
+    logger.info(`OutboundPayload.toHex(): ${payloadType.toHex()}`);
+    return payloadType;
+  }, [account, call, createType, sourceChain, weight]);
+
+  const dispatch = useCallback(
+    (data: any, error: string) => dispatchTransaction(TransactionActionCreators.setPayload(data, error)),
+    [dispatchTransaction]
   );
 
-  return updatePayload;
+  const { execute } = useDispatchGenericCall({
+    call: payloadCallback,
+    dispatch,
+    shouldExecute: Boolean(account && call && weight)
+  });
+
+  return execute;
 };
 
 export default usePayload;

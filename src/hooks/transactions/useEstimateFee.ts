@@ -20,6 +20,7 @@ import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import { TransactionActionCreators } from '../../actions/transactionActions';
 import { useUpdateTransactionContext, useTransactionContext } from '../../contexts/TransactionContext';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
+import useDispatchGenericCall from '../api/useDispatchGenericCall';
 import useLaneId from '../chain/useLaneId';
 
 export const useEstimateFee = () => {
@@ -30,15 +31,14 @@ export const useEstimateFee = () => {
     targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
   const { dispatchTransaction } = useUpdateTransactionContext();
-  const { estimatedFeeMethodName } = getSubstrateDynamicNames(targetChain);
   const { payload } = useTransactionContext();
+  const { estimatedFeeMethodName } = getSubstrateDynamicNames(targetChain);
 
-  const getEstimateFeeCall = useCallback(async () => {
-    if (!payload) {
-      return;
-    }
-    try {
-      dispatchTransaction(TransactionActionCreators.resetEstimatedFee());
+  const estimateFeeCallback = useCallback(
+    async (payload: Object | null) => {
+      if (!payload) {
+        return;
+      }
       // Ignoring custom types missed for TS for now.
       // Need to apply: https://polkadot.js.org/docs/api/start/typescript.user
       // @ts-ignore
@@ -54,13 +54,23 @@ export const useEstimateFee = () => {
       // @ts-ignore
       const estimatedFeeType = createType(sourceChain, 'Option<Balance>', estimatedFeeCall);
       const estimatedFee = estimatedFeeType.toString();
-      dispatchTransaction(TransactionActionCreators.setEstimatedFee(estimatedFee, null));
-    } catch (error) {
-      dispatchTransaction(TransactionActionCreators.setEstimatedFee(null, error));
-    }
-  }, [createType, dispatchTransaction, estimatedFeeMethodName, laneId, payload, sourceChain, stateCall]);
+      return estimatedFee;
+    },
+    [createType, estimatedFeeMethodName, laneId, sourceChain, stateCall]
+  );
 
-  return getEstimateFeeCall;
+  const dispatch = useCallback(
+    (data: any, error: string) => dispatchTransaction(TransactionActionCreators.setEstimatedFee(data, error)),
+    [dispatchTransaction]
+  );
+
+  const { execute: calculateEstimateFee } = useDispatchGenericCall({
+    call: estimateFeeCallback,
+    shouldExecute: Boolean(payload),
+    dispatch
+  });
+
+  return calculateEstimateFee;
 };
 
 export default useEstimateFee;

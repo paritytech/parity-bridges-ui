@@ -50,24 +50,13 @@ export default function transactionReducer(state: TransactionState, action: Tran
         estimatedFee: action.payload.estimatedFeeError ? null : action.payload.estimatedFee,
         estimatedFeeError: action.payload.estimatedFeeError
       };
-    case TransactionActionTypes.RESET_ESTIMATED_FEE:
+    case TransactionActionTypes.SET_PAYLOAD: {
       return {
         ...state,
-        estimatedFee: null,
-        estimatedFeeError: null
+        payload: action.payload.payloadError ? null : action.payload.payload,
+        payloadError: action.payload.payloadError
       };
-    case TransactionActionTypes.SET_PAYLOAD:
-      return {
-        ...state,
-        payloadError: action.payload.payloadError ? null : action.payload.payload,
-        payload: action.payload.payload
-      };
-    case TransactionActionTypes.RESET_PAYLOAD:
-      return {
-        ...state,
-        payloadError: null,
-        payload: null
-      };
+    }
     case TransactionActionTypes.SET_RECEIVER_ADDRESS:
       return { ...state, receiverAddress: action.payload.receiverAddress };
     case TransactionActionTypes.SET_UNFORMATTED_RECEIVER_ADDRESS:

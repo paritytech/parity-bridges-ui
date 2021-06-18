@@ -15,12 +15,10 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { useEffect } from 'react';
-import { useAccountContext } from '../../contexts/AccountContextProvider';
-import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
-import useLoadingApi from '../connections/useLoadingApi';
+import { useTransactionContext } from '../../contexts/TransactionContext';
 import useTransactionType from './useTransactionType';
-import { useEstimateFee } from './useEstimateFee';
-import { usePayload } from './usePayload';
+import useEstimateFee from './useEstimateFee';
+import usePayload from './usePayload';
 
 interface Props {
   input: string;
@@ -30,30 +28,20 @@ interface Props {
 }
 
 export default function useTransactionPreparation({ input, type, weightInput, isValidCall = true }: Props) {
-  const { areApiReady } = useLoadingApi();
-
-  const {
-    sourceChainDetails: { chain: sourceChain }
-  } = useSourceTarget();
-  const { account } = useAccountContext();
+  const { payload } = useTransactionContext();
   const { call, weight } = useTransactionType({ input, type, weightInput });
 
   const calculateFee = useEstimateFee();
-  const updatePayload = usePayload();
+  const updatePayload = usePayload({ call, weight });
 
   useEffect(() => {
-    const asyncCalculateFee = async () => {
-      await calculateFee();
-    };
-    if (areApiReady) {
-      asyncCalculateFee();
-    }
-  }, [areApiReady, calculateFee]);
+    calculateFee(payload);
+  }, [calculateFee, payload]);
 
   useEffect(() => {
     if (!isValidCall) {
       return;
     }
-    updatePayload(call, weight);
-  }, [account, call, isValidCall, type, weight, sourceChain, updatePayload]);
+    updatePayload();
+  }, [isValidCall, updatePayload]);
 }
