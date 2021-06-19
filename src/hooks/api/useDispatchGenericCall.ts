@@ -15,32 +15,38 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { useCallback } from 'react';
-import { useMountedState } from '../react/useMountedState';
+interface DispatchGenericCallInput {
+  call: Function;
+  dispatch: Function;
+  shouldExecute?: boolean | unknown;
+}
 
-export const useApiGenericCall = (getStateCall: Function) => {
-  const [error, setError] = useMountedState<unknown>(null);
-  const [data, setData] = useMountedState<unknown>(null);
-
+export const useDispatchGenericCall = ({ call, dispatch, shouldExecute = true }: DispatchGenericCallInput) => {
   const execute = useCallback(
-    async (...params) => {
-      setData(null);
-      setError(null);
+    async (...params: any[]) => {
+      let data;
+      let error;
       try {
-        const stateCall = await getStateCall(...params);
-        setData(stateCall);
+        if (!shouldExecute) {
+          return null;
+        }
+        dispatch(null, null);
+        data = await call(...params);
+        if (data) {
+          dispatch(null, data);
+        }
       } catch (e) {
-        setData(null);
-        setError(e);
+        error = e;
+        dispatch(e, null);
       }
+      return { data, error };
     },
-    [getStateCall, setData, setError]
+    [call, dispatch, shouldExecute]
   );
 
   return {
-    error,
-    data,
     execute
   };
 };
 
-export default useApiGenericCall;
+export default useDispatchGenericCall;

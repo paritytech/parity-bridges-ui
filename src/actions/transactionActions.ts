@@ -17,7 +17,6 @@
 import { TransactionStatusType, UpdatedTransactionStatusType, ReceiverPayload } from '../types/transactionTypes';
 
 enum TransactionActionTypes {
-  RESET_ESTIMATED_FEE = 'RESET_ESTIMATED_FEE',
   SET_ESTIMATED_FEE = 'SET_ESTIMATED_FEE',
   SET_PAYLOAD = 'SET_PAYLOAD',
   RESET_PAYLOAD = 'RESET_PAYLOAD',
@@ -31,24 +30,16 @@ enum TransactionActionTypes {
   RESET = 'RESET'
 }
 
-const resetEstimatedFee = () => ({
-  payload: {},
-  type: TransactionActionTypes.RESET_ESTIMATED_FEE
-});
+const setEstimatedFee = (estimatedFeeError: string | null, estimatedFee: string | null) => {
+  return {
+    payload: { estimatedFee, estimatedFeeError },
+    type: TransactionActionTypes.SET_ESTIMATED_FEE
+  };
+};
 
-const setEstimatedFee = (estimatedFee: string | null, estimatedFeeError: string | null) => ({
-  payload: { estimatedFee, estimatedFeeError },
-  type: TransactionActionTypes.SET_ESTIMATED_FEE
-});
-
-const setPayload = (payload: Object | null, payloadError: string | null) => ({
+const setPayload = (payloadError: string | null, payload: Object | null) => ({
   payload: { payload, payloadError },
   type: TransactionActionTypes.SET_PAYLOAD
-});
-
-const resetPayload = () => ({
-  payload: {},
-  type: TransactionActionTypes.RESET_PAYLOAD
 });
 
 const setReceiverAddress = (receiverAddress: string | null) => ({
@@ -81,10 +72,8 @@ const reset = () => ({
 });
 
 const TransactionActionCreators = {
-  resetPayload,
   setEstimatedFee,
   createTransactionStatus,
-  resetEstimatedFee,
   setReceiverAddress,
   setReceiver,
   updateTransactionStatus,

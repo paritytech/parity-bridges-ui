@@ -14,11 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { TransactionActionCreators } from '../../actions/transactionActions';
+import { useEffect, useState, useCallback } from 'react';
 import type { KeyringPair } from '@polkadot/keyring/types';
 import { encodeAddress } from '@polkadot/util-crypto';
-import { useEffect, useState } from 'react';
-import { useUpdateTransactionContext } from '../../contexts/TransactionContext';
 import { AccountActionCreators } from '../../actions/accountActions';
 import { SourceTargetActionsCreators } from '../../actions/sourceTargetActions';
 import { useUpdateAccountContext } from '../../contexts/AccountContextProvider';
@@ -43,7 +41,6 @@ const useAccounts = (): Accounts => {
   const derivedAccount = useDerivedAccount();
   const { account } = useAccountContext();
   const { getSS58PrefixByChain } = useChainGetters();
-  const { dispatchTransaction } = useUpdateTransactionContext();
 
   useEffect(() => {
     if (keyringPairsReady && keyringPairs.length) {
@@ -51,16 +48,18 @@ const useAccounts = (): Accounts => {
     }
   }, [keyringPairsReady, keyringPairs, setAccounts]);
 
-  const setCurrentAccount = (value: string, chain: string) => {
-    const ss58Format = getSS58PrefixByChain(chain);
+  const setCurrentAccount = useCallback(
+    (value: string, chain: string) => {
+      const ss58Format = getSS58PrefixByChain(chain);
 
-    const account = accounts.find(({ address }) => encodeAddress(address, ss58Format) === value);
-    if (account) {
-      dispatchChangeSourceTarget(SourceTargetActionsCreators.switchChains(chain));
-      dispatchTransaction(TransactionActionCreators.reset());
-      dispatchAccount(AccountActionCreators.setAccount(account));
-    }
-  };
+      const account = accounts.find(({ address }) => encodeAddress(address, ss58Format) === value);
+      if (account) {
+        dispatchChangeSourceTarget(SourceTargetActionsCreators.switchChains(chain));
+        dispatchAccount(AccountActionCreators.setAccount(account));
+      }
+    },
+    [accounts, dispatchAccount, dispatchChangeSourceTarget, getSS58PrefixByChain]
+  );
 
   return {
     account,
