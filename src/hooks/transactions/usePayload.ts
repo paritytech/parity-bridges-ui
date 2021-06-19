@@ -51,7 +51,7 @@ export const usePayload = ({ call, weight }: Input) => {
     const payloadType = createType(sourceChain, 'OutboundPayload', payload);
     logger.info(`OutboundPayload: ${JSON.stringify(payload)}`);
     logger.info(`OutboundPayload.toHex(): ${payloadType.toHex()}`);
-    return payloadType;
+    return payload;
   }, [account, call, createType, sourceChain, weight]);
 
   const dispatch = useCallback(
