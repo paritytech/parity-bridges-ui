@@ -74,8 +74,6 @@ export interface Step {
 
 export interface ReceiverPayload {
   unformattedReceiverAddress: string | null;
-  receiverAddress: string | null;
-  formatFound: string | null;
   sourceChainDetails: ChainState;
   targetChainDetails: ChainState;
 }

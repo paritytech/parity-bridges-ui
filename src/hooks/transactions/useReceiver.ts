@@ -35,7 +35,6 @@ export default function useReceiver() {
       const unformattedReceiverAddress = event.target.value;
       dispatchTransaction(TransactionActionCreators.reset());
       dispatchTransaction(
-        // @ts-ignore
         TransactionActionCreators.setReceiver({
           unformattedReceiverAddress,
           sourceChainDetails,

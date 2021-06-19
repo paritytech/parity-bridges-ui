@@ -19,7 +19,6 @@ import { TransactionStatusType, UpdatedTransactionStatusType, ReceiverPayload } 
 enum TransactionActionTypes {
   SET_ESTIMATED_FEE = 'SET_ESTIMATED_FEE',
   SET_PAYLOAD = 'SET_PAYLOAD',
-  RESET_PAYLOAD = 'RESET_PAYLOAD',
   SET_PAYLOAD_ERROR = 'SET_PAYLOAD_ERROR',
   SET_RECEIVER = 'SET_RECEIVER',
   SET_RECEIVER_ADDRESS = 'SET_RECEIVER_ADDRESS',
