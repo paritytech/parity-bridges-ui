@@ -58,7 +58,12 @@ const useTransactionNonces = ({ transaction }: Props) => {
 
     const getLatestReceivedNonce = async (blockNumber: string) => {
       const blockHash = await targetApi.rpc.chain.getBlockHash(blockNumber);
-      const latestReceivedNonceCall = await stateCall(targetChain, laneId, blockHash.toJSON());
+      const latestReceivedNonceCall = await stateCall(
+        targetChain,
+        latestReceivedNonceMethodName,
+        laneId,
+        blockHash.toJSON()
+      );
 
       // @ts-ignore
       const latestReceivedNonceCallType = createType(targetChain, 'MessageNonce', latestReceivedNonceCall);
