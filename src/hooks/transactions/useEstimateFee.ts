@@ -36,9 +36,6 @@ export const useEstimateFee = () => {
 
   const estimateFeeCallback = useCallback(
     async (payloadInput: Object | null) => {
-      if (!payloadInput) {
-        return;
-      }
       // Ignoring custom types missed for TS for now.
       // Need to apply: https://polkadot.js.org/docs/api/start/typescript.user
       // @ts-ignore
