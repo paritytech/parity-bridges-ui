@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import { useCallback } from 'react';
 import { SignerOptions } from '@polkadot/api/types';
 import { web3FromSource } from '@polkadot/extension-dapp';
 import type { KeyringPair } from '@polkadot/keyring/types';
@@ -56,97 +57,116 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
   useTransactionPreparation({ input, isValidCall, type, weightInput });
   const { dispatchMessage } = useUpdateMessageContext();
 
-  const sendLaneMessage = async () => {
+  const makeCall = useCallback(
+    async (id: string) => {
+      try {
+        if (!account || isRunning) {
+          return;
+        }
+
+        const { bridgedMessages } = getSubstrateDynamicNames(targetChain);
+        const bridgeMessage = sourceApi.tx[bridgedMessages].sendMessage(laneId, payload, estimatedFee);
+        logger.info(`bridge::sendMessage ${bridgeMessage.toHex()}`);
+        const options: Partial<SignerOptions> = {
+          nonce: -1
+        };
+        let sourceAccount: string | KeyringPair = account;
+        if (account.meta.isInjected) {
+          const injector = await web3FromSource(account.meta.source as string);
+          options.signer = injector.signer;
+          sourceAccount = account.address;
+        }
+        const unsub = await bridgeMessage.signAndSend(sourceAccount, { ...options }, ({ events = [], status }) => {
+          if (status.isReady) {
+            dispatchTransaction(
+              TransactionActionCreators.createTransactionStatus({
+                block: null,
+                blockHash: null,
+                id,
+                input,
+                messageNonce: null,
+                receiverAddress,
+                sourceAccount: account.address,
+                sourceChain,
+                status: TransactionStatusEnum.CREATED,
+                targetChain,
+                type
+              })
+            );
+          }
+          if (status.isBroadcast) {
+            dispatchMessage(MessageActionsCreators.triggerInfoMessage({ message: 'Transaction was broadcasted' }));
+          }
+          if (status.isInBlock) {
+            events.forEach(({ event: { data, method } }) => {
+              if (method.toString() === 'MessageAccepted') {
+                const messageNonce = data.toArray()[1].toString();
+                sourceApi.rpc.chain
+                  .getBlock(status.asInBlock)
+                  .then((res) => {
+                    const block = res.block.header.number.toString();
+                    dispatchTransaction(
+                      TransactionActionCreators.updateTransactionStatus(
+                        {
+                          block,
+                          blockHash: status.asInBlock.toString(),
+                          messageNonce,
+                          status: TransactionStatusEnum.IN_PROGRESS
+                        },
+                        id
+                      )
+                    );
+                  })
+                  .catch((e) => {
+                    logger.error(e.message);
+                    throw new Error('Issue reading block information.');
+                  });
+              }
+            });
+          }
+          if (status.isFinalized) {
+            logger.info(`Transaction included at blockHash ${status.asFinalized}`);
+            unsub();
+          }
+        });
+      } catch (e) {
+        dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e.message }));
+        logger.error(e.message);
+      } finally {
+        setIsRunning(false);
+      }
+    },
+    [
+      account,
+      dispatchMessage,
+      dispatchTransaction,
+      estimatedFee,
+      input,
+      isRunning,
+      laneId,
+      payload,
+      receiverAddress,
+      setIsRunning,
+      sourceApi.rpc.chain,
+      sourceApi.tx,
+      sourceChain,
+      targetChain,
+      type
+    ]
+  );
+
+  const sendLaneMessage = useCallback(() => {
     if (!account || isRunning) {
       return;
     }
     const id = moment().format('x');
     setIsRunning(true);
     return makeCall(id);
-  };
-
-  const makeCall = async (id: string) => {
-    try {
-      if (!account || isRunning) {
-        return;
-      }
-
-      const { bridgedMessages } = getSubstrateDynamicNames(targetChain);
-      const bridgeMessage = sourceApi.tx[bridgedMessages].sendMessage(laneId, payload, estimatedFee);
-      logger.info(`bridge::sendMessage ${bridgeMessage.toHex()}`);
-      const options: Partial<SignerOptions> = {
-        nonce: -1
-      };
-      let sourceAccount: string | KeyringPair = account;
-      if (account.meta.isInjected) {
-        const injector = await web3FromSource(account.meta.source as string);
-        options.signer = injector.signer;
-        sourceAccount = account.address;
-      }
-      const unsub = await bridgeMessage.signAndSend(sourceAccount, { ...options }, ({ events = [], status }) => {
-        if (status.isReady) {
-          dispatchTransaction(
-            TransactionActionCreators.createTransactionStatus({
-              block: null,
-              blockHash: null,
-              id,
-              input,
-              messageNonce: null,
-              receiverAddress,
-              sourceAccount: account.address,
-              sourceChain,
-              status: TransactionStatusEnum.CREATED,
-              targetChain,
-              type
-            })
-          );
-        }
-        if (status.isBroadcast) {
-          dispatchMessage(MessageActionsCreators.triggerInfoMessage({ message: 'Transaction was broadcasted' }));
-        }
-        if (status.isInBlock) {
-          events.forEach(({ event: { data, method } }) => {
-            if (method.toString() === 'MessageAccepted') {
-              const messageNonce = data.toArray()[1].toString();
-              sourceApi.rpc.chain
-                .getBlock(status.asInBlock)
-                .then((res) => {
-                  const block = res.block.header.number.toString();
-                  dispatchTransaction(
-                    TransactionActionCreators.updateTransactionStatus(
-                      {
-                        block,
-                        blockHash: status.asInBlock.toString(),
-                        messageNonce,
-                        status: TransactionStatusEnum.IN_PROGRESS
-                      },
-                      id
-                    )
-                  );
-                })
-                .catch((e) => {
-                  logger.error(e.message);
-                  throw new Error('Issue reading block information.');
-                });
-            }
-          });
-        }
-        if (status.isFinalized) {
-          logger.info(`Transaction included at blockHash ${status.asFinalized}`);
-          unsub();
-        }
-      });
-    } catch (e) {
-      dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e.message }));
-      logger.error(e.message);
-    } finally {
-      setIsRunning(false);
-    }
-  };
+  }, [account, isRunning, makeCall, setIsRunning]);
 
   const { areApiReady } = useLoadingApi();
 
-  const isButtonDisabled = () => {
+  const isButtonDisabled = useCallback(() => {
     switch (type) {
       case TransactionTypes.REMARK:
         return isRunning || !account || !areApiReady;
@@ -160,7 +180,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
       default:
         throw new Error(`Unknown type: ${type}`);
     }
-  };
+  }, [account, areApiReady, input, isRunning, isValidCall, receiverAddress, type, weightInput]);
 
   return { isButtonDisabled, sendLaneMessage };
 }
