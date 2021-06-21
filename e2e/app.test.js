@@ -46,7 +46,7 @@ const chromeOptions = {
   headless: false
 };
 
-const timeout = 50000000;
+const timeout = 500000;
 
 const ids = {
   native: '#test-native-input',
@@ -150,7 +150,8 @@ describe('<App />', () => {
       let nativeText;
       let companionText;
 
-      const checkDerived = async () => {
+      const checkGeneric = async () => {
+        logger.info('  >>> Validating generic acccount');
         await page.focus('#test-receiver-input').then(() => logger.info('     -- Focus on receiver input field'));
         await page.keyboard
           .type('5H3ZryLmpNwrochemdVFTq9WMJW39NCo5HWFEwRtjbVtrThD')
@@ -167,7 +168,7 @@ describe('<App />', () => {
         await page.waitForTimeout(500);
       };
 
-      await testWrapper(page, checkDerived, 'Generic Account Validation', true);
+      await testWrapper(page, checkGeneric, 'Generic Account Validation', true);
     },
     timeout
   );
@@ -180,6 +181,7 @@ describe('<App />', () => {
       let nativeText;
 
       const checkNative = async () => {
+        logger.info('  >>> Validating native acccount');
         await page.focus('#test-receiver-input').then(() => logger.info('     -- Focus on receiver input field'));
         await page.keyboard
           .type('711cUirFtNtASdZNJ37ahHYELi69kPCco5QRG5GyoEQXguPZ')
@@ -197,21 +199,23 @@ describe('<App />', () => {
   it(
     'should show companion component',
     async () => {
+      logger.info('  >>> Validating companion acccount');
+
       const companionExpectedText = 'companion(5rERga...7BRbjAH2)';
 
       let companionText;
 
-      const checkNative = async () => {
+      const checkCompanion = async () => {
         await page.focus('#test-receiver-input').then(() => logger.info('     -- Focus on receiver input field'));
         await page.keyboard
           .type('5rERgaT1Z8nM3et2epA5i1VtEBfp5wkhwHtVE8HK7BRbjAH2')
-          .then(() => logger.info('     -- Add a native receiver address'));
+          .then(() => logger.info('     -- Add a companion receiver address'));
         await page.waitForTimeout(1000);
         companionText = await page.$eval(ids.companion, (el) => el.innerText);
         expect(companionText).toEqual(companionExpectedText);
       };
 
-      await testWrapper(page, checkNative, 'Companion Account Validation', true);
+      await testWrapper(page, checkCompanion, 'Companion Account Validation', true);
     },
     timeout
   );
@@ -220,6 +224,7 @@ describe('<App />', () => {
     'should make a successfull transfer',
     async () => {
       const makeTransfer = async () => {
+        logger.info('  >>> Making transfer');
         await page.focus('#test-receiver-input').then(() => logger.info('     -- Focus on receiver input field'));
         await page.keyboard
           .type('75DSWq62jcgwcfz15DKgG3w9z35L8fYAUDUcKF1K4zCfv2yc')
