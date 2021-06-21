@@ -55,6 +55,7 @@ const ReceiverDerivedAccount = () => {
           friendlyName={shortUnformattedReceiver}
           value={receiverAddress!}
           chain={targetChain}
+          id={`test-${AddressKind.COMPANION}-input`.toLowerCase()}
           isDerived
           hideAddress
           withTooltip
@@ -73,7 +74,12 @@ const ReceiverDerivedAccount = () => {
 
   return (
     <div className={classes.accountCompanion}>
-      <AccountDisplay address={receiverAddress!} addressKind={AddressKind.NATIVE} withTooltip />
+      <AccountDisplay
+        address={receiverAddress!}
+        addressKind={AddressKind.NATIVE}
+        id={`test-${AddressKind.NATIVE}-input`.toLowerCase()}
+        withTooltip
+      />
     </div>
   );
 };

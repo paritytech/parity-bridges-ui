@@ -111,6 +111,7 @@ const GenericAccount = ({ value }: Props) => {
           addressKind={AddressKind.NATIVE}
           balance={nativeState.formattedBalance}
           friendlyName={shortGenericAddress}
+          id={`test-${AddressKind.NATIVE}-input`.toLowerCase()}
           hideAddress
           withTooltip
         />
@@ -123,6 +124,7 @@ const GenericAccount = ({ value }: Props) => {
           addressKind={AddressKind.COMPANION}
           balance={companionState.formattedBalance}
           friendlyName={shortGenericAddress}
+          id={`test-${AddressKind.COMPANION}-input`.toLowerCase()}
           hideAddress
           withTooltip
         />

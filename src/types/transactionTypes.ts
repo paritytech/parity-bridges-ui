@@ -68,6 +68,7 @@ export enum TransactionTypes {
 }
 
 export interface Step {
+  id: string;
   chainType: string;
   label: string;
   labelOnChain?: string;

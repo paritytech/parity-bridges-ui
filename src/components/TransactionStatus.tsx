@@ -62,12 +62,12 @@ const TransactionStatus = ({ transaction, onComplete, transactionDisplayProps }:
         <ButtonSwitchMode disabled> Human</ButtonSwitchMode>
       </Box>
       <Card elevation={transactionDisplayProps?.size === 'sm' ? 23 : 24} className={classes.card}>
-        <Box className="header" component="p">
+        <Box className="header" component="p" id="transaction-header">
           <IconTxStatus status={transaction.status} /> {transaction.type} {transaction.sourceChain} {'->'}{' '}
           {transaction.targetChain}
         </Box>
-        {steps.map(({ chainType, label, labelOnChain, status }, idx) => (
-          <p key={idx}>
+        {steps.map(({ chainType, label, labelOnChain, status, id }) => (
+          <p key={id} id={id}>
             <IconTxStatus status={status} /> {chainType}: {label}&nbsp;
             {labelOnChain && (
               <Box pt={0.25} pb={0.25} pl={0.5} pr={0.5} component="span" border={1} borderRadius={6}>

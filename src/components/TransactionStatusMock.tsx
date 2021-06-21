@@ -60,34 +60,40 @@ const TransactionStatusMock = ({ type }: Props) => {
   useEffect(() => {
     setSteps([
       {
+        id: 'step-include-message-block',
         chainType: sourceChain,
         label: 'Include message in block',
         labelOnChain: '',
         status: TransactionStatusEnum.NOT_STARTED
       },
       {
+        id: 'step-finalized-block',
         chainType: sourceChain,
         label: 'Finalise block',
         status: TransactionStatusEnum.NOT_STARTED
       },
       {
+        id: 'step-relay-block',
         chainType: targetChain,
         label: 'Relay block',
         status: TransactionStatusEnum.NOT_STARTED
       },
       {
+        id: 'step-deliver-message-block',
         chainType: targetChain,
         label: 'Deliver message',
         labelOnChain: '',
         status: TransactionStatusEnum.NOT_STARTED
       },
       {
+        id: 'step-finalized-message',
         chainType: targetChain,
         label: 'Finalise message in target block',
         labelOnChain: '',
         status: TransactionStatusEnum.NOT_STARTED
       },
       {
+        id: 'step-confirm-delivery',
         chainType: sourceChain,
         label: 'Confirm delivery',
         status: TransactionStatusEnum.NOT_STARTED

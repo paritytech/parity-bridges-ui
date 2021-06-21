@@ -25,7 +25,7 @@ interface Props extends AccountDisplayProps {
   value: string;
 }
 
-const Account = ({ value, chain, hideAddress = false, isDerived = false, ...props }: Props) => {
+const Account = ({ value, chain, hideAddress = false, isDerived = false, id, ...props }: Props) => {
   const { api, address } = useApiBalance(value, chain, isDerived);
 
   const state = useBalance(api, address, true);
@@ -37,6 +37,7 @@ const Account = ({ value, chain, hideAddress = false, isDerived = false, ...prop
         balance={`${state.formattedBalance} ${state.formattedBalance === '0' ? state.chainTokens : ''}`}
         addressKind={isDerived ? AddressKind.COMPANION : undefined}
         hideAddress={hideAddress}
+        id={id ? id : undefined}
         {...props}
       />
     </>

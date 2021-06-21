@@ -18,7 +18,7 @@ module.exports = {
   preset: 'jest-puppeteer',
   globals: {
     SERVER_URL: 'http://localhost:3001',
-    JEST_TIMEOUT: 10000
+    JEST_TIMEOUT: 100000
   },
   testRegex: './*\\.test\\.tsx$',
   transform: {
