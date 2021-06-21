@@ -20,7 +20,7 @@ module.exports = {
     SERVER_URL: 'http://localhost:3001',
     JEST_TIMEOUT: 100000
   },
-  testRegex: './*\\.test\\.tsx$',
+  testRegex: './*\\.test\\.js$',
   transform: {
     '\\.js$': 'react-scripts/config/jest/babelTransform'
   },

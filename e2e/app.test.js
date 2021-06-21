@@ -17,7 +17,29 @@
 // @ts-ignore due to isolatedModules flag - no import so this needed
 
 const puppeteer = require('puppeteer');
+const winston = require('winston');
 const { globals } = require('./jest.config');
+
+winston.addColors({
+  debug: 'grey',
+  error: 'red',
+  info: 'green',
+  warn: 'blue'
+});
+
+const myformat = winston.format.cli({
+  all: true
+});
+
+const logger = winston.createLogger({
+  transports: [
+    new winston.transports.Console({
+      format: myformat
+    })
+  ]
+});
+
+export default logger;
 
 const chromeOptions = {
   executablePath: process.env.chrome,
@@ -34,38 +56,43 @@ const ids = {
 };
 
 const chooseSender = async (page) => {
+  logger.info('  >>> Choosing Sender');
   await page.waitForSelector('#test_sender_component');
   await page.waitForTimeout(1000);
-  await page.click('#test_sender_component').then(() => console.log('-- Open Sender dropdown'));
+  await page.click('#test_sender_component').then(() => logger.info('     -- Open Sender dropdown'));
   await page.waitForTimeout(1000);
   const [aliceOption] = await page.$x("//div[contains(., '5sauUX')]");
   await page.waitForTimeout(500);
   if (aliceOption) {
-    await aliceOption.click().then(() => console.log('-- Click on an account from the dropdown'));
+    await aliceOption.click().then(() => logger.info('     -- Click on an account from the dropdown'));
   }
   await page.waitForTimeout(500);
 };
 
 const enterAmount = async (page) => {
-  await page.focus('#test-amount-send').then(() => console.log('-- Focus on amount input field.'));
-  await page.keyboard.type('10').then(() => console.log('-- add 10 MLAU'));
+  logger.info('  >>> Entering Amount');
+
+  await page.focus('#test-amount-send').then(() => logger.info('     -- Focus on amount input field.'));
+  await page.keyboard.type('10').then(() => logger.info('     -- add 10 MLAU'));
   await page.waitForTimeout(500);
-  await page.focus('#test-receiver-input').then(() => console.log('-- Focus on receiver input field'));
+  await page.focus('#test-receiver-input').then(() => logger.info('     -- Focus on receiver input field'));
   await page.waitForTimeout(500);
 };
 
 const checkEnabledButton = async (page) => {
+  logger.info('  >>> Checking if execution button is enabled');
+
   await page.waitForSelector(ids.transferButton);
   await page.waitForTimeout(500);
   await page
     .waitForSelector(`${ids.transferButton}:not([disabled])`)
-    .then(() => console.log('-- Submit button enabled'));
+    .then(() => logger.info('     -- Submit button enabled'));
   await page.waitForTimeout(1000);
 };
 
 const testWrapper = async (page, fn, logHeader, checkButton = false) => {
   if (logHeader) {
-    console.log(`********** Starting Check: ${logHeader} ********** `);
+    logger.info(`********** Starting Check: ${logHeader} ********** `);
   }
   try {
     // Run happy path test for submitting a transaction
@@ -85,6 +112,11 @@ const testWrapper = async (page, fn, logHeader, checkButton = false) => {
   } finally {
     page.close();
   }
+};
+
+const getBalance = (input) => {
+  const balance = input.split(' ');
+  return parseFloat(balance[0]);
 };
 
 describe('<App />', () => {
@@ -121,17 +153,17 @@ describe('<App />', () => {
       let companionText;
 
       const checkDerived = async () => {
-        await page.focus('#test-receiver-input').then(() => console.log('-- Focus on receiver input field'));
+        await page.focus('#test-receiver-input').then(() => logger.info('     -- Focus on receiver input field'));
         await page.keyboard
           .type('5H3ZryLmpNwrochemdVFTq9WMJW39NCo5HWFEwRtjbVtrThD')
-          .then(() => console.log('-- Add a generic receiver address'));
+          .then(() => logger.info('     -- Add a generic receiver address'));
         await page.waitForTimeout(1000);
         nativeText = await page.$eval(ids.native, (el) => el.innerText);
         companionText = await page.$eval(ids.companion, (el) => el.innerText);
         expect(nativeText).toEqual(nativeExpectedText);
         expect(companionText).toEqual(companionExpectedText);
         await page.waitForSelector(ids.native);
-        await page.click(ids.native).then(() => console.log('-- Clicking Native account'));
+        await page.click(ids.native).then(() => logger.info('     -- Clicking Native account'));
         await page.waitForTimeout(1000);
         await expect(page).not.toMatchElement(ids.companion);
         await page.waitForTimeout(500);
@@ -150,10 +182,10 @@ describe('<App />', () => {
       let nativeText;
 
       const checkNative = async () => {
-        await page.focus('#test-receiver-input').then(() => console.log('-- Focus on receiver input field'));
+        await page.focus('#test-receiver-input').then(() => logger.info('     -- Focus on receiver input field'));
         await page.keyboard
           .type('711cUirFtNtASdZNJ37ahHYELi69kPCco5QRG5GyoEQXguPZ')
-          .then(() => console.log('-- Add a native receiver address'));
+          .then(() => logger.info('     -- Add a native receiver address'));
         await page.waitForTimeout(1000);
         nativeText = await page.$eval(ids.native, (el) => el.innerText);
         expect(nativeText).toEqual(nativeExpectedText);
@@ -172,10 +204,10 @@ describe('<App />', () => {
       let companionText;
 
       const checkNative = async () => {
-        await page.focus('#test-receiver-input').then(() => console.log('-- Focus on receiver input field'));
+        await page.focus('#test-receiver-input').then(() => logger.info('     -- Focus on receiver input field'));
         await page.keyboard
           .type('5rERgaT1Z8nM3et2epA5i1VtEBfp5wkhwHtVE8HK7BRbjAH2')
-          .then(() => console.log('-- Add a native receiver address'));
+          .then(() => logger.info('     -- Add a native receiver address'));
         await page.waitForTimeout(1000);
         companionText = await page.$eval(ids.companion, (el) => el.innerText);
         expect(companionText).toEqual(companionExpectedText);
@@ -190,43 +222,48 @@ describe('<App />', () => {
     'should make a successfull transfer',
     async () => {
       const makeTransfer = async () => {
-        await page.focus('#test-receiver-input').then(() => console.log('-- Focus on receiver input field'));
+        await page.focus('#test-receiver-input').then(() => logger.info('     -- Focus on receiver input field'));
         await page.keyboard
-          .type('74YBVK9EJ4uSzokqewqmBcecAWq6tosB2xujX5Lf8jKg2gze')
-          .then(() => console.log('-- Add a receiver address'));
-        await page.waitForTimeout(500);
+          .type('75DSWq62jcgwcfz15DKgG3w9z35L8fYAUDUcKF1K4zCfv2yc')
+          .then(() => logger.info('     -- Add a receiver address'));
+        await page.waitForTimeout(2000);
+        const originalBalance = await page.$eval('#receiver-balance', (el) => el.innerText);
         await page
           .click('#test-button-submit')
-          .then(() => console.log('-- Click send button to initiate the transaction'));
+          .then(() => logger.info('     -- Click send button to initiate the transaction'));
         await page.waitForTimeout(500);
         await page
           .waitForXPath('//div[contains(text(), "Transaction was broadcasted")]')
-          .then(() => console.log('-- Transaction was broadcasted.'));
+          .then(() => logger.info('     -- Transaction was broadcasted.'));
         await page.waitForTimeout(500);
 
         await page
           .waitForSelector('#step-include-message-block > #check-circle-icon')
-          .then(() => console.log('-- Step 1 "Include message in block" completed'));
+          .then(() => logger.info('     -- Step 1 "Include message in block" completed'));
         await page
           .waitForSelector('#step-finalized-block > #check-circle-icon')
-          .then(() => console.log('-- Step 2 "Finalize block" completed'));
+          .then(() => logger.info('     -- Step 2 "Finalize block" completed'));
         await page
           .waitForSelector('#step-relay-block > #check-circle-icon')
-          .then(() => console.log('-- Step 3 "Relay block" completed'));
+          .then(() => logger.info('     -- Step 3 "Relay block" completed'));
         await page
           .waitForSelector('#step-deliver-message-block > #check-circle-icon')
-          .then(() => console.log('-- Step 4 "Deliver message in target block" completed'));
+          .then(() => logger.info('     -- Step 4 "Deliver message in target block" completed'));
         await page
           .waitForSelector('#step-finalized-message > #check-circle-icon')
-          .then(() => console.log('-- Step 5 "Finalize message" completed'));
+          .then(() => logger.info('     -- Step 5 "Finalize message" completed'));
         await page
           .waitForSelector('#step-confirm-delivery > #check-circle-icon')
-          .then(() => console.log('-- Step 6 "Confirm delivery" completed'));
+          .then(() => logger.info('     -- Step 6 "Confirm delivery" completed'));
 
         await page
           .waitForSelector('#transaction-header > #check-circle-icon')
-          .then(() => console.log('-- Transaction Completed'));
+          .then(() => logger.info('     -- Transaction Completed'));
         await page.waitForTimeout(15000);
+        const udpatedBalance = await page.$eval('#receiver-balance', (el) => el.innerText);
+        const expectedBalance = getBalance(originalBalance) + 10;
+        expect(getBalance(udpatedBalance)).toEqual(expectedBalance);
+        logger.info('Balance increased successfully');
       };
 
       await testWrapper(page, makeTransfer, 'Successfull Transfer', false);

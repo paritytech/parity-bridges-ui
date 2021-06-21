@@ -21,6 +21,7 @@ import React from 'react';
 interface Props {
   balance?: string | null | undefined;
   onClick?: () => void;
+  id?: string | undefined;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -30,10 +31,10 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const Balance = ({ balance, onClick }: Props) => {
+const Balance = ({ balance, onClick, id }: Props) => {
   const classes = useStyles();
   return (
-    <div onClick={onClick} className={classes.balances}>
+    <div onClick={onClick} className={classes.balances} id={id}>
       {balance || ''}
     </div>
   );

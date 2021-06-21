@@ -147,7 +147,7 @@ function ReceiverInput({ setError }: Props) {
           value={addressInput}
           placeholder="Recipient address"
         />
-        {showBalance && state && <Balance balance={state.formattedBalance} />}
+        {showBalance && state && <Balance balance={state.formattedBalance} id="receiver-balance" />}
       </Box>
     </div>
   );
