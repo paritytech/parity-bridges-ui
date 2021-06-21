@@ -52,14 +52,15 @@ const ids = {
   native: '#test-native-input',
   companion: '#test-companion-input',
   sender: '#test_sender_component',
-  transferButton: '#test-button-submit'
+  transferButton: '#test-button-submit',
+  senderComponent: '#test_sender_component'
 };
 
 const chooseSender = async (page) => {
   logger.info('  >>> Choosing Sender');
-  await page.waitForSelector('#test_sender_component');
+  await page.waitForSelector(ids.senderComponent);
   await page.waitForTimeout(1000);
-  await page.click('#test_sender_component').then(() => logger.info('     -- Open Sender dropdown'));
+  await page.click(ids.senderComponent).then(() => logger.info('     -- Open Sender dropdown'));
   await page.waitForTimeout(1000);
   const [aliceOption] = await page.$x("//div[contains(., '5sauUX')]");
   await page.waitForTimeout(500);
@@ -74,8 +75,6 @@ const enterAmount = async (page) => {
 
   await page.focus('#test-amount-send').then(() => logger.info('     -- Focus on amount input field.'));
   await page.keyboard.type('10').then(() => logger.info('     -- add 10 MLAU'));
-  await page.waitForTimeout(500);
-  await page.focus('#test-receiver-input').then(() => logger.info('     -- Focus on receiver input field'));
   await page.waitForTimeout(500);
 };
 
@@ -95,7 +94,6 @@ const testWrapper = async (page, fn, logHeader, checkButton = false) => {
     logger.info(`********** Starting Check: ${logHeader} ********** `);
   }
   try {
-    // Run happy path test for submitting a transaction
     await chooseSender(page);
     await enterAmount(page);
     if (checkButton) {
@@ -263,7 +261,7 @@ describe('<App />', () => {
         const udpatedBalance = await page.$eval('#receiver-balance', (el) => el.innerText);
         const expectedBalance = getBalance(originalBalance) + 10;
         expect(getBalance(udpatedBalance)).toEqual(expectedBalance);
-        logger.info('Balance increased successfully');
+        logger.info('     -- Balance increased successfully');
       };
 
       await testWrapper(page, makeTransfer, 'Successfull Transfer', false);
