@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { TransactionStatusType, UpdatedTransactionStatusType } from '../types/transactionTypes';
+import { TransactionStatusType, UpdatedTransactionStatusType, TransactionPayload } from '../types/transactionTypes';
 
 enum TransactionActionTypes {
   SET_ESTIMATED_FEE = 'SET_ESTIMATED_FEE',
@@ -40,7 +40,7 @@ const setEstimatedFee = (
   };
 };
 
-const setPayload = (payloadError: string | null, payload: Object | null) => ({
+const setPayload = (payloadError: string | null, payload: TransactionPayload | null) => ({
   payload: { payload, payloadError },
   type: TransactionActionTypes.SET_PAYLOAD
 });

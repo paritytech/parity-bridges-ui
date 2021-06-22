@@ -32,6 +32,15 @@ export enum TransactionStatusEnum {
   FAILED = 'FAILED'
 }
 
+export interface TransactionPayload {
+  call: Uint8Array;
+  origin: {
+    SourceAccount: string;
+  };
+  spec_version: number;
+  weight: number;
+}
+
 export interface TransactionStatusType extends UpdatedTransactionStatusType {
   input: string;
   sourceChain: string;
@@ -49,7 +58,7 @@ export interface TransactionState {
   derivedReceiverAccount: string | null;
   genericReceiverAccount: string | null;
   transactions: Array<TransactionStatusType>;
-  payload: Object | null;
+  payload: TransactionPayload | null;
   payloadError: string | null;
   estimatedFeeLoading: boolean;
 }
