@@ -19,7 +19,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import React, { useCallback, useEffect, useState } from 'react';
 import { INCORRECT_FORMAT, GENERIC } from '../constants';
 import { TransactionActionCreators } from '../actions/transactionActions';
-
+import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
 import useApiBalance from '../hooks/subscriptions/useApiBalance';
@@ -77,21 +77,27 @@ function ReceiverInput({ setError }: Props) {
     sourceChainDetails: { chain: sourceChain }
   } = useSourceTarget();
   const prevTargetChain = usePrevious(targetChain);
+  const { account } = useAccountContext();
+  const prevAccount = usePrevious(account);
 
   const reset = useCallback(() => {
     dispatchTransaction(TransactionActionCreators.setGenericAccount(null));
     dispatchTransaction(TransactionActionCreators.setDerivedAccount(null));
     dispatchTransaction(TransactionActionCreators.setReceiverAddress(null));
-    dispatchTransaction(TransactionActionCreators.setEstimateFee(''));
-
+    dispatchTransaction(TransactionActionCreators.setUnformattedReceiverAddress(null));
     setShowBalance(false);
     setError('');
   }, [dispatchTransaction, setError]);
 
   useEffect(() => {
-    if (prevTargetChain !== targetChain) {
+    if (account && prevAccount && prevAccount !== account) {
       reset();
-      setUnformattedReceiver(null);
+    }
+  }, [account, prevAccount, reset]);
+
+  useEffect(() => {
+    if (targetChain && prevTargetChain && prevTargetChain !== targetChain) {
+      reset();
     }
     if (!unformattedReceiverAddress) {
       setShowBalance(false);

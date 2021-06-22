@@ -16,15 +16,6 @@
 
 import { TransactionActionTypes } from '../actions/transactionActions';
 
-export interface TransactionContextType {
-  estimatedFee: string | null;
-  receiverAddress: string | null;
-  unformattedReceiverAddress: string | null;
-  transactions: Array<TransactionStatusType>;
-  derivedReceiverAccount: string | null;
-  genericReceiverAccount: string | null;
-}
-
 export interface Payload {
   [propName: string]: any;
 }
@@ -41,6 +32,15 @@ export enum TransactionStatusEnum {
   FAILED = 'FAILED'
 }
 
+export interface TransactionPayload {
+  call: Uint8Array;
+  origin: {
+    SourceAccount: string;
+  };
+  spec_version: number;
+  weight: number;
+}
+
 export interface TransactionStatusType extends UpdatedTransactionStatusType {
   input: string;
   sourceChain: string;
@@ -52,11 +52,15 @@ export interface TransactionStatusType extends UpdatedTransactionStatusType {
 }
 export interface TransactionState {
   estimatedFee: string | null;
+  estimatedFeeError: string | null;
   receiverAddress: string | null;
   unformattedReceiverAddress: string | null;
   derivedReceiverAccount: string | null;
   genericReceiverAccount: string | null;
   transactions: Array<TransactionStatusType>;
+  payload: TransactionPayload | null;
+  payloadError: string | null;
+  estimatedFeeLoading: boolean;
 }
 
 export type TransactionsActionType = { type: TransactionActionTypes; payload: Payload };

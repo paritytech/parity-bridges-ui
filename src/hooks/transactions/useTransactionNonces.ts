@@ -14,22 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Codec } from '@polkadot/types/types';
-
 import { useEffect } from 'react';
-
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import { useSubscriptionsContext } from '../../contexts/SubscriptionsContextProvider';
 
 import useLaneId from '../chain/useLaneId';
 import useLoadingApi from '../connections/useLoadingApi';
-import useChainGetters from '../chain/useChainGetters';
 import { useMountedState } from '../react/useMountedState';
-
+import useChainGetters from '../chain/useChainGetters';
 import { isTransactionCompleted } from '../../util/transactionUtils';
 import { getChainSubscriptionsKey } from '../../util/chainsUtils';
 import { TransactionStatusType } from '../../types/transactionTypes';
-import getSubstrateDynamicNames from '../../util/getSubstrateDynamicNames';
+import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
+import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
+
 interface Props {
   transaction: TransactionStatusType;
 }
@@ -38,21 +36,20 @@ const useTransactionNonces = ({ transaction }: Props) => {
   const [nonceOfBestTargetBlock, setNonceOfBestTargetBlock] = useMountedState<null | number>(null);
   const [nonceOfFinalTargetBlock, setNonceOfFinalTargetBlock] = useMountedState<null | number>(null);
   const subscriptions = useSubscriptionsContext();
-
   const { getValuesByChain } = useChainGetters();
-
   const laneId = useLaneId();
   const { areApiReady } = useLoadingApi();
   const { sourceChain, targetChain } = transaction;
+  const { api: targetApi } = getValuesByChain(targetChain);
   const { targetRole } = getChainSubscriptionsKey({
     useSourceTarget,
     sourceChain
   });
+  const { createType, stateCall } = useApiCallsContext();
 
   const { bestBlockFinalized, bestBlock } = subscriptions[targetRole];
 
   const { latestReceivedNonceMethodName } = getSubstrateDynamicNames(sourceChain);
-  const { api: targetApi } = getValuesByChain(targetChain);
 
   useEffect(() => {
     if (!areApiReady || !transaction || !transaction || isTransactionCompleted(transaction)) {
@@ -61,14 +58,15 @@ const useTransactionNonces = ({ transaction }: Props) => {
 
     const getLatestReceivedNonce = async (blockNumber: string) => {
       const blockHash = await targetApi.rpc.chain.getBlockHash(blockNumber);
-      const latestReceivedNonceCall = await targetApi.rpc.state.call<Codec>(
+      const latestReceivedNonceCall = await stateCall(
+        targetChain,
         latestReceivedNonceMethodName,
         laneId,
         blockHash.toJSON()
       );
 
       // @ts-ignore
-      const latestReceivedNonceCallType = targetApi.registry.createType('MessageNonce', latestReceivedNonceCall);
+      const latestReceivedNonceCallType = createType(targetChain, 'MessageNonce', latestReceivedNonceCall);
       const latestReceivedNonce = latestReceivedNonceCallType.toString();
       return parseInt(latestReceivedNonce);
     };
@@ -87,13 +85,14 @@ const useTransactionNonces = ({ transaction }: Props) => {
     transaction,
     laneId,
     latestReceivedNonceMethodName,
-    targetApi.registry,
-    targetApi.rpc.chain,
-    targetApi.rpc.state,
     setNonceOfBestTargetBlock,
     setNonceOfFinalTargetBlock,
     bestBlock,
-    bestBlockFinalized
+    bestBlockFinalized,
+    stateCall,
+    targetChain,
+    createType,
+    targetApi.rpc.chain
   ]);
 
   return { nonceOfBestTargetBlock, nonceOfFinalTargetBlock };

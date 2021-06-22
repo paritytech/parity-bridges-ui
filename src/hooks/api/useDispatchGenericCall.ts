@@ -14,11 +14,33 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-enum ActionsTypes {
-  CHANGE_SOURCE = 'CHANGE_SOURCE',
-  CHANGE_TARGET = 'CHANGE_TARGET',
-  SWAP_CHAINS = 'SWAP_CHAINS',
-  SET_ESTIMATED_FEE = 'SET_ESTIMATED_FEE',
-  SET_RECEIVER_ADDRESS = 'SET_RECEIVER_ADDRESS'
+import { useCallback } from 'react';
+interface DispatchGenericCallInput {
+  call: Function;
+  dispatch: (error: string | null, data: any, loading: boolean) => void;
 }
-export default ActionsTypes;
+
+export const useDispatchGenericCall = ({ call, dispatch }: DispatchGenericCallInput) => {
+  const execute = useCallback(
+    async (...params: any[]) => {
+      let data;
+      let error;
+      try {
+        dispatch(null, null, true);
+        data = await call(...params);
+        dispatch(null, data, false);
+      } catch (e) {
+        error = e;
+        dispatch(e, null, false);
+      }
+      return { data, error };
+    },
+    [call, dispatch]
+  );
+
+  return {
+    execute
+  };
+};
+
+export default useDispatchGenericCall;

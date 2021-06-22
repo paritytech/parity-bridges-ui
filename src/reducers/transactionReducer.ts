@@ -45,7 +45,19 @@ const createTransaction = (state: TransactionState, initialTransaction: Transact
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
   switch (action.type) {
     case TransactionActionTypes.SET_ESTIMATED_FEE:
-      return { ...state, estimatedFee: action.payload.estimatedFee };
+      return {
+        ...state,
+        estimatedFee: action.payload.estimatedFeeError ? null : action.payload.estimatedFee,
+        estimatedFeeError: action.payload.estimatedFeeError,
+        estimatedFeeLoading: action.payload.estimatedFeeLoading
+      };
+    case TransactionActionTypes.SET_PAYLOAD: {
+      return {
+        ...state,
+        payload: action.payload.payloadError ? null : action.payload.payload,
+        payloadError: action.payload.payloadError
+      };
+    }
     case TransactionActionTypes.SET_RECEIVER_ADDRESS:
       return { ...state, receiverAddress: action.payload.receiverAddress };
     case TransactionActionTypes.SET_UNFORMATTED_RECEIVER_ADDRESS:
