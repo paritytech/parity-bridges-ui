@@ -14,8 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useRef } from 'react';
 import { useIsMounted } from './useIsMounted';
+import logger from '../../util/logger';
 
 /**
  * Like React's [useState](https://reactjs.org/docs/hooks-reference.html#usestate)
@@ -30,6 +31,7 @@ import { useIsMounted } from './useIsMounted';
  */
 export const useMountedState = <D>(initialState: D | (() => D)) => {
   const isMounted = useIsMounted();
+  const counter = useRef(0);
 
   const [state, setState] = useState<D>(initialState);
 
@@ -37,6 +39,11 @@ export const useMountedState = <D>(initialState: D | (() => D)) => {
     (value: D) => {
       if (isMounted()) {
         setState(value);
+      } else {
+        counter.current = counter.current + 1;
+      }
+      if (counter.current > 1) {
+        logger.warn('Unmounted component tried to update their state.');
       }
     },
     [isMounted]
