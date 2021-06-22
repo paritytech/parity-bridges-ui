@@ -39,8 +39,6 @@ const logger = winston.createLogger({
   ]
 });
 
-export default logger;
-
 const chromeOptions = {
   executablePath: process.env.chrome,
   headless: false
