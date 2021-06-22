@@ -14,10 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { TransactionStatusType, UpdatedTransactionStatusType } from '../types/transactionTypes';
+import { TransactionStatusType, UpdatedTransactionStatusType, TransactionPayload } from '../types/transactionTypes';
 
 enum TransactionActionTypes {
   SET_ESTIMATED_FEE = 'SET_ESTIMATED_FEE',
+  SET_PAYLOAD = 'SET_PAYLOAD',
   SET_RECEIVER_ADDRESS = 'SET_RECEIVER_ADDRESS',
   SET_UNFORMATTED_RECEIVER_ADDRESS = 'SET_UNFORMATTED_RECEIVER_ADDRESS',
   CREATE_TRANSACTION_STATUS = 'CREATE_TRANSACTION_STATUS',
@@ -28,9 +29,20 @@ enum TransactionActionTypes {
   SET_GENERIC_RECEIVER_ACCOUNT = 'SET_GENERIC_RECEIVER_ACCOUNT'
 }
 
-const setEstimateFee = (estimatedFee: string) => ({
-  payload: { estimatedFee },
-  type: TransactionActionTypes.SET_ESTIMATED_FEE
+const setEstimatedFee = (
+  estimatedFeeError: string | null,
+  estimatedFee: string | null,
+  estimatedFeeLoading: boolean
+) => {
+  return {
+    payload: { estimatedFee, estimatedFeeError, estimatedFeeLoading },
+    type: TransactionActionTypes.SET_ESTIMATED_FEE
+  };
+};
+
+const setPayload = (payloadError: string | null, payload: TransactionPayload | null) => ({
+  payload: { payload, payloadError },
+  type: TransactionActionTypes.SET_PAYLOAD
 });
 
 const setReceiverAddress = (receiverAddress: string | null) => ({
@@ -68,13 +80,14 @@ const setDerivedAccount = (derivedReceiverAccount: string | null) => ({
 });
 
 const TransactionActionCreators = {
+  setEstimatedFee,
   createTransactionStatus,
-  setEstimateFee,
   setReceiverAddress,
   setUnformattedReceiverAddress,
   updateTransactionStatus,
   setGenericAccount,
-  setDerivedAccount
+  setDerivedAccount,
+  setPayload
 };
 
 export { TransactionActionCreators, TransactionActionTypes };

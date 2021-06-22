@@ -13,18 +13,12 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
-import { Codec } from '@polkadot/types/types';
-import { compactAddLength } from '@polkadot/util';
-import { useEffect, useState } from 'react';
-import { TransactionActionCreators } from '../../actions/transactionActions';
-import { useAccountContext } from '../../contexts/AccountContextProvider';
-import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
-import { useUpdateTransactionContext } from '../../contexts/TransactionContext';
-import useLaneId from '../chain/useLaneId';
-import useLoadingApi from '../connections/useLoadingApi';
+
+import { useEffect } from 'react';
+import { useTransactionContext } from '../../contexts/TransactionContext';
 import useTransactionType from './useTransactionType';
-import getSubstrateDynamicNames from '../../util/getSubstrateDynamicNames';
-import logger from '../../util/logger';
+import useEstimateFee from './useEstimateFee';
+import usePayload from './usePayload';
 
 interface Props {
   input: string;
@@ -33,89 +27,21 @@ interface Props {
   isValidCall?: boolean;
 }
 
-interface FeeAndPayload {
-  payload: any;
-}
-
-export default function useTransactionPreparation({
-  input,
-  type,
-  weightInput,
-  isValidCall = true
-}: Props): FeeAndPayload {
-  const { areApiReady } = useLoadingApi();
-  const laneId = useLaneId();
-  const {
-    sourceChainDetails: {
-      apiConnection: { api: sourceApi }
-    },
-    targetChainDetails: { chain: targetChain }
-  } = useSourceTarget();
-  const { account } = useAccountContext();
-
-  const [payload, setPayload] = useState<null | {}>(null);
+export default function useTransactionPreparation({ input, type, weightInput, isValidCall = true }: Props) {
+  const { payload } = useTransactionContext();
   const { call, weight } = useTransactionType({ input, type, weightInput });
 
-  const { dispatchTransaction } = useUpdateTransactionContext();
-  const { estimatedFeeMethodName } = getSubstrateDynamicNames(targetChain);
+  const calculateFee = useEstimateFee();
+  const updatePayload = usePayload({ call, weight });
 
   useEffect(() => {
-    const calculateFee = async () => {
-      // Ignoring custom types missed for TS for now.
-      // Need to apply: https://polkadot.js.org/docs/api/start/typescript.user
-      // @ts-ignore
-      const payloadType = sourceApi.registry.createType('OutboundPayload', payload);
-      // @ts-ignore
-      const messageFeeType = sourceApi.registry.createType('MessageFeeData', {
-        lane_id: laneId,
-        payload: payloadType.toHex()
-      });
-
-      const estimatedFeeCall = await sourceApi.rpc.state.call<Codec>(estimatedFeeMethodName, messageFeeType.toHex());
-
-      // @ts-ignore
-      const estimatedFeeType = sourceApi.registry.createType('Option<Balance>', estimatedFeeCall);
-      const estimatedFee = estimatedFeeType.toString();
-
-      dispatchTransaction(TransactionActionCreators.setEstimateFee(estimatedFee));
-    };
-
-    if (areApiReady && payload) {
-      calculateFee();
-    }
-  }, [
-    areApiReady,
-    dispatchTransaction,
-    estimatedFeeMethodName,
-    laneId,
-    payload,
-    sourceApi.registry,
-    sourceApi.rpc.state,
-    targetChain
-  ]);
+    calculateFee(payload);
+  }, [calculateFee, payload]);
 
   useEffect(() => {
-    if (!(isValidCall && account && call && weight)) {
+    if (!isValidCall) {
       return;
     }
-
-    const payload = {
-      call: compactAddLength(call),
-      origin: {
-        SourceAccount: account.addressRaw
-      },
-      // TODO [#122] This must not be hardcoded.
-      spec_version: 1,
-      weight
-    };
-    // @ts-ignore
-    const payloadType = sourceApi.registry.createType('OutboundPayload', payload);
-    logger.info(`OutboundPayload: ${JSON.stringify(payload)}`);
-    logger.info(`OutboundPayload.toHex(): ${payloadType.toHex()}`);
-    setPayload(payload);
-  }, [account, call, isValidCall, type, weight, sourceApi.registry]);
-
-  return {
-    payload
-  };
+    updatePayload();
+  }, [isValidCall, updatePayload]);
 }

@@ -20,7 +20,7 @@ import { Hash } from '@polkadot/types/interfaces';
 import { Codec } from '@polkadot/types/types';
 import BN from 'bn.js';
 import { useMountedState } from '../react/useMountedState';
-import getSubstrateDynamicNames from '../../util/getSubstrateDynamicNames';
+import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
 import { useApiSubscription } from './useApiSubscription';
 interface HeaderId {
   number: BN;
