@@ -53,7 +53,8 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     unformattedReceiverAddress: null,
     transactions: [],
     payload: null,
-    payloadError: null
+    payloadError: null,
+    estimatedFeeLoading: false
   });
 
   return (

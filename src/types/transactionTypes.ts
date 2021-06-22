@@ -51,6 +51,7 @@ export interface TransactionState {
   transactions: Array<TransactionStatusType>;
   payload: Object | null;
   payloadError: string | null;
+  estimatedFeeLoading: boolean;
 }
 
 export type TransactionsActionType = { type: TransactionActionTypes; payload: Payload };

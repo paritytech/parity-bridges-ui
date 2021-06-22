@@ -48,7 +48,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return {
         ...state,
         estimatedFee: action.payload.estimatedFeeError ? null : action.payload.estimatedFee,
-        estimatedFeeError: action.payload.estimatedFeeError
+        estimatedFeeError: action.payload.estimatedFeeError,
+        estimatedFeeLoading: action.payload.estimatedFeeLoading
       };
     case TransactionActionTypes.SET_PAYLOAD: {
       return {

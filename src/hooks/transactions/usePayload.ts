@@ -38,6 +38,9 @@ export const usePayload = ({ call, weight }: Input) => {
   const { account } = useAccountContext();
 
   const payloadCallback = useCallback(() => {
+    if (!account || !call || !weight) {
+      return null;
+    }
     const payload = {
       call: compactAddLength(call!),
       origin: {
@@ -55,14 +58,13 @@ export const usePayload = ({ call, weight }: Input) => {
   }, [account, call, createType, sourceChain, weight]);
 
   const dispatch = useCallback(
-    (error: string, data: any) => dispatchTransaction(TransactionActionCreators.setPayload(error, data)),
+    (error: string | null, data: any) => dispatchTransaction(TransactionActionCreators.setPayload(error, data)),
     [dispatchTransaction]
   );
 
   const { execute } = useDispatchGenericCall({
     call: payloadCallback,
-    dispatch,
-    shouldExecute: Boolean(account && call && weight)
+    dispatch
   });
 
   return execute;
