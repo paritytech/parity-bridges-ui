@@ -32,7 +32,7 @@ const CustomCall = () => {
   const [error, setError] = useState<string | null>();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
-  const { estimatedFee } = useTransactionContext();
+  const { estimatedFee, estimatedFeeLoading } = useTransactionContext();
   const {
     targetChainDetails: {
       apiConnection: { api: targetApi }
@@ -67,6 +67,7 @@ const CustomCall = () => {
     }
   }
 
+  // To extract estimated fee logic to specific component. Issue #171
   return (
     <>
       <Box mb={2}>
@@ -83,9 +84,15 @@ const CustomCall = () => {
       <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
         Send custom call from {sourceChainDetails.chain} to {targetChainDetails.chain}
       </ButtonSubmit>
-      <Typography variant="body1" color="secondary">
-        {estimatedFee && `Estimated source Fee: ${estimatedFee}`}
-      </Typography>
+      {estimatedFeeLoading ? (
+        <Typography variant="body1" color="secondary">
+          Estimated source Fee loading...
+        </Typography>
+      ) : (
+        <Typography variant="body1" color="secondary">
+          {estimatedFee && `Estimated source Fee: ${estimatedFee}`}
+        </Typography>
+      )}
       <div>
         {decoded && (
           <Message>

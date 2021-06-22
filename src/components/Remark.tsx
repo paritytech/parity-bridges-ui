@@ -27,7 +27,7 @@ const Remark = () => {
   const [remarkInput, setRemarkInput] = useState('0x');
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
-  const { estimatedFee } = useTransactionContext();
+  const { estimatedFee, estimatedFeeLoading } = useTransactionContext();
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
     input: remarkInput,
@@ -39,6 +39,7 @@ const Remark = () => {
     setRemarkInput(event.target.value);
   };
 
+  // To extract estimated fee logic to specific component. Issue #171
   return (
     <>
       <TextField
@@ -53,9 +54,16 @@ const Remark = () => {
       <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
         Send bridge remark from {sourceChainDetails.chain} to {targetChainDetails.chain}
       </ButtonSubmit>
-      <Typography variant="body1" color="secondary">
-        {estimatedFee && `Estimated source Fee: ${estimatedFee}`}
-      </Typography>
+
+      {estimatedFeeLoading ? (
+        <Typography variant="body1" color="secondary">
+          Estimated source Fee loading...
+        </Typography>
+      ) : (
+        <Typography variant="body1" color="secondary">
+          {estimatedFee && `Estimated source Fee: ${estimatedFee}`}
+        </Typography>
+      )}
     </>
   );
 };
