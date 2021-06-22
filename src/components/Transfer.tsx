@@ -57,7 +57,7 @@ function Transfer() {
   const { account } = useAccounts();
 
   const planck = 10 ** targetChainDetails.apiConnection.api.registry.chainDecimals[0];
-  const { estimatedFee, receiverAddress } = useTransactionContext();
+  const { estimatedFee, receiverAddress, estimatedFeeLoading } = useTransactionContext();
   const { api, isApiReady } = sourceChainDetails.apiConnection;
   const balance = useBalance(api, account?.address || '');
 
@@ -81,6 +81,7 @@ function Transfer() {
     isRunning && setTransferInput('');
   }, [isRunning]);
 
+  // To extract estimated fee logic to specific component. Issue #171
   useEffect((): void => {
     estimatedFee &&
       actualInput &&
@@ -112,6 +113,10 @@ function Transfer() {
         <Alert severity="error">
           Account&apos;s amount (including fees: {estimatedFee}) is not enough for this transaction.
         </Alert>
+      ) : estimatedFeeLoading ? (
+        <Typography variant="body1" color="secondary">
+          Estimated source Fee loading...
+        </Typography>
       ) : (
         <Typography variant="body1" color="secondary">
           {receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}

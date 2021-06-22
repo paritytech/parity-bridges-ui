@@ -18,7 +18,7 @@ import { useCallback } from 'react';
 import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import { TransactionActionCreators } from '../../actions/transactionActions';
-import { useUpdateTransactionContext, useTransactionContext } from '../../contexts/TransactionContext';
+import { useUpdateTransactionContext } from '../../contexts/TransactionContext';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
 import useDispatchGenericCall from '../api/useDispatchGenericCall';
 import useLaneId from '../chain/useLaneId';
@@ -31,11 +31,13 @@ export const useEstimateFee = () => {
     targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
   const { dispatchTransaction } = useUpdateTransactionContext();
-  const { payload } = useTransactionContext();
   const { estimatedFeeMethodName } = getSubstrateDynamicNames(targetChain);
 
   const estimateFeeCallback = useCallback(
     async (payloadInput: Object | null) => {
+      if (!payloadInput) {
+        return null;
+      }
       // Ignoring custom types missed for TS for now.
       // Need to apply: https://polkadot.js.org/docs/api/start/typescript.user
       // @ts-ignore
@@ -57,13 +59,13 @@ export const useEstimateFee = () => {
   );
 
   const dispatch = useCallback(
-    (error: string, data: any) => dispatchTransaction(TransactionActionCreators.setEstimatedFee(error, data)),
+    (error: string | null, data: any, loading: boolean) =>
+      dispatchTransaction(TransactionActionCreators.setEstimatedFee(error, data, loading)),
     [dispatchTransaction]
   );
 
   const { execute: calculateEstimateFee } = useDispatchGenericCall({
     call: estimateFeeCallback,
-    shouldExecute: Boolean(payload),
     dispatch
   });
 

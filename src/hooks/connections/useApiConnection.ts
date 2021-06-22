@@ -74,11 +74,13 @@ export function useApiConnection(connectionDetails: ConnectionChainInformation):
 
   useEffect(() => {
     const getChainConfigs = async () => {
-      const values = await getConfigs(apiPromise);
-      setConfigs(values);
+      if (await apiPromise.isReady) {
+        const values = await getConfigs(apiPromise);
+        setConfigs(values);
+      }
     };
 
-    if (apiPromise.isReady && isEmpty(configs)) {
+    if (isEmpty(configs)) {
       getChainConfigs();
     }
   }, [apiPromise, apiPromise.isReady, configs]);

@@ -125,7 +125,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
             });
           }
           if (status.isFinalized) {
-            logger.info(`Transaction included at blockHash ${status.asFinalized}`);
+            logger.info(`Transaction finalized at blockHash ${status.asFinalized}`);
             unsub();
           }
         });

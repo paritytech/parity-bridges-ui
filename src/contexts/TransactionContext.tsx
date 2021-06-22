@@ -56,7 +56,8 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     payload: null,
     payloadError: null,
     showBalance: false,
-    formatFound: null
+    formatFound: null,
+    estimatedFeeLoading: false
   });
 
   return (

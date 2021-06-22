@@ -162,7 +162,12 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return {
         ...state,
         estimatedFee: action.payload.estimatedFeeError ? null : action.payload.estimatedFee,
+<<<<<<< HEAD
         estimatedFeeError: action.payload.estimatedFeeError
+=======
+        estimatedFeeError: action.payload.estimatedFeeError,
+        estimatedFeeLoading: action.payload.estimatedFeeLoading
+>>>>>>> master
       };
     case TransactionActionTypes.SET_PAYLOAD: {
       return {
@@ -171,6 +176,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
         payloadError: action.payload.payloadError
       };
     }
+<<<<<<< HEAD
     case TransactionActionTypes.RESET:
       return {
         ...state,
@@ -186,6 +192,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
         showBalance: false,
         formatFound: null
       };
+=======
+>>>>>>> master
     case TransactionActionTypes.SET_RECEIVER_ADDRESS:
       return { ...state, receiverAddress: action.payload.receiverAddress };
     case TransactionActionTypes.CREATE_TRANSACTION_STATUS:
