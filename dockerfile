@@ -7,12 +7,12 @@ WORKDIR /parity-bridges-ui
 RUN apk update
 RUN apk add git
 
-# add `/parity-bridges-ui/node_modules/.bin` to $PATH
-ENV PATH /parity-bridges-ui/node_modules/.bin:$PATH
-
 # install app dependencies
+COPY package.json .
+COPY yarn.lock .
+RUN yarn
 COPY . .
-RUN yarn && yarn build
+RUN yarn build
 
 # nginx state for serving content
 FROM nginx:alpine
