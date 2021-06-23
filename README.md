@@ -91,4 +91,4 @@ docker run --rm -it -p 8080:80 parity-bridges-ui:dev
 ```
 
 (optional) The `--env-file` param can be added in the command above if you intend to alter the default [ENV params](https://github.com/paritytech/parity-bridges-ui/blob/master/.env).
-(e.g. `docker run --rm -it --env-file .env -p 8080:80 parity-bridges-ui:dev` )
+(e.g. `docker build --env-file .env -t parity-bridges-ui:dev ` )
