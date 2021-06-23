@@ -82,7 +82,7 @@ _NOTE: alter url once this is moved_
 
 To build the image run the:
 ```
-sudo docker build -t parity-bridges-ui:dev .
+docker build -t parity-bridges-ui:dev .
 ```
 
 Now that image is built, container can start with the following command, which will serve our app on port 8080.
