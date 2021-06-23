@@ -77,7 +77,8 @@ For additional information about the Bridges Project please refer to [parity-bri
 
 ## Docker
 
-Can be found in [dockerhub]().
+Can be found in [dockerhub](https://hub.docker.com/repository/docker/wirednkod13/parity-bridges-ui).
+_NOTE: alter url once this is moved_
 
 To build the image run the:
 ```
