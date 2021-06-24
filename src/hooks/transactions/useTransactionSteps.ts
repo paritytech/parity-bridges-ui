@@ -99,39 +99,39 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
 
     setSteps([
       {
-        id: 'step-include-message-block',
+        id: 'test-step-include-message-block',
         chainType: sourceChain,
         label: 'Include message in block',
         labelOnChain: transaction.block,
         status: completionStatus(!!transaction.block)
       },
       {
-        id: 'step-finalized-block',
+        id: 'test-step-finalized-block',
         chainType: sourceChain,
         label: 'Finalize block',
         status: completionStatus(sourceTransactionFinalized)
       },
       {
-        id: 'step-relay-block',
+        id: 'test-step-relay-block',
         chainType: targetChain,
         label: 'Relay block',
         status: completionStatus(blockFinalityRelayed)
       },
       {
-        id: 'step-deliver-message-block',
+        id: 'test-step-deliver-message-block',
         chainType: targetChain,
         label: 'Deliver message in target block',
         labelOnChain: onChainCompleted(messageDelivered) && deliveryBlock,
         status: completionStatus(messageDelivered)
       },
       {
-        id: 'step-finalized-message',
+        id: 'test-step-finalized-message',
         chainType: targetChain,
         label: 'Finalize message',
         status: completionStatus(messageFinalizedOnTarget)
       },
       {
-        id: 'step-confirm-delivery',
+        id: 'test-step-confirm-delivery',
         chainType: sourceChain,
         label: 'Confirm delivery',
         status: completionStatus(sourceConfirmationReceived)

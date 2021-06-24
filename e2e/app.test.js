@@ -49,9 +49,9 @@ const timeout = 500000;
 const ids = {
   native: '#test-native-input',
   companion: '#test-companion-input',
-  sender: '#test_sender_component',
   transferButton: '#test-button-submit',
-  senderComponent: '#test_sender_component'
+  senderComponent: '#test-sender-component',
+  checkCircleComponent: '#test-check-circle-icon'
 };
 
 const chooseSender = async (page) => {
@@ -228,7 +228,7 @@ describe('<App />', () => {
           .type('75DSWq62jcgwcfz15DKgG3w9z35L8fYAUDUcKF1K4zCfv2yc')
           .then(() => logger.info('     -- Add a receiver address'));
         await page.waitForTimeout(2000);
-        const originalBalance = await page.$eval('#receiver-balance', (el) => el.innerText);
+        const originalBalance = await page.$eval('#test-receiver-balance', (el) => el.innerText);
         await page
           .click('#test-button-submit')
           .then(() => logger.info('     -- Click send button to initiate the transaction'));
@@ -239,29 +239,29 @@ describe('<App />', () => {
         await page.waitForTimeout(500);
 
         await page
-          .waitForSelector('#step-include-message-block > #check-circle-icon')
+          .waitForSelector(`#test-step-include-message-block > ${ids.checkCircleComponent}`)
           .then(() => logger.info('     -- Step 1 "Include message in block" completed'));
         await page
-          .waitForSelector('#step-finalized-block > #check-circle-icon')
+          .waitForSelector(`#test-step-finalized-block > ${ids.checkCircleComponent}`)
           .then(() => logger.info('     -- Step 2 "Finalize block" completed'));
         await page
-          .waitForSelector('#step-relay-block > #check-circle-icon')
+          .waitForSelector(`#test-step-relay-block > ${ids.checkCircleComponent}`)
           .then(() => logger.info('     -- Step 3 "Relay block" completed'));
         await page
-          .waitForSelector('#step-deliver-message-block > #check-circle-icon')
+          .waitForSelector(`#test-step-deliver-message-block > ${ids.checkCircleComponent}`)
           .then(() => logger.info('     -- Step 4 "Deliver message in target block" completed'));
         await page
-          .waitForSelector('#step-finalized-message > #check-circle-icon')
+          .waitForSelector(`#test-step-finalized-message > ${ids.checkCircleComponent}`)
           .then(() => logger.info('     -- Step 5 "Finalize message" completed'));
         await page
-          .waitForSelector('#step-confirm-delivery > #check-circle-icon')
+          .waitForSelector(`#test-step-confirm-delivery > ${ids.checkCircleComponent}`)
           .then(() => logger.info('     -- Step 6 "Confirm delivery" completed'));
 
         await page
-          .waitForSelector('#transaction-header > #check-circle-icon')
+          .waitForSelector(`#test-transaction-header > ${ids.checkCircleComponent}`)
           .then(() => logger.info('     -- Transaction Completed'));
         await page.waitForTimeout(15000);
-        const udpatedBalance = await page.$eval('#receiver-balance', (el) => el.innerText);
+        const udpatedBalance = await page.$eval('#test-receiver-balance', (el) => el.innerText);
         const expectedBalance = getBalance(originalBalance) + 10;
         expect(getBalance(udpatedBalance)).toEqual(expectedBalance);
         logger.info('     -- Balance increased successfully');
