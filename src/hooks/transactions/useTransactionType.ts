@@ -66,9 +66,15 @@ export default function useTransactionType({ input, type, weightInput }: Props):
             // TODO [#121] Figure out what the extra bytes are about
             call = call.slice(2);
             weight = (await targetApi.tx.system.remark(input).paymentInfo(account)).weight.toNumber();
+            setValues({ call, weight });
             break;
           case TransactionTypes.TRANSFER:
             if (receiverAddress) {
+              // This is a "hack" that will not break the UI
+              // see github #111 (https://github.com/paritytech/parity-bridges-ui/issues/111)
+              if (input.length > 15) {
+                break;
+              }
               call = (await targetApi.tx.balances.transfer(receiverAddress, input)).toU8a();
               logger.info(`balances::transfer: ${u8aToHex(call)}`);
               // TODO [#121] Figure out what the extra bytes are about
@@ -76,16 +82,17 @@ export default function useTransactionType({ input, type, weightInput }: Props):
               weight = (
                 await targetApi.tx.balances.transfer(receiverAddress, input).paymentInfo(account)
               ).weight.toNumber();
+              setValues({ call, weight });
             }
             break;
           case TransactionTypes.CUSTOM:
             call = isHex(input) ? hexToU8a(input) : null;
             weight = parseInt(weightInput!);
+            setValues({ call, weight });
             break;
           default:
             throw new Error(`Unknown type: ${type}`);
         }
-        setValues({ call, weight });
       }
     }
 

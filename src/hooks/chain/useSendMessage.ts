@@ -172,7 +172,9 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
         return isRunning || !account || !areApiReady;
         break;
       case TransactionTypes.TRANSFER:
-        return isRunning || !receiverAddress || !input || !account || !areApiReady;
+        // This is a "hack" that will not break the UI
+        // see github #111 (https://github.com/paritytech/parity-bridges-ui/issues/111)
+        return isRunning || !receiverAddress || !input || input.length > 15 || !account || !areApiReady;
         break;
       case TransactionTypes.CUSTOM:
         return isRunning || !account || !input || !weightInput || !isValidCall || !areApiReady;
