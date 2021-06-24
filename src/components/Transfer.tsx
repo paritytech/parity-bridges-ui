@@ -69,11 +69,9 @@ function Transfer() {
   });
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.value) {
-      const [actualValue, message] = evalUnits(event.target.value);
-      setHelperText(message);
-      setActualInput(actualValue && actualValue * planck);
-    }
+    const [actualValue, message] = evalUnits(event.target.value);
+    setHelperText(message);
+    setActualInput(actualValue && actualValue * planck);
     setTransferInput(event.target.value);
   };
 
