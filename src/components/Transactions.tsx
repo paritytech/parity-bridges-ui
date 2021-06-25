@@ -25,6 +25,7 @@ import { TransactionStatusEnum, TransactionStatusType } from '../types/transacti
 import shortenItem from '../util/shortenItem';
 import TransactionStatus, { TransactionDisplayProps } from './TransactionStatus';
 import TransactionStatusMock from './TransactionStatusMock';
+import TransactionSwitchTab from './TransactionSwitchTab';
 
 interface Props extends TransactionDisplayProps {
   type?: string;
@@ -53,16 +54,19 @@ const Transactions = ({ type, ...transactionDisplayProps }: Props) => {
             );
           };
           return (
-            <TransactionStatus
-              key={transaction.id}
-              transaction={transaction}
-              onComplete={onComplete}
-              transactionDisplayProps={{ ...transactionDisplayProps }}
-            />
+            <TransactionSwitchTab key={transaction.id}>
+              <TransactionStatus
+                transaction={transaction}
+                onComplete={onComplete}
+                transactionDisplayProps={{ ...transactionDisplayProps }}
+              />
+            </TransactionSwitchTab>
           );
         })
       ) : (
-        <TransactionStatusMock type={type} />
+        <TransactionSwitchTab key="mock">
+          <TransactionStatusMock type={type} />
+        </TransactionSwitchTab>
       )}
     </>
   );
