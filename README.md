@@ -74,3 +74,15 @@ In case there is an unexpected issue with this process you can test this process
 ## Learn More
 
 For additional information about the Bridges Project please refer to [parity-bridges-common](https://github.com/paritytech/parity-bridges-common) repository.
+
+## Docker
+
+To build the image run the:
+```
+docker build -t parity-bridges-ui:dev .
+```
+
+Now that image is built, container can start with the following command, which will serve our app on port 8080.
+```
+docker run --rm -it -p 8080:80 parity-bridges-ui:dev
+```
