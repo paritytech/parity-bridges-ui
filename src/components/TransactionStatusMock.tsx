@@ -19,6 +19,8 @@ import React, { useEffect, useState } from 'react';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { Step, TransactionStatusEnum } from '../types/transactionTypes';
 import TransactionReceipt from './TransactionReceipt';
+import TransactionSwitchTab from './TransactionSwitchTab';
+import useTransactionPayloadDisplay from '../hooks/transactions/useTransactionPayloadDisplay';
 interface Props {
   type?: string;
 }
@@ -30,6 +32,7 @@ const TransactionStatusMock = ({ type }: Props) => {
     sourceChainDetails: { chain: sourceChain },
     targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
+  const { payloadHex, displayPayload } = useTransactionPayloadDisplay();
 
   useEffect(() => {
     setSteps([
@@ -75,7 +78,11 @@ const TransactionStatusMock = ({ type }: Props) => {
     ]);
   }, [sourceChain, targetChain]);
 
-  return <TransactionReceipt steps={steps} type={type} status={TransactionStatusEnum.NOT_STARTED} />;
+  return (
+    <TransactionSwitchTab payloadHex={payloadHex} displayPayload={displayPayload}>
+      <TransactionReceipt steps={steps} type={type} status={TransactionStatusEnum.NOT_STARTED} />
+    </TransactionSwitchTab>
+  );
 };
 
 export default TransactionStatusMock;

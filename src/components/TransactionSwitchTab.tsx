@@ -18,6 +18,7 @@ import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
 import { ButtonSwitchMode } from './Buttons';
 import TransactionPayload from './TransactionPayload';
+import { DisplayPayload } from '../types/transactionTypes';
 import { SwitchSwitchTab } from '../types/transactionTypes';
 
 export interface TransactionDisplayProps {
@@ -25,17 +26,18 @@ export interface TransactionDisplayProps {
 }
 interface Props {
   transactionDisplayProps?: TransactionDisplayProps;
-  children: React.ReactElement;
-  key: string;
+  children: JSX.Element | JSX.Element[];
+  payloadHex: string | null;
+  displayPayload: DisplayPayload | null;
 }
 
-const TransactionSwitchTab = ({ transactionDisplayProps, children, key }: Props) => {
+const TransactionSwitchTab = ({ transactionDisplayProps, children, payloadHex, displayPayload }: Props) => {
   const [tab, setTab] = useState(SwitchSwitchTab.RECEIPT);
 
   const getColorByState = (value: string) => (value === tab ? 'primary' : 'secondary');
 
   return (
-    <div key={key}>
+    <>
       <Box mt={2}>
         <ButtonSwitchMode
           color={getColorByState(SwitchSwitchTab.PAYLOAD)}
@@ -57,8 +59,13 @@ const TransactionSwitchTab = ({ transactionDisplayProps, children, key }: Props)
         </ButtonSwitchMode>
       </Box>
       {tab === SwitchSwitchTab.RECEIPT && children}
-      <TransactionPayload tab={tab} transactionDisplayProps={transactionDisplayProps} />
-    </div>
+      <TransactionPayload
+        tab={tab}
+        transactionDisplayProps={transactionDisplayProps}
+        payloadHex={payloadHex}
+        displayPayload={displayPayload}
+      />
+    </>
   );
 };
 

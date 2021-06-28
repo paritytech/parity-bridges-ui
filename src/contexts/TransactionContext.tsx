@@ -17,7 +17,7 @@
 import React, { useContext, useReducer } from 'react';
 
 import transactionReducer from '../reducers/transactionReducer';
-import { TransactionState, TransactionsActionType } from '../types/transactionTypes';
+import { TransactionState, TransactionsActionType, DisplayPayload } from '../types/transactionTypes';
 
 interface TransactionContextProviderProps {
   children: React.ReactElement;
@@ -57,7 +57,9 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     payloadError: null,
     showBalance: false,
     formatFound: null,
-    estimatedFeeLoading: false
+    estimatedFeeLoading: false,
+    payloadHex: null,
+    displayPayload: {} as DisplayPayload
   });
 
   return (

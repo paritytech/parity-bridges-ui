@@ -30,7 +30,9 @@ import useLaneId from './useLaneId';
 import useTransactionPreparation from '../transactions/useTransactionPreparation';
 import { TransactionStatusEnum, TransactionTypes } from '../../types/transactionTypes';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
+import { getDisplayPayload } from '../../util/transactionUtils';
 import logger from '../../util/logger';
+import useApiCalls from '../api/useApiCalls';
 import useLoadingApi from '../connections/useLoadingApi';
 
 interface Props {
@@ -55,6 +57,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
   } = useSourceTarget();
   const { account } = useAccountContext();
   useTransactionPreparation({ input, isValidCall, type, weightInput });
+  const { createType } = useApiCalls();
   const { dispatchMessage } = useUpdateMessageContext();
 
   const makeCall = useCallback(
@@ -63,6 +66,10 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
         if (!account || isRunning) {
           return;
         }
+        //@ts-ignore
+        const payloadType = createType(sourceChain, 'OutboundPayload', payload);
+        const payloadHex = payloadType.toHex();
+        const displayPayload = getDisplayPayload(payload);
 
         const { bridgedMessages } = getSubstrateDynamicNames(targetChain);
         const bridgeMessage = sourceApi.tx[bridgedMessages].sendMessage(laneId, payload, estimatedFee);
@@ -90,7 +97,9 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
                 sourceChain,
                 status: TransactionStatusEnum.CREATED,
                 targetChain,
-                type
+                type,
+                payloadHex,
+                displayPayload
               })
             );
           }
@@ -138,6 +147,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
     },
     [
       account,
+      createType,
       dispatchMessage,
       dispatchTransaction,
       estimatedFee,

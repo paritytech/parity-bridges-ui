@@ -18,7 +18,8 @@ import React from 'react';
 import { Card, makeStyles } from '@material-ui/core';
 import ReactJson from 'react-json-view';
 import { SwitchSwitchTab } from '../types/transactionTypes';
-import useTransactionPayloadDisplay from '../hooks/transactions/useTransactionPayloadDisplay';
+
+import { DisplayPayload } from '../types/transactionTypes';
 
 export interface TransactionDisplayProps {
   size?: 'sm';
@@ -27,6 +28,8 @@ export interface TransactionDisplayProps {
 interface Props {
   transactionDisplayProps?: TransactionDisplayProps;
   tab: SwitchSwitchTab;
+  payloadHex: string | null;
+  displayPayload: DisplayPayload | null;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -51,9 +54,8 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const TransactionPayload = ({ tab, transactionDisplayProps }: Props) => {
+const TransactionPayload = ({ tab, transactionDisplayProps, payloadHex, displayPayload }: Props) => {
   const classes = useStyles();
-  const { payloadHex, displayPayload } = useTransactionPayloadDisplay();
 
   if (tab === SwitchSwitchTab.RECEIPT) {
     return null;

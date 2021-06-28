@@ -47,6 +47,13 @@ export interface TransactionPayload {
   weight: number;
 }
 
+export interface DisplayPayload {
+  call: Object;
+  origin: Object;
+  spec_version: string;
+  weight: string;
+}
+
 export interface TransactionStatusType extends UpdatedTransactionStatusType {
   input: string;
   sourceChain: string;
@@ -56,6 +63,7 @@ export interface TransactionStatusType extends UpdatedTransactionStatusType {
   type: string;
   status: TransactionStatusEnum;
 }
+
 export interface TransactionState {
   estimatedFee: string | null;
   estimatedFeeError: string | null;
@@ -70,6 +78,8 @@ export interface TransactionState {
   payload: TransactionPayload | null;
   payloadError: string | null;
   estimatedFeeLoading: boolean;
+  payloadHex: string | null;
+  displayPayload: DisplayPayload;
 }
 
 export type TransactionsActionType = { type: TransactionActionTypes; payload: Payload };
@@ -92,11 +102,4 @@ export interface ReceiverPayload {
   unformattedReceiverAddress: string | null;
   sourceChainDetails: ChainState;
   targetChainDetails: ChainState;
-}
-
-export interface DisplayPayload {
-  call: Object;
-  origin: Object;
-  spec_version: string;
-  weight: string;
 }

@@ -19,6 +19,8 @@ import React from 'react';
 import useTransactionSteps from '../hooks/transactions/useTransactionSteps';
 import { TransactionStatusType } from '../types/transactionTypes';
 import TransactionReceipt from './TransactionReceipt';
+import TransactionSwitchTab from './TransactionSwitchTab';
+
 export interface TransactionDisplayProps {
   size?: 'sm';
 }
@@ -30,8 +32,13 @@ interface Props {
 
 const TransactionStatus = ({ transaction, onComplete }: Props) => {
   const steps = useTransactionSteps({ transaction, onComplete });
+  const { payloadHex, displayPayload } = transaction;
 
-  return <TransactionReceipt steps={steps} type={transaction.type} status={transaction.status} />;
+  return (
+    <TransactionSwitchTab payloadHex={payloadHex} displayPayload={displayPayload}>
+      <TransactionReceipt steps={steps} type={transaction.type} status={transaction.status} />
+    </TransactionSwitchTab>
+  );
 };
 
 export default TransactionStatus;
