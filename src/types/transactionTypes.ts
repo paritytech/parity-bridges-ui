@@ -93,3 +93,10 @@ export interface ReceiverPayload {
   sourceChainDetails: ChainState;
   targetChainDetails: ChainState;
 }
+
+export interface DisplayPayload {
+  call: Object;
+  origin: Object;
+  spec_version: string;
+  weight: string;
+}

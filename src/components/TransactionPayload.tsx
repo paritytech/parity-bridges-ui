@@ -16,11 +16,9 @@
 
 import React from 'react';
 import { Card, makeStyles } from '@material-ui/core';
-
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useTransactionContext } from '../contexts/TransactionContext';
+import ReactJson from 'react-json-view';
 import { SwitchSwitchTab } from '../types/transactionTypes';
-import useApiCalls from '../hooks/api/useApiCalls';
+import useTransactionPayloadDisplay from '../hooks/transactions/useTransactionPayloadDisplay';
 
 export interface TransactionDisplayProps {
   size?: 'sm';
@@ -48,38 +46,27 @@ const useStyles = makeStyles((theme) => ({
       maxWidth: '100%',
       padding: theme.spacing(2),
       borderRadius: theme.spacing(1.5)
-    }
+    },
+    wordBreak: 'break-word'
   }
 }));
 
 const TransactionPayload = ({ tab, transactionDisplayProps }: Props) => {
   const classes = useStyles();
-  const { payload } = useTransactionContext();
-  const {
-    sourceChainDetails: { chain: sourceChain }
-  } = useSourceTarget();
-  const { createType } = useApiCalls();
+  const { payloadHex, displayPayload } = useTransactionPayloadDisplay();
 
-  //@ts-ignore
-  const payloadType = createType(sourceChain, 'OutboundPayload', payload);
-  const payloadHex = payloadType.toHex();
-  const payloadDecoded = JSON.stringify(payload, (key, value) => {});
+  if (tab === SwitchSwitchTab.RECEIPT) {
+    return null;
+  }
 
-  if (tab === SwitchSwitchTab.PAYLOAD && payload) {
-    return (
-      <Card elevation={transactionDisplayProps?.size === 'sm' ? 23 : 24} className={classes.card}>
-        {payloadHex}
-      </Card>
-    );
-  }
-  if (tab === SwitchSwitchTab.DECODED && payload) {
-    return (
-      <Card elevation={transactionDisplayProps?.size === 'sm' ? 23 : 24} className={classes.card}>
-        <pre>{payloadDecoded}</pre>
-      </Card>
-    );
-  }
-  return null;
+  return (
+    <Card elevation={transactionDisplayProps?.size === 'sm' ? 23 : 24} className={classes.card}>
+      {tab === SwitchSwitchTab.PAYLOAD && payloadHex}
+      {tab === SwitchSwitchTab.DECODED && displayPayload && (
+        <ReactJson src={displayPayload} enableClipboard collapsed={1} name={false} />
+      )}
+    </Card>
+  );
 };
 
 export default TransactionPayload;

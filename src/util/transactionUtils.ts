@@ -14,8 +14,34 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { TransactionStatusType, TransactionStatusEnum } from '../types/transactionTypes';
+import { TransactionStatusType, TransactionStatusEnum, Payload, DisplayPayload } from '../types/transactionTypes';
 
 export function isTransactionCompleted(transaction: TransactionStatusType): boolean {
   return transaction.status === TransactionStatusEnum.COMPLETED;
+}
+
+interface ToObject {
+  [propName: number]: number;
+}
+
+function toObject(arr: Array<any>): Object {
+  const rv: ToObject = {};
+  for (let i = 0; i < arr.length; ++i) rv[i] = arr[i];
+  return rv;
+}
+
+export function getDisplayPayload(payload: Payload | null): DisplayPayload | null {
+  const displayPayload = {} as DisplayPayload;
+  if (payload) {
+    const { call, origin, spec_version, weight } = payload;
+    displayPayload.call = toObject(call);
+    displayPayload.origin = {
+      SourceAccount: toObject(origin.SourceAccount)
+    };
+
+    displayPayload.weight = weight;
+    displayPayload.spec_version = spec_version;
+    return displayPayload;
+  }
+  return null;
 }
