@@ -79,21 +79,7 @@ const useChainGetters = () => {
     }
   };
 
-  const getChainBySS58Prefix = (prefix: string) => {
-    const intPrefix: number = parseInt(prefix, 10);
-    switch (intPrefix) {
-      case GENERIC_SUBSTRATE_PREFIX:
-        return GENERIC;
-      case targetSS58Format:
-        return targetChain;
-      case sourceSS58Format:
-        return sourceChain;
-      default:
-        return '';
-    }
-  };
-
-  return { getValuesByChain, getChainBySS58Prefix, getSS58PrefixByChain };
+  return { getValuesByChain, getSS58PrefixByChain };
 };
 
 export default useChainGetters;

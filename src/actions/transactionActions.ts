@@ -14,19 +14,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { TransactionStatusType, UpdatedTransactionStatusType, TransactionPayload } from '../types/transactionTypes';
+import {
+  TransactionStatusType,
+  UpdatedTransactionStatusType,
+  ReceiverPayload,
+  TransactionPayload
+} from '../types/transactionTypes';
 
 enum TransactionActionTypes {
   SET_ESTIMATED_FEE = 'SET_ESTIMATED_FEE',
   SET_PAYLOAD = 'SET_PAYLOAD',
+  SET_PAYLOAD_ERROR = 'SET_PAYLOAD_ERROR',
+  SET_RECEIVER = 'SET_RECEIVER',
   SET_RECEIVER_ADDRESS = 'SET_RECEIVER_ADDRESS',
-  SET_UNFORMATTED_RECEIVER_ADDRESS = 'SET_UNFORMATTED_RECEIVER_ADDRESS',
+  SET_RECEIVER_VALIDATION = 'SET_RECEIVER_VALIDATION',
   CREATE_TRANSACTION_STATUS = 'CREATE_TRANSACTION_STATUS',
   UPDATE_CURRENT_TRANSACTION_STATUS = 'UPDATE_CURRENT_TRANSACTION_STATUS',
   SET_TRANSACTION_COMPLETED = 'SET_TRANSACTION_COMPLETED',
-  SET_RECEIVER_VALIDATION = 'SET_RECEIVER_VALIDATION',
-  SET_DERIVED_RECEIVER_ACCOUNT = 'SET_DERIVED_RECEIVER_ACCOUNT',
-  SET_GENERIC_RECEIVER_ACCOUNT = 'SET_GENERIC_RECEIVER_ACCOUNT'
+  RESET = 'RESET'
 }
 
 const setEstimatedFee = (
@@ -50,9 +55,9 @@ const setReceiverAddress = (receiverAddress: string | null) => ({
   type: TransactionActionTypes.SET_RECEIVER_ADDRESS
 });
 
-const setUnformattedReceiverAddress = (unformattedReceiverAddress: string | null) => ({
-  payload: { unformattedReceiverAddress },
-  type: TransactionActionTypes.SET_UNFORMATTED_RECEIVER_ADDRESS
+const setReceiver = (receiverPayload: ReceiverPayload) => ({
+  payload: { receiverPayload },
+  type: TransactionActionTypes.SET_RECEIVER
 });
 
 const createTransactionStatus = (initialTransaction: TransactionStatusType) => {
@@ -69,25 +74,19 @@ const updateTransactionStatus = (updatedValues: UpdatedTransactionStatusType, id
   };
 };
 
-const setGenericAccount = (genericReceiverAccount: string | null) => ({
-  payload: { genericReceiverAccount },
-  type: TransactionActionTypes.SET_GENERIC_RECEIVER_ACCOUNT
-});
-
-const setDerivedAccount = (derivedReceiverAccount: string | null) => ({
-  payload: { derivedReceiverAccount },
-  type: TransactionActionTypes.SET_DERIVED_RECEIVER_ACCOUNT
+const reset = () => ({
+  payload: {},
+  type: TransactionActionTypes.RESET
 });
 
 const TransactionActionCreators = {
   setEstimatedFee,
   createTransactionStatus,
   setReceiverAddress,
-  setUnformattedReceiverAddress,
+  setReceiver,
   updateTransactionStatus,
-  setGenericAccount,
-  setDerivedAccount,
-  setPayload
+  setPayload,
+  reset
 };
 
 export { TransactionActionCreators, TransactionActionTypes };

@@ -14,20 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useState } from 'react';
+import React from 'react';
 import ReceiverInput from './ReceiverInput';
 import ReceiverDerivedAccount from './ReceiverDerivedAccount';
+import { useTransactionContext } from '../contexts/TransactionContext';
 import { Typography } from '@material-ui/core';
 
 const Receiver = () => {
-  const [error, setError] = useState('');
-
+  const { addressValidationError } = useTransactionContext();
   return (
     <>
-      <ReceiverInput setError={setError} />
+      <ReceiverInput />
       <ReceiverDerivedAccount />
       <Typography variant="body2" color="error">
-        {error}
+        {addressValidationError}
       </Typography>
     </>
   );

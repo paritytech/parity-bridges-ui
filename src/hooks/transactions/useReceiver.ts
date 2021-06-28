@@ -14,43 +14,42 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import React, { useCallback, useEffect } from 'react';
 import { TransactionActionCreators } from '../../actions/transactionActions';
-import { INCORRECT_FORMAT } from '../../constants';
+
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
-import { useUpdateTransactionContext } from '../../contexts/TransactionContext';
-import useChainGetters from '../chain/useChainGetters';
-import getReceiverAddress from '../../util/getReceiverAddress';
-import logger from '../../util/logger';
+import { useUpdateTransactionContext, useTransactionContext } from '../../contexts/TransactionContext';
+
+import usePrevious from '../../hooks/react/usePrevious';
 
 export default function useReceiver() {
   const { dispatchTransaction } = useUpdateTransactionContext();
-
+  const { unformattedReceiverAddress } = useTransactionContext();
   const { targetChainDetails, sourceChainDetails } = useSourceTarget();
-  const { getChainBySS58Prefix } = useChainGetters();
 
-  const setReceiver = (address: string | null) =>
-    dispatchTransaction(TransactionActionCreators.setReceiverAddress(address));
+  const { chain: targetChain } = targetChainDetails;
+  const prevTargetChain = usePrevious(targetChain);
 
-  const setUnformattedReceiver = (address: string | null) =>
-    dispatchTransaction(TransactionActionCreators.setUnformattedReceiverAddress(address));
+  const onReceiverChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const unformattedReceiverAddress = event.target.value;
+      dispatchTransaction(TransactionActionCreators.reset());
+      dispatchTransaction(
+        TransactionActionCreators.setReceiver({
+          unformattedReceiverAddress,
+          sourceChainDetails,
+          targetChainDetails
+        })
+      );
+    },
+    [dispatchTransaction, sourceChainDetails, targetChainDetails]
+  );
 
-  const validateAccount = (receiver: string) => {
-    try {
-      const { address, formatFound } = getReceiverAddress({
-        getChainBySS58Prefix,
-        targetChainDetails,
-        sourceChainDetails,
-        receiverAddress: receiver
-      });
-
-      return { formatFound, formattedAccount: address };
-    } catch (e) {
-      logger.error(e.message);
-      if (e.message === INCORRECT_FORMAT) {
-        return { formatFound: e.message, formattedAccount: receiver };
-      }
+  useEffect(() => {
+    if (prevTargetChain !== targetChain) {
+      dispatchTransaction(TransactionActionCreators.reset());
     }
-  };
+  }, [unformattedReceiverAddress, prevTargetChain, targetChain, dispatchTransaction]);
 
-  return { setReceiver, setUnformattedReceiver, validateAccount };
+  return { onReceiverChange };
 }

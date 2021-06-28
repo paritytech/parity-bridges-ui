@@ -14,10 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
-import Container from '@material-ui/core/Container';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import Balance from './Balance';
@@ -25,6 +21,7 @@ import shorterItem from '../util/shortenItem';
 import AccountIdenticon from './AccountIdenticon';
 import { Box, Tooltip } from '@material-ui/core';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+import { AddressKind } from '../types/accountTypes';
 
 export interface Props {
   friendlyName?: string | null;
@@ -101,10 +98,5 @@ const AccountDisplay = ({
     </Box>
   );
 };
-
-export enum AddressKind {
-  NATIVE = 'native',
-  COMPANION = 'companion'
-}
 
 export default AccountDisplay;

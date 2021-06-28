@@ -18,8 +18,8 @@ import React from 'react';
 
 import useApiBalance from '../hooks/subscriptions/useApiBalance';
 import useBalance from '../hooks/subscriptions/useBalance';
-import AccountDisplay, { AddressKind, Props as AccountDisplayProps } from './AccountDisplay';
-
+import AccountDisplay, { Props as AccountDisplayProps } from './AccountDisplay';
+import { AddressKind } from '../types/accountTypes';
 interface Props extends AccountDisplayProps {
   chain?: string | undefined;
   value: string;

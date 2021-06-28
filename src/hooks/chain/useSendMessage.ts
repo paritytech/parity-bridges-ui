@@ -166,7 +166,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
 
   const { areApiReady } = useLoadingApi();
 
-  const isButtonDisabled = () => {
+  const isButtonDisabled = useCallback(() => {
     switch (type) {
       case TransactionTypes.REMARK:
         return isRunning || !account || !areApiReady;
@@ -180,7 +180,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
       default:
         throw new Error(`Unknown type: ${type}`);
     }
-  };
+  }, [account, areApiReady, input, isRunning, isValidCall, receiverAddress, type, weightInput]);
 
   return { isButtonDisabled, sendLaneMessage };
 }

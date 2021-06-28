@@ -15,34 +15,42 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 import { checkAddress } from '@polkadot/util-crypto';
 import { ChainState } from '../types/sourceTargetTypes';
-import { INCORRECT_FORMAT } from '../constants';
+import { INCORRECT_FORMAT, GENERIC, GENERIC_SUBSTRATE_PREFIX } from '../constants';
 import getDeriveAccount from './getDeriveAccount';
 import { getBridgeId } from './getConfigs';
 
 interface Props {
-  getChainBySS58Prefix: (prefix: string) => string;
   receiverAddress: string;
   targetChainDetails: ChainState;
   sourceChainDetails: ChainState;
 }
-const getReceiverAddress = ({
-  getChainBySS58Prefix,
-  targetChainDetails,
-  sourceChainDetails,
-  receiverAddress
-}: Props) => {
-  const { configs: sourceConfigs } = sourceChainDetails;
+const getReceiverAddress = ({ targetChainDetails, sourceChainDetails, receiverAddress }: Props) => {
+  const { configs: sourceConfigs, chain: sourceChain } = sourceChainDetails;
   const { chain: targetChain, configs: targetConfigs } = targetChainDetails;
 
   const targetSS58Format = targetConfigs.ss58Format;
   const bridgeId = getBridgeId(targetConfigs, sourceConfigs.chainName);
 
+  const getChainBySS58Prefix = (prefix: string) => {
+    const intPrefix: number = parseInt(prefix, 10);
+    switch (intPrefix) {
+      case GENERIC_SUBSTRATE_PREFIX:
+        return GENERIC;
+      case targetConfigs.ss58Format:
+        return targetChain;
+      case sourceConfigs.ss58Format:
+        return sourceChain;
+      default:
+        return '';
+    }
+  };
+
   try {
     const [validatedDerivedAcccount, rest] = checkAddress(receiverAddress, targetSS58Format);
+
     if (validatedDerivedAcccount) {
       return { address: receiverAddress, formatFound: targetChain };
     }
-    // should be extracted as a separate component/function
 
     const parts = rest?.split(',');
     const prefix = parts![2].split(' ');

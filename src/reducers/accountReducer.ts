@@ -13,7 +13,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
-
 import { AccountActionsTypes } from '../actions/accountActions';
 import type { AccountsActionType, AccountState } from '../types/accountTypes';
 

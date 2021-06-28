@@ -14,23 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { encodeAddress } from '@polkadot/util-crypto';
-import React, { useState } from 'react';
-import { useUpdateTransactionContext } from '../contexts/TransactionContext';
-import { TransactionActionCreators } from '../actions/transactionActions';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import useBalance from '../hooks/subscriptions/useBalance';
-import getDeriveAccount from '../util/getDeriveAccount';
-import shorterItem from '../util/shortenItem';
-import { getBridgeId } from '../util/getConfigs';
-import AccountDisplay, { AddressKind } from './AccountDisplay';
+import AccountDisplay from './AccountDisplay';
+import { useGenericAccount } from '../hooks/accounts/useGenericAccount';
+import { AddressKind } from '../types/accountTypes';
 import { Paper } from '@material-ui/core';
 import { styleAccountCompanion } from '.';
 
 interface Props {
   value: string;
-  isDerived?: boolean;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -51,59 +44,22 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const NATIVE = 'NATIVE';
-const COMPANION = 'COMPANION';
-
 const GenericAccount = ({ value }: Props) => {
-  const [selected, setSelected] = useState('');
   const classes = useStyles();
-
-  const { dispatchTransaction } = useUpdateTransactionContext();
   const {
-    sourceChainDetails: { configs: sourceConfigs },
-    targetChainDetails: {
-      configs: targetConfigs,
-      apiConnection: { api: targetApi }
-    }
-  } = useSourceTarget();
+    selected,
+    shortGenericAddress,
+    companionAddress,
+    setNativeAsTarget,
+    setCompanionAsTarget,
+    nativeAddress,
+    nativeState,
+    companionState
+  } = useGenericAccount(value);
 
-  const nativeAddress = encodeAddress(value, targetConfigs.ss58Format);
-  const nativeState = useBalance(targetApi, nativeAddress, true);
-
-  const companionAddress = getDeriveAccount({
-    ss58Format: targetConfigs.ss58Format,
-    address: value,
-    bridgeId: getBridgeId(targetConfigs, sourceConfigs.chainName)
-  });
-  const companionState = useBalance(targetApi, companionAddress, true);
-
-  const looseHelperAccount = () => {
-    setSelected('');
-    dispatchTransaction(TransactionActionCreators.setReceiverAddress(null));
-  };
-
-  const setNativeAsTarget = () => {
-    if (selected) {
-      looseHelperAccount();
-      return;
-    }
-    setSelected(NATIVE);
-    dispatchTransaction(TransactionActionCreators.setReceiverAddress(nativeAddress));
-  };
-
-  const setCompanionAsTarget = () => {
-    if (selected) {
-      looseHelperAccount();
-      return;
-    }
-    setSelected(COMPANION);
-    dispatchTransaction(TransactionActionCreators.setReceiverAddress(companionAddress));
-  };
-
-  const shortGenericAddress = shorterItem(value);
   return (
     <Paper elevation={!selected ? 23 : 0}>
-      {(!selected || selected === NATIVE) && (
+      {(!selected || selected === AddressKind.NATIVE) && (
         <AccountDisplay
           className={`${classes.accountCompanion} ${classes.selectAccountCompanionItem}`}
           onClick={setNativeAsTarget}
@@ -116,7 +72,7 @@ const GenericAccount = ({ value }: Props) => {
           withTooltip
         />
       )}
-      {(!selected || selected === COMPANION) && (
+      {(!selected || selected === AddressKind.COMPANION) && (
         <AccountDisplay
           className={`${classes.accountCompanion} ${classes.selectAccountCompanionItem}`}
           onClick={setCompanionAsTarget}

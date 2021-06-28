@@ -24,7 +24,8 @@ import useLoadingApi from '../hooks/connections/useLoadingApi';
 import { Account as AccountType } from '../types/accountTypes';
 import formatAccounts from '../util/formatAccounts';
 import Account from './Account';
-import AccountDisplay, { AddressKind } from './AccountDisplay';
+import AccountDisplay from './AccountDisplay';
+import { AddressKind } from '../types/accountTypes';
 import { SelectLabel, styleAccountCompanion } from '../components';
 import useChainGetters from '../hooks/chain/useChainGetters';
 
