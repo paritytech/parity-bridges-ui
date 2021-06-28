@@ -44,15 +44,15 @@ interface IconApiStatusProps {
 export const IconTxStatus = ({ status }: IconTxStatusProps) => {
   switch (status) {
     case TransactionStatusEnum.COMPLETED:
-      return <CheckCircleOutlineIcon />;
+      return <CheckCircleOutlineIcon id="test-transaction-status-completed" />;
     case TransactionStatusEnum.IN_PROGRESS:
-      return <AutorenewIcon />;
+      return <AutorenewIcon id="test-auto-new-icon" />;
     case TransactionStatusEnum.FAILED:
-      return <ErrorOutlineIcon />;
+      return <ErrorOutlineIcon id="test-error-outline-icon" />;
     case TransactionStatusEnum.NOT_STARTED:
-      return <FiberManualRecordTwoToneIcon />;
+      return <FiberManualRecordTwoToneIcon id="test-fiber-manual-two-icon" />;
     default:
-      return <FiberManualRecordIcon />;
+      return <FiberManualRecordIcon id="test-fiber-manual-icon" />;
   }
 };
 

@@ -36,6 +36,7 @@ export interface Props {
   balance?: string | null | undefined;
   className?: string;
   withTooltip?: boolean;
+  id?: string | undefined;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -68,7 +69,8 @@ const AccountDisplay = ({
   hideAddress = false,
   onClick,
   className,
-  withTooltip
+  withTooltip,
+  id
 }: Props) => {
   const classes = useStyles();
   const displayText = () => {
@@ -87,7 +89,7 @@ const AccountDisplay = ({
   return (
     <Box onClick={onClick} display="flex" alignItems="center" className={className}>
       <AccountIdenticon address={address} />
-      <div className={`${classes.address} ${!address && classes.missingAddress}`}>
+      <div className={`${classes.address} ${!address && classes.missingAddress}`} id={id}>
         {displayText()}
         {withTooltip && (
           <Tooltip title={address} arrow placement="top" interactive>

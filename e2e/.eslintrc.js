@@ -13,10 +13,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
-
-// @ts-ignore due to isolatedModules flag - no import so this needed
-describe('<App />', () => {
-  beforeAll(async () => {
-    await page.goto(SERVER_URL, { waitUntil: 'domcontentloaded' });
-  }, JEST_TIMEOUT);
-});
+module.exports = {
+  env: {
+    jest: true
+  }
+};
