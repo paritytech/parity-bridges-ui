@@ -23,6 +23,7 @@ import { Step, TransactionStatusEnum } from '../types/transactionTypes';
 
 interface Props {
   steps: Step[];
+  status: TransactionStatusEnum;
   type?: string;
 }
 
@@ -47,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const Receipt = ({ type, steps }: Props) => {
+const TransactionReceipt = ({ type, steps, status }: Props) => {
   const classes = useStyles();
 
   const {
@@ -57,11 +58,11 @@ const Receipt = ({ type, steps }: Props) => {
 
   return (
     <Card elevation={24} className={classes.card}>
-      <Box className="header" component="p">
-        <IconTxStatus status={TransactionStatusEnum.NOT_STARTED} /> {type} {sourceChain} {'->'} {targetChain}
+      <Box className="header" component="p" id="test-transaction-header">
+        <IconTxStatus status={status} /> {type} {sourceChain} {'->'} {targetChain}
       </Box>
-      {steps.map(({ chainType, label, labelOnChain, status }, idx) => (
-        <p key={idx}>
+      {steps.map(({ chainType, label, labelOnChain, status, id }) => (
+        <p key={id} id={id}>
           <IconTxStatus status={status} /> {chainType}: {label}&nbsp;
           {labelOnChain && (
             <Box pt={0.25} pb={0.25} pl={0.5} pr={0.5} component="span" border={1} borderRadius={6}>
@@ -76,4 +77,4 @@ const Receipt = ({ type, steps }: Props) => {
   );
 };
 
-export default Receipt;
+export default TransactionReceipt;

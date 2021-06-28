@@ -18,7 +18,7 @@ import React from 'react';
 
 import useTransactionSteps from '../hooks/transactions/useTransactionSteps';
 import { TransactionStatusType } from '../types/transactionTypes';
-import Receipt from './TransactionReceipt';
+import TransactionReceipt from './TransactionReceipt';
 export interface TransactionDisplayProps {
   size?: 'sm';
 }
@@ -31,7 +31,7 @@ interface Props {
 const TransactionStatus = ({ transaction, onComplete }: Props) => {
   const steps = useTransactionSteps({ transaction, onComplete });
 
-  return <Receipt steps={steps} type={transaction.type} />;
+  return <TransactionReceipt steps={steps} type={transaction.type} status={transaction.status} />;
 };
 
 export default TransactionStatus;

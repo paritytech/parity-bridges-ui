@@ -18,7 +18,7 @@ import React, { useEffect, useState } from 'react';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { Step, TransactionStatusEnum } from '../types/transactionTypes';
-import Receipt from './TransactionReceipt';
+import TransactionReceipt from './TransactionReceipt';
 interface Props {
   type?: string;
 }
@@ -75,7 +75,7 @@ const TransactionStatusMock = ({ type }: Props) => {
     ]);
   }, [sourceChain, targetChain]);
 
-  return <Receipt steps={steps} type={type} />;
+  return <TransactionReceipt steps={steps} type={type} status={TransactionStatusEnum.NOT_STARTED} />;
 };
 
 export default TransactionStatusMock;
