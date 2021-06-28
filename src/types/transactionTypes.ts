@@ -33,7 +33,7 @@ export enum TransactionStatusEnum {
   FAILED = 'FAILED'
 }
 
-export enum SwitchSwitchTab {
+export enum SwitchTabType {
   RECEIPT = 'RECEIPT',
   PAYLOAD = 'PAYLOAD',
   DECODED = 'DECODED'
@@ -47,7 +47,7 @@ export interface TransactionPayload {
   weight: number;
 }
 
-export interface DisplayPayload {
+export interface TransactionDisplayPayload {
   call: Object;
   origin: Object;
   spec_version: string;
@@ -79,7 +79,7 @@ export interface TransactionState {
   payloadError: string | null;
   estimatedFeeLoading: boolean;
   payloadHex: string | null;
-  displayPayload: DisplayPayload;
+  TransactionDisplayPayload: TransactionDisplayPayload;
 }
 
 export type TransactionsActionType = { type: TransactionActionTypes; payload: Payload };

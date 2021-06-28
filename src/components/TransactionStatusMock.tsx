@@ -32,7 +32,7 @@ const TransactionStatusMock = ({ type }: Props) => {
     sourceChainDetails: { chain: sourceChain },
     targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
-  const { payloadHex, displayPayload } = useTransactionPayloadDisplay();
+  const { payloadHex, TransactionDisplayPayload } = useTransactionPayloadDisplay();
 
   useEffect(() => {
     setSteps([
@@ -79,7 +79,7 @@ const TransactionStatusMock = ({ type }: Props) => {
   }, [sourceChain, targetChain]);
 
   return (
-    <TransactionSwitchTab payloadHex={payloadHex} displayPayload={displayPayload}>
+    <TransactionSwitchTab payloadHex={payloadHex} TransactionDisplayPayload={TransactionDisplayPayload}>
       <TransactionReceipt steps={steps} type={type} status={TransactionStatusEnum.NOT_STARTED} />
     </TransactionSwitchTab>
   );

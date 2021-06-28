@@ -30,7 +30,7 @@ import useLaneId from './useLaneId';
 import useTransactionPreparation from '../transactions/useTransactionPreparation';
 import { TransactionStatusEnum, TransactionTypes } from '../../types/transactionTypes';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
-import { getDisplayPayload } from '../../util/transactionUtils';
+import { getTransactionDisplayPayload } from '../../util/transactionUtils';
 import logger from '../../util/logger';
 import useApiCalls from '../api/useApiCalls';
 import useLoadingApi from '../connections/useLoadingApi';
@@ -69,7 +69,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
         //@ts-ignore
         const payloadType = createType(sourceChain, 'OutboundPayload', payload);
         const payloadHex = payloadType.toHex();
-        const displayPayload = getDisplayPayload(payload);
+        const TransactionDisplayPayload = getTransactionDisplayPayload(payload);
 
         const { bridgedMessages } = getSubstrateDynamicNames(targetChain);
         const bridgeMessage = sourceApi.tx[bridgedMessages].sendMessage(laneId, payload, estimatedFee);
@@ -99,7 +99,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
                 targetChain,
                 type,
                 payloadHex,
-                displayPayload
+                TransactionDisplayPayload
               })
             );
           }

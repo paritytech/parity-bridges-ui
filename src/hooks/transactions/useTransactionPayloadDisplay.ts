@@ -18,14 +18,14 @@ import { useEffect, useState } from 'react';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../../contexts/TransactionContext';
 
-import { DisplayPayload } from '../../types/transactionTypes';
-import { getDisplayPayload } from '../../util/transactionUtils';
+import { TransactionDisplayPayload } from '../../types/transactionTypes';
+import { getTransactionDisplayPayload } from '../../util/transactionUtils';
 import useApiCalls from '../api/useApiCalls';
 
 const useTransactionPayloadDisplay = () => {
   const { payload, receiverAddress } = useTransactionContext();
   const [payloadHex, setPayloadHex] = useState<string | null>(null);
-  const [displayPayload, setDisplayPayload] = useState<DisplayPayload | null>(null);
+  const [TransactionDisplayPayload, setTransactionDisplayPayload] = useState<TransactionDisplayPayload | null>(null);
 
   const {
     sourceChainDetails: { chain: sourceChain }
@@ -35,7 +35,7 @@ const useTransactionPayloadDisplay = () => {
   useEffect(() => {
     if (!receiverAddress) {
       setPayloadHex(null);
-      setDisplayPayload(null);
+      setTransactionDisplayPayload(null);
     }
     if (payload) {
       //@ts-ignore
@@ -43,10 +43,10 @@ const useTransactionPayloadDisplay = () => {
       setPayloadHex(payloadType.toHex());
     }
     //@ts-ignorex
-    setDisplayPayload(getDisplayPayload(payload));
-  }, [receiverAddress, payload, setDisplayPayload, setPayloadHex, createType, sourceChain]);
+    setTransactionDisplayPayload(getTransactionDisplayPayload(payload));
+  }, [receiverAddress, payload, setTransactionDisplayPayload, setPayloadHex, createType, sourceChain]);
 
-  return { payloadHex, displayPayload };
+  return { payloadHex, TransactionDisplayPayload };
 };
 
 export default useTransactionPayloadDisplay;

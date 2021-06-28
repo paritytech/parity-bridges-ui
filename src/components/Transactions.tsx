@@ -62,7 +62,7 @@ const Transactions = ({ type, ...transactionDisplayProps }: Props) => {
           );
         })
       ) : (
-        <TransactionStatusMock type={type} key="mock" />
+        <TransactionStatusMock type={type} />
       )}
     </>
   );
