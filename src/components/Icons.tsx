@@ -44,7 +44,7 @@ interface IconApiStatusProps {
 export const IconTxStatus = ({ status }: IconTxStatusProps) => {
   switch (status) {
     case TransactionStatusEnum.COMPLETED:
-      return <CheckCircleOutlineIcon id="test-check-circle-icon" />;
+      return <CheckCircleOutlineIcon id="test-transaction-status-completed" />;
     case TransactionStatusEnum.IN_PROGRESS:
       return <AutorenewIcon id="test-auto-new-icon" />;
     case TransactionStatusEnum.FAILED:

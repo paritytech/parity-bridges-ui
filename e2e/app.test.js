@@ -51,7 +51,7 @@ const ids = {
   companion: '#test-companion-input',
   transferButton: '#test-button-submit',
   senderComponent: '#test-sender-component',
-  checkCircleComponent: '#test-check-circle-icon'
+  checkCircleComponent: '#test-transaction-status-completed'
 };
 
 const chooseSender = async (page) => {
