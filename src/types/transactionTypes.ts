@@ -33,6 +33,11 @@ export enum TransactionStatusEnum {
   FAILED = 'FAILED'
 }
 
+export enum SwitchSwitchTab {
+  RECEIPT = 'RECEIPT',
+  PAYLOAD = 'PAYLOAD',
+  DECODED = 'DECODED'
+}
 export interface TransactionPayload {
   call: Uint8Array;
   origin: {

@@ -19,7 +19,7 @@ import { Card, makeStyles } from '@material-ui/core';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
-
+import { SwitchSwitchTab } from '../types/transactionTypes';
 import useApiCalls from '../hooks/api/useApiCalls';
 
 export interface TransactionDisplayProps {
@@ -28,7 +28,7 @@ export interface TransactionDisplayProps {
 
 interface Props {
   transactionDisplayProps?: TransactionDisplayProps;
-  tab: string;
+  tab: SwitchSwitchTab;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -63,19 +63,19 @@ const TransactionPayload = ({ tab, transactionDisplayProps }: Props) => {
   //@ts-ignore
   const payloadType = createType(sourceChain, 'OutboundPayload', payload);
   const payloadHex = payloadType.toHex();
-  const payloadHuman = JSON.stringify(payload, null, 4);
+  const payloadDecoded = JSON.stringify(payload, (key, value) => {});
 
-  if (tab === 'payload' && payload) {
+  if (tab === SwitchSwitchTab.PAYLOAD && payload) {
     return (
       <Card elevation={transactionDisplayProps?.size === 'sm' ? 23 : 24} className={classes.card}>
         {payloadHex}
       </Card>
     );
   }
-  if (tab === 'human' && payload) {
+  if (tab === SwitchSwitchTab.DECODED && payload) {
     return (
       <Card elevation={transactionDisplayProps?.size === 'sm' ? 23 : 24} className={classes.card}>
-        {payloadHuman}
+        <pre>{payloadDecoded}</pre>
       </Card>
     );
   }
