@@ -52,7 +52,7 @@ export const useGenericAccount = (value: string) => {
     dispatchTransaction(TransactionActionCreators.setReceiverAddress(null));
   }, [dispatchTransaction]);
 
-  const setAddressAsTarget = useCallback(
+  const setNativeAsTargetOrClear = useCallback(
     (address: string, addressKind: AddressKind) => {
       if (selected) {
         looseHelperAccount();
@@ -64,13 +64,13 @@ export const useGenericAccount = (value: string) => {
     [dispatchTransaction, looseHelperAccount, selected]
   );
 
-  const setNativeAsTarget = useCallback(() => setAddressAsTarget(nativeAddress, AddressKind.NATIVE), [
+  const setNativeAsTarget = useCallback(() => setNativeAsTargetOrClear(nativeAddress, AddressKind.NATIVE), [
     nativeAddress,
-    setAddressAsTarget
+    setNativeAsTargetOrClear
   ]);
-  const setCompanionAsTarget = useCallback(() => setAddressAsTarget(companionAddress, AddressKind.COMPANION), [
+  const setCompanionAsTarget = useCallback(() => setNativeAsTargetOrClear(companionAddress, AddressKind.COMPANION), [
     companionAddress,
-    setAddressAsTarget
+    setNativeAsTargetOrClear
   ]);
 
   const shortGenericAddress = shorterItem(value);
