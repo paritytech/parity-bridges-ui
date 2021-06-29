@@ -165,6 +165,12 @@ export default function transactionReducer(state: TransactionState, action: Tran
         estimatedFeeError: action.payload.estimatedFeeError,
         estimatedFeeLoading: action.payload.estimatedFeeLoading
       };
+    case TransactionActionTypes.SET_TRANSFER_AMOUNT:
+      return {
+        ...state,
+        transferAmount: action.payload.transferAmount,
+        transferAmountError: action.payload.transferAmountError
+      };
     case TransactionActionTypes.SET_PAYLOAD: {
       return {
         ...state,

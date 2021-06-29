@@ -45,6 +45,8 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
   const { children = null } = props;
 
   const [transaction, dispatchTransaction] = useReducer(transactionReducer, {
+    transferAmount: null,
+    transferAmountError: null,
     derivedReceiverAccount: null,
     estimatedFee: null,
     estimatedFeeError: null,

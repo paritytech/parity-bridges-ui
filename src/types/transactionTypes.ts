@@ -52,6 +52,8 @@ export interface TransactionStatusType extends UpdatedTransactionStatusType {
   status: TransactionStatusEnum;
 }
 export interface TransactionState {
+  transferAmount: string | null;
+  transferAmountError: string | null;
   estimatedFee: string | null;
   estimatedFeeError: string | null;
   receiverAddress: string | null;
