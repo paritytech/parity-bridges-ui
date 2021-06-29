@@ -24,6 +24,7 @@ import useLoadingApi from '../connections/useLoadingApi';
 import { TransactionTypes } from '../../types/transactionTypes';
 import logger from '../../util/logger';
 import { evalUnits } from '../../util/evalUnits';
+import BN from 'bn.js';
 
 interface TransactionFunction {
   call: Uint8Array | null;
@@ -56,7 +57,7 @@ export default function useTransactionType({ input, type, weightInput }: Props):
   });
 
   const planck = 10 ** targetApi.registry.chainDecimals[0];
-  const [resInp, msg] = evalUnits((parseFloat(input) * planck).toString());
+  const [resInp, msg] = evalUnits(new BN(input).mul(new BN(planck)).toString());
   const trnsfInput = resInp?.toString() || '0';
 
   useEffect(() => {

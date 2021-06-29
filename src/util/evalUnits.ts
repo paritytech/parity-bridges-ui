@@ -13,11 +13,13 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
+
+import BN from 'bn.js';
+
+// along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 const si = [
-  // Deactivate these huge nums for now
-  // > than 1e21 is too big for JS to handle
-  // { value: -1e24, symbol: 'y' },
-  // { value: -1e21, symbol: 'z' },
+  { value: -1e24, symbol: 'y' },
+  { value: -1e21, symbol: 'z' },
   { value: -1e18, symbol: 'a' },
   { value: -1e15, symbol: 'f' },
   { value: -1e12, symbol: 'p' },
@@ -30,12 +32,9 @@ const si = [
   { value: 1e9, symbol: 'G' },
   { value: 1e12, symbol: 'T' },
   { value: 1e15, symbol: 'P' },
-  { value: 1e18, symbol: 'E' }
-  // Deactivate these huge nums for now
-  // > than 1e21 is too big for JS to handle
-  // ,
-  // { value: 1e21, symbol: 'Z' },
-  // { value: 1e24, symbol: 'Y' }
+  { value: 1e18, symbol: 'E' },
+  { value: 1e21, symbol: 'Z' },
+  { value: 1e24, symbol: 'Y' }
 ];
 
 const floats = /^[0-9]*[.,]{1}[0-9]*$/;
@@ -52,6 +51,16 @@ export enum EvalMessages {
   GENERAL_ERROR = 'Check your input. Something went wrong'
 }
 
+const transformShorthandToBN = (input: string): BN | null => {
+  // find the character from the alphanumerics
+  const charPart = input.replace(/[0-9.,]/g, '');
+  // find the value from the si list
+  const siVal = si.find((s) => s.symbol === charPart);
+  // get only the numeric parts of input
+  const numericPart = new BN(parseFloat(input.replace(/[,]/g, '.')));
+  return siVal ? numericPart.mul(new BN(siVal.value)) : null;
+};
+
 /**
  * A function that identifes integer/float(comma or dot)/expressions (such as 1k)
  * and converts to actual value (or reports an error).
@@ -60,33 +69,29 @@ export enum EvalMessages {
  * the first is the actual calculated number (or null if none) while
  * the second is the message that should appear in case of error
  */
-export function evalUnits(input: string): [number | null, string] {
-  if (input.length >= Number.MAX_SAFE_INTEGER.toString().length) {
-    return [null, EvalMessages.GENERAL_ERROR];
-  }
+export function evalUnits(input: string): [BN | null, string] {
   if (!floats.test(input) && !ints.test(input) && !alphaInts.test(input) && !alphaFloats.test(input)) {
     return [null, EvalMessages.GIBBERISH];
   }
   if (floats.test(input) || ints.test(input)) {
-    return [parseFloat(input.replace(/[,]/g, '.')), EvalMessages.SUCCESS];
+    const result = new BN(input.replace(/[,]/g, '.'));
+    return [result, EvalMessages.SUCCESS];
   }
   if (alphaInts.test(input) || alphaFloats.test(input)) {
-    const numericPart = parseFloat(input.replace(/[,]/g, '.'));
-    const charPart = input.replace(/[0-9.,]/g, '');
-    const siVal = si.find((s) => s.symbol === charPart);
-    const numeric = siVal ? numericPart * siVal.value : null;
-    if (siVal && numeric) {
-      return numeric > 0
-        ? [numericPart * siVal.value, EvalMessages.SUCCESS]
-        : [numericPart * siVal.value, EvalMessages.NEGATIVE];
+    const numeric = transformShorthandToBN(input);
+    if (numeric) {
+      return numeric.gt(new BN(0)) ? [numeric, EvalMessages.SUCCESS] : [numeric, EvalMessages.NEGATIVE];
     } else {
       return [null, EvalMessages.SYMBOL_ERROR];
     }
   }
-  if (parseInt(input) === 0 || isNaN(parseInt(input))) {
+  if (new BN(input).gte(new BN(Number.MAX_SAFE_INTEGER))) {
+    return [null, EvalMessages.GENERAL_ERROR];
+  }
+  if (new BN(input).eq(new BN(0))) {
     return [null, EvalMessages.ZERO];
   }
-  if (Number.parseInt(input) < 0) {
+  if (new BN(input).isNeg()) {
     return [null, EvalMessages.NEGATIVE];
   }
   return [null, EvalMessages.GENERAL_ERROR];
