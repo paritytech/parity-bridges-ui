@@ -39,7 +39,8 @@ const Transactions = ({ type, ...transactionDisplayProps }: Props) => {
 
   return (
     <>
-      {transactions.length ? (
+      <TransactionStatusMock type={type} />
+      {Boolean(transactions.length) &&
         transactions.map((transaction: TransactionStatusType) => {
           const onComplete = () => {
             dispatchTransaction(
@@ -62,10 +63,7 @@ const Transactions = ({ type, ...transactionDisplayProps }: Props) => {
               transactionDisplayProps={{ ...transactionDisplayProps }}
             />
           );
-        })
-      ) : (
-        <TransactionStatusMock type={type} />
-      )}
+        })}
     </>
   );
 };

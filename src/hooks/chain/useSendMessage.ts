@@ -114,6 +114,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
           }
           if (status.isBroadcast) {
             dispatchMessage(MessageActionsCreators.triggerInfoMessage({ message: 'Transaction was broadcasted' }));
+            dispatchTransaction(TransactionActionCreators.reset());
           }
           if (status.isInBlock) {
             events.forEach(({ event: { data, method } }) => {
@@ -144,6 +145,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
           }
           if (status.isFinalized) {
             logger.info(`Transaction finalized at blockHash ${status.asFinalized}`);
+
             unsub();
           }
         });
