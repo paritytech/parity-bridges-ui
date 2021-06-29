@@ -23,6 +23,8 @@ import { useTransactionContext } from '../../contexts/TransactionContext';
 import useLoadingApi from '../connections/useLoadingApi';
 import { TransactionTypes } from '../../types/transactionTypes';
 import logger from '../../util/logger';
+import { evalUnits } from '../../util/evalUnits';
+
 interface TransactionFunction {
   call: Uint8Array | null;
   weight: number | null;
@@ -53,11 +55,14 @@ export default function useTransactionType({ input, type, weightInput }: Props):
     weight: null
   });
 
+  const planck = 10 ** targetApi.registry.chainDecimals[0];
+  const [resInp, msg] = evalUnits((parseFloat(input) * planck).toString());
+  const trnsfInput = resInp?.toString() || '0';
+
   useEffect(() => {
     async function getValues() {
       let weight: number = 0;
       let call: Uint8Array | null = null;
-
       if (account) {
         switch (type) {
           case TransactionTypes.REMARK:
@@ -69,12 +74,12 @@ export default function useTransactionType({ input, type, weightInput }: Props):
             break;
           case TransactionTypes.TRANSFER:
             if (receiverAddress) {
-              call = (await targetApi.tx.balances.transfer(receiverAddress, input)).toU8a();
+              call = (await targetApi.tx.balances.transfer(receiverAddress, trnsfInput)).toU8a();
               logger.info(`balances::transfer: ${u8aToHex(call)}`);
               // TODO [#121] Figure out what the extra bytes are about
               call = call.slice(2);
               weight = (
-                await targetApi.tx.balances.transfer(receiverAddress, input).paymentInfo(account)
+                await targetApi.tx.balances.transfer(receiverAddress, trnsfInput).paymentInfo(account)
               ).weight.toNumber();
             }
             break;
@@ -92,7 +97,7 @@ export default function useTransactionType({ input, type, weightInput }: Props):
     if (areApiReady) {
       getValues();
     }
-  }, [account, areApiReady, input, receiverAddress, sourceApi, targetApi, type, weightInput]);
+  }, [account, areApiReady, input, msg, receiverAddress, sourceApi, targetApi, trnsfInput, type, weightInput]);
 
   return values;
 }

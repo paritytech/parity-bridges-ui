@@ -19,6 +19,9 @@ import { Box, makeStyles, TextField, Typography } from '@material-ui/core';
 import BN from 'bn.js';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
+import { TransactionActionCreators } from '../actions/transactionActions';
+import { useUpdateTransactionContext } from '../contexts/TransactionContext';
+
 import useAccounts from '../hooks/accounts/useAccounts';
 import useBalance from '../hooks/subscriptions/useBalance';
 import useSendMessage from '../hooks/chain/useSendMessage';
@@ -47,22 +50,20 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Transfer() {
+  const { dispatchTransaction } = useUpdateTransactionContext();
   const classes = useStyles();
   const [isRunning, setIsRunning] = useState(false);
   const [helperText, setHelperText] = useState('');
-  const [transferInput, setTransferInput] = useState<string>('');
-  const [actualInput, setActualInput] = useState<number | null>();
   const [amountNotCorrect, setAmountNotCorrect] = useState<boolean>(false);
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   const { account } = useAccounts();
 
-  const planck = 10 ** targetChainDetails.apiConnection.api.registry.chainDecimals[0];
-  const { estimatedFee, receiverAddress, estimatedFeeLoading } = useTransactionContext();
+  const { estimatedFee, transferAmount, receiverAddress, estimatedFeeLoading } = useTransactionContext();
   const { api, isApiReady } = sourceChainDetails.apiConnection;
   const balance = useBalance(api, account?.address || '');
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
-    input: actualInput?.toString() ?? '',
+    input: transferAmount ?? '',
     isRunning,
     setIsRunning,
     type: TransactionTypes.TRANSFER
@@ -71,20 +72,21 @@ function Transfer() {
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const [actualValue, message] = evalUnits(event.target.value);
     setHelperText(message);
-    setActualInput(actualValue && actualValue * planck);
-    setTransferInput(event.target.value);
+    dispatchTransaction(
+      TransactionActionCreators.setTransferAmount(null, actualValue !== null ? actualValue?.toString() : '')
+    );
   };
 
   useEffect((): void => {
-    isRunning && setTransferInput('');
-  }, [isRunning]);
+    isRunning && dispatchTransaction(TransactionActionCreators.setTransferAmount(null, ''));
+  }, [dispatchTransaction, isRunning]);
 
   // To extract estimated fee logic to specific component. Issue #171
   useEffect((): void => {
     estimatedFee &&
-      actualInput &&
-      setAmountNotCorrect(new BN(balance.free).sub(new BN(actualInput).add(new BN(estimatedFee))).toNumber() < 0);
-  }, [actualInput, estimatedFee, balance, isApiReady]);
+      transferAmount &&
+      setAmountNotCorrect(new BN(balance.free).sub(new BN(transferAmount).add(new BN(estimatedFee))).isNeg());
+  }, [transferAmount, estimatedFee, balance, isApiReady]);
 
   return (
     <>
@@ -92,7 +94,7 @@ function Transfer() {
         <TextField
           id="test-amount-send"
           onChange={onChange}
-          value={transferInput}
+          value={transferAmount || '0'}
           placeholder={'0'}
           className={classes.inputAmount}
           fullWidth

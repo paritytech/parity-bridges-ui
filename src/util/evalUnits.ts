@@ -14,8 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 const si = [
-  { value: -1e24, symbol: 'y' },
-  { value: -1e21, symbol: 'z' },
+  // Deactivate these huge nums for now
+  // > than 1e21 is too big for JS to handle
+  // { value: -1e24, symbol: 'y' },
+  // { value: -1e21, symbol: 'z' },
   { value: -1e18, symbol: 'a' },
   { value: -1e15, symbol: 'f' },
   { value: -1e12, symbol: 'p' },
@@ -28,9 +30,12 @@ const si = [
   { value: 1e9, symbol: 'G' },
   { value: 1e12, symbol: 'T' },
   { value: 1e15, symbol: 'P' },
-  { value: 1e18, symbol: 'E' },
-  { value: 1e21, symbol: 'Z' },
-  { value: 1e24, symbol: 'Y' }
+  { value: 1e18, symbol: 'E' }
+  // Deactivate these huge nums for now
+  // > than 1e21 is too big for JS to handle
+  // ,
+  // { value: 1e21, symbol: 'Z' },
+  // { value: 1e24, symbol: 'Y' }
 ];
 
 const floats = /^[0-9]*[.,]{1}[0-9]*$/;
@@ -40,6 +45,8 @@ const alphaInts = /^[0-9]*[a-zA-Z]{1}$/;
 
 export enum EvalMessages {
   GIBBERISH = 'Input is not correct. Use numbers, floats or expression (e.g. 1k, 1.3m)',
+  ZERO = 'You cannot send 0 funds',
+  NEGATIVE = 'You cannot send negative amount of funds',
   SUCCESS = '',
   SYMBOL_ERROR = 'Provided symbol is not correct',
   GENERAL_ERROR = 'Check your input. Something went wrong'
@@ -54,18 +61,33 @@ export enum EvalMessages {
  * the second is the message that should appear in case of error
  */
 export function evalUnits(input: string): [number | null, string] {
+  if (input.length >= Number.MAX_SAFE_INTEGER.toString().length) {
+    return [null, EvalMessages.GENERAL_ERROR];
+  }
   if (!floats.test(input) && !ints.test(input) && !alphaInts.test(input) && !alphaFloats.test(input)) {
     return [null, EvalMessages.GIBBERISH];
   }
-
   if (floats.test(input) || ints.test(input)) {
     return [parseFloat(input.replace(/[,]/g, '.')), EvalMessages.SUCCESS];
-  } else if (alphaInts.test(input) || alphaFloats.test(input)) {
+  }
+  if (alphaInts.test(input) || alphaFloats.test(input)) {
     const numericPart = parseFloat(input.replace(/[,]/g, '.'));
     const charPart = input.replace(/[0-9.,]/g, '');
     const siVal = si.find((s) => s.symbol === charPart);
-    return siVal ? [numericPart * siVal.value, EvalMessages.SUCCESS] : [null, EvalMessages.SYMBOL_ERROR];
-  } else {
-    return [null, EvalMessages.GENERAL_ERROR];
+    const numeric = siVal ? numericPart * siVal.value : null;
+    if (siVal && numeric) {
+      return numeric > 0
+        ? [numericPart * siVal.value, EvalMessages.SUCCESS]
+        : [numericPart * siVal.value, EvalMessages.NEGATIVE];
+    } else {
+      return [null, EvalMessages.SYMBOL_ERROR];
+    }
   }
+  if (parseInt(input) === 0 || isNaN(parseInt(input))) {
+    return [null, EvalMessages.ZERO];
+  }
+  if (Number.parseInt(input) < 0) {
+    return [null, EvalMessages.NEGATIVE];
+  }
+  return [null, EvalMessages.GENERAL_ERROR];
 }
