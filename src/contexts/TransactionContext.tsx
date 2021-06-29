@@ -59,7 +59,7 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     formatFound: null,
     estimatedFeeLoading: false,
     payloadHex: null,
-    TransactionDisplayPayload: {} as TransactionDisplayPayload
+    transactionDisplayPayload: {} as TransactionDisplayPayload
   });
 
   return (

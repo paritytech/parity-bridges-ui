@@ -77,9 +77,9 @@ export interface TransactionState {
   formatFound: string | null;
   payload: TransactionPayload | null;
   payloadError: string | null;
-  estimatedFeeLoading: boolean;
   payloadHex: string | null;
-  TransactionDisplayPayload: TransactionDisplayPayload;
+  estimatedFeeLoading: boolean;
+  transactionDisplayPayload: TransactionDisplayPayload;
 }
 
 export type TransactionsActionType = { type: TransactionActionTypes; payload: Payload };

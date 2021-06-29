@@ -18,9 +18,9 @@ import React from 'react';
 import { Card, makeStyles } from '@material-ui/core';
 import ReactJson from 'react-json-view';
 import { SwitchTabType } from '../types/transactionTypes';
-
+import TransactionHeader from './TransactionHeader';
 import { TransactionDisplayPayload } from '../types/transactionTypes';
-
+import { TransactionStatusEnum } from '../types/transactionTypes';
 export interface TransactionDisplayProps {
   size?: 'sm';
 }
@@ -29,7 +29,9 @@ interface Props {
   transactionDisplayProps?: TransactionDisplayProps;
   tab: SwitchTabType;
   payloadHex: string | null;
-  TransactionDisplayPayload: TransactionDisplayPayload | null;
+  transactionDisplayPayload: TransactionDisplayPayload | null;
+  status: TransactionStatusEnum;
+  type?: string;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -54,7 +56,14 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const TransactionPayload = ({ tab, transactionDisplayProps, payloadHex, TransactionDisplayPayload }: Props) => {
+const TransactionPayload = ({
+  tab,
+  transactionDisplayProps,
+  payloadHex,
+  transactionDisplayPayload,
+  type,
+  status
+}: Props) => {
   const classes = useStyles();
 
   if (tab === SwitchTabType.RECEIPT) {
@@ -63,9 +72,10 @@ const TransactionPayload = ({ tab, transactionDisplayProps, payloadHex, Transact
 
   return (
     <Card elevation={transactionDisplayProps?.size === 'sm' ? 23 : 24} className={classes.card}>
+      {payloadHex && <TransactionHeader type={type} status={status} />}
       {tab === SwitchTabType.PAYLOAD && payloadHex}
-      {tab === SwitchTabType.DECODED && TransactionDisplayPayload && (
-        <ReactJson src={TransactionDisplayPayload} enableClipboard collapsed={1} name={false} />
+      {tab === SwitchTabType.DECODED && transactionDisplayPayload && (
+        <ReactJson src={transactionDisplayPayload} enableClipboard collapsed={1} name={false} />
       )}
     </Card>
   );

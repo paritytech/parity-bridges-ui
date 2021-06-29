@@ -18,8 +18,8 @@ import React from 'react';
 
 import { Box, Card, makeStyles, Typography } from '@material-ui/core';
 import { IconTxStatus } from './Icons';
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { Step, TransactionStatusEnum } from '../types/transactionTypes';
+import TransactionHeader from './TransactionHeader';
 
 interface Props {
   steps: Step[];
@@ -51,16 +51,9 @@ const useStyles = makeStyles((theme) => ({
 const TransactionReceipt = ({ type, steps, status }: Props) => {
   const classes = useStyles();
 
-  const {
-    sourceChainDetails: { chain: sourceChain },
-    targetChainDetails: { chain: targetChain }
-  } = useSourceTarget();
-
   return (
     <Card elevation={24} className={classes.card}>
-      <Box className="header" component="p" id="test-transaction-header">
-        <IconTxStatus status={status} /> {type} {sourceChain} {'->'} {targetChain}
-      </Box>
+      <TransactionHeader type={type} status={status} />
       {steps.map(({ chainType, label, labelOnChain, status, id }) => (
         <p key={id} id={id}>
           <IconTxStatus status={status} /> {chainType}: {label}&nbsp;

@@ -63,7 +63,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
   const makeCall = useCallback(
     async (id: string) => {
       try {
-        if (!account || isRunning) {
+        if (!account || isRunning || !payload) {
           return;
         }
         //@ts-ignore

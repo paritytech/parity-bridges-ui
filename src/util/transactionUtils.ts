@@ -25,28 +25,15 @@ export function isTransactionCompleted(transaction: TransactionStatusType): bool
   return transaction.status === TransactionStatusEnum.COMPLETED;
 }
 
-interface ToObject {
-  [propName: number]: number;
-}
-
-function toObject(arr: Array<any>): Object {
-  const rv: ToObject = {};
-  for (let i = 0; i < arr.length; ++i) rv[i] = arr[i];
-  return rv;
-}
-
-export function getTransactionDisplayPayload(payload: Payload | null): TransactionDisplayPayload | null {
-  const TransactionDisplayPayload = {} as TransactionDisplayPayload;
-  if (payload) {
-    const { call, origin, spec_version, weight } = payload;
-    TransactionDisplayPayload.call = toObject(call);
-    TransactionDisplayPayload.origin = {
-      SourceAccount: toObject(origin.SourceAccount)
-    };
-
-    TransactionDisplayPayload.weight = weight;
-    TransactionDisplayPayload.spec_version = spec_version;
-    return TransactionDisplayPayload;
-  }
-  return null;
+export function getTransactionDisplayPayload(payload: Payload): TransactionDisplayPayload {
+  const toObject = (arr: Array<any>): Object => Object.fromEntries(Object.entries(arr));
+  const transactionDisplayPayload = {} as TransactionDisplayPayload;
+  const { call, origin, spec_version, weight } = payload;
+  transactionDisplayPayload.call = toObject(call);
+  transactionDisplayPayload.origin = {
+    SourceAccount: toObject(origin.SourceAccount)
+  };
+  transactionDisplayPayload.weight = weight;
+  transactionDisplayPayload.spec_version = spec_version;
+  return transactionDisplayPayload;
 }

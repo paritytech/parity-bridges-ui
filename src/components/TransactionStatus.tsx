@@ -32,10 +32,15 @@ interface Props {
 
 const TransactionStatus = ({ transaction, onComplete }: Props) => {
   const steps = useTransactionSteps({ transaction, onComplete });
-  const { payloadHex, TransactionDisplayPayload } = transaction;
+  const { payloadHex, transactionDisplayPayload } = transaction;
 
   return (
-    <TransactionSwitchTab payloadHex={payloadHex} TransactionDisplayPayload={TransactionDisplayPayload}>
+    <TransactionSwitchTab
+      payloadHex={payloadHex}
+      transactionDisplayPayload={transactionDisplayPayload}
+      status={transaction.status}
+      type={transaction.type}
+    >
       <TransactionReceipt steps={steps} type={transaction.type} status={transaction.status} />
     </TransactionSwitchTab>
   );

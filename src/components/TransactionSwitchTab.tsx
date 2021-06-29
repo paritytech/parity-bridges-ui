@@ -20,6 +20,8 @@ import { ButtonSwitchMode } from './Buttons';
 import TransactionPayload from './TransactionPayload';
 import { TransactionDisplayPayload } from '../types/transactionTypes';
 import { SwitchTabType } from '../types/transactionTypes';
+import { useCallback } from 'react';
+import { TransactionStatusEnum } from '../types/transactionTypes';
 
 export interface TransactionDisplayProps {
   size?: 'sm';
@@ -28,33 +30,55 @@ interface Props {
   transactionDisplayProps?: TransactionDisplayProps;
   children: JSX.Element | JSX.Element[];
   payloadHex: string | null;
-  TransactionDisplayPayload: TransactionDisplayPayload | null;
+  transactionDisplayPayload: TransactionDisplayPayload | null;
+  status: TransactionStatusEnum;
+  type?: string;
 }
 
-const TransactionSwitchTab = ({ transactionDisplayProps, children, payloadHex, TransactionDisplayPayload }: Props) => {
+const TransactionSwitchTab = ({
+  transactionDisplayProps,
+  children,
+  payloadHex,
+  transactionDisplayPayload,
+  type,
+  status
+}: Props) => {
   const [tab, setTab] = useState(SwitchTabType.RECEIPT);
 
   const getColorByState = (value: string) => (value === tab ? 'primary' : 'secondary');
 
+  const setTabCallback = useCallback((value: SwitchTabType) => () => setTab(value), []);
+
   return (
     <>
       <Box mt={2}>
-        <ButtonSwitchMode color={getColorByState(SwitchTabType.PAYLOAD)} onClick={() => setTab(SwitchTabType.PAYLOAD)}>
+        <ButtonSwitchMode
+          color={getColorByState(SwitchTabType.PAYLOAD)}
+          onClick={setTabCallback(SwitchTabType.PAYLOAD)}
+        >
           Payload
         </ButtonSwitchMode>
-        <ButtonSwitchMode color={getColorByState(SwitchTabType.RECEIPT)} onClick={() => setTab(SwitchTabType.RECEIPT)}>
+        <ButtonSwitchMode
+          color={getColorByState(SwitchTabType.RECEIPT)}
+          onClick={setTabCallback(SwitchTabType.RECEIPT)}
+        >
           Receipt
         </ButtonSwitchMode>
-        <ButtonSwitchMode color={getColorByState(SwitchTabType.DECODED)} onClick={() => setTab(SwitchTabType.DECODED)}>
+        <ButtonSwitchMode
+          color={getColorByState(SwitchTabType.DECODED)}
+          onClick={setTabCallback(SwitchTabType.DECODED)}
+        >
           Decoded
         </ButtonSwitchMode>
       </Box>
       {tab === SwitchTabType.RECEIPT && children}
       <TransactionPayload
         tab={tab}
+        type={type}
+        status={status}
         transactionDisplayProps={transactionDisplayProps}
         payloadHex={payloadHex}
-        TransactionDisplayPayload={TransactionDisplayPayload}
+        transactionDisplayPayload={transactionDisplayPayload}
       />
     </>
   );
