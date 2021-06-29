@@ -51,7 +51,8 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
   const {
     sourceChainDetails: {
       apiConnection: { api: sourceApi },
-      chain: sourceChain
+      chain: sourceChain,
+      configs: { ss58Format }
     },
     targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
@@ -82,9 +83,14 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
           options.signer = injector.signer;
           sourceAccount = account.address;
         }
-        //@ts-ignore
-        const callType = createType(targetChain, 'BridgedOpaqueCall', payload.call);
-        const TransactionDisplayPayload = getTransactionDisplayPayload(payload, callType, account.address);
+
+        const transactionDisplayPayload = getTransactionDisplayPayload({
+          payload,
+          ss58Format,
+          account: account.address,
+          createType,
+          targetChain
+        });
 
         const unsub = await bridgeMessage.signAndSend(sourceAccount, { ...options }, ({ events = [], status }) => {
           if (status.isReady) {
@@ -102,7 +108,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
                 targetChain,
                 type,
                 payloadHex,
-                TransactionDisplayPayload
+                transactionDisplayPayload
               })
             );
           }
@@ -163,6 +169,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
       sourceApi.rpc.chain,
       sourceApi.tx,
       sourceChain,
+      ss58Format,
       targetChain,
       type
     ]

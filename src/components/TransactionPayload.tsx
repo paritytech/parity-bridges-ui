@@ -15,12 +15,14 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React from 'react';
-import { Card, makeStyles } from '@material-ui/core';
+import { Card, makeStyles, CircularProgress } from '@material-ui/core';
 import ReactJson from 'react-json-view';
 import { SwitchTabType } from '../types/transactionTypes';
 import TransactionHeader from './TransactionHeader';
+import { useTransactionContext } from '../contexts/TransactionContext';
 import { TransactionDisplayPayload } from '../types/transactionTypes';
 import { TransactionStatusEnum } from '../types/transactionTypes';
+
 export interface TransactionDisplayProps {
   size?: 'sm';
 }
@@ -53,6 +55,11 @@ const useStyles = makeStyles((theme) => ({
       borderRadius: theme.spacing(1.5)
     },
     wordBreak: 'break-word'
+  },
+  loader: {
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'center'
   }
 }));
 
@@ -65,7 +72,7 @@ const TransactionPayload = ({
   status
 }: Props) => {
   const classes = useStyles();
-
+  const { estimatedFeeLoading } = useTransactionContext();
   if (tab === SwitchTabType.RECEIPT) {
     return null;
   }
@@ -73,9 +80,14 @@ const TransactionPayload = ({
   return (
     <Card elevation={transactionDisplayProps?.size === 'sm' ? 23 : 24} className={classes.card}>
       {payloadHex && <TransactionHeader type={type} status={status} />}
-      {tab === SwitchTabType.PAYLOAD && payloadHex}
-      {tab === SwitchTabType.DECODED && transactionDisplayPayload && (
-        <ReactJson src={transactionDisplayPayload} enableClipboard collapsed={1} name={false} />
+      {estimatedFeeLoading && (
+        <div className={classes.loader}>
+          <CircularProgress />
+        </div>
+      )}
+      {!estimatedFeeLoading && tab === SwitchTabType.PAYLOAD && payloadHex}
+      {!estimatedFeeLoading && tab === SwitchTabType.DECODED && transactionDisplayPayload && (
+        <ReactJson src={transactionDisplayPayload} enableClipboard name={false} />
       )}
     </Card>
   );

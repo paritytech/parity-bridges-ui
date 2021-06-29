@@ -20,17 +20,38 @@ import {
   Payload,
   TransactionDisplayPayload
 } from '../types/transactionTypes';
+import { encodeAddress } from '@polkadot/util-crypto';
 
 export function isTransactionCompleted(transaction: TransactionStatusType): boolean {
   return transaction.status === TransactionStatusEnum.COMPLETED;
 }
 
-export function getTransactionDisplayPayload(payload: Payload, call: any, account: string): TransactionDisplayPayload {
+interface PayloadInput {
+  payload: Payload;
+  ss58Format: number;
+  account: string;
+  createType: Function;
+  targetChain: string;
+}
+
+export function getTransactionDisplayPayload({
+  payload,
+  ss58Format,
+  account,
+  createType,
+  targetChain
+}: PayloadInput): TransactionDisplayPayload {
+  //@ts-ignore
+  const callType = createType(targetChain, 'BridgedOpaqueCall', payload.call);
+  //@ts-ignore
+  const call = createType(targetChain, 'Call', callType.toHex());
+  const formatedAccount = encodeAddress(account, ss58Format);
+
   const transactionDisplayPayload = {} as TransactionDisplayPayload;
   const { spec_version, weight } = payload;
-  transactionDisplayPayload.call = call;
+  transactionDisplayPayload.call = JSON.parse(call);
   transactionDisplayPayload.origin = {
-    SourceAccount: account
+    SourceAccount: formatedAccount
   };
   transactionDisplayPayload.weight = weight;
   transactionDisplayPayload.spec_version = spec_version;
