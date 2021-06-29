@@ -58,7 +58,7 @@ export default function useTransactionType({ input, type, weightInput }: Props):
 
   const planck = 10 ** targetApi.registry.chainDecimals[0];
   const [resInp, msg] = evalUnits(new BN(input).mul(new BN(planck)).toString());
-  const trnsfInput = resInp?.toString() || '0';
+  const transferInput = resInp?.toString() || '0';
 
   useEffect(() => {
     async function getValues() {
@@ -75,12 +75,12 @@ export default function useTransactionType({ input, type, weightInput }: Props):
             break;
           case TransactionTypes.TRANSFER:
             if (receiverAddress) {
-              call = (await targetApi.tx.balances.transfer(receiverAddress, trnsfInput)).toU8a();
+              call = (await targetApi.tx.balances.transfer(receiverAddress, transferInput)).toU8a();
               logger.info(`balances::transfer: ${u8aToHex(call)}`);
               // TODO [#121] Figure out what the extra bytes are about
               call = call.slice(2);
               weight = (
-                await targetApi.tx.balances.transfer(receiverAddress, trnsfInput).paymentInfo(account)
+                await targetApi.tx.balances.transfer(receiverAddress, transferInput).paymentInfo(account)
               ).weight.toNumber();
             }
             break;
@@ -98,7 +98,7 @@ export default function useTransactionType({ input, type, weightInput }: Props):
     if (areApiReady) {
       getValues();
     }
-  }, [account, areApiReady, input, msg, receiverAddress, sourceApi, targetApi, trnsfInput, type, weightInput]);
+  }, [account, areApiReady, input, msg, receiverAddress, sourceApi, targetApi, transferInput, type, weightInput]);
 
   return values;
 }
