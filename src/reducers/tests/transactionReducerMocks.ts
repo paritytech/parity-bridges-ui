@@ -17,6 +17,8 @@
 import { ApiPromise } from '@polkadot/api';
 
 export const state = {
+  transferAmount: null,
+  transferAmountError: null,
   derivedReceiverAccount: null,
   estimatedFee: null,
   estimatedFeeError: null,

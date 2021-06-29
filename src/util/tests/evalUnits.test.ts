@@ -55,21 +55,9 @@ describe('Tests suite - evalUnits', () => {
   });
 
   // Extreme happy paths
-  it('Should accept as input an expression (5y)', () => {
-    const [actualValue, msg] = evalUnits('5y');
-    expect(actualValue).toBe(5 * -1e24);
-    expect(msg).toBe(EvalMessages.SUCCESS);
-  });
-
-  it('Should accept as input an expression (1.2z)', () => {
-    const [actualValue, msg] = evalUnits('1.2z');
-    expect(actualValue).toBe(1.2 * -1e21);
-    expect(msg).toBe(EvalMessages.SUCCESS);
-  });
-
-  it('Should accept as input an expression (3Y)', () => {
-    const [actualValue, msg] = evalUnits('3Y');
-    expect(actualValue).toBe(3 * 1e24);
+  it('Should accept as input an expression (3E)', () => {
+    const [actualValue, msg] = evalUnits('3E');
+    expect(actualValue).toBe(3 * 1e18);
     expect(msg).toBe(EvalMessages.SUCCESS);
   });
 
@@ -80,6 +68,12 @@ describe('Tests suite - evalUnits', () => {
   });
 
   // Not so happy paths
+  it('Should accept as input an expression (5a) and respond with "Negative" error', () => {
+    const [actualValue, msg] = evalUnits('5a');
+    expect(actualValue).toBe(5 * -1e18);
+    expect(msg).toBe(EvalMessages.NEGATIVE);
+  });
+
   it('Should accept as input something gibberish (good23) and return error message', () => {
     const [actualValue, msg] = evalUnits('good23');
     expect(actualValue).toBeFalsy;
@@ -90,5 +84,11 @@ describe('Tests suite - evalUnits', () => {
     const [actualValue, msg] = evalUnits('1,23.445k');
     expect(actualValue).toBeFalsy;
     expect(msg).toBe(EvalMessages.GIBBERISH);
+  });
+
+  it('Should accept as input a HUGE number and return error message', () => {
+    const [actualValue, msg] = evalUnits((Number.MAX_SAFE_INTEGER + 10).toString());
+    expect(actualValue).toBeFalsy;
+    expect(msg).toBe(EvalMessages.GENERAL_ERROR);
   });
 });
