@@ -21,6 +21,8 @@ import { useTransactionContext } from '../../contexts/TransactionContext';
 import { TransactionDisplayPayload } from '../../types/transactionTypes';
 import { getTransactionDisplayPayload } from '../../util/transactionUtils';
 import useApiCalls from '../api/useApiCalls';
+import { useAccountContext } from '../../contexts/AccountContextProvider';
+import { encodeAddress } from '@polkadot/util-crypto';
 
 const useTransactionPayloadDisplay = () => {
   const { payload, receiverAddress } = useTransactionContext();
@@ -28,21 +30,29 @@ const useTransactionPayloadDisplay = () => {
   const [transactionDisplayPayload, setTransactionDisplayPayload] = useState<TransactionDisplayPayload | null>(null);
 
   const {
-    sourceChainDetails: { chain: sourceChain }
+    sourceChainDetails: {
+      chain: sourceChain,
+      configs: { ss58Format }
+    },
+    targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
   const { createType } = useApiCalls();
+  const { account } = useAccountContext();
 
   useEffect(() => {
-    if (payload && receiverAddress) {
+    if (payload && receiverAddress && account) {
       //@ts-ignore
       const payloadType = createType(sourceChain, 'OutboundPayload', payload);
       setPayloadHex(payloadType.toHex());
-      setTransactionDisplayPayload(getTransactionDisplayPayload(payload));
+      //@ts-ignore
+      const callType = createType(targetChain, 'BridgedOpaqueCall', payload.call);
+      const sourceAccount = encodeAddress(account.address, ss58Format);
+      setTransactionDisplayPayload(getTransactionDisplayPayload(payload, callType, sourceAccount));
     } else {
       setPayloadHex(null);
       setTransactionDisplayPayload(null);
     }
-  }, [createType, payload, receiverAddress, sourceChain]);
+  }, [account, createType, payload, receiverAddress, sourceChain, ss58Format, targetChain]);
 
   return { payloadHex, transactionDisplayPayload };
 };

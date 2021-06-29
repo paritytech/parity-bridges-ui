@@ -25,13 +25,12 @@ export function isTransactionCompleted(transaction: TransactionStatusType): bool
   return transaction.status === TransactionStatusEnum.COMPLETED;
 }
 
-export function getTransactionDisplayPayload(payload: Payload): TransactionDisplayPayload {
-  const toObject = (arr: Array<any>): Object => Object.fromEntries(Object.entries(arr));
+export function getTransactionDisplayPayload(payload: Payload, call: any, account: string): TransactionDisplayPayload {
   const transactionDisplayPayload = {} as TransactionDisplayPayload;
-  const { call, origin, spec_version, weight } = payload;
-  transactionDisplayPayload.call = toObject(call);
+  const { spec_version, weight } = payload;
+  transactionDisplayPayload.call = call;
   transactionDisplayPayload.origin = {
-    SourceAccount: toObject(origin.SourceAccount)
+    SourceAccount: account
   };
   transactionDisplayPayload.weight = weight;
   transactionDisplayPayload.spec_version = spec_version;

@@ -69,7 +69,6 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
         //@ts-ignore
         const payloadType = createType(sourceChain, 'OutboundPayload', payload);
         const payloadHex = payloadType.toHex();
-        const TransactionDisplayPayload = getTransactionDisplayPayload(payload);
 
         const { bridgedMessages } = getSubstrateDynamicNames(targetChain);
         const bridgeMessage = sourceApi.tx[bridgedMessages].sendMessage(laneId, payload, estimatedFee);
@@ -83,6 +82,10 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
           options.signer = injector.signer;
           sourceAccount = account.address;
         }
+        //@ts-ignore
+        const callType = createType(targetChain, 'BridgedOpaqueCall', payload.call);
+        const TransactionDisplayPayload = getTransactionDisplayPayload(payload, callType, account.address);
+
         const unsub = await bridgeMessage.signAndSend(sourceAccount, { ...options }, ({ events = [], status }) => {
           if (status.isReady) {
             dispatchTransaction(
