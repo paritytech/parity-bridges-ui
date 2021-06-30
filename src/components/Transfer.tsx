@@ -87,8 +87,15 @@ function Transfer() {
   useEffect((): void => {
     estimatedFee &&
       transferAmount &&
-      setAmountNotCorrect(new BN(balance.free).sub(new BN(transferAmount).add(new BN(estimatedFee))).isNeg());
-  }, [transferAmount, estimatedFee, balance, isApiReady]);
+      setAmountNotCorrect(
+        new BN(balance.free)
+          // TODO (nik): EstimatedFee should align with base unit token
+          // (see github issue https://github.com/paritytech/parity-bridges-ui/issues/210)
+          .sub(new BN(parseFloat(transferAmount || '0') * 10 ** api.registry.chainDecimals[0]))
+          .add(new BN(estimatedFee))
+          .isNeg()
+      );
+  }, [transferAmount, estimatedFee, balance, isApiReady, api.registry.chainDecimals]);
 
   return (
     <>

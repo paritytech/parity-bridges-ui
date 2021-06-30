@@ -24,7 +24,6 @@ import useLoadingApi from '../connections/useLoadingApi';
 import { TransactionTypes } from '../../types/transactionTypes';
 import logger from '../../util/logger';
 import { evalUnits } from '../../util/evalUnits';
-import BN from 'bn.js';
 
 interface TransactionFunction {
   call: Uint8Array | null;
@@ -72,7 +71,7 @@ export default function useTransactionType({ input, type, weightInput }: Props):
           case TransactionTypes.TRANSFER:
             if (receiverAddress) {
               const planck = 10 ** targetApi.registry.chainDecimals[0];
-              const [resInp] = evalUnits(new BN(input).mul(new BN(planck)).toString());
+              const [resInp] = evalUnits((parseFloat(input) * planck).toString());
               const transferInput = resInp?.toString() || '0';
               call = (await targetApi.tx.balances.transfer(receiverAddress, transferInput)).toU8a();
               logger.info(`balances::transfer: ${u8aToHex(call)}`);
