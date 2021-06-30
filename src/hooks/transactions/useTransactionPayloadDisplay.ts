@@ -23,36 +23,37 @@ import { getTransactionDisplayPayload } from '../../util/transactionUtils';
 import useApiCalls from '../api/useApiCalls';
 import { useAccountContext } from '../../contexts/AccountContextProvider';
 
+interface Output {
+  transactionDisplayPayload: TransactionDisplayPayload | null;
+  payloadHex: string | null;
+}
+
+const emptyState = { payloadHex: null, transactionDisplayPayload: null };
+
 const useTransactionPayloadDisplay = () => {
   const { payload } = useTransactionContext();
-  const [payloadHex, setPayloadHex] = useState<string | null>(null);
-  const [transactionDisplayPayload, setTransactionDisplayPayload] = useState<TransactionDisplayPayload | null>(null);
 
-  const {
-    sourceChainDetails: {
-      chain: sourceChain,
-      configs: { ss58Format }
-    },
-    targetChainDetails: { chain: targetChain }
-  } = useSourceTarget();
+  const [payloadDisplay, setPayloadDisplay] = useState<Output>(emptyState);
+  const sourceTargetDetails = useSourceTarget();
   const { createType } = useApiCalls();
   const { account } = useAccountContext();
 
   useEffect(() => {
     if (payload && account) {
-      //@ts-ignore
-      const payloadType = createType(sourceChain, 'OutboundPayload', payload);
-      setPayloadHex(payloadType.toHex());
-      setTransactionDisplayPayload(
-        getTransactionDisplayPayload({ payload, ss58Format, account: account.address, createType, targetChain })
+      setPayloadDisplay(
+        getTransactionDisplayPayload({
+          payload,
+          account: account.address,
+          createType,
+          sourceTargetDetails
+        })
       );
     } else {
-      setPayloadHex(null);
-      setTransactionDisplayPayload(null);
+      setPayloadDisplay(emptyState);
     }
-  }, [account, createType, payload, sourceChain, ss58Format, targetChain]);
+  }, [account, createType, payload, sourceTargetDetails]);
 
-  return { payloadHex, transactionDisplayPayload };
+  return payloadDisplay;
 };
 
 export default useTransactionPayloadDisplay;

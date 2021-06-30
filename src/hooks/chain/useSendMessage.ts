@@ -48,14 +48,14 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
   const { estimatedFee, receiverAddress, payload } = useTransactionContext();
   const { dispatchTransaction } = useUpdateTransactionContext();
   const laneId = useLaneId();
+  const sourceTargetDetails = useSourceTarget();
   const {
     sourceChainDetails: {
       apiConnection: { api: sourceApi },
-      chain: sourceChain,
-      configs: { ss58Format }
+      chain: sourceChain
     },
     targetChainDetails: { chain: targetChain }
-  } = useSourceTarget();
+  } = sourceTargetDetails;
   const { account } = useAccountContext();
   useTransactionPreparation({ input, isValidCall, type, weightInput });
   const { createType } = useApiCalls();
@@ -86,10 +86,9 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
 
         const transactionDisplayPayload = getTransactionDisplayPayload({
           payload,
-          ss58Format,
           account: account.address,
           createType,
-          targetChain
+          sourceTargetDetails
         });
 
         const unsub = await bridgeMessage.signAndSend(sourceAccount, { ...options }, ({ events = [], status }) => {
@@ -171,7 +170,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
       sourceApi.rpc.chain,
       sourceApi.tx,
       sourceChain,
-      ss58Format,
+      sourceTargetDetails,
       targetChain,
       type
     ]

@@ -67,19 +67,19 @@ export interface TransactionStatusType extends UpdatedTransactionStatusType {
 export interface TransactionState {
   estimatedFee: string | null;
   estimatedFeeError: string | null;
+  estimatedFeeLoading: boolean;
   receiverAddress: string | null;
   unformattedReceiverAddress: string | null;
   derivedReceiverAccount: string | null;
   genericReceiverAccount: string | null;
   transactions: Array<TransactionStatusType>;
+  transactionDisplayPayload: TransactionDisplayPayload;
   addressValidationError: string | null;
   showBalance: boolean;
   formatFound: string | null;
   payload: TransactionPayload | null;
   payloadError: string | null;
   payloadHex: string | null;
-  estimatedFeeLoading: boolean;
-  transactionDisplayPayload: TransactionDisplayPayload;
 }
 
 export type TransactionsActionType = { type: TransactionActionTypes; payload: Payload };

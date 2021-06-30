@@ -21,6 +21,7 @@ import {
   TransactionDisplayPayload
 } from '../types/transactionTypes';
 import { encodeAddress } from '@polkadot/util-crypto';
+import { SourceTargetState } from '../types/sourceTargetTypes';
 
 export function isTransactionCompleted(transaction: TransactionStatusType): boolean {
   return transaction.status === TransactionStatusEnum.COMPLETED;
@@ -28,19 +29,32 @@ export function isTransactionCompleted(transaction: TransactionStatusType): bool
 
 interface PayloadInput {
   payload: Payload;
-  ss58Format: number;
   account: string;
   createType: Function;
-  targetChain: string;
+  sourceTargetDetails: SourceTargetState;
+}
+
+interface Output {
+  transactionDisplayPayload: TransactionDisplayPayload | null;
+  payloadHex: string | null;
 }
 
 export function getTransactionDisplayPayload({
   payload,
-  ss58Format,
   account,
   createType,
-  targetChain
-}: PayloadInput): TransactionDisplayPayload {
+  sourceTargetDetails
+}: PayloadInput): Output {
+  const {
+    sourceChainDetails: {
+      chain: sourceChain,
+      configs: { ss58Format }
+    },
+    targetChainDetails: { chain: targetChain }
+  } = sourceTargetDetails;
+  //@ts-ignore
+  const payloadType = createType(sourceChain, 'OutboundPayload', payload);
+  const payloadHex = payloadType.toHex();
   //@ts-ignore
   const callType = createType(targetChain, 'BridgedOpaqueCall', payload.call);
   //@ts-ignore
@@ -55,5 +69,5 @@ export function getTransactionDisplayPayload({
   };
   transactionDisplayPayload.weight = weight;
   transactionDisplayPayload.spec_version = spec_version;
-  return transactionDisplayPayload;
+  return { transactionDisplayPayload, payloadHex };
 }
