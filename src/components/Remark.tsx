@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import React, { useState, useCallback } from 'react';
 import { TextField, Typography } from '@material-ui/core';
-import React, { useState } from 'react';
 import { ButtonSubmit } from '../components';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
@@ -25,6 +25,8 @@ import { TransactionTypes } from '../types/transactionTypes';
 const Remark = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [remarkInput, setRemarkInput] = useState('0x');
+  const [remarkActualInput, setRemarkActualInput] = useState('0x');
+
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
   const { estimatedFee, estimatedFeeLoading } = useTransactionContext();
@@ -35,21 +37,27 @@ const Remark = () => {
     setIsRunning,
     type: TransactionTypes.REMARK
   });
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRemarkInput(event.target.value);
-  };
+
+  const onChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setRemarkActualInput(event.target.value);
+  }, []);
+
+  const onBlur = useCallback(() => {
+    setRemarkInput(remarkActualInput);
+  }, [remarkActualInput]);
 
   // To extract estimated fee logic to specific component. Issue #171
   return (
     <>
       <TextField
         label="Remark"
-        value={remarkInput}
+        value={remarkActualInput}
         variant="outlined"
         fullWidth
         multiline
         rows={4}
         onChange={onChange}
+        onBlur={onBlur}
       />
       <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
         Send bridge remark from {sourceChainDetails.chain} to {targetChainDetails.chain}

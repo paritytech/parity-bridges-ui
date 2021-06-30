@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Box, makeStyles, TextField, Typography } from '@material-ui/core';
 import BN from 'bn.js';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
@@ -68,14 +68,15 @@ function Transfer() {
     type: TransactionTypes.TRANSFER
   });
 
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.value) {
-      const [actualValue, message] = evalUnits(event.target.value);
-      setHelperText(message);
-      setActualInput(actualValue && actualValue * planck);
-    }
+  const onChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setTransferInput(event.target.value);
-  };
+  }, []);
+
+  const onBlur = useCallback(() => {
+    const [actualValue, message] = evalUnits(transferInput);
+    setHelperText(message);
+    setActualInput(actualValue && actualValue * planck);
+  }, [planck, transferInput]);
 
   useEffect((): void => {
     isRunning && setTransferInput('');
@@ -94,6 +95,7 @@ function Transfer() {
         <TextField
           id="test-amount-send"
           onChange={onChange}
+          onBlur={onBlur}
           value={transferInput}
           placeholder={'0'}
           className={classes.inputAmount}
