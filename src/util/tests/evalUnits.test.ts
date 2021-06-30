@@ -47,7 +47,6 @@ describe('Tests suite - evalUnits', () => {
   it('Should accept as input an float expression with dot as symbol (1.2k)', () => {
     const [actualResult, msg] = evalUnits('1.2k');
     expect(actualResult?.toString()).toBe('1200');
-    console.log('actualResult', typeof actualResult, actualResult?.toString());
     expect(msg).toBe(EvalMessages.SUCCESS);
   });
 
@@ -58,20 +57,20 @@ describe('Tests suite - evalUnits', () => {
   });
 
   // Extreme happy paths
-  it('Should accept as input an expression (3P)', () => {
-    const [actualResult, msg] = evalUnits('3P');
+  it('Should accept as input an expression (3Y)', () => {
+    const [actualResult, msg] = evalUnits('3Y');
     expect(actualResult?.toString()).toBe('3000000000000000');
     expect(msg).toBe(EvalMessages.SUCCESS);
   });
 
-  it('Should accept as input an expression (7.9P)', () => {
-    const [actualResult, msg] = evalUnits('7.9P');
+  it('Should accept as input an expression (7.9Y)', () => {
+    const [actualResult, msg] = evalUnits('7.9Y');
     expect(actualResult?.toString()).toBe('7900000000000000');
     expect(msg).toBe(EvalMessages.SUCCESS);
   });
 
   // Not so happy paths
-  it('Should accept as input an expression (5a) and respond with "Negative" error', () => {
+  it('Should accept as input an expression (5f) and respond with "Negative" error', () => {
     const [actualResult, msg] = evalUnits('5f');
     expect(actualResult?.toString()).toBe('-5000000000000000');
     expect(msg).toBe(EvalMessages.NEGATIVE);
@@ -84,8 +83,8 @@ describe('Tests suite - evalUnits', () => {
   });
 
   it('Should accept as input double decimal symbols (1,23.445k) and return error message', () => {
-    const [, msg] = evalUnits('1,23.445k');
-    // expect(actualValue).toBeFalsy;
+    const [actualValue, msg] = evalUnits('1,23.445k');
+    expect(actualValue).toBeFalsy;
     expect(msg).toBe(EvalMessages.GIBBERISH);
   });
 

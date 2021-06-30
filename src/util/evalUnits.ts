@@ -18,8 +18,8 @@ import BN from 'bn.js';
 
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 const si = [
-  { value: -1e24, symbol: 'y' },
-  { value: -1e21, symbol: 'z' },
+  { value: -1000000000000000, symbol: 'y' },
+  { value: -1000000000000, symbol: 'z' },
   { value: -1e18, symbol: 'a' },
   { value: -1e15, symbol: 'f' },
   { value: -1e12, symbol: 'p' },
@@ -33,8 +33,10 @@ const si = [
   { value: 1e12, symbol: 'T' },
   { value: 1e15, symbol: 'P' },
   { value: 1e18, symbol: 'E' },
-  { value: 1e21, symbol: 'Z' },
-  { value: 1e24, symbol: 'Y' }
+  // This may seem crazy but 1e21 and 1e24 were actually passed to BN like that and making it break
+  // (while 1e18 is transforming to format seen below)
+  { value: 1000000000000, symbol: 'Z' },
+  { value: 1000000000000000, symbol: 'Y' }
 ];
 
 const floats = /^[0-9]*[.,]{1}[0-9]*$/;
@@ -51,16 +53,24 @@ export enum EvalMessages {
   GENERAL_ERROR = 'Check your input. Something went wrong'
 }
 
-const transformShorthandToBN = (input: string): BN | null => {
+const transformShorthandToBN = (input: string, multiplyWithBN?: boolean): [BN | null, EvalMessages] => {
   // find the character from the alphanumerics
   const charPart = input.replace(/[0-9.,]/g, '');
   // find the value from the si list
   const siVal = si.find((s) => s.symbol === charPart);
-  // unfortunately in the case of shorthand parseFloat has to be used
-  // as BN library does not support decimals
-  const numbered = parseFloat(input.replace(/[,]/g, '.'));
-  // get only the numeric parts of input
-  return siVal ? new BN(numbered * siVal.value) : null;
+  const numberPart = input.replace(/[a-zA-Z]/g, '');
+  let numeric: BN;
+  if (siVal) {
+    if (multiplyWithBN) {
+      numeric = new BN(numberPart).mul(new BN(siVal.value));
+    } else {
+      numeric = new BN(parseFloat(numberPart.replace(/[,]/g, '.')) * siVal.value);
+    }
+    if (numeric) {
+      return numeric.gt(new BN(0)) ? [numeric, EvalMessages.SUCCESS] : [numeric, EvalMessages.NEGATIVE];
+    }
+  }
+  return [null, EvalMessages.SYMBOL_ERROR];
 };
 
 /**
@@ -80,12 +90,8 @@ export function evalUnits(input: string): [BN | number | null, string] {
     return [result, EvalMessages.SUCCESS];
   }
   if (alphaInts.test(input) || alphaFloats.test(input)) {
-    const numeric = transformShorthandToBN(input);
-    if (numeric) {
-      return numeric.gt(new BN(0)) ? [numeric, EvalMessages.SUCCESS] : [numeric, EvalMessages.NEGATIVE];
-    } else {
-      return [null, EvalMessages.SYMBOL_ERROR];
-    }
+    const containDecimal = !input.replace(/[,]/g, '.').includes('.');
+    return transformShorthandToBN(input, containDecimal);
   }
   if (new BN(input).gte(new BN(Number.MAX_SAFE_INTEGER))) {
     return [null, EvalMessages.GENERAL_ERROR];
