@@ -52,6 +52,7 @@ const useStyles = makeStyles((theme) => ({
 function Transfer() {
   const { dispatchTransaction } = useUpdateTransactionContext();
   const classes = useStyles();
+  const [input, setInput] = useState<string>('0');
   const [isRunning, setIsRunning] = useState(false);
   const [helperText, setHelperText] = useState('');
   const [amountNotCorrect, setAmountNotCorrect] = useState<boolean>(false);
@@ -70,6 +71,7 @@ function Transfer() {
   });
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(event.target.value);
     const [actualValue, message] = evalUnits(event.target.value);
     setHelperText(message);
     dispatchTransaction(
@@ -94,7 +96,7 @@ function Transfer() {
         <TextField
           id="test-amount-send"
           onChange={onChange}
-          value={transferAmount || '0'}
+          value={input}
           placeholder={'0'}
           className={classes.inputAmount}
           fullWidth

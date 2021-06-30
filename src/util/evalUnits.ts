@@ -56,9 +56,11 @@ const transformShorthandToBN = (input: string): BN | null => {
   const charPart = input.replace(/[0-9.,]/g, '');
   // find the value from the si list
   const siVal = si.find((s) => s.symbol === charPart);
+  // unfortunately in the case of shorthand parseFloat has to be used
+  // as BN library does not support decimals
+  const numbered = parseFloat(input.replace(/[,]/g, '.'));
   // get only the numeric parts of input
-  const numericPart = new BN(parseFloat(input.replace(/[,]/g, '.')));
-  return siVal ? numericPart.mul(new BN(siVal.value)) : null;
+  return siVal ? new BN(numbered * siVal.value) : null;
 };
 
 /**
@@ -69,12 +71,12 @@ const transformShorthandToBN = (input: string): BN | null => {
  * the first is the actual calculated number (or null if none) while
  * the second is the message that should appear in case of error
  */
-export function evalUnits(input: string): [BN | null, string] {
+export function evalUnits(input: string): [BN | number | null, string] {
   if (!floats.test(input) && !ints.test(input) && !alphaInts.test(input) && !alphaFloats.test(input)) {
     return [null, EvalMessages.GIBBERISH];
   }
   if (floats.test(input) || ints.test(input)) {
-    const result = new BN(input.replace(/[,]/g, '.'));
+    const result = parseFloat(input.replace(/[,]/g, '.'));
     return [result, EvalMessages.SUCCESS];
   }
   if (alphaInts.test(input) || alphaFloats.test(input)) {

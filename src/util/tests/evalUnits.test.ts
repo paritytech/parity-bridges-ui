@@ -19,54 +19,63 @@ import { evalUnits, EvalMessages } from '../evalUnits';
 describe('Tests suite - evalUnits', () => {
   // Happy paths
   it('Should input string', () => {
-    const [, msg] = evalUnits('666');
+    const [actualResult, msg] = evalUnits('666');
+    expect(actualResult).toBe(666);
     expect(msg).toBe(EvalMessages.SUCCESS);
   });
 
   // FOR SOME REASON JEST DO NOT WANT TO WORK WITH BN (????)
 
-  // it('Should accept as input, float (dot for decimal symbol)', () => {
-  //   const [, msg] = evalUnits('1.23');
-  //   expect(msg).toBe(EvalMessages.SUCCESS);
-  // });
-
-  // it('Should accept as input, float (comma for decimal symbol)', () => {
-  //   const [, msg] = evalUnits('1,23');
-  //   expect(msg).toBe(EvalMessages.SUCCESS);
-  // });
-
-  it('Should accept as input an expression (1k)', () => {
-    const [, msg] = evalUnits('1k');
+  it('Should accept as input, float (dot for decimal symbol)', () => {
+    const [actualResult, msg] = evalUnits('1.23');
+    expect(actualResult).toBe(1.23);
     expect(msg).toBe(EvalMessages.SUCCESS);
   });
 
-  // it('Should accept as input an float expression with dot as symbol (1.2k)', () => {
-  //   const [, msg] = evalUnits('1.2k');
-  //   expect(msg).toBe(EvalMessages.SUCCESS);
-  // });
+  it('Should accept as input, float (comma for decimal symbol)', () => {
+    const [actualResult, msg] = evalUnits('1,23');
+    expect(actualResult).toBe(1.23);
+    expect(msg).toBe(EvalMessages.SUCCESS);
+  });
 
-  // it('Should accept as input an float expression with commas as symbol (1,2k)', () => {
-  //   const [actualValue, msg] = evalUnits('1,2k');
-  //   expect(actualValue).toBe(1.2 * 1e3);
-  //   expect(msg).toBe(EvalMessages.SUCCESS);
-  // });
+  it('Should accept as input an expression (1k)', () => {
+    const [actualResult, msg] = evalUnits('1k');
+    expect(actualResult?.toString()).toBe('1000');
+    expect(msg).toBe(EvalMessages.SUCCESS);
+  });
 
-  // // Extreme happy paths
-  // it('Should accept as input an expression (3E)', () => {
-  //   const [, msg] = evalUnits('3E');
-  //   expect(msg).toBe(EvalMessages.SUCCESS);
-  // });
+  it('Should accept as input an float expression with dot as symbol (1.2k)', () => {
+    const [actualResult, msg] = evalUnits('1.2k');
+    expect(actualResult?.toString()).toBe('1200');
+    console.log('actualResult', typeof actualResult, actualResult?.toString());
+    expect(msg).toBe(EvalMessages.SUCCESS);
+  });
 
-  // it('Should accept as input an expression (7.9E)', () => {
-  //   const [, msg] = evalUnits('7.9E');
-  //   expect(msg).toBe(EvalMessages.SUCCESS);
-  // });
+  it('Should accept as input an float expression with commas as symbol (1,2k)', () => {
+    const [actualResult, msg] = evalUnits('1,2k');
+    expect(actualResult?.toString()).toBe('1200');
+    expect(msg).toBe(EvalMessages.SUCCESS);
+  });
 
-  // // // Not so happy paths
-  // it('Should accept as input an expression (5a) and respond with "Negative" error', () => {
-  //   const [, msg] = evalUnits('5a');
-  //   expect(msg).toBe(EvalMessages.NEGATIVE);
-  // });
+  // Extreme happy paths
+  it('Should accept as input an expression (3P)', () => {
+    const [actualResult, msg] = evalUnits('3P');
+    expect(actualResult?.toString()).toBe('3000000000000000');
+    expect(msg).toBe(EvalMessages.SUCCESS);
+  });
+
+  it('Should accept as input an expression (7.9P)', () => {
+    const [actualResult, msg] = evalUnits('7.9P');
+    expect(actualResult?.toString()).toBe('7900000000000000');
+    expect(msg).toBe(EvalMessages.SUCCESS);
+  });
+
+  // Not so happy paths
+  it('Should accept as input an expression (5a) and respond with "Negative" error', () => {
+    const [actualResult, msg] = evalUnits('5f');
+    expect(actualResult?.toString()).toBe('-5000000000000000');
+    expect(msg).toBe(EvalMessages.NEGATIVE);
+  });
 
   it('Should accept as input something gibberish (good23) and return error message', () => {
     const [actualValue, msg] = evalUnits('good23');
