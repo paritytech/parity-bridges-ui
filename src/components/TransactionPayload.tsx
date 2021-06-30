@@ -15,9 +15,9 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React from 'react';
-import { Card, makeStyles, CircularProgress } from '@material-ui/core';
+import { Card, makeStyles, CircularProgress, Typography } from '@material-ui/core';
 import ReactJson from 'react-json-view';
-import { SwitchTabType } from '../types/transactionTypes';
+import { SwitchTabEnum } from '../types/transactionTypes';
 import TransactionHeader from './TransactionHeader';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import { TransactionDisplayPayload } from '../types/transactionTypes';
@@ -29,7 +29,7 @@ export interface TransactionDisplayProps {
 
 interface Props {
   transactionDisplayProps?: TransactionDisplayProps;
-  tab: SwitchTabType;
+  tab: SwitchTabEnum;
   payloadHex: string | null;
   transactionDisplayPayload: TransactionDisplayPayload | null;
   status: TransactionStatusEnum;
@@ -73,7 +73,7 @@ const TransactionPayload = ({
 }: Props) => {
   const classes = useStyles();
   const { estimatedFeeLoading } = useTransactionContext();
-  if (tab === SwitchTabType.RECEIPT) {
+  if (tab === SwitchTabEnum.RECEIPT) {
     return null;
   }
 
@@ -85,9 +85,13 @@ const TransactionPayload = ({
           <CircularProgress />
         </div>
       )}
-      {!estimatedFeeLoading && tab === SwitchTabType.PAYLOAD && payloadHex}
-      {!estimatedFeeLoading && tab === SwitchTabType.DECODED && transactionDisplayPayload && (
-        <ReactJson src={transactionDisplayPayload} enableClipboard name={false} />
+      {!estimatedFeeLoading && tab === SwitchTabEnum.PAYLOAD && (
+        <Typography variant="subtitle2">{payloadHex}</Typography>
+      )}
+      {!estimatedFeeLoading && tab === SwitchTabEnum.DECODED && transactionDisplayPayload && (
+        <Typography variant="subtitle2">
+          <ReactJson src={transactionDisplayPayload} enableClipboard name={false} />
+        </Typography>
       )}
     </Card>
   );

@@ -33,7 +33,7 @@ export enum TransactionStatusEnum {
   FAILED = 'FAILED'
 }
 
-export enum SwitchTabType {
+export enum SwitchTabEnum {
   RECEIPT = 'RECEIPT',
   PAYLOAD = 'PAYLOAD',
   DECODED = 'DECODED'

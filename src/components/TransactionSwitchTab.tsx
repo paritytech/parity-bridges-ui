@@ -19,7 +19,7 @@ import { Box } from '@material-ui/core';
 import { ButtonSwitchMode } from './Buttons';
 import TransactionPayload from './TransactionPayload';
 import { TransactionDisplayPayload } from '../types/transactionTypes';
-import { SwitchTabType } from '../types/transactionTypes';
+import { SwitchTabEnum } from '../types/transactionTypes';
 import { useCallback } from 'react';
 import { TransactionStatusEnum } from '../types/transactionTypes';
 
@@ -43,35 +43,35 @@ const TransactionSwitchTab = ({
   type,
   status
 }: Props) => {
-  const [tab, setTab] = useState(SwitchTabType.RECEIPT);
+  const [tab, setTab] = useState(SwitchTabEnum.RECEIPT);
 
   const getColorByState = (value: string) => (value === tab ? 'primary' : 'secondary');
 
-  const setTabCallback = useCallback((value: SwitchTabType) => () => setTab(value), []);
+  const setTabCallback = useCallback((value: SwitchTabEnum) => () => setTab(value), []);
 
   return (
     <>
       <Box mt={2}>
         <ButtonSwitchMode
-          color={getColorByState(SwitchTabType.PAYLOAD)}
-          onClick={setTabCallback(SwitchTabType.PAYLOAD)}
+          color={getColorByState(SwitchTabEnum.PAYLOAD)}
+          onClick={setTabCallback(SwitchTabEnum.PAYLOAD)}
         >
           Payload
         </ButtonSwitchMode>
         <ButtonSwitchMode
-          color={getColorByState(SwitchTabType.RECEIPT)}
-          onClick={setTabCallback(SwitchTabType.RECEIPT)}
+          color={getColorByState(SwitchTabEnum.RECEIPT)}
+          onClick={setTabCallback(SwitchTabEnum.RECEIPT)}
         >
           Receipt
         </ButtonSwitchMode>
         <ButtonSwitchMode
-          color={getColorByState(SwitchTabType.DECODED)}
-          onClick={setTabCallback(SwitchTabType.DECODED)}
+          color={getColorByState(SwitchTabEnum.DECODED)}
+          onClick={setTabCallback(SwitchTabEnum.DECODED)}
         >
           Decoded
         </ButtonSwitchMode>
       </Box>
-      {tab === SwitchTabType.RECEIPT && children}
+      {tab === SwitchTabEnum.RECEIPT && children}
       <TransactionPayload
         tab={tab}
         type={type}
