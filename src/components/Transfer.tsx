@@ -17,6 +17,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Box, makeStyles, TextField, Typography } from '@material-ui/core';
 import BN from 'bn.js';
+import debounce from 'lodash/debounce';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import useAccounts from '../hooks/accounts/useAccounts';
@@ -68,15 +69,28 @@ function Transfer() {
     type: TransactionTypes.TRANSFER
   });
 
-  const onChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setTransferInput(event.target.value);
-  }, []);
+  const onBlur = useCallback(
+    (value) => {
+      console.log('value', value);
+      const [actualValue, message] = evalUnits(value);
+      setHelperText(message);
+      setActualInput(actualValue && actualValue * planck);
+    },
+    [planck]
+  );
 
-  const onBlur = useCallback(() => {
-    const [actualValue, message] = evalUnits(transferInput);
-    setHelperText(message);
-    setActualInput(actualValue && actualValue * planck);
-  }, [planck, transferInput]);
+  const delayedQuery = useCallback(
+    debounce((value) => onBlur(value), 500),
+    []
+  );
+
+  const onChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setTransferInput(event.target.value);
+      delayedQuery(event.target.value);
+    },
+    [delayedQuery]
+  );
 
   useEffect((): void => {
     isRunning && setTransferInput('');
@@ -95,7 +109,6 @@ function Transfer() {
         <TextField
           id="test-amount-send"
           onChange={onChange}
-          onBlur={onBlur}
           value={transferInput}
           placeholder={'0'}
           className={classes.inputAmount}
