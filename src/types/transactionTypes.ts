@@ -33,6 +33,11 @@ export enum TransactionStatusEnum {
   FAILED = 'FAILED'
 }
 
+export enum SwitchTabEnum {
+  RECEIPT = 'RECEIPT',
+  PAYLOAD = 'PAYLOAD',
+  DECODED = 'DECODED'
+}
 export interface TransactionPayload {
   call: Uint8Array;
   origin: {
@@ -40,6 +45,13 @@ export interface TransactionPayload {
   };
   spec_version: number;
   weight: number;
+}
+
+export interface TransactionDisplayPayload {
+  call: Object;
+  origin: Object;
+  spec_version: string;
+  weight: string;
 }
 
 export interface TransactionStatusType extends UpdatedTransactionStatusType {
@@ -51,20 +63,23 @@ export interface TransactionStatusType extends UpdatedTransactionStatusType {
   type: string;
   status: TransactionStatusEnum;
 }
+
 export interface TransactionState {
   estimatedFee: string | null;
   estimatedFeeError: string | null;
+  estimatedFeeLoading: boolean;
   receiverAddress: string | null;
   unformattedReceiverAddress: string | null;
   derivedReceiverAccount: string | null;
   genericReceiverAccount: string | null;
   transactions: Array<TransactionStatusType>;
+  transactionDisplayPayload: TransactionDisplayPayload;
   addressValidationError: string | null;
   showBalance: boolean;
   formatFound: string | null;
   payload: TransactionPayload | null;
   payloadError: string | null;
-  estimatedFeeLoading: boolean;
+  payloadHex: string | null;
 }
 
 export type TransactionsActionType = { type: TransactionActionTypes; payload: Payload };

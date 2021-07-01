@@ -16,11 +16,11 @@
 
 import { Box, TextField, Typography } from '@material-ui/core';
 import React, { useState } from 'react';
-import { Message } from 'semantic-ui-react';
 import { ButtonSubmit } from '../components';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import useSendMessage from '../hooks/chain/useSendMessage';
+import useApiCalls from '../hooks/api/useApiCalls';
 import { TransactionTypes } from '../types/transactionTypes';
 
 const CustomCall = () => {
@@ -34,10 +34,9 @@ const CustomCall = () => {
 
   const { estimatedFee, estimatedFeeLoading } = useTransactionContext();
   const {
-    targetChainDetails: {
-      apiConnection: { api: targetApi }
-    }
+    targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
+  const { createType } = useApiCalls();
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
     input: customCallInput,
@@ -59,7 +58,9 @@ const CustomCall = () => {
   function decodePayload(input: string) {
     try {
       setError(null);
-      const call = targetApi.createType('Call', input);
+
+      //@ts-ignore
+      const call = createType(targetChain, 'Call', input);
       setDecoded(JSON.stringify(call, null, 4));
     } catch (e) {
       setError('Wrong call provided');
@@ -93,16 +94,6 @@ const CustomCall = () => {
           {estimatedFee && `Estimated source Fee: ${estimatedFee}`}
         </Typography>
       )}
-      <div>
-        {decoded && (
-          <Message>
-            <Message.Header>Decoded Call</Message.Header>
-            <p>
-              <pre>{decoded}</pre>
-            </p>
-          </Message>
-        )}
-      </div>
     </>
   );
 };

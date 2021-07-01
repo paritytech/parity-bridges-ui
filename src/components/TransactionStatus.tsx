@@ -15,11 +15,12 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React from 'react';
-import { Box, Card, makeStyles, Typography } from '@material-ui/core';
-import { ButtonSwitchMode } from './Buttons';
-import { IconTxStatus } from './Icons';
+
 import useTransactionSteps from '../hooks/transactions/useTransactionSteps';
 import { TransactionStatusType } from '../types/transactionTypes';
+import TransactionReceipt from './TransactionReceipt';
+import TransactionSwitchTab from './TransactionSwitchTab';
+
 export interface TransactionDisplayProps {
   size?: 'sm';
 }
@@ -29,57 +30,19 @@ interface Props {
   transactionDisplayProps?: TransactionDisplayProps;
 }
 
-const useStyles = makeStyles((theme) => ({
-  card: {
-    '& p': {
-      ...theme.typography.body2
-    },
-    '& svg': {
-      marginBottom: '-0.2em',
-      fontSize: '1.2em',
-      marginRight: theme.spacing()
-    },
-    '& .header': {
-      fontWeight: 500
-    },
-    '&.MuiPaper-root': {
-      maxWidth: '100%',
-      padding: theme.spacing(2),
-      borderRadius: theme.spacing(1.5)
-    }
-  }
-}));
-
-const TransactionStatus = ({ transaction, onComplete, transactionDisplayProps }: Props) => {
-  const classes = useStyles();
+const TransactionStatus = ({ transaction, onComplete }: Props) => {
   const steps = useTransactionSteps({ transaction, onComplete });
+  const { payloadHex, transactionDisplayPayload } = transaction;
 
   return (
-    <>
-      <Box mt={2}>
-        <ButtonSwitchMode disabled> Payload</ButtonSwitchMode>
-        <ButtonSwitchMode color="primary"> Receipt</ButtonSwitchMode>
-        <ButtonSwitchMode disabled> Human</ButtonSwitchMode>
-      </Box>
-      <Card elevation={transactionDisplayProps?.size === 'sm' ? 23 : 24} className={classes.card}>
-        <Box className="header" component="p" id="test-transaction-header">
-          <IconTxStatus status={transaction.status} /> {transaction.type} {transaction.sourceChain} {'->'}{' '}
-          {transaction.targetChain}
-        </Box>
-        {steps.map(({ chainType, label, labelOnChain, status, id }) => (
-          <p key={id} id={id}>
-            <IconTxStatus status={status} /> {chainType}: {label}&nbsp;
-            {labelOnChain && (
-              <Box pt={0.25} pb={0.25} pl={0.5} pr={0.5} component="span" border={1} borderRadius={6}>
-                <Typography component="span" variant="subtitle2">
-                  {labelOnChain}
-                </Typography>
-              </Box>
-            )}
-          </p>
-        ))}
-      </Card>
-    </>
+    <TransactionSwitchTab
+      payloadHex={payloadHex}
+      transactionDisplayPayload={transactionDisplayPayload}
+      status={transaction.status}
+      type={transaction.type}
+    >
+      <TransactionReceipt steps={steps} type={transaction.type} status={transaction.status} />
+    </TransactionSwitchTab>
   );
 };
 

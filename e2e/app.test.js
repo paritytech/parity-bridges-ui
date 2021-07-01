@@ -261,6 +261,11 @@ describe('<App />', () => {
           .waitForSelector(`#test-transaction-header > ${ids.checkCircleComponent}`)
           .then(() => logger.info('     -- Transaction Completed'));
         await page.waitForTimeout(15000);
+        await page.focus('#test-receiver-input').then(() => logger.info('     -- Focus on receiver input field'));
+        await page.keyboard
+          .type('75DSWq62jcgwcfz15DKgG3w9z35L8fYAUDUcKF1K4zCfv2yc')
+          .then(() => logger.info('     -- Adding a receiver address back to check balance'));
+        await page.waitForTimeout(2000);
         const udpatedBalance = await page.$eval('#test-receiver-balance', (el) => el.innerText);
         const expectedBalance = getBalance(originalBalance) + 10;
         expect(getBalance(udpatedBalance)).toEqual(expectedBalance);

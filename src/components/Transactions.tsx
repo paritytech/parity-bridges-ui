@@ -25,6 +25,7 @@ import { TransactionStatusEnum, TransactionStatusType } from '../types/transacti
 import shortenItem from '../util/shortenItem';
 import TransactionStatus, { TransactionDisplayProps } from './TransactionStatus';
 import TransactionStatusMock from './TransactionStatusMock';
+import useResetTransactionState from '../hooks/transactions/useResetTransactionState';
 
 interface Props extends TransactionDisplayProps {
   type?: string;
@@ -34,10 +35,12 @@ const Transactions = ({ type, ...transactionDisplayProps }: Props) => {
   const { transactions } = useTransactionContext();
   const { dispatchTransaction } = useUpdateTransactionContext();
   const { dispatchMessage } = useUpdateMessageContext();
+  useResetTransactionState(type);
 
   return (
     <>
-      {transactions.length ? (
+      <TransactionStatusMock type={type} />
+      {Boolean(transactions.length) &&
         transactions.map((transaction: TransactionStatusType) => {
           const onComplete = () => {
             dispatchTransaction(
@@ -60,10 +63,7 @@ const Transactions = ({ type, ...transactionDisplayProps }: Props) => {
               transactionDisplayProps={{ ...transactionDisplayProps }}
             />
           );
-        })
-      ) : (
-        <TransactionStatusMock type={type} />
-      )}
+        })}
     </>
   );
 };

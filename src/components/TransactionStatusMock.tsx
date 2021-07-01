@@ -16,46 +16,23 @@
 
 import React, { useEffect, useState } from 'react';
 
-import { Box, Card, makeStyles, Typography } from '@material-ui/core';
-import { ButtonSwitchMode } from './Buttons';
-import { IconTxStatus } from './Icons';
-
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { Step, TransactionStatusEnum } from '../types/transactionTypes';
-
+import TransactionReceipt from './TransactionReceipt';
+import TransactionSwitchTab from './TransactionSwitchTab';
+import useTransactionPayloadDisplay from '../hooks/transactions/useTransactionPayloadDisplay';
 interface Props {
   type?: string;
 }
 
-const useStyles = makeStyles((theme) => ({
-  card: {
-    '& p': {
-      ...theme.typography.body2
-    },
-    '& svg': {
-      marginBottom: '-0.2em',
-      fontSize: '1.2em',
-      marginRight: theme.spacing()
-    },
-    '& .header': {
-      fontWeight: 500
-    },
-    '&.MuiPaper-root': {
-      maxWidth: '100%',
-      padding: theme.spacing(2),
-      borderRadius: theme.spacing(1.5)
-    }
-  }
-}));
-
 const TransactionStatusMock = ({ type }: Props) => {
-  const classes = useStyles();
   const [steps, setSteps] = useState<Array<Step>>([]);
 
   const {
     sourceChainDetails: { chain: sourceChain },
     targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
+  const { payloadHex, transactionDisplayPayload } = useTransactionPayloadDisplay();
 
   useEffect(() => {
     setSteps([
@@ -102,28 +79,14 @@ const TransactionStatusMock = ({ type }: Props) => {
   }, [sourceChain, targetChain]);
 
   return (
-    <>
-      <ButtonSwitchMode disabled> Payload</ButtonSwitchMode>
-      <ButtonSwitchMode color="primary"> Receipt</ButtonSwitchMode>
-      <ButtonSwitchMode disabled> Human</ButtonSwitchMode>
-      <Card elevation={24} className={classes.card}>
-        <Box className="header" component="p">
-          <IconTxStatus status={TransactionStatusEnum.NOT_STARTED} /> {type} {sourceChain} {'->'} {targetChain}
-        </Box>
-        {steps.map(({ chainType, label, labelOnChain, status }, idx) => (
-          <p key={idx}>
-            <IconTxStatus status={status} /> {chainType}: {label}&nbsp;
-            {labelOnChain && (
-              <Box pt={0.25} pb={0.25} pl={0.5} pr={0.5} component="span" border={1} borderRadius={6}>
-                <Typography component="span" variant="subtitle2">
-                  {labelOnChain}
-                </Typography>
-              </Box>
-            )}
-          </p>
-        ))}
-      </Card>
-    </>
+    <TransactionSwitchTab
+      payloadHex={payloadHex}
+      transactionDisplayPayload={transactionDisplayPayload}
+      type={type}
+      status={TransactionStatusEnum.NOT_STARTED}
+    >
+      <TransactionReceipt steps={steps} type={type} status={TransactionStatusEnum.NOT_STARTED} />
+    </TransactionSwitchTab>
   );
 };
 
