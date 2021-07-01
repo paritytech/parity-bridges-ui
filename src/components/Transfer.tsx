@@ -14,10 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, makeStyles, TextField, Typography } from '@material-ui/core';
 import BN from 'bn.js';
-import debounce from 'lodash/debounce';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import useAccounts from '../hooks/accounts/useAccounts';
@@ -69,28 +68,14 @@ function Transfer() {
     type: TransactionTypes.TRANSFER
   });
 
-  const onBlur = useCallback(
-    (value) => {
-      console.log('value', value);
-      const [actualValue, message] = evalUnits(value);
+  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.value) {
+      const [actualValue, message] = evalUnits(event.target.value);
       setHelperText(message);
       setActualInput(actualValue && actualValue * planck);
-    },
-    [planck]
-  );
-
-  const delayedQuery = useCallback(
-    debounce((value) => onBlur(value), 500),
-    []
-  );
-
-  const onChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setTransferInput(event.target.value);
-      delayedQuery(event.target.value);
-    },
-    [delayedQuery]
-  );
+    }
+    setTransferInput(event.target.value);
+  };
 
   useEffect((): void => {
     isRunning && setTransferInput('');

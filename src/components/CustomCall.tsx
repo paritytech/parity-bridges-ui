@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useState, useCallback } from 'react';
 import { Box, TextField, Typography } from '@material-ui/core';
+import React, { useState } from 'react';
 import { ButtonSubmit } from '../components';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
@@ -28,11 +28,7 @@ const CustomCall = () => {
   const [decoded, setDecoded] = useState<string | null>();
 
   const [customCallInput, setCustomCallInput] = useState('0x');
-  const [actualCustomCallInput, setActualCustomCallInput] = useState('0x');
-
   const [weightInput, setWeightInput] = useState<string>();
-  const [weightActualInput, setWeightActualInput] = useState<string>();
-
   const [error, setError] = useState<string | null>();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
@@ -50,38 +46,27 @@ const CustomCall = () => {
     type: TransactionTypes.CUSTOM,
     weightInput
   });
-  const onChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setActualCustomCallInput(event.target.value);
-  }, []);
+  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    decodePayload(event.target.value);
+    setCustomCallInput(event.target.value);
+  };
 
-  const decodePayload = useCallback(
-    (input: string) => {
-      try {
-        setError(null);
+  const onWeightChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setWeightInput(event.target.value);
+  };
 
-        //@ts-ignore
-        const call = createType(targetChain, 'Call', input);
-        setDecoded(JSON.stringify(call, null, 4));
-      } catch (e) {
-        setError('Wrong call provided');
-        setDecoded(null);
-      }
-    },
-    [createType, targetChain]
-  );
+  function decodePayload(input: string) {
+    try {
+      setError(null);
 
-  const onBlur = useCallback(() => {
-    decodePayload(actualCustomCallInput);
-    setCustomCallInput(actualCustomCallInput);
-  }, [actualCustomCallInput, decodePayload]);
-
-  const onWeightChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setWeightActualInput(event.target.value);
-  }, []);
-
-  const onWeightBlur = useCallback(() => {
-    setWeightInput(weightActualInput);
-  }, [weightActualInput]);
+      //@ts-ignore
+      const call = createType(targetChain, 'Call', input);
+      setDecoded(JSON.stringify(call, null, 4));
+    } catch (e) {
+      setError('Wrong call provided');
+      setDecoded(null);
+    }
+  }
 
   // To extract estimated fee logic to specific component. Issue #171
   return (
@@ -89,7 +74,6 @@ const CustomCall = () => {
       <Box mb={2}>
         <TextField
           onChange={onChange}
-          onBlur={onBlur}
           value={customCallInput}
           label="Call"
           variant="outlined"
@@ -97,14 +81,7 @@ const CustomCall = () => {
           helperText={error && `${error}`}
         />
       </Box>
-      <TextField
-        onChange={onWeightChange}
-        onBlur={onWeightBlur}
-        value={weightActualInput}
-        label="Weight"
-        variant="outlined"
-        fullWidth
-      />
+      <TextField onChange={onWeightChange} value={weightInput} label="Weight" variant="outlined" fullWidth />
       <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
         Send custom call from {sourceChainDetails.chain} to {targetChainDetails.chain}
       </ButtonSubmit>
