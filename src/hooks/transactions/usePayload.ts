@@ -34,14 +34,14 @@ export const usePayload = ({ call, weight }: Input) => {
   const {
     sourceChainDetails: { chain: sourceChain },
     targetChainDetails: {
-      apiConnection: { api: targetApi, isApiReady: isTargetApiReady }
+      apiConnection: { api: targetApi }
     }
   } = useSourceTarget();
   const { dispatchTransaction } = useUpdateTransactionContext();
   const { account } = useAccountContext();
 
   const payloadCallback = useCallback(() => {
-    if (!account || !call || !weight || !isTargetApiReady) {
+    if (!account || !call || !weight) {
       return null;
     }
 
@@ -58,7 +58,7 @@ export const usePayload = ({ call, weight }: Input) => {
     logger.info(`OutboundPayload: ${JSON.stringify(payload)}`);
     logger.info(`OutboundPayload.toHex(): ${payloadType.toHex()}`);
     return payload;
-  }, [account, call, createType, isTargetApiReady, sourceChain, targetApi.consts.system.version.specVersion, weight]);
+  }, [account, call, createType, sourceChain, targetApi, weight]);
 
   const dispatch = useCallback(
     (error: string | null, data: any) => dispatchTransaction(TransactionActionCreators.setPayload(error, data)),
