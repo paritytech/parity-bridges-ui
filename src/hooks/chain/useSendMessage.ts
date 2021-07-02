@@ -39,9 +39,9 @@ interface Props {
   isValidCall?: boolean;
   isRunning: boolean;
   setIsRunning: (status: boolean) => void;
-  input: string;
+  input: string | null;
   type: string;
-  weightInput?: string;
+  weightInput?: string | null;
 }
 
 function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, weightInput }: Props) {
@@ -64,7 +64,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
   const makeCall = useCallback(
     async (id: string) => {
       try {
-        if (!account || isRunning || !payload) {
+        if (!account || isRunning || !payload || !input) {
           return;
         }
         //@ts-ignore

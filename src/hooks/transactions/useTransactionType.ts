@@ -29,9 +29,9 @@ interface TransactionFunction {
 }
 
 interface Props {
-  input: string;
+  input: string | null;
   type: string;
-  weightInput?: string;
+  weightInput?: string | null;
 }
 
 export default function useTransactionType({ input, type, weightInput }: Props): TransactionFunction {
@@ -58,7 +58,7 @@ export default function useTransactionType({ input, type, weightInput }: Props):
       let weight: number = 0;
       let call: Uint8Array | null = null;
 
-      if (account) {
+      if (account && input) {
         switch (type) {
           case TransactionTypes.REMARK:
             call = (await targetApi.tx.system.remark(input)).toU8a();

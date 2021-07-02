@@ -41,6 +41,7 @@ export const usePayload = ({ call, weight }: Input) => {
     if (!account || !call || !weight) {
       return null;
     }
+
     const payload = {
       call: compactAddLength(call!),
       origin: {

@@ -21,22 +21,26 @@ import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import useSendMessage from '../hooks/chain/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
+import useDebounceState from '../hooks/react/useDebounceState';
+
+const initialRemark = '0x';
 
 const Remark = () => {
   const [isRunning, setIsRunning] = useState(false);
-  const [remarkInput, setRemarkInput] = useState('0x');
+  const [currentInput, remarkActualInput, setRemarkInput] = useDebounceState(initialRemark);
+
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
   const { estimatedFee, estimatedFeeLoading } = useTransactionContext();
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
-    input: remarkInput,
+    input: remarkActualInput,
     isRunning,
     setIsRunning,
     type: TransactionTypes.REMARK
   });
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRemarkInput(event.target.value);
+    setRemarkInput(event.target.value || initialRemark);
   };
 
   // To extract estimated fee logic to specific component. Issue #171
@@ -44,7 +48,7 @@ const Remark = () => {
     <>
       <TextField
         label="Remark"
-        value={remarkInput}
+        value={currentInput}
         variant="outlined"
         fullWidth
         multiline
