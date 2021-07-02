@@ -56,13 +56,13 @@ describe('Tests suite - evalUnits', () => {
     expect(msg).toBe(EvalMessages.SUCCESS);
   });
 
-  // Not so happy paths
-  it('Should accept as input an expression (3Y)', () => {
-    const [actualResult, msg] = evalUnits('3Y', defaultChainDecimals);
-    expect(actualResult?.toString()).toBeFalsy;
-    expect(msg).toBe(EvalMessages.BITLENGTH_EXCEEDED);
+  it('Should accept as input an float expression (100000000000000000.1)', () => {
+    const [actualResult, msg] = evalUnits('100000000000000000.1', defaultChainDecimals);
+    expect(actualResult?.toString()).toBe('100000000000000000100000000');
+    expect(msg).toBe(EvalMessages.SUCCESS);
   });
 
+  // Not so happy paths
   it('Should accept as input something gibberish (good23) and return error message', () => {
     const [actualValue, msg] = evalUnits('good23', defaultChainDecimals);
     expect(actualValue).toBeFalsy;

@@ -40,8 +40,7 @@ export enum EvalMessages {
   ZERO = 'You cannot send 0 funds',
   SUCCESS = '',
   SYMBOL_ERROR = 'Provided symbol is not correct',
-  GENERAL_ERROR = 'Check your input. Something went wrong',
-  BITLENGTH_EXCEEDED = 'Input too large. Exceeds the supported 64 bits'
+  GENERAL_ERROR = 'Check your input. Something went wrong'
 }
 
 /**
@@ -65,18 +64,17 @@ export function evalUnits(input: string, chainDecimals: number): [BN | null, str
   const numberStr = input.replace(symbol, '').replace(',', '.');
   let numeric: BN = new BN(0);
   if (siVal) {
-    let action: number | BN;
     const containDecimal = input.replace(/[,]/g, '.').includes('.');
     if (containDecimal) {
-      action = parseFloat(numberStr.replace(/[,]/g, '.')) * 10 ** chainDecimals;
+      const [decPart, fracPart] = numberStr.replace(/[,]/g, '.').split('.');
+      const decimals = fracPart.length;
+      const exp = new BN(10).pow(new BN(decimals));
+      numeric = new BN(new BN(decPart).mul(exp).add(new BN(fracPart)))
+        .mul(siVal.value)
+        .mul(new BN(10).pow(new BN(chainDecimals)))
+        .div(exp);
     } else {
-      action = new BN(numberStr).mul(new BN(10).pow(new BN(chainDecimals)));
-    }
-    numeric = new BN(action).mul(siVal.value);
-
-    // Temporary workaround so that UI will not break
-    if (numeric.bitLength() > 64) {
-      return [null, EvalMessages.BITLENGTH_EXCEEDED];
+      numeric = new BN(new BN(numberStr).mul(new BN(10).pow(new BN(chainDecimals)))).mul(siVal.value);
     }
 
     if (numeric.eq(new BN(0))) {
