@@ -47,7 +47,6 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
   const [transaction, dispatchTransaction] = useReducer(transactionReducer, {
     transferAmount: null,
     transferAmountError: null,
-    derivedReceiverAccount: null,
     estimatedFee: null,
     estimatedFeeError: null,
     estimatedFeeLoading: false,
