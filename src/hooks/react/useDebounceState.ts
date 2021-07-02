@@ -19,22 +19,31 @@ import debounce from 'lodash/debounce';
 
 type Output = [string | null, string | null, Function];
 
-export const useDebounceState = (initialValue: string | null, wait: number = 500): Output => {
+export const useDebounceState = (
+  initialValue: string | null,
+  wait?: null | number,
+  transformCallback?: Function
+): Output => {
   const [value, setValue] = useState(initialValue);
   const [debounced, setDebounced] = useState(value);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const setDebouncedCallback = useCallback(
-    debounce((value) => setDebounced(value), wait),
+    debounce((value) => setDebounced(value), wait || 500),
     []
   );
 
   const setValueCallback = useCallback(
     (value: string | null) => {
       setValue(value);
-      setDebouncedCallback(value);
+      if (transformCallback) {
+        const transformedValue = transformCallback(value);
+        setDebouncedCallback(transformedValue);
+      } else {
+        setDebouncedCallback(value);
+      }
     },
-    [setDebouncedCallback]
+    [setDebouncedCallback, transformCallback]
   );
 
   return [value, debounced, setValueCallback];

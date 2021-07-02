@@ -27,6 +27,7 @@ import { TokenSymbol } from './TokenSymbol';
 import Receiver from './Receiver';
 import { evalUnits } from '../util/evalUnits';
 import { Alert, ButtonSubmit } from '../components';
+import useDebounceState from '../hooks/react/useDebounceState';
 
 const useStyles = makeStyles((theme) => ({
   inputAmount: {
@@ -50,8 +51,7 @@ function Transfer() {
   const classes = useStyles();
   const [isRunning, setIsRunning] = useState(false);
   const [helperText, setHelperText] = useState('');
-  const [transferInput, setTransferInput] = useState<string>('');
-  const [actualInput, setActualInput] = useState<number | null>();
+
   const [amountNotCorrect, setAmountNotCorrect] = useState<boolean>(false);
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   const { account } = useAccounts();
@@ -61,6 +61,14 @@ function Transfer() {
   const { api, isApiReady } = sourceChainDetails.apiConnection;
   const balance = useBalance(api, account?.address || '');
 
+  const transformInput = (value: string) => {
+    const [actualValue, message] = evalUnits(value || '0');
+    setHelperText(message);
+    return actualValue && actualValue * planck;
+  };
+
+  const [transferInput, actualInput, setActualInput] = useDebounceState('', null, transformInput);
+
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
     input: actualInput?.toString() ?? '',
     isRunning,
@@ -69,20 +77,18 @@ function Transfer() {
   });
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.value) {
-      const [actualValue, message] = evalUnits(event.target.value);
-      setHelperText(message);
-      setActualInput(actualValue && actualValue * planck);
-    }
-    setTransferInput(event.target.value);
+    setActualInput(event.target.value);
   };
 
   useEffect((): void => {
-    isRunning && setTransferInput('');
-  }, [isRunning]);
+    isRunning && setActualInput('');
+  }, [isRunning, setActualInput]);
 
   // To extract estimated fee logic to specific component. Issue #171
   useEffect((): void => {
+    console.log('estimatedFee', estimatedFee);
+    console.log('actualInput', actualInput);
+
     estimatedFee &&
       actualInput &&
       setAmountNotCorrect(new BN(balance.free).sub(new BN(actualInput).add(new BN(estimatedFee))).toNumber() < 0);
