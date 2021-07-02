@@ -14,8 +14,60 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { TransactionStatusType, TransactionStatusEnum } from '../types/transactionTypes';
+import {
+  TransactionStatusType,
+  TransactionStatusEnum,
+  Payload,
+  TransactionDisplayPayload
+} from '../types/transactionTypes';
+import { encodeAddress } from '@polkadot/util-crypto';
+import { SourceTargetState } from '../types/sourceTargetTypes';
 
 export function isTransactionCompleted(transaction: TransactionStatusType): boolean {
   return transaction.status === TransactionStatusEnum.COMPLETED;
+}
+
+interface PayloadInput {
+  payload: Payload;
+  account: string;
+  createType: Function;
+  sourceTargetDetails: SourceTargetState;
+}
+
+interface Output {
+  transactionDisplayPayload: TransactionDisplayPayload | null;
+  payloadHex: string | null;
+}
+
+export function getTransactionDisplayPayload({
+  payload,
+  account,
+  createType,
+  sourceTargetDetails
+}: PayloadInput): Output {
+  const {
+    sourceChainDetails: {
+      chain: sourceChain,
+      configs: { ss58Format }
+    },
+    targetChainDetails: { chain: targetChain }
+  } = sourceTargetDetails;
+  //@ts-ignore
+  const payloadType = createType(sourceChain, 'OutboundPayload', payload);
+  const payloadHex = payloadType.toHex();
+  //@ts-ignore
+  const callType = createType(targetChain, 'BridgedOpaqueCall', payload.call);
+  //@ts-ignore
+  const call = createType(targetChain, 'Call', callType.toHex());
+  const formatedAccount = encodeAddress(account, ss58Format);
+
+  const transactionDisplayPayload = {} as TransactionDisplayPayload;
+  const { spec_version, weight } = payload;
+  transactionDisplayPayload.call = JSON.parse(call);
+  transactionDisplayPayload.origin = {
+    SourceAccount: formatedAccount
+  };
+  transactionDisplayPayload.weight = weight;
+  transactionDisplayPayload.spec_version = spec_version;
+  return { transactionDisplayPayload, payloadHex };
 }
