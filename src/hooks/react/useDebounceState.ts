@@ -17,13 +17,15 @@
 import { useCallback, useState } from 'react';
 import debounce from 'lodash/debounce';
 
-type Output = [string | null, string | null, Function];
+type Output<T> = [T, T, (value: T) => void];
 
-export const useDebounceState = (
-  initialValue: string | null,
-  wait?: null | number,
-  transformCallback?: Function
-): Output => {
+interface Input<T> {
+  initialValue: T;
+  wait?: number;
+  transformCallback?: (value: T) => void;
+}
+
+export const useDebounceState = <T>({ initialValue, wait = 500, transformCallback }: Input<T>): Output<T> => {
   const [value, setValue] = useState(initialValue);
   const [debounced, setDebounced] = useState(value);
 
@@ -34,7 +36,7 @@ export const useDebounceState = (
   );
 
   const setValueCallback = useCallback(
-    (value: string | null) => {
+    (value: T) => {
       setValue(value);
       if (transformCallback) {
         const transformedValue = transformCallback(value);

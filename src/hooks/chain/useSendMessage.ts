@@ -39,9 +39,9 @@ interface Props {
   isValidCall?: boolean;
   isRunning: boolean;
   setIsRunning: (status: boolean) => void;
-  input: string | null;
+  input: string;
   type: string;
-  weightInput?: string | null;
+  weightInput?: string;
 }
 
 function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, weightInput }: Props) {

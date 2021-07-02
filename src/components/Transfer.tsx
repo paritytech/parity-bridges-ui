@@ -61,35 +61,35 @@ function Transfer() {
   const { api, isApiReady } = sourceChainDetails.apiConnection;
   const balance = useBalance(api, account?.address || '');
 
-  const transformInput = (value: string) => {
+  const transformCallback = (value: string) => {
     const [actualValue, message] = evalUnits(value || '0');
     setHelperText(message);
     return actualValue && actualValue * planck;
   };
 
-  const [transferInput, actualInput, setActualInput] = useDebounceState('', null, transformInput);
+  const [currentInput, debouncedInput, setInput] = useDebounceState({ initialValue: '', transformCallback });
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
-    input: actualInput?.toString() ?? '',
+    input: debouncedInput?.toString() ?? '',
     isRunning,
     setIsRunning,
     type: TransactionTypes.TRANSFER
   });
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setActualInput(event.target.value);
+    setInput(event.target.value);
   };
 
   useEffect((): void => {
-    isRunning && setActualInput('');
-  }, [isRunning, setActualInput]);
+    isRunning && setInput('');
+  }, [isRunning, setInput]);
 
   // To extract estimated fee logic to specific component. Issue #171
   useEffect((): void => {
     estimatedFee &&
-      actualInput &&
-      setAmountNotCorrect(new BN(balance.free).sub(new BN(actualInput).add(new BN(estimatedFee))).toNumber() < 0);
-  }, [actualInput, estimatedFee, balance, isApiReady]);
+      debouncedInput &&
+      setAmountNotCorrect(new BN(balance.free).sub(new BN(debouncedInput).add(new BN(estimatedFee))).toNumber() < 0);
+  }, [debouncedInput, estimatedFee, balance, isApiReady]);
 
   return (
     <>
@@ -97,7 +97,7 @@ function Transfer() {
         <TextField
           id="test-amount-send"
           onChange={onChange}
-          value={transferInput}
+          value={currentInput}
           placeholder={'0'}
           className={classes.inputAmount}
           fullWidth

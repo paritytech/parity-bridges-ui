@@ -24,14 +24,14 @@ import useApiCalls from '../hooks/api/useApiCalls';
 import { TransactionTypes } from '../types/transactionTypes';
 import useDebounceState from '../hooks/react/useDebounceState';
 
-const initialCustomCallInput = '0x';
+const initialValue = '0x';
 
 const CustomCall = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [decoded, setDecoded] = useState<string | null>();
 
-  const [currentCustomCallInput, customCallInput, setCustomCallInput] = useDebounceState(initialCustomCallInput);
-  const [currentWeightInput, weightInput, setWeightInput] = useDebounceState('');
+  const [currentCustomCallInput, customCallInput, setCustomCallInput] = useDebounceState({ initialValue });
+  const [currentWeightInput, weightInput, setWeightInput] = useDebounceState({ initialValue: '' });
 
   const [error, setError] = useState<string | null>();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
@@ -55,7 +55,7 @@ const CustomCall = () => {
       const input = event.target.value;
       try {
         setError(null);
-        setCustomCallInput(input || initialCustomCallInput);
+        setCustomCallInput(input);
         //@ts-ignore
         const call = createType(targetChain, 'Call', input);
         setDecoded(JSON.stringify(call, null, 4));
@@ -81,6 +81,7 @@ const CustomCall = () => {
         <TextField
           onChange={onChange}
           value={currentCustomCallInput}
+          placeholder={initialValue}
           label="Call"
           variant="outlined"
           fullWidth

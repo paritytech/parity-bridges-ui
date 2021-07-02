@@ -23,11 +23,11 @@ import useSendMessage from '../hooks/chain/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
 import useDebounceState from '../hooks/react/useDebounceState';
 
-const initialRemark = '0x';
+const initialValue = '0x';
 
 const Remark = () => {
   const [isRunning, setIsRunning] = useState(false);
-  const [currentInput, remarkActualInput, setRemarkInput] = useDebounceState(initialRemark);
+  const [currentInput, remarkActualInput, setRemarkInput] = useDebounceState({ initialValue });
 
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
@@ -40,7 +40,7 @@ const Remark = () => {
     type: TransactionTypes.REMARK
   });
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRemarkInput(event.target.value || initialRemark);
+    setRemarkInput(event.target.value);
   };
 
   // To extract estimated fee logic to specific component. Issue #171

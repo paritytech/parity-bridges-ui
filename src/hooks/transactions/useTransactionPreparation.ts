@@ -21,9 +21,9 @@ import useEstimateFee from './useEstimateFee';
 import usePayload from './usePayload';
 
 interface Props {
-  input: string | null;
+  input: string;
   type: string;
-  weightInput?: string | null;
+  weightInput?: string;
   isValidCall?: boolean;
 }
 

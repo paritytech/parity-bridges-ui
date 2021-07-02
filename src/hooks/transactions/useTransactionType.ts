@@ -29,9 +29,9 @@ interface TransactionFunction {
 }
 
 interface Props {
-  input: string | null;
+  input: string;
   type: string;
-  weightInput?: string | null;
+  weightInput?: string;
 }
 
 export default function useTransactionType({ input, type, weightInput }: Props): TransactionFunction {
