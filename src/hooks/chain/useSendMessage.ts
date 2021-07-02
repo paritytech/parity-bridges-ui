@@ -30,7 +30,9 @@ import useLaneId from './useLaneId';
 import useTransactionPreparation from '../transactions/useTransactionPreparation';
 import { TransactionStatusEnum, TransactionTypes } from '../../types/transactionTypes';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
+import { getTransactionDisplayPayload } from '../../util/transactionUtils';
 import logger from '../../util/logger';
+import useApiCalls from '../api/useApiCalls';
 import useLoadingApi from '../connections/useLoadingApi';
 
 interface Props {
@@ -46,23 +48,28 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
   const { estimatedFee, receiverAddress, payload } = useTransactionContext();
   const { dispatchTransaction } = useUpdateTransactionContext();
   const laneId = useLaneId();
+  const sourceTargetDetails = useSourceTarget();
   const {
     sourceChainDetails: {
       apiConnection: { api: sourceApi },
       chain: sourceChain
     },
     targetChainDetails: { chain: targetChain }
-  } = useSourceTarget();
+  } = sourceTargetDetails;
   const { account } = useAccountContext();
   useTransactionPreparation({ input, isValidCall, type, weightInput });
+  const { createType } = useApiCalls();
   const { dispatchMessage } = useUpdateMessageContext();
 
   const makeCall = useCallback(
     async (id: string) => {
       try {
-        if (!account || isRunning) {
+        if (!account || isRunning || !payload) {
           return;
         }
+        //@ts-ignore
+        const payloadType = createType(sourceChain, 'OutboundPayload', payload);
+        const payloadHex = payloadType.toHex();
 
         const { bridgedMessages } = getSubstrateDynamicNames(targetChain);
         const bridgeMessage = sourceApi.tx[bridgedMessages].sendMessage(laneId, payload, estimatedFee);
@@ -76,6 +83,14 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
           options.signer = injector.signer;
           sourceAccount = account.address;
         }
+
+        const transactionDisplayPayload = getTransactionDisplayPayload({
+          payload,
+          account: account.address,
+          createType,
+          sourceTargetDetails
+        });
+
         const unsub = await bridgeMessage.signAndSend(sourceAccount, { ...options }, ({ events = [], status }) => {
           if (status.isReady) {
             dispatchTransaction(
@@ -90,12 +105,15 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
                 sourceChain,
                 status: TransactionStatusEnum.CREATED,
                 targetChain,
-                type
+                type,
+                payloadHex,
+                transactionDisplayPayload
               })
             );
           }
           if (status.isBroadcast) {
             dispatchMessage(MessageActionsCreators.triggerInfoMessage({ message: 'Transaction was broadcasted' }));
+            dispatchTransaction(TransactionActionCreators.reset());
           }
           if (status.isInBlock) {
             events.forEach(({ event: { data, method } }) => {
@@ -126,6 +144,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
           }
           if (status.isFinalized) {
             logger.info(`Transaction finalized at blockHash ${status.asFinalized}`);
+
             unsub();
           }
         });
@@ -138,6 +157,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
     },
     [
       account,
+      createType,
       dispatchMessage,
       dispatchTransaction,
       estimatedFee,
@@ -150,6 +170,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
       sourceApi.rpc.chain,
       sourceApi.tx,
       sourceChain,
+      sourceTargetDetails,
       targetChain,
       type
     ]
