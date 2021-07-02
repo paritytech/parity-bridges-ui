@@ -23,7 +23,6 @@ import { useTransactionContext } from '../../contexts/TransactionContext';
 import useLoadingApi from '../connections/useLoadingApi';
 import { TransactionTypes } from '../../types/transactionTypes';
 import logger from '../../util/logger';
-import { evalUnits } from '../../util/evalUnits';
 
 interface TransactionFunction {
   call: Uint8Array | null;
@@ -48,7 +47,7 @@ export default function useTransactionType({ input, type, weightInput }: Props):
   } = useSourceTarget();
 
   const { account } = useAccountContext();
-  const { receiverAddress } = useTransactionContext();
+  const { receiverAddress, transferAmount } = useTransactionContext();
 
   const [values, setValues] = useState<TransactionFunction>({
     call: null,
@@ -70,15 +69,12 @@ export default function useTransactionType({ input, type, weightInput }: Props):
             break;
           case TransactionTypes.TRANSFER:
             if (receiverAddress) {
-              const planck = 10 ** targetApi.registry.chainDecimals[0];
-              const [resInp] = evalUnits((parseFloat(input) * planck).toString());
-              const transferInput = resInp?.toString() || '0';
-              call = (await targetApi.tx.balances.transfer(receiverAddress, transferInput)).toU8a();
+              call = (await targetApi.tx.balances.transfer(receiverAddress, transferAmount || 0)).toU8a();
               logger.info(`balances::transfer: ${u8aToHex(call)}`);
               // TODO [#121] Figure out what the extra bytes are about
               call = call.slice(2);
               weight = (
-                await targetApi.tx.balances.transfer(receiverAddress, transferInput).paymentInfo(account)
+                await targetApi.tx.balances.transfer(receiverAddress, transferAmount || 0).paymentInfo(account)
               ).weight.toNumber();
             }
             break;
@@ -96,7 +92,7 @@ export default function useTransactionType({ input, type, weightInput }: Props):
     if (areApiReady) {
       getValues();
     }
-  }, [account, areApiReady, input, receiverAddress, sourceApi, targetApi, type, weightInput]);
+  }, [account, areApiReady, input, receiverAddress, sourceApi, targetApi, transferAmount, type, weightInput]);
 
   return values;
 }

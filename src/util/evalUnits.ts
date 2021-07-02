@@ -16,62 +16,33 @@
 
 import BN from 'bn.js';
 
-// along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
+const getSiValue = (si: number): BN => new BN(10).pow(new BN(si));
+
 const si = [
-  { value: -1000000000000000, symbol: 'y' },
-  { value: -1000000000000, symbol: 'z' },
-  { value: -1e18, symbol: 'a' },
-  { value: -1e15, symbol: 'f' },
-  { value: -1e12, symbol: 'p' },
-  { value: -1e9, symbol: 'n' },
-  { value: -1e6, symbol: 'μ' },
-  { value: -1e3, symbol: 'm' },
-  { value: 1, symbol: '' },
-  { value: 1e3, symbol: 'k' },
-  { value: 1e6, symbol: 'M' },
-  { value: 1e9, symbol: 'G' },
-  { value: 1e12, symbol: 'T' },
-  { value: 1e15, symbol: 'P' },
-  { value: 1e18, symbol: 'E' },
-  // This may seem crazy but 1e21 and 1e24 were actually passed to BN like that and making it break
-  // (while 1e18 is transforming to format seen below)
-  { value: 1000000000000, symbol: 'Z' },
-  { value: 1000000000000000, symbol: 'Y' }
+  { value: new BN(1), symbol: '' },
+  { value: getSiValue(3), symbol: 'k' },
+  { value: getSiValue(6), symbol: 'M' },
+  { value: getSiValue(9), symbol: 'G' },
+  { value: getSiValue(12), symbol: 'T' },
+  { value: getSiValue(15), symbol: 'P' },
+  { value: getSiValue(18), symbol: 'E' },
+  { value: getSiValue(21), symbol: 'Y' },
+  { value: getSiValue(24), symbol: 'Z' }
 ];
 
-const floats = /^[0-9]*[.,]{1}[0-9]*$/;
-const ints = /^[0-9]+$/;
-const alphaFloats = /^[0-9]*[.,]{1}[0-9]*[a-zA-Z]{1}$/;
-const alphaInts = /^[0-9]*[a-zA-Z]{1}$/;
+const floats = /^[+]?[0-9]*[.,]{1}[0-9]*$/;
+const ints = /^[+]?[0-9]+$/;
+const alphaFloats = /^[+]?[0-9]*[.,]{1}[0-9]*[k, M, G, T, P, E, Y, Z]{1}$/;
+const alphaInts = /^[+]?[0-9]*[k, M, G, T, P, E, Y, Z]{1}$/;
 
 export enum EvalMessages {
   GIBBERISH = 'Input is not correct. Use numbers, floats or expression (e.g. 1k, 1.3m)',
   ZERO = 'You cannot send 0 funds',
-  NEGATIVE = 'You cannot send negative amount of funds',
   SUCCESS = '',
   SYMBOL_ERROR = 'Provided symbol is not correct',
-  GENERAL_ERROR = 'Check your input. Something went wrong'
+  GENERAL_ERROR = 'Check your input. Something went wrong',
+  BITLENGTH_EXCEEDED = 'Input too large. Exceeds the supported 64 bits'
 }
-
-const transformShorthandToBN = (input: string, multiplyWithBN?: boolean): [BN | null, EvalMessages] => {
-  // find the character from the alphanumerics
-  const charPart = input.replace(/[0-9.,]/g, '');
-  // find the value from the si list
-  const siVal = si.find((s) => s.symbol === charPart);
-  const numberPart = input.replace(/[a-zA-Z]/g, '');
-  let numeric: BN;
-  if (siVal) {
-    if (multiplyWithBN) {
-      numeric = new BN(numberPart).mul(new BN(siVal.value));
-    } else {
-      numeric = new BN(parseFloat(numberPart.replace(/[,]/g, '.')) * siVal.value);
-    }
-    if (numeric) {
-      return numeric.gt(new BN(0)) ? [numeric, EvalMessages.SUCCESS] : [numeric, EvalMessages.NEGATIVE];
-    }
-  }
-  return [null, EvalMessages.SYMBOL_ERROR];
-};
 
 /**
  * A function that identifes integer/float(comma or dot)/expressions (such as 1k)
@@ -81,26 +52,37 @@ const transformShorthandToBN = (input: string, multiplyWithBN?: boolean): [BN | 
  * the first is the actual calculated number (or null if none) while
  * the second is the message that should appear in case of error
  */
-export function evalUnits(input: string): [BN | number | null, string] {
+export function evalUnits(input: string, chainDecimals: number): [BN | null, string] {
+  //sanitize input to remove + char if exists
+  input = input && input.replace('+', '');
   if (!floats.test(input) && !ints.test(input) && !alphaInts.test(input) && !alphaFloats.test(input)) {
     return [null, EvalMessages.GIBBERISH];
   }
-  if (floats.test(input) || ints.test(input)) {
-    const result = parseFloat(input.replace(/[,]/g, '.'));
-    return [result, EvalMessages.SUCCESS];
+  // find the character from the alphanumerics
+  const symbol = input.replace(/[0-9.,]/g, '');
+  // find the value from the si list
+  const siVal = si.find((s) => s.symbol === symbol);
+  const numberStr = input.replace(symbol, '').replace(',', '.');
+  let numeric: BN = new BN(0);
+  if (siVal) {
+    let action: number | BN;
+    const containDecimal = input.replace(/[,]/g, '.').includes('.');
+    if (containDecimal) {
+      action = parseFloat(numberStr.replace(/[,]/g, '.')) * 10 ** chainDecimals;
+    } else {
+      action = new BN(numberStr).mul(new BN(10).pow(new BN(chainDecimals)));
+    }
+    numeric = new BN(action).mul(siVal.value);
+
+    // Temporary workaround so that UI will not break
+    if (numeric.bitLength() > 64) {
+      return [null, EvalMessages.BITLENGTH_EXCEEDED];
+    }
+
+    if (numeric.eq(new BN(0))) {
+      return [null, EvalMessages.ZERO];
+    }
+    return [numeric, EvalMessages.SUCCESS];
   }
-  if (alphaInts.test(input) || alphaFloats.test(input)) {
-    const containDecimal = !input.replace(/[,]/g, '.').includes('.');
-    return transformShorthandToBN(input, containDecimal);
-  }
-  if (new BN(input).gte(new BN(Number.MAX_SAFE_INTEGER))) {
-    return [null, EvalMessages.GENERAL_ERROR];
-  }
-  if (new BN(input).eq(new BN(0))) {
-    return [null, EvalMessages.ZERO];
-  }
-  if (new BN(input).isNeg()) {
-    return [null, EvalMessages.NEGATIVE];
-  }
-  return [null, EvalMessages.GENERAL_ERROR];
+  return [null, EvalMessages.SYMBOL_ERROR];
 }
