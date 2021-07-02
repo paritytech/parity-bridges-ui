@@ -86,9 +86,6 @@ function Transfer() {
 
   // To extract estimated fee logic to specific component. Issue #171
   useEffect((): void => {
-    console.log('estimatedFee', estimatedFee);
-    console.log('actualInput', actualInput);
-
     estimatedFee &&
       actualInput &&
       setAmountNotCorrect(new BN(balance.free).sub(new BN(actualInput).add(new BN(estimatedFee))).toNumber() < 0);
