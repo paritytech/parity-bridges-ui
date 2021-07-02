@@ -16,80 +16,62 @@
 
 import { evalUnits, EvalMessages } from '../evalUnits';
 
+const defaultChainDecimals = 9;
+
 describe('Tests suite - evalUnits', () => {
   // Happy paths
   it('Should input string', () => {
-    const [actualResult, msg] = evalUnits('666');
-    expect(actualResult).toBe(666);
+    const [actualResult, msg] = evalUnits('666', defaultChainDecimals);
+    expect(actualResult?.toString()).toBe('666000000000');
     expect(msg).toBe(EvalMessages.SUCCESS);
   });
 
-  // FOR SOME REASON JEST DO NOT WANT TO WORK WITH BN (????)
-
   it('Should accept as input, float (dot for decimal symbol)', () => {
-    const [actualResult, msg] = evalUnits('1.23');
-    expect(actualResult).toBe(1.23);
+    const [actualResult, msg] = evalUnits('1.23', defaultChainDecimals);
+    expect(actualResult?.toString()).toBe('1230000000');
     expect(msg).toBe(EvalMessages.SUCCESS);
   });
 
   it('Should accept as input, float (comma for decimal symbol)', () => {
-    const [actualResult, msg] = evalUnits('1,23');
-    expect(actualResult).toBe(1.23);
+    const [actualResult, msg] = evalUnits('1,23', defaultChainDecimals);
+    expect(actualResult?.toString()).toBe('1230000000');
     expect(msg).toBe(EvalMessages.SUCCESS);
   });
 
   it('Should accept as input an expression (1k)', () => {
-    const [actualResult, msg] = evalUnits('1k');
-    expect(actualResult?.toString()).toBe('1000');
+    const [actualResult, msg] = evalUnits('1k', defaultChainDecimals);
+    expect(actualResult?.toString()).toBe('1000000000000');
     expect(msg).toBe(EvalMessages.SUCCESS);
   });
 
   it('Should accept as input an float expression with dot as symbol (1.2k)', () => {
-    const [actualResult, msg] = evalUnits('1.2k');
-    expect(actualResult?.toString()).toBe('1200');
+    const [actualResult, msg] = evalUnits('1.2k', defaultChainDecimals);
+    expect(actualResult?.toString()).toBe('1200000000000');
     expect(msg).toBe(EvalMessages.SUCCESS);
   });
 
   it('Should accept as input an float expression with commas as symbol (1,2k)', () => {
-    const [actualResult, msg] = evalUnits('1,2k');
-    expect(actualResult?.toString()).toBe('1200');
-    expect(msg).toBe(EvalMessages.SUCCESS);
-  });
-
-  // Extreme happy paths
-  it('Should accept as input an expression (3Y)', () => {
-    const [actualResult, msg] = evalUnits('3Y');
-    expect(actualResult?.toString()).toBe('3000000000000000');
-    expect(msg).toBe(EvalMessages.SUCCESS);
-  });
-
-  it('Should accept as input an expression (7.9Y)', () => {
-    const [actualResult, msg] = evalUnits('7.9Y');
-    expect(actualResult?.toString()).toBe('7900000000000000');
+    const [actualResult, msg] = evalUnits('1,2k', defaultChainDecimals);
+    expect(actualResult?.toString()).toBe('1200000000000');
     expect(msg).toBe(EvalMessages.SUCCESS);
   });
 
   // Not so happy paths
-  it('Should accept as input an expression (5f) and respond with "Negative" error', () => {
-    const [actualResult, msg] = evalUnits('5f');
-    expect(actualResult?.toString()).toBe('-5000000000000000');
-    expect(msg).toBe(EvalMessages.NEGATIVE);
+  it('Should accept as input an expression (3Y)', () => {
+    const [actualResult, msg] = evalUnits('3Y', defaultChainDecimals);
+    expect(actualResult?.toString()).toBeFalsy;
+    expect(msg).toBe(EvalMessages.BITLENGTH_EXCEEDED);
   });
 
   it('Should accept as input something gibberish (good23) and return error message', () => {
-    const [actualValue, msg] = evalUnits('good23');
+    const [actualValue, msg] = evalUnits('good23', defaultChainDecimals);
     expect(actualValue).toBeFalsy;
     expect(msg).toBe(EvalMessages.GIBBERISH);
   });
 
   it('Should accept as input double decimal symbols (1,23.445k) and return error message', () => {
-    const [actualValue, msg] = evalUnits('1,23.445k');
+    const [actualValue, msg] = evalUnits('1,23.445k', defaultChainDecimals);
     expect(actualValue).toBeFalsy;
     expect(msg).toBe(EvalMessages.GIBBERISH);
-  });
-
-  it('Should accept as input a HUGE number and be fine with that', () => {
-    const [, msg] = evalUnits((Number.MAX_SAFE_INTEGER + 10).toString());
-    expect(msg).toBe(EvalMessages.SUCCESS);
   });
 });
