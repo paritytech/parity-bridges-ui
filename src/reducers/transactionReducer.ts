@@ -26,6 +26,7 @@ import {
 } from '../types/transactionTypes';
 import { ChainState } from '../types/sourceTargetTypes';
 import logger from '../util/logger';
+import { evalUnits } from '../util/evalUnits';
 
 const updateTransaction = (state: TransactionState, payload: Payload): TransactionState => {
   if (state.transactions) {
@@ -165,12 +166,15 @@ export default function transactionReducer(state: TransactionState, action: Tran
         estimatedFeeError: action.payload.estimatedFeeError,
         estimatedFeeLoading: action.payload.estimatedFeeLoading
       };
-    case TransactionActionTypes.SET_TRANSFER_AMOUNT:
+    case TransactionActionTypes.SET_TRANSFER_AMOUNT: {
+      const { transferAmount, chainDecimals } = action.payload;
+      const [actualValue, message] = evalUnits(transferAmount, chainDecimals);
       return {
         ...state,
-        transferAmount: action.payload.transferAmount,
-        transferAmountError: action.payload.transferAmountError
+        transferAmount: actualValue || null,
+        transferAmountError: message
       };
+    }
     case TransactionActionTypes.SET_PAYLOAD: {
       return {
         ...state,

@@ -16,7 +16,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { Box, makeStyles, TextField, Typography } from '@material-ui/core';
-import BN from 'bn.js';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import { TransactionActionCreators } from '../actions/transactionActions';
@@ -28,8 +27,8 @@ import useSendMessage from '../hooks/chain/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
 import { TokenSymbol } from './TokenSymbol';
 import Receiver from './Receiver';
-import { evalUnits } from '../util/evalUnits';
 import { Alert, ButtonSubmit } from '../components';
+import BN from 'bn.js';
 
 const useStyles = makeStyles((theme) => ({
   inputAmount: {
@@ -54,48 +53,43 @@ function Transfer() {
   const classes = useStyles();
   const [input, setInput] = useState<string>('0');
   const [isRunning, setIsRunning] = useState(false);
-  const [helperText, setHelperText] = useState('');
   const [amountNotCorrect, setAmountNotCorrect] = useState<boolean>(false);
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   const { account } = useAccounts();
 
-  const { estimatedFee, transferAmount, receiverAddress, estimatedFeeLoading } = useTransactionContext();
-  const { api, isApiReady } = sourceChainDetails.apiConnection;
+  const {
+    estimatedFee,
+    transferAmount,
+    transferAmountError,
+    receiverAddress,
+    estimatedFeeLoading
+  } = useTransactionContext();
+  const { api } = sourceChainDetails.apiConnection;
   const balance = useBalance(api, account?.address || '');
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
-    input: transferAmount ?? '',
+    input: transferAmount?.toString() ?? '',
     isRunning,
     setIsRunning,
     type: TransactionTypes.TRANSFER
   });
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(event.target.value);
-    const [actualValue, message] = evalUnits(event.target.value);
-    setHelperText(message);
+    const actualValue = event.target.value;
+    setInput(actualValue);
     dispatchTransaction(
-      TransactionActionCreators.setTransferAmount(null, actualValue !== null ? actualValue?.toString() : '')
+      TransactionActionCreators.setTransferAmount(
+        actualValue !== null ? actualValue?.toString() : '',
+        api.registry.chainDecimals[0]
+      )
     );
   };
 
   useEffect((): void => {
-    isRunning && dispatchTransaction(TransactionActionCreators.setTransferAmount(null, ''));
-  }, [dispatchTransaction, isRunning]);
-
-  // To extract estimated fee logic to specific component. Issue #171
-  useEffect((): void => {
     estimatedFee &&
       transferAmount &&
-      setAmountNotCorrect(
-        new BN(balance.free)
-          // TODO (nik): EstimatedFee should align with base unit token
-          // (see github issue https://github.com/paritytech/parity-bridges-ui/issues/210)
-          .sub(new BN(parseFloat(transferAmount || '0') * 10 ** api.registry.chainDecimals[0]))
-          .add(new BN(estimatedFee))
-          .isNeg()
-      );
-  }, [transferAmount, estimatedFee, balance, isApiReady, api.registry.chainDecimals]);
+      setAmountNotCorrect(new BN(balance.free).sub(transferAmount).add(new BN(estimatedFee)).isNeg());
+  }, [transferAmount, estimatedFee, api.registry.chainDecimals, balance.free]);
 
   return (
     <>
@@ -108,7 +102,7 @@ function Transfer() {
           className={classes.inputAmount}
           fullWidth
           variant="outlined"
-          helperText={helperText}
+          helperText={transferAmountError || ''}
           InputProps={{
             endAdornment: <TokenSymbol position="start" />
           }}

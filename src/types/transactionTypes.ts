@@ -16,6 +16,7 @@
 
 import { TransactionActionTypes } from '../actions/transactionActions';
 import { ChainState } from './sourceTargetTypes';
+import BN from 'bn.js';
 
 export interface Payload {
   [propName: string]: any;
@@ -52,7 +53,7 @@ export interface TransactionStatusType extends UpdatedTransactionStatusType {
   status: TransactionStatusEnum;
 }
 export interface TransactionState {
-  transferAmount: string | null;
+  transferAmount: BN | null;
   transferAmountError: string | null;
   estimatedFee: string | null;
   estimatedFeeError: string | null;
