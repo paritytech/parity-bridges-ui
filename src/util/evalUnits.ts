@@ -19,6 +19,14 @@ import BN from 'bn.js';
 const getSiValue = (si: number): BN => new BN(10).pow(new BN(si));
 
 const si = [
+  { value: getSiValue(24), symbol: 'y' },
+  { value: getSiValue(21), symbol: 'z' },
+  { value: getSiValue(18), symbol: 'a' },
+  { value: getSiValue(15), symbol: 'f' },
+  { value: getSiValue(12), symbol: 'p' },
+  { value: getSiValue(9), symbol: 'n' },
+  { value: getSiValue(6), symbol: 'μ' },
+  { value: getSiValue(3), symbol: 'm' },
   { value: new BN(1), symbol: '' },
   { value: getSiValue(3), symbol: 'k' },
   { value: getSiValue(6), symbol: 'M' },
@@ -32,8 +40,8 @@ const si = [
 
 const floats = /^[+]?[0-9]*[.,]{1}[0-9]*$/;
 const ints = /^[+]?[0-9]+$/;
-const alphaFloats = /^[+]?[0-9]*[.,]{1}[0-9]*[k, M, G, T, P, E, Y, Z]{1}$/;
-const alphaInts = /^[+]?[0-9]*[k, M, G, T, P, E, Y, Z]{1}$/;
+const alphaFloats = /^[+]?[0-9]*[.,]{1}[0-9]*[y, z, a, f, p, n ,μ, m, k, M, G, T, P, E, Y, Z]{1}$/;
+const alphaInts = /^[+]?[0-9]*[y, z, a, f, p, n ,μ, m, k, M, G, T, P, E, Y, Z]{1}$/;
 
 export enum EvalMessages {
   GIBBERISH = 'Input is not correct. Use numbers, floats or expression (e.g. 1k, 1.3m)',
@@ -69,14 +77,24 @@ export function evalUnits(input: string, chainDecimals: number): [BN | null, str
       const [decPart, fracPart] = numberStr.replace(/[,]/g, '.').split('.');
       const decimals = fracPart.length;
       const exp = new BN(10).pow(new BN(decimals));
-      numeric = new BN(new BN(decPart).mul(exp).add(new BN(fracPart)))
-        .mul(siVal.value)
-        .mul(new BN(10).pow(new BN(chainDecimals)))
-        .div(exp);
+      if (symbol.toUpperCase() === symbol || symbol === 'k') {
+        numeric = new BN(new BN(decPart).mul(exp).add(new BN(fracPart)))
+          .mul(new BN(10).pow(new BN(chainDecimals)))
+          .mul(siVal.value)
+          .div(exp);
+      } else {
+        numeric = new BN(new BN(decPart).mul(exp).add(new BN(fracPart)))
+          .mul(new BN(10).pow(new BN(chainDecimals)))
+          .div(siVal.value)
+          .div(exp);
+      }
     } else {
-      numeric = new BN(new BN(numberStr).mul(new BN(10).pow(new BN(chainDecimals)))).mul(siVal.value);
+      if (symbol.toUpperCase() === symbol || symbol === 'k') {
+        numeric = new BN(new BN(numberStr).mul(new BN(10).pow(new BN(chainDecimals)))).mul(siVal.value);
+      } else {
+        numeric = new BN(new BN(numberStr).mul(new BN(10).pow(new BN(chainDecimals)))).div(siVal.value);
+      }
     }
-
     if (numeric.eq(new BN(0))) {
       return [null, EvalMessages.ZERO];
     }
