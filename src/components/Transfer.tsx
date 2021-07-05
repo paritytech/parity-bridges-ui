@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Box, makeStyles, TextField, Typography } from '@material-ui/core';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
@@ -28,7 +28,6 @@ import { TransactionTypes } from '../types/transactionTypes';
 import { TokenSymbol } from './TokenSymbol';
 import Receiver from './Receiver';
 import { Alert, ButtonSubmit } from '../components';
-import BN from 'bn.js';
 
 const useStyles = makeStyles((theme) => ({
   inputAmount: {
@@ -53,7 +52,6 @@ function Transfer() {
   const classes = useStyles();
   const [input, setInput] = useState<string>('0');
   const [isRunning, setIsRunning] = useState(false);
-  const [amountNotCorrect, setAmountNotCorrect] = useState<boolean>(false);
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   const { account } = useAccounts();
 
@@ -80,16 +78,11 @@ function Transfer() {
     dispatchTransaction(
       TransactionActionCreators.setTransferAmount(
         actualValue !== null ? actualValue?.toString() : '',
+        balance.free,
         api.registry.chainDecimals[0]
       )
     );
   };
-
-  useEffect((): void => {
-    estimatedFee &&
-      transferAmount &&
-      setAmountNotCorrect(new BN(balance.free).sub(transferAmount).add(new BN(estimatedFee)).isNeg());
-  }, [transferAmount, estimatedFee, api.registry.chainDecimals, balance.free]);
 
   return (
     <>
@@ -109,10 +102,10 @@ function Transfer() {
         />
       </Box>
       <Receiver />
-      <ButtonSubmit disabled={isButtonDisabled() || amountNotCorrect} onClick={sendLaneMessage}>
+      <ButtonSubmit disabled={isButtonDisabled() || !!transferAmountError} onClick={sendLaneMessage}>
         Send bridge transfer from {sourceChainDetails.chain} to {targetChainDetails.chain}
       </ButtonSubmit>
-      {amountNotCorrect ? (
+      {transferAmountError === 'Not enough funds for this transaction.' ? (
         <Alert severity="error">
           Account&apos;s amount (including fees: {estimatedFee}) is not enough for this transaction.
         </Alert>

@@ -27,6 +27,7 @@ import {
 import { ChainState } from '../types/sourceTargetTypes';
 import logger from '../util/logger';
 import { evalUnits } from '../util/evalUnits';
+import BN from 'bn.js';
 
 const updateTransaction = (state: TransactionState, payload: Payload): TransactionState => {
   if (state.transactions) {
@@ -167,8 +168,16 @@ export default function transactionReducer(state: TransactionState, action: Tran
         estimatedFeeLoading: action.payload.estimatedFeeLoading
       };
     case TransactionActionTypes.SET_TRANSFER_AMOUNT: {
-      const { transferAmount, chainDecimals } = action.payload;
-      const [actualValue, message] = evalUnits(transferAmount, chainDecimals);
+      const { transferAmount, balance, chainDecimals } = action.payload;
+      let [actualValue, message] = evalUnits(transferAmount, chainDecimals);
+      if (
+        state.estimatedFee &&
+        actualValue &&
+        new BN(balance).sub(actualValue).add(new BN(state.estimatedFee)).isNeg()
+      ) {
+        actualValue = null;
+        message = 'Not enough funds for this transaction.';
+      }
       return {
         ...state,
         transferAmount: actualValue || null,
