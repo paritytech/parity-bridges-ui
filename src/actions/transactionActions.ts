@@ -36,9 +36,9 @@ enum TransactionActionTypes {
   RESET = 'RESET'
 }
 
-const setTransferAmount = (transferAmount: string | null, balance?: BN, chainDecimals?: number) => {
+const setTransferAmount = (transferAmount: string | null, chainDecimals?: number) => {
   return {
-    payload: { transferAmount, balance, chainDecimals },
+    payload: { transferAmount, chainDecimals },
     type: TransactionActionTypes.SET_TRANSFER_AMOUNT
   };
 };

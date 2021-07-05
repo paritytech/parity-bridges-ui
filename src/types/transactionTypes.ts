@@ -93,6 +93,14 @@ export enum TransactionTypes {
   REMARK = 'REMARK'
 }
 
+export enum EvalMessages {
+  GIBBERISH = 'Input is not correct. Use numbers, floats or expression (e.g. 1k, 1.3m)',
+  ZERO = 'You cannot send 0 funds',
+  SUCCESS = '',
+  SYMBOL_ERROR = 'Provided symbol is not correct',
+  GENERAL_ERROR = 'Check your input. Something went wrong'
+}
+
 export interface Step {
   id: string;
   chainType: string;

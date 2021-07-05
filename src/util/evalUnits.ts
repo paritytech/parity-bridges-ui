@@ -15,18 +15,19 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import BN from 'bn.js';
+import { EvalMessages } from '../types/transactionTypes';
 
 const getSiValue = (si: number): BN => new BN(10).pow(new BN(si));
 
 const si = [
-  { value: getSiValue(24), symbol: 'y' },
-  { value: getSiValue(21), symbol: 'z' },
-  { value: getSiValue(18), symbol: 'a' },
-  { value: getSiValue(15), symbol: 'f' },
-  { value: getSiValue(12), symbol: 'p' },
-  { value: getSiValue(9), symbol: 'n' },
-  { value: getSiValue(6), symbol: 'μ' },
-  { value: getSiValue(3), symbol: 'm' },
+  { value: getSiValue(24), symbol: 'y', isMil: true },
+  { value: getSiValue(21), symbol: 'z', isMil: true },
+  { value: getSiValue(18), symbol: 'a', isMil: true },
+  { value: getSiValue(15), symbol: 'f', isMil: true },
+  { value: getSiValue(12), symbol: 'p', isMil: true },
+  { value: getSiValue(9), symbol: 'n', isMil: true },
+  { value: getSiValue(6), symbol: 'μ', isMil: true },
+  { value: getSiValue(3), symbol: 'm', isMil: true },
   { value: new BN(1), symbol: '' },
   { value: getSiValue(3), symbol: 'k' },
   { value: getSiValue(6), symbol: 'M' },
@@ -42,18 +43,10 @@ const allowedSymbols = si
   .map((s) => s.symbol)
   .join(', ')
   .replace(', ,', ',');
-const floats = '^[+]?[0-9]*[.,]{1}[0-9]*$';
-const ints = '^[+]?[0-9]+$';
-const alphaFloats = '^[+]?[0-9]*[.,]{1}[0-9]*[' + allowedSymbols + ']{1}$';
-const alphaInts = '^[+]?[0-9]*[' + allowedSymbols + ']{1}$';
-
-export enum EvalMessages {
-  GIBBERISH = 'Input is not correct. Use numbers, floats or expression (e.g. 1k, 1.3m)',
-  ZERO = 'You cannot send 0 funds',
-  SUCCESS = '',
-  SYMBOL_ERROR = 'Provided symbol is not correct',
-  GENERAL_ERROR = 'Check your input. Something went wrong'
-}
+const floats = new RegExp('^[+]?[0-9]*[.,]{1}[0-9]*$');
+const ints = new RegExp('^[+]?[0-9]+$');
+const alphaFloats = new RegExp('^[+]?[0-9]*[.,]{1}[0-9]*[' + allowedSymbols + ']{1}$');
+const alphaInts = new RegExp('^[+]?[0-9]*[' + allowedSymbols + ']{1}$');
 
 /**
  * A function that identifes integer/float(comma or dot)/expressions (such as 1k)
@@ -66,12 +59,7 @@ export enum EvalMessages {
 export function evalUnits(input: string, chainDecimals: number): [BN | null, string] {
   //sanitize input to remove + char if exists
   input = input && input.replace('+', '');
-  if (
-    !new RegExp(floats).test(input) &&
-    !new RegExp(ints).test(input) &&
-    !new RegExp(alphaInts).test(input) &&
-    !new RegExp(alphaFloats).test(input)
-  ) {
+  if (!floats.test(input) && !ints.test(input) && !alphaInts.test(input) && !alphaFloats.test(input)) {
     return [null, EvalMessages.GIBBERISH];
   }
   // find the character from the alphanumerics
@@ -80,34 +68,24 @@ export function evalUnits(input: string, chainDecimals: number): [BN | null, str
   const siVal = si.find((s) => s.symbol === symbol);
   const numberStr = input.replace(symbol, '').replace(',', '.');
   let numeric: BN = new BN(0);
-  if (siVal) {
-    const containDecimal = input.replace(/[,]/g, '.').includes('.');
-    if (containDecimal) {
-      const [decPart, fracPart] = numberStr.replace(/[,]/g, '.').split('.');
-      const decimals = fracPart.length;
-      const exp = new BN(10).pow(new BN(decimals));
-      if (symbol.toUpperCase() === symbol || symbol === 'k') {
-        numeric = new BN(new BN(decPart).mul(exp).add(new BN(fracPart)))
-          .mul(new BN(10).pow(new BN(chainDecimals)))
-          .mul(siVal.value)
-          .div(exp);
-      } else {
-        numeric = new BN(new BN(decPart).mul(exp).add(new BN(fracPart)))
-          .mul(new BN(10).pow(new BN(chainDecimals)))
-          .div(siVal.value)
-          .div(exp);
-      }
-    } else {
-      if (symbol.toUpperCase() === symbol || symbol === 'k') {
-        numeric = new BN(new BN(numberStr).mul(new BN(10).pow(new BN(chainDecimals)))).mul(siVal.value);
-      } else {
-        numeric = new BN(new BN(numberStr).mul(new BN(10).pow(new BN(chainDecimals)))).div(siVal.value);
-      }
-    }
-    if (numeric.eq(new BN(0))) {
-      return [null, EvalMessages.ZERO];
-    }
-    return [numeric, EvalMessages.SUCCESS];
+
+  if (!siVal) {
+    return [null, EvalMessages.SYMBOL_ERROR];
   }
-  return [null, EvalMessages.SYMBOL_ERROR];
+  const decimalsBn = new BN(10).pow(new BN(chainDecimals));
+  const containDecimal = numberStr.includes('.');
+  const [decPart, fracPart] = numberStr.split('.');
+  const fracDecimals = fracPart?.length || 0;
+  const fracExp = new BN(10).pow(new BN(fracDecimals));
+  numeric = containDecimal ? new BN(new BN(decPart).mul(fracExp).add(new BN(fracPart))) : new BN(new BN(numberStr));
+  numeric = numeric.mul(decimalsBn);
+  if (containDecimal) {
+    numeric = siVal.isMil ? numeric.div(siVal.value).div(fracExp) : numeric.mul(siVal.value).div(fracExp);
+  } else {
+    numeric = siVal.isMil ? numeric.div(siVal.value) : numeric.mul(siVal.value);
+  }
+  if (numeric.eq(new BN(0))) {
+    return [null, EvalMessages.ZERO];
+  }
+  return [numeric, EvalMessages.SUCCESS];
 }

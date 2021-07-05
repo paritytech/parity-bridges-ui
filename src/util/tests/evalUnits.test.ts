@@ -14,7 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { evalUnits, EvalMessages } from '../evalUnits';
+import { EvalMessages } from '../../types/transactionTypes';
+import { evalUnits } from '../evalUnits';
 
 const defaultChainDecimals = 9;
 
