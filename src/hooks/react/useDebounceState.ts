@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import debounce from 'lodash/debounce';
 
 type Output<T> = [T, T, (value: T) => void];
@@ -29,11 +29,7 @@ export const useDebounceState = <T>({ initialValue, wait = 500, transformCallbac
   const [value, setValue] = useState(initialValue);
   const [debounced, setDebounced] = useState(value);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const setDebouncedCallback = useCallback(
-    debounce((value) => setDebounced(value), wait || 500),
-    []
-  );
+  const setDebouncedCallback = useMemo(() => debounce((value) => setDebounced(value), wait), [wait]);
 
   const setValueCallback = useCallback(
     (value: T) => {
