@@ -44,15 +44,33 @@ describe('Tests suite - evalUnits', () => {
     expect(msg).toBe(EvalMessages.SUCCESS);
   });
 
-  it('Should accept as input an float expression with dot as symbol (1.2k)', () => {
+  it('Should accept as input an float expression with dot as dec separator (1.2k)', () => {
     const [actualResult, msg] = evalUnits('1.2k', defaultChainDecimals);
     expect(actualResult?.toString()).toBe('1200000000000');
     expect(msg).toBe(EvalMessages.SUCCESS);
   });
 
-  it('Should accept as input an float expression with commas as symbol (1,2k)', () => {
+  it('Should accept as input an float expression with comma as dec separator (1,2k)', () => {
     const [actualResult, msg] = evalUnits('1,2k', defaultChainDecimals);
     expect(actualResult?.toString()).toBe('1200000000000');
+    expect(msg).toBe(EvalMessages.SUCCESS);
+  });
+
+  it('Should accept as input an float expression with mili symbol (1.2m)', () => {
+    const [actualResult, msg] = evalUnits('1.2m', defaultChainDecimals);
+    expect(actualResult?.toString()).toBe('1200000');
+    expect(msg).toBe(EvalMessages.SUCCESS);
+  });
+
+  it('Should accept as input an float expression with mili symbol (0.002μ)', () => {
+    const [actualResult, msg] = evalUnits('0.002μ', defaultChainDecimals);
+    expect(actualResult?.toString()).toBe('2');
+    expect(msg).toBe(EvalMessages.SUCCESS);
+  });
+
+  it('Should accept as input an float expression with mili symbol (13000000f)', () => {
+    const [actualResult, msg] = evalUnits('13000000f', defaultChainDecimals);
+    expect(actualResult?.toString()).toBe('13');
     expect(msg).toBe(EvalMessages.SUCCESS);
   });
 
