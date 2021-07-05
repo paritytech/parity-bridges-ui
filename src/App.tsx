@@ -29,7 +29,7 @@ import { SubscriptionsContextProvider } from './contexts/SubscriptionsContextPro
 import { ApiCallsContextProvider } from './contexts/ApiCallsContextProvider';
 import { useConnections } from './hooks/connections/useConnections';
 import Main from './screens/Main';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 const [connectionDetails1, connectionDetails2] = substrateProviders();
 
