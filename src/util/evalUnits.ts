@@ -38,10 +38,14 @@ const si = [
   { value: getSiValue(24), symbol: 'Z' }
 ];
 
-const floats = /^[+]?[0-9]*[.,]{1}[0-9]*$/;
-const ints = /^[+]?[0-9]+$/;
-const alphaFloats = /^[+]?[0-9]*[.,]{1}[0-9]*[y, z, a, f, p, n ,μ, m, k, M, G, T, P, E, Y, Z]{1}$/;
-const alphaInts = /^[+]?[0-9]*[y, z, a, f, p, n ,μ, m, k, M, G, T, P, E, Y, Z]{1}$/;
+const allowedSymbols = si
+  .map((s) => s.symbol)
+  .join(', ')
+  .replace(', ,', ',');
+const floats = '^[+]?[0-9]*[.,]{1}[0-9]*$';
+const ints = '^[+]?[0-9]+$';
+const alphaFloats = '^[+]?[0-9]*[.,]{1}[0-9]*[' + allowedSymbols + ']{1}$';
+const alphaInts = '^[+]?[0-9]*[' + allowedSymbols + ']{1}$';
 
 export enum EvalMessages {
   GIBBERISH = 'Input is not correct. Use numbers, floats or expression (e.g. 1k, 1.3m)',
@@ -62,7 +66,12 @@ export enum EvalMessages {
 export function evalUnits(input: string, chainDecimals: number): [BN | null, string] {
   //sanitize input to remove + char if exists
   input = input && input.replace('+', '');
-  if (!floats.test(input) && !ints.test(input) && !alphaInts.test(input) && !alphaFloats.test(input)) {
+  if (
+    !new RegExp(floats).test(input) &&
+    !new RegExp(ints).test(input) &&
+    !new RegExp(alphaInts).test(input) &&
+    !new RegExp(alphaFloats).test(input)
+  ) {
     return [null, EvalMessages.GIBBERISH];
   }
   // find the character from the alphanumerics
