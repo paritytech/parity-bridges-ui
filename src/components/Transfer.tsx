@@ -48,7 +48,6 @@ const useStyles = makeStyles((theme) => ({
 
 function Transfer() {
   const classes = useStyles();
-  const [isRunning, setIsRunning] = useState(false);
   const [helperText, setHelperText] = useState('');
   const [transferInput, setTransferInput] = useState<string>('');
   const [actualInput, setActualInput] = useState<number | null>();
@@ -57,14 +56,12 @@ function Transfer() {
   const { account } = useAccounts();
 
   const planck = 10 ** targetChainDetails.apiConnection.api.registry.chainDecimals[0];
-  const { estimatedFee, receiverAddress, estimatedFeeLoading } = useTransactionContext();
+  const { estimatedFee, receiverAddress, estimatedFeeLoading, transactionRunning } = useTransactionContext();
   const { api, isApiReady } = sourceChainDetails.apiConnection;
   const balance = useBalance(api, account?.address || '');
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
     input: actualInput?.toString() ?? '',
-    isRunning,
-    setIsRunning,
     type: TransactionTypes.TRANSFER
   });
 
@@ -78,8 +75,8 @@ function Transfer() {
   };
 
   useEffect((): void => {
-    isRunning && setTransferInput('');
-  }, [isRunning]);
+    transactionRunning && setTransferInput('');
+  }, [transactionRunning]);
 
   // To extract estimated fee logic to specific component. Issue #171
   useEffect((): void => {

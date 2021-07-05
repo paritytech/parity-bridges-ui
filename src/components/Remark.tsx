@@ -23,7 +23,6 @@ import useSendMessage from '../hooks/chain/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
 
 const Remark = () => {
-  const [isRunning, setIsRunning] = useState(false);
   const [remarkInput, setRemarkInput] = useState('0x');
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
@@ -31,8 +30,6 @@ const Remark = () => {
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
     input: remarkInput,
-    isRunning,
-    setIsRunning,
     type: TransactionTypes.REMARK
   });
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {

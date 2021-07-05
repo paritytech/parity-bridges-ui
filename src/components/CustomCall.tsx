@@ -24,7 +24,6 @@ import useApiCalls from '../hooks/api/useApiCalls';
 import { TransactionTypes } from '../types/transactionTypes';
 
 const CustomCall = () => {
-  const [isRunning, setIsRunning] = useState(false);
   const [decoded, setDecoded] = useState<string | null>();
 
   const [customCallInput, setCustomCallInput] = useState('0x');
@@ -40,9 +39,7 @@ const CustomCall = () => {
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
     input: customCallInput,
-    isRunning,
     isValidCall: Boolean(decoded),
-    setIsRunning,
     type: TransactionTypes.CUSTOM,
     weightInput
   });
