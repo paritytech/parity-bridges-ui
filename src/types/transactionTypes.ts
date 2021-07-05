@@ -75,7 +75,6 @@ export interface TransactionState {
   transactions: Array<TransactionStatusType>;
   transactionDisplayPayload: TransactionDisplayPayload;
   transactionRunning: boolean;
-  transactionReadyToExecute: boolean;
   addressValidationError: string | null;
   showBalance: boolean;
   formatFound: string | null;
