@@ -22,13 +22,11 @@ import {
   TransactionsActionType,
   TransactionState,
   TransactionStatusType,
-  ReceiverPayload,
-  EvalMessages
+  ReceiverPayload
 } from '../types/transactionTypes';
 import { ChainState } from '../types/sourceTargetTypes';
 import logger from '../util/logger';
 import { evalUnits } from '../util/evalUnits';
-import BN from 'bn.js';
 
 const updateTransaction = (state: TransactionState, payload: Payload): TransactionState => {
   if (state.transactions) {

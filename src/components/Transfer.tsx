@@ -24,7 +24,7 @@ import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 import useAccounts from '../hooks/accounts/useAccounts';
 import useBalance from '../hooks/subscriptions/useBalance';
 import useSendMessage from '../hooks/chain/useSendMessage';
-import { EvalMessages, TransactionTypes } from '../types/transactionTypes';
+import { TransactionTypes } from '../types/transactionTypes';
 import { TokenSymbol } from './TokenSymbol';
 import Receiver from './Receiver';
 import { Alert, ButtonSubmit } from '../components';
