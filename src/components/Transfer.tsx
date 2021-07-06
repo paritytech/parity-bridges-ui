@@ -52,7 +52,6 @@ function Transfer() {
   const { dispatchTransaction } = useUpdateTransactionContext();
   const classes = useStyles();
   const [input, setInput] = useState<string>('0');
-  const [isRunning, setIsRunning] = useState(false);
   const [amountNotCorrect, setAmountNotCorrect] = useState<boolean>(false);
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   const { account } = useAccounts();
@@ -62,15 +61,14 @@ function Transfer() {
     transferAmount,
     transferAmountError,
     receiverAddress,
-    estimatedFeeLoading
+    estimatedFeeLoading,
+    transactionRunning
   } = useTransactionContext();
   const { api } = sourceChainDetails.apiConnection;
   const balance = useBalance(api, account?.address || '');
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
     input: transferAmount?.toString() ?? '',
-    isRunning,
-    setIsRunning,
     type: TransactionTypes.TRANSFER
   });
 
@@ -84,6 +82,10 @@ function Transfer() {
       )
     );
   };
+
+  useEffect((): void => {
+    transactionRunning && setInput('');
+  }, [transactionRunning]);
 
   useEffect((): void => {
     estimatedFee &&

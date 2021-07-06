@@ -77,6 +77,7 @@ export interface TransactionState {
   genericReceiverAccount: string | null;
   transactions: Array<TransactionStatusType>;
   transactionDisplayPayload: TransactionDisplayPayload;
+  transactionRunning: boolean;
   addressValidationError: string | null;
   showBalance: boolean;
   formatFound: string | null;

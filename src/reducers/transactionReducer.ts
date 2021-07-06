@@ -190,6 +190,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
         estimatedFeeError: null,
         genericReceiverAccount: null,
         receiverAddress: null,
+        transferAmount: null,
+        transferAmountError: null,
         unformattedReceiverAddress: null,
         addressValidationError: null,
         payload: null,
@@ -205,6 +207,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return updateTransaction(state, action.payload);
     case TransactionActionTypes.SET_RECEIVER:
       return setReceiver(state, action.payload.receiverPayload);
+    case TransactionActionTypes.SET_TRANSACTION_RUNNING:
+      return { ...state, transactionRunning: action.payload.transactionRunning };
     default:
       throw new Error(`Unknown type: ${action.type}`);
   }

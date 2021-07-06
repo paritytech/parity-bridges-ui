@@ -56,6 +56,7 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     genericReceiverAccount: null,
     transactions: [],
     transactionDisplayPayload: {} as TransactionDisplayPayload,
+    transactionRunning: false,
     addressValidationError: null,
     showBalance: false,
     formatFound: null,
