@@ -16,6 +16,7 @@
 
 import { TransactionActionTypes } from '../actions/transactionActions';
 import { ChainState } from './sourceTargetTypes';
+import BN from 'bn.js';
 
 export interface Payload {
   [propName: string]: any;
@@ -65,6 +66,8 @@ export interface TransactionStatusType extends UpdatedTransactionStatusType {
 }
 
 export interface TransactionState {
+  transferAmount: BN | null;
+  transferAmountError: string | null;
   estimatedFee: string | null;
   estimatedFeeError: string | null;
   estimatedFeeLoading: boolean;
@@ -88,6 +91,14 @@ export enum TransactionTypes {
   CUSTOM = 'CUSTOM',
   TRANSFER = 'TRANSFER',
   REMARK = 'REMARK'
+}
+
+export enum EvalMessages {
+  GIBBERISH = 'Input is not correct. Use numbers, floats or expression (e.g. 1k, 1.3m)',
+  ZERO = 'You cannot send 0 funds',
+  SUCCESS = '',
+  SYMBOL_ERROR = 'Provided symbol is not correct',
+  GENERAL_ERROR = 'Check your input. Something went wrong'
 }
 
 export interface Step {

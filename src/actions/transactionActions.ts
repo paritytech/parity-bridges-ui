@@ -22,6 +22,7 @@ import {
 } from '../types/transactionTypes';
 
 enum TransactionActionTypes {
+  SET_TRANSFER_AMOUNT = 'SET_TRANSFER_AMOUNT',
   SET_ESTIMATED_FEE = 'SET_ESTIMATED_FEE',
   SET_PAYLOAD = 'SET_PAYLOAD',
   SET_PAYLOAD_ERROR = 'SET_PAYLOAD_ERROR',
@@ -33,6 +34,13 @@ enum TransactionActionTypes {
   SET_TRANSACTION_COMPLETED = 'SET_TRANSACTION_COMPLETED',
   RESET = 'RESET'
 }
+
+const setTransferAmount = (transferAmount: string | null, chainDecimals?: number) => {
+  return {
+    payload: { transferAmount, chainDecimals },
+    type: TransactionActionTypes.SET_TRANSFER_AMOUNT
+  };
+};
 
 const setEstimatedFee = (
   estimatedFeeError: string | null,
@@ -80,6 +88,7 @@ const reset = () => ({
 });
 
 const TransactionActionCreators = {
+  setTransferAmount,
   setEstimatedFee,
   createTransactionStatus,
   setReceiverAddress,

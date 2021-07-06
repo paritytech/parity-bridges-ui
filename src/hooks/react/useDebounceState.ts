@@ -14,7 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useEffect, Dispatch } from 'react';
+import usePrevious from './usePrevious';
 import debounce from 'lodash/debounce';
 
 type Output<T> = [T, T, (value: T) => void];
@@ -23,11 +24,18 @@ interface Input<T> {
   initialValue: T;
   wait?: number;
   transformCallback?: (value: T) => void;
+  dispatchCallback?: Dispatch<T>;
 }
 
-export const useDebounceState = <T>({ initialValue, wait = 500, transformCallback }: Input<T>): Output<T> => {
+export const useDebounceState = <T>({
+  initialValue,
+  wait = 500,
+  transformCallback,
+  dispatchCallback
+}: Input<T>): Output<T> => {
   const [value, setValue] = useState(initialValue);
   const [debounced, setDebounced] = useState(value);
+  const previousDebounced = usePrevious(debounced);
 
   const setDebouncedCallback = useMemo(() => debounce((value) => setDebounced(value), wait), [wait]);
 
@@ -43,6 +51,12 @@ export const useDebounceState = <T>({ initialValue, wait = 500, transformCallbac
     },
     [setDebouncedCallback, transformCallback]
   );
+
+  useEffect(() => {
+    if (dispatchCallback && previousDebounced !== debounced) {
+      dispatchCallback(debounced);
+    }
+  }, [debounced, dispatchCallback, previousDebounced]);
 
   return [value, debounced, setValueCallback];
 };
