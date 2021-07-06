@@ -14,19 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, makeStyles, TextField, Typography } from '@material-ui/core';
-import BN from 'bn.js';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
+import { TransactionActionCreators } from '../actions/transactionActions';
+import { useUpdateTransactionContext } from '../contexts/TransactionContext';
+
 import useAccounts from '../hooks/accounts/useAccounts';
 import useBalance from '../hooks/subscriptions/useBalance';
 import useSendMessage from '../hooks/chain/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
 import { TokenSymbol } from './TokenSymbol';
 import Receiver from './Receiver';
-import { evalUnits } from '../util/evalUnits';
 import { Alert, ButtonSubmit } from '../components';
+import BN from 'bn.js';
 
 const useStyles = makeStyles((theme) => ({
   inputAmount: {
@@ -47,46 +49,47 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Transfer() {
+  const { dispatchTransaction } = useUpdateTransactionContext();
   const classes = useStyles();
+  const [input, setInput] = useState<string>('0');
   const [isRunning, setIsRunning] = useState(false);
-  const [helperText, setHelperText] = useState('');
-  const [transferInput, setTransferInput] = useState<string>('');
-  const [actualInput, setActualInput] = useState<number | null>();
   const [amountNotCorrect, setAmountNotCorrect] = useState<boolean>(false);
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   const { account } = useAccounts();
 
-  const planck = 10 ** targetChainDetails.apiConnection.api.registry.chainDecimals[0];
-  const { estimatedFee, receiverAddress, estimatedFeeLoading } = useTransactionContext();
-  const { api, isApiReady } = sourceChainDetails.apiConnection;
+  const {
+    estimatedFee,
+    transferAmount,
+    transferAmountError,
+    receiverAddress,
+    estimatedFeeLoading
+  } = useTransactionContext();
+  const { api } = sourceChainDetails.apiConnection;
   const balance = useBalance(api, account?.address || '');
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
-    input: actualInput?.toString() ?? '',
+    input: transferAmount?.toString() ?? '',
     isRunning,
     setIsRunning,
     type: TransactionTypes.TRANSFER
   });
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.value) {
-      const [actualValue, message] = evalUnits(event.target.value);
-      setHelperText(message);
-      setActualInput(actualValue && actualValue * planck);
-    }
-    setTransferInput(event.target.value);
+    const actualValue = event.target.value;
+    setInput(actualValue);
+    dispatchTransaction(
+      TransactionActionCreators.setTransferAmount(
+        actualValue !== null ? actualValue?.toString() : '',
+        api.registry.chainDecimals[0]
+      )
+    );
   };
 
   useEffect((): void => {
-    isRunning && setTransferInput('');
-  }, [isRunning]);
-
-  // To extract estimated fee logic to specific component. Issue #171
-  useEffect((): void => {
     estimatedFee &&
-      actualInput &&
-      setAmountNotCorrect(new BN(balance.free).sub(new BN(actualInput).add(new BN(estimatedFee))).toNumber() < 0);
-  }, [actualInput, estimatedFee, balance, isApiReady]);
+      transferAmount &&
+      setAmountNotCorrect(new BN(balance.free).sub(transferAmount).add(new BN(estimatedFee)).isNeg());
+  }, [transferAmount, estimatedFee, api.registry.chainDecimals, balance.free]);
 
   return (
     <>
@@ -94,19 +97,19 @@ function Transfer() {
         <TextField
           id="test-amount-send"
           onChange={onChange}
-          value={transferInput}
+          value={input}
           placeholder={'0'}
           className={classes.inputAmount}
           fullWidth
           variant="outlined"
-          helperText={helperText}
+          helperText={transferAmountError || ''}
           InputProps={{
             endAdornment: <TokenSymbol position="start" />
           }}
         />
       </Box>
       <Receiver />
-      <ButtonSubmit disabled={isButtonDisabled() || amountNotCorrect} onClick={sendLaneMessage}>
+      <ButtonSubmit disabled={isButtonDisabled() || !!transferAmountError} onClick={sendLaneMessage}>
         Send bridge transfer from {sourceChainDetails.chain} to {targetChainDetails.chain}
       </ButtonSubmit>
       {amountNotCorrect ? (

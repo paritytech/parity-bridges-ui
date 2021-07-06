@@ -31,19 +31,12 @@ describe('transactionReducer', () => {
       const action = TransactionActionCreators.setReceiver(payload);
       const result = transactionReducer(state, action);
       expect(result).toEqual({
+        ...state,
         derivedReceiverAccount: '714dr3fW9PAKWMRn9Zcr6vtqn8gUEoKF7E2bDu5BniTMS4bo',
-        estimatedFee: null,
-        estimatedFeeError: null,
-        genericReceiverAccount: null,
         receiverAddress: '5rERgaT1Z8nM3et2epA5i1VtEBfp5wkhwHtVE8HK7BRbjAH2',
         unformattedReceiverAddress: '5rERgaT1Z8nM3et2epA5i1VtEBfp5wkhwHtVE8HK7BRbjAH2',
-        transactions: [],
-        addressValidationError: null,
-        payload: null,
-        payloadError: null,
         showBalance: true,
-        formatFound: 'chain1',
-        estimatedFeeLoading: false
+        formatFound: 'chain1'
       });
     });
 
@@ -52,19 +45,11 @@ describe('transactionReducer', () => {
       const action = TransactionActionCreators.setReceiver(payload);
       const result = transactionReducer(state, action);
       expect(result).toEqual({
-        derivedReceiverAccount: null,
-        estimatedFee: null,
-        estimatedFeeError: null,
-        genericReceiverAccount: null,
+        ...state,
         receiverAddress: '74GNQjmkcfstRftSQPJgMREchqHM56EvAUXRc266cZ1NYVW5',
         unformattedReceiverAddress: '74GNQjmkcfstRftSQPJgMREchqHM56EvAUXRc266cZ1NYVW5',
-        transactions: [],
-        addressValidationError: null,
-        payload: null,
-        payloadError: null,
         showBalance: true,
-        formatFound: 'chain2',
-        estimatedFeeLoading: false
+        formatFound: 'chain2'
       });
     });
 
@@ -73,19 +58,10 @@ describe('transactionReducer', () => {
       const action = TransactionActionCreators.setReceiver(payload);
       const result = transactionReducer(state, action);
       expect(result).toEqual({
-        derivedReceiverAccount: null,
-        estimatedFee: null,
-        estimatedFeeError: null,
+        ...state,
         genericReceiverAccount: '5H3ZryLmpNwrochemdVFTq9WMJW39NCo5HWFEwRtjbVtrThD',
-        receiverAddress: null,
         unformattedReceiverAddress: '5H3ZryLmpNwrochemdVFTq9WMJW39NCo5HWFEwRtjbVtrThD',
-        transactions: [],
-        addressValidationError: null,
-        payload: null,
-        payloadError: null,
-        showBalance: false,
-        formatFound: 'GENERIC',
-        estimatedFeeLoading: false
+        formatFound: 'GENERIC'
       });
     });
 
@@ -94,19 +70,10 @@ describe('transactionReducer', () => {
       const action = TransactionActionCreators.setReceiver(payload);
       const result = transactionReducer(state, action);
       expect(result).toEqual({
-        derivedReceiverAccount: null,
-        estimatedFee: null,
-        estimatedFeeError: null,
-        genericReceiverAccount: null,
-        receiverAddress: null,
+        ...state,
         unformattedReceiverAddress: 'invalid',
-        transactions: [],
         addressValidationError: 'Invalid address',
-        payload: null,
-        payloadError: null,
-        showBalance: false,
-        formatFound: 'INCORRECT_FORMAT',
-        estimatedFeeLoading: false
+        formatFound: 'INCORRECT_FORMAT'
       });
     });
 
@@ -115,19 +82,10 @@ describe('transactionReducer', () => {
       const action = TransactionActionCreators.setReceiver(payload);
       const result = transactionReducer(state, action);
       expect(result).toEqual({
-        derivedReceiverAccount: null,
-        estimatedFee: null,
-        estimatedFeeError: null,
-        genericReceiverAccount: null,
-        receiverAddress: null,
+        ...state,
         unformattedReceiverAddress: 'tH95Ew4kVD9VcwsyXaSdC74Noe3H8o6fJfnKhZezXHKHEcs',
-        transactions: [],
         addressValidationError: 'Unsupported address SS58 prefix: 8',
-        payload: null,
-        payloadError: null,
-        showBalance: false,
-        formatFound: '8',
-        estimatedFeeLoading: false
+        formatFound: '8'
       });
     });
   });
