@@ -190,6 +190,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
         estimatedFeeError: null,
         genericReceiverAccount: null,
         receiverAddress: null,
+        transferAmount: null,
+        transferAmountError: null,
         unformattedReceiverAddress: null,
         addressValidationError: null,
         payload: null,

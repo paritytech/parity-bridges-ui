@@ -61,7 +61,8 @@ function Transfer() {
     transferAmount,
     transferAmountError,
     receiverAddress,
-    estimatedFeeLoading
+    estimatedFeeLoading,
+    transactionRunning
   } = useTransactionContext();
   const { api } = sourceChainDetails.apiConnection;
   const balance = useBalance(api, account?.address || '');
@@ -81,6 +82,10 @@ function Transfer() {
       )
     );
   };
+
+  useEffect((): void => {
+    transactionRunning && setInput('');
+  }, [transactionRunning]);
 
   useEffect((): void => {
     estimatedFee &&
