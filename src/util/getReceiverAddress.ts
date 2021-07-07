@@ -47,10 +47,7 @@ const getReceiverAddress = ({ targetChainDetails, sourceChainDetails, receiverAd
 
   try {
     const decodedReceiverAddress = base58Decode(receiverAddress);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [isValidDerivedAcccount, _length, _ss58DecodedLength, ss58Decoded] = checkAddressChecksum(
-      decodedReceiverAddress
-    );
+    const [isValidDerivedAcccount, , , ss58Decoded] = checkAddressChecksum(decodedReceiverAddress);
 
     const formatFound = getChainBySS58Prefix(ss58Decoded) || ss58Decoded;
 
