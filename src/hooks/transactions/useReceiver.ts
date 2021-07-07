@@ -33,7 +33,6 @@ export default function useReceiver() {
   const onReceiverChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const unformattedReceiverAddress = event.target.value;
-      dispatchTransaction(TransactionActionCreators.reset());
       dispatchTransaction(
         TransactionActionCreators.setReceiver({
           unformattedReceiverAddress,
