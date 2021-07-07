@@ -15,7 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { EvalMessages } from '../../types/transactionTypes';
-import { evalUnits } from '../evalUnits';
+import { evalUnits, transformToBaseUnit } from '../evalUnits';
 
 const defaultChainDecimals = 9;
 
@@ -92,5 +92,12 @@ describe('Tests suite - evalUnits', () => {
     const [actualValue, msg] = evalUnits('1,23.445k', defaultChainDecimals);
     expect(actualValue).toBeFalsy;
     expect(msg).toBe(EvalMessages.GIBBERISH);
+  });
+});
+
+describe('Tests suite - transformToBaseUnit', () => {
+  it('Should accept a fee (275002583) and return to Base unit', () => {
+    const result = transformToBaseUnit('275002583', 9);
+    expect(result).toBe('0.275002583');
   });
 });
