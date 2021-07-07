@@ -91,7 +91,6 @@ function Transfer() {
     setInput(event.target.value);
   };
 
-  // To extract estimated fee logic to specific component. Issue #171
   useEffect((): void => {
     transactionRunning && setInput('');
   }, [setInput, transactionRunning]);
