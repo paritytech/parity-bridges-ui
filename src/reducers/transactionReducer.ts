@@ -105,8 +105,6 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
   const { chain: targetChain } = targetChainDetails;
   const { chain: sourceChain } = sourceChainDetails;
 
-  console.log('formatFound', formatFound);
-
   if (formatFound === INCORRECT_FORMAT) {
     return {
       ...state,
@@ -173,7 +171,6 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
 };
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
-  console.log(action);
   switch (action.type) {
     case TransactionActionTypes.SET_ESTIMATED_FEE:
       return {

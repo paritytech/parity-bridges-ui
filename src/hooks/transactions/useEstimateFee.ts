@@ -39,8 +39,6 @@ export const useEstimateFee = () => {
         return null;
       }
 
-      console.log('calculating fee');
-
       // Ignoring custom types missed for TS for now.
       // Need to apply: https://polkadot.js.org/docs/api/start/typescript.user
       // @ts-ignore

@@ -34,7 +34,7 @@ export const useDebounceState = <T>({
   dispatchCallback
 }: Input<T>): Output<T> => {
   const [value, setValue] = useState(initialValue);
-  const [debounced, setDebounced] = useState(value);
+  const [debounced, setDebounced] = useState(initialValue);
   const previousDebounced = usePrevious(debounced);
   const setDebouncedCallback = useMemo(() => debounce((value) => setDebounced(value), wait), [wait]);
 

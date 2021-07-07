@@ -30,7 +30,7 @@ interface Input {
   weight: number | null;
 }
 
-export const usePayload = ({ call, weight, input }: Input) => {
+export const usePayload = () => {
   const { createType } = useApiCallsContext();
   const {
     sourceChainDetails: { chain: sourceChain },
@@ -42,35 +42,29 @@ export const usePayload = ({ call, weight, input }: Input) => {
   const { receiverAddress } = useTransactionContext();
   const { account } = useAccountContext();
 
-  const payloadCallback = useCallback(() => {
-    if (!account || !call || !weight || !input || !receiverAddress) {
-      return null;
-    }
+  const payloadCallback = useCallback(
+    ({ call, weight }: Input) => {
+      if (!account || !call || !weight || !receiverAddress) {
+        return null;
+      }
 
-    const payload = {
-      call: compactAddLength(call!),
-      origin: {
-        SourceAccount: account!.addressRaw
-      },
-      spec_version: targetApi.consts.system.version.specVersion.toNumber(),
-      weight
-    };
+      const payload = {
+        call: compactAddLength(call!),
+        origin: {
+          SourceAccount: account!.addressRaw
+        },
+        spec_version: targetApi.consts.system.version.specVersion.toNumber(),
+        weight
+      };
 
-    // @ts-ignore
-    const payloadType = createType(sourceChain, 'OutboundPayload', payload);
-    logger.info(`OutboundPayload: ${JSON.stringify(payload)}`);
-    logger.info(`OutboundPayload.toHex(): ${payloadType.toHex()}`);
-    return payload;
-  }, [
-    account,
-    call,
-    createType,
-    input,
-    receiverAddress,
-    sourceChain,
-    targetApi.consts.system.version.specVersion,
-    weight
-  ]);
+      // @ts-ignore
+      const payloadType = createType(sourceChain, 'OutboundPayload', payload);
+      logger.info(`OutboundPayload: ${JSON.stringify(payload)}`);
+      logger.info(`OutboundPayload.toHex(): ${payloadType.toHex()}`);
+      return payload;
+    },
+    [account, createType, receiverAddress, sourceChain, targetApi.consts.system.version.specVersion]
+  );
 
   const dispatch = useCallback(
     (error: string | null, data: any) => dispatchTransaction(TransactionActionCreators.setPayload(error, data)),

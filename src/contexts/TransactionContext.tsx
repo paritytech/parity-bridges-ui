@@ -66,8 +66,6 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     payloadHex: null
   });
 
-  console.log(transaction);
-
   return (
     <TransactionContext.Provider value={transaction}>
       <UpdateTransactionContext.Provider value={{ dispatchTransaction }}>{children}</UpdateTransactionContext.Provider>

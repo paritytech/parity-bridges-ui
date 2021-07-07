@@ -38,9 +38,6 @@ interface Props {
 export default function useTransactionType({ input, type, weightInput }: Props): TransactionFunction {
   const { areApiReady } = useLoadingApi();
   const {
-    sourceChainDetails: {
-      apiConnection: { api: sourceApi }
-    },
     targetChainDetails: {
       apiConnection: { api: targetApi }
     }
@@ -93,7 +90,17 @@ export default function useTransactionType({ input, type, weightInput }: Props):
     if (areApiReady) {
       getValues();
     }
-  }, [account, areApiReady, input, receiverAddress, sourceApi, targetApi, transferAmount, type, weightInput]);
+  }, [
+    account,
+    areApiReady,
+    input,
+    receiverAddress,
+    targetApi.tx.balances,
+    targetApi.tx.system,
+    transferAmount,
+    type,
+    weightInput
+  ]);
 
   return values;
 }

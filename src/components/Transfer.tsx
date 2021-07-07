@@ -82,7 +82,7 @@ function Transfer() {
     [api.registry.chainDecimals, dispatchTransaction]
   );
 
-  const [currentInput, debounced, setInput] = useDebounceState({ initialValue: '', dispatchCallback });
+  const [currentInput, debounced, setInput] = useDebounceState({ initialValue: '0', dispatchCallback });
 
   useEffect((): void => {
     account && dispatchTransaction(TransactionActionCreators.setSenderAccount(account.address));
