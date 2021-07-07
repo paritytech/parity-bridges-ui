@@ -56,7 +56,7 @@ export default function useTransactionType({ input, type, weightInput }: Props):
       let weight: number = 0;
       let call: Uint8Array | null = null;
 
-      if (account && input) {
+      if (account) {
         switch (type) {
           case TransactionTypes.REMARK:
             call = (await targetApi.tx.system.remark(input)).toU8a();

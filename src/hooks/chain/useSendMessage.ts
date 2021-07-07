@@ -42,7 +42,7 @@ interface Props {
 }
 
 function useSendMessage({ isValidCall, input, type, weightInput }: Props) {
-  const { estimatedFee, receiverAddress, payload, transactionRunning, transferAmount } = useTransactionContext();
+  const { estimatedFee, receiverAddress, payload, transactionRunning } = useTransactionContext();
   const { dispatchTransaction } = useUpdateTransactionContext();
   const laneId = useLaneId();
   const sourceTargetDetails = useSourceTarget();
@@ -61,9 +61,10 @@ function useSendMessage({ isValidCall, input, type, weightInput }: Props) {
   const makeCall = useCallback(
     async (id: string) => {
       try {
-        if (!account || transactionRunning || !payload) {
+        if (!account || !payload) {
           return;
         }
+
         //@ts-ignore
         const payloadType = createType(sourceChain, 'OutboundPayload', payload);
         const payloadHex = payloadType.toHex();
@@ -81,7 +82,7 @@ function useSendMessage({ isValidCall, input, type, weightInput }: Props) {
           sourceAccount = account.address;
         }
 
-        const transactionDisplayPayload = getTransactionDisplayPayload({
+        const { transactionDisplayPayload } = getTransactionDisplayPayload({
           payload,
           account: account.address,
           createType,
@@ -165,7 +166,6 @@ function useSendMessage({ isValidCall, input, type, weightInput }: Props) {
       laneId,
       payload,
       receiverAddress,
-      transactionRunning,
       sourceApi.rpc.chain,
       sourceApi.tx,
       sourceChain,
@@ -176,13 +176,10 @@ function useSendMessage({ isValidCall, input, type, weightInput }: Props) {
   );
 
   const sendLaneMessage = useCallback(() => {
-    if (!account || transactionRunning) {
-      return;
-    }
     const id = moment().format('x');
     dispatchTransaction(TransactionActionCreators.setTransactionRunning(true));
     return makeCall(id);
-  }, [account, transactionRunning, dispatchTransaction, makeCall]);
+  }, [dispatchTransaction, makeCall]);
 
   const { areApiReady } = useLoadingApi();
 
@@ -191,26 +188,13 @@ function useSendMessage({ isValidCall, input, type, weightInput }: Props) {
       case TransactionTypes.REMARK:
         return transactionRunning || !account || !areApiReady;
         break;
-      case TransactionTypes.TRANSFER:
-        return transactionRunning || !receiverAddress || !transferAmount || !account || !areApiReady;
-        break;
       case TransactionTypes.CUSTOM:
         return transactionRunning || !account || !input || !weightInput || !isValidCall || !areApiReady;
         break;
       default:
         throw new Error(`Unknown type: ${type}`);
     }
-  }, [
-    transactionRunning,
-    receiverAddress,
-    input,
-    account,
-    areApiReady,
-    type,
-    transferAmount,
-    weightInput,
-    isValidCall
-  ]);
+  }, [account, areApiReady, input, isValidCall, transactionRunning, type, weightInput]);
 
   return { sendLaneMessage, isButtonDisabled };
 }

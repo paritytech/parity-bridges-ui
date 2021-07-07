@@ -19,13 +19,7 @@ import { TransactionActionTypes } from '../actions/transactionActions';
 import { TransactionDisplayPayload } from '../types/transactionTypes';
 
 import getReceiverAddress from '../util/getReceiverAddress';
-import {
-  Payload,
-  TransactionsActionType,
-  TransactionState,
-  TransactionStatusType,
-  ReceiverPayload
-} from '../types/transactionTypes';
+import { Payload, TransactionsActionType, TransactionState, ReceiverPayload } from '../types/transactionTypes';
 import { ChainState } from '../types/sourceTargetTypes';
 import logger from '../util/logger';
 import { evalUnits } from '../util/evalUnits';
@@ -47,12 +41,6 @@ const updateTransaction = (state: TransactionState, payload: Payload): Transacti
     return newState;
   }
   return state;
-};
-
-const createTransaction = (state: TransactionState, initialTransaction: TransactionStatusType): TransactionState => {
-  const newState = { ...state };
-  newState.transactions.unshift(initialTransaction);
-  return newState;
 };
 
 const validateAccount = (receiver: string, sourceChainDetails: ChainState, targetChainDetails: ChainState) => {
@@ -171,7 +159,6 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
 };
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
-  console.log(action);
   switch (action.type) {
     case TransactionActionTypes.SET_ESTIMATED_FEE:
       return {
@@ -227,13 +214,14 @@ export default function transactionReducer(state: TransactionState, action: Tran
         transactionReadyToExecute: isReadyToExecute(state)
       };
     case TransactionActionTypes.CREATE_TRANSACTION_STATUS:
-      return createTransaction(state, action.payload.initialTransaction);
+      return { ...state, transactions: [action.payload.initialTransaction, ...state.transactions] };
     case TransactionActionTypes.UPDATE_CURRENT_TRANSACTION_STATUS:
       return updateTransaction(state, action.payload);
     case TransactionActionTypes.SET_RECEIVER:
       return setReceiver(state, action.payload.receiverPayload);
-    case TransactionActionTypes.SET_TRANSACTION_RUNNING:
+    case TransactionActionTypes.SET_TRANSACTION_RUNNING: {
       return { ...state, transactionRunning: action.payload.transactionRunning };
+    }
     case TransactionActionTypes.SET_SENDER_ACCOUNT:
       return { ...state, senderAccount: action.payload.senderAccount };
 
