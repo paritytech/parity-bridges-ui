@@ -82,7 +82,7 @@ function Transfer() {
     [api.registry.chainDecimals, dispatchTransaction]
   );
 
-  const [currentInput, debounced, setInput] = useDebounceState({ initialValue: '0', dispatchCallback });
+  const [currentInput, , setInput] = useDebounceState({ initialValue: '0', dispatchCallback });
 
   useEffect((): void => {
     account && dispatchTransaction(TransactionActionCreators.setSenderAccount(account.address));
@@ -104,9 +104,9 @@ function Transfer() {
 
   useEffect((): void => {
     estimatedFee &&
-      debounced &&
-      setAmountNotCorrect(new BN(balance.free).sub(new BN(debounced).add(new BN(estimatedFee))).toNumber() < 0);
-  }, [debounced, estimatedFee, balance]);
+      transferAmount &&
+      setAmountNotCorrect(new BN(balance.free).sub(new BN(transferAmount).add(new BN(estimatedFee))).toNumber() < 0);
+  }, [transferAmount, estimatedFee, balance]);
 
   return (
     <>
