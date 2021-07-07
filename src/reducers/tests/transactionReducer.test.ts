@@ -32,7 +32,7 @@ describe('transactionReducer', () => {
       const result = transactionReducer(state, action);
       expect(result).toEqual({
         ...state,
-        derivedReceiverAccount: '714dr3fW9PAKWMRn9Zcr6vtqn8gUEoKF7E2bDu5BniTMS4bo',
+        derivedReceiverAccount: '5rERgaT1Z8nM3et2epA5i1VtEBfp5wkhwHtVE8HK7BRbjAH2',
         receiverAddress: '5rERgaT1Z8nM3et2epA5i1VtEBfp5wkhwHtVE8HK7BRbjAH2',
         unformattedReceiverAddress: '5rERgaT1Z8nM3et2epA5i1VtEBfp5wkhwHtVE8HK7BRbjAH2',
         showBalance: true,
@@ -85,7 +85,7 @@ describe('transactionReducer', () => {
         ...state,
         unformattedReceiverAddress: 'tH95Ew4kVD9VcwsyXaSdC74Noe3H8o6fJfnKhZezXHKHEcs',
         addressValidationError: 'Unsupported address SS58 prefix: 8',
-        formatFound: '8'
+        formatFound: 8
       });
     });
   });

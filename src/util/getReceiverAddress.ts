@@ -24,6 +24,7 @@ interface Props {
   targetChainDetails: ChainState;
   sourceChainDetails: ChainState;
 }
+
 const getReceiverAddress = ({ targetChainDetails, sourceChainDetails, receiverAddress }: Props) => {
   const { configs: sourceConfigs, chain: sourceChain } = sourceChainDetails;
   const { chain: targetChain, configs: targetConfigs } = targetChainDetails;
@@ -46,13 +47,16 @@ const getReceiverAddress = ({ targetChainDetails, sourceChainDetails, receiverAd
 
   try {
     const decodedReceiverAddress = base58Decode(receiverAddress);
-    const [isValidDerivedAcccount, , , ss58Decoded] = checkAddressChecksum(decodedReceiverAddress);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [isValidDerivedAcccount, _length, _ss58DecodedLength, ss58Decoded] = checkAddressChecksum(
+      decodedReceiverAddress
+    );
+
+    const formatFound = getChainBySS58Prefix(ss58Decoded) || ss58Decoded;
 
     if (isValidDerivedAcccount) {
-      return { address: receiverAddress, formatFound: targetChain };
+      return { address: receiverAddress, formatFound };
     }
-
-    const formatFound = getChainBySS58Prefix(ss58Decoded);
 
     const address = getDeriveAccount({
       ss58Format: targetSS58Format,
