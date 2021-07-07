@@ -98,7 +98,7 @@ function Transfer() {
   useEffect((): void => {
     estimatedFee &&
       transferAmount &&
-      setAmountNotCorrect(new BN(balance.free).sub(new BN(transferAmount).add(new BN(estimatedFee))).toNumber() < 0);
+      setAmountNotCorrect(new BN(balance.free).sub(transferAmount).add(new BN(estimatedFee)).isNeg());
   }, [transferAmount, estimatedFee, balance]);
 
   return (
