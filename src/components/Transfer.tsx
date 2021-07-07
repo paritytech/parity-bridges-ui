@@ -14,13 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Box, makeStyles, TextField, Typography } from '@material-ui/core';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import { TransactionActionCreators } from '../actions/transactionActions';
 import { useUpdateTransactionContext } from '../contexts/TransactionContext';
-
 import useAccounts from '../hooks/accounts/useAccounts';
 import useBalance from '../hooks/subscriptions/useBalance';
 import useSendMessage from '../hooks/chain/useSendMessage';
@@ -30,7 +29,6 @@ import Receiver from './Receiver';
 import { Alert, ButtonSubmit } from '../components';
 import useDebounceState from '../hooks/react/useDebounceState';
 import BN from 'bn.js';
-import { useCallback } from 'react';
 
 const useStyles = makeStyles((theme) => ({
   inputAmount: {
