@@ -28,6 +28,7 @@ import { TransactionTypes } from '../types/transactionTypes';
 import { TokenSymbol } from './TokenSymbol';
 import Receiver from './Receiver';
 import { Alert, ButtonSubmit } from '../components';
+import { EstimatedFee } from '../components/EstimatedFee';
 import BN from 'bn.js';
 
 const useStyles = makeStyles((theme) => ({
@@ -60,7 +61,6 @@ function Transfer() {
     estimatedFee,
     transferAmount,
     transferAmountError,
-    receiverAddress,
     estimatedFeeLoading,
     transactionRunning
   } = useTransactionContext();
@@ -123,9 +123,7 @@ function Transfer() {
           Estimated source Fee loading...
         </Typography>
       ) : (
-        <Typography variant="body1" color="secondary">
-          {receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}
-        </Typography>
+        <EstimatedFee />
       )}
     </>
   );

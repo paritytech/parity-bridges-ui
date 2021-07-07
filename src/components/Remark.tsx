@@ -21,12 +21,13 @@ import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import useSendMessage from '../hooks/chain/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
+import { EstimatedFee } from './EstimatedFee';
 
 const Remark = () => {
   const [remarkInput, setRemarkInput] = useState('0x');
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
-  const { estimatedFee, estimatedFeeLoading } = useTransactionContext();
+  const { estimatedFeeLoading } = useTransactionContext();
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
     input: remarkInput,
@@ -57,9 +58,7 @@ const Remark = () => {
           Estimated source Fee loading...
         </Typography>
       ) : (
-        <Typography variant="body1" color="secondary">
-          {estimatedFee && `Estimated source Fee: ${estimatedFee}`}
-        </Typography>
+        <EstimatedFee />
       )}
     </>
   );

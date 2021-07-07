@@ -89,3 +89,8 @@ export function evalUnits(input: string, chainDecimals: number): [BN | null, str
   }
   return [numeric, EvalMessages.SUCCESS];
 }
+
+export function transformToBaseUnit(estFee: string, chainDecimals: number): string {
+  const est = parseInt(estFee) / 10 ** chainDecimals;
+  return est.toString();
+}
