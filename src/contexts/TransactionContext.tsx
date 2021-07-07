@@ -14,9 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useContext, useReducer } from 'react';
+import React, { useContext, useReducer, useEffect } from 'react';
 import transactionReducer from '../reducers/transactionReducer';
 import { TransactionState, TransactionsActionType, TransactionDisplayPayload } from '../types/transactionTypes';
+import { TransactionActionCreators } from '../actions/transactionActions';
+import { useAccountContext } from './AccountContextProvider';
 
 interface TransactionContextProviderProps {
   children: React.ReactElement;
@@ -42,6 +44,7 @@ export function useUpdateTransactionContext() {
 
 export function TransactionContextProvider(props: TransactionContextProviderProps): React.ReactElement {
   const { children = null } = props;
+  const { account } = useAccountContext();
 
   const [transaction, dispatchTransaction] = useReducer(transactionReducer, {
     senderAccount: null,
@@ -65,6 +68,10 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     payloadError: null,
     payloadHex: null
   });
+
+  useEffect((): void => {
+    account && dispatchTransaction(TransactionActionCreators.setSenderAccount(account.address));
+  }, [account, dispatchTransaction]);
 
   return (
     <TransactionContext.Provider value={transaction}>

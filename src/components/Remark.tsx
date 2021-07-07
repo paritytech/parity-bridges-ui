@@ -26,12 +26,12 @@ import useDebounceState from '../hooks/react/useDebounceState';
 const initialValue = '0x';
 
 const Remark = () => {
-  const [currentInput, remarkActualInput, setRemarkInput] = useDebounceState({ initialValue });
+  const [currentInput, setRemarkInput, remarkDebouncedInput] = useDebounceState({ initialValue });
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   const { estimatedFee, estimatedFeeLoading } = useTransactionContext();
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
-    input: remarkActualInput,
+    input: remarkDebouncedInput,
     type: TransactionTypes.REMARK
   });
 

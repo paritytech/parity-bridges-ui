@@ -29,8 +29,8 @@ const initialValue = '0x';
 const CustomCall = () => {
   const [decoded, setDecoded] = useState<string | null>();
 
-  const [currentCustomCallInput, customCallInput, setCustomCallInput] = useDebounceState({ initialValue });
-  const [currentWeightInput, weightInput, setWeightInput] = useDebounceState({ initialValue: '' });
+  const [currentCustomCallInput, setCustomCallInput, customCallDebouncedInput] = useDebounceState({ initialValue });
+  const [currentWeightInput, setWeightInput, weightDebouncedInput] = useDebounceState({ initialValue: '' });
 
   const [error, setError] = useState<string | null>();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
@@ -42,10 +42,10 @@ const CustomCall = () => {
   const { createType } = useApiCalls();
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
-    input: customCallInput,
+    input: customCallDebouncedInput,
     isValidCall: Boolean(decoded),
     type: TransactionTypes.CUSTOM,
-    weightInput
+    weightInput: weightDebouncedInput
   });
   const onChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {

@@ -18,7 +18,7 @@ import { useCallback, useMemo, useState, Dispatch, useEffect } from 'react';
 import usePrevious from './usePrevious';
 import debounce from 'lodash/debounce';
 
-type Output<T> = [T, T, (value: T) => void];
+type Output<T> = [T, (value: T) => void, T];
 
 interface Input<T> {
   initialValue: T;
@@ -55,7 +55,7 @@ export const useDebounceState = <T>({
     previousDebounced && previousDebounced !== debounced && dispatchCallback && dispatchCallback(debounced);
   }, [debounced, dispatchCallback, previousDebounced]);
 
-  return [value, debounced, setValueCallback];
+  return [value, setValueCallback, debounced];
 };
 
 export default useDebounceState;

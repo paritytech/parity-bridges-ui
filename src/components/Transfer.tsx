@@ -82,11 +82,7 @@ function Transfer() {
     [api.registry.chainDecimals, dispatchTransaction]
   );
 
-  const [currentInput, , setInput] = useDebounceState({ initialValue: '0', dispatchCallback });
-
-  useEffect((): void => {
-    account && dispatchTransaction(TransactionActionCreators.setSenderAccount(account.address));
-  }, [account, dispatchTransaction]);
+  const [currentInput, setInput] = useDebounceState({ initialValue: '0', dispatchCallback });
 
   const { sendLaneMessage } = useSendMessage({
     input: transferAmount?.toString() ?? '',
