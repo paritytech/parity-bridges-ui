@@ -52,7 +52,7 @@ export const useDebounceState = <T>({
   );
 
   useEffect(() => {
-    previousDebounced !== debounced && dispatchCallback && dispatchCallback(debounced);
+    previousDebounced && previousDebounced !== debounced && dispatchCallback && dispatchCallback(debounced);
   }, [debounced, dispatchCallback, previousDebounced]);
 
   return [value, debounced, setValueCallback];
