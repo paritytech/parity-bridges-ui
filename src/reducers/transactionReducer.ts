@@ -181,7 +181,9 @@ export default function transactionReducer(state: TransactionState, action: Tran
         estimatedFee: action.payload.estimatedFeeError ? null : action.payload.estimatedFee,
         estimatedFeeError: action.payload.estimatedFeeError,
         estimatedFeeLoading: action.payload.estimatedFeeLoading,
-        transactionReadyToExecute: action.payload.estimatedFeeLoading ? false : isReadyToExecute(state)
+        transactionReadyToExecute: action.payload.estimatedFeeLoading
+          ? false
+          : isReadyToExecute(state) && action.payload.estimatedFee
       };
     case TransactionActionTypes.SET_TRANSFER_AMOUNT: {
       const { transferAmount, chainDecimals } = action.payload;

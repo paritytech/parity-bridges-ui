@@ -43,7 +43,6 @@ export const usePayload = ({ call, weight, input }: Input) => {
   const { account } = useAccountContext();
 
   const payloadCallback = useCallback(() => {
-    console.log('input', input);
     if (!account || !call || !weight || !input || !receiverAddress) {
       return null;
     }
@@ -61,7 +60,6 @@ export const usePayload = ({ call, weight, input }: Input) => {
     const payloadType = createType(sourceChain, 'OutboundPayload', payload);
     logger.info(`OutboundPayload: ${JSON.stringify(payload)}`);
     logger.info(`OutboundPayload.toHex(): ${payloadType.toHex()}`);
-    console.log('payloadd', payload);
     return payload;
   }, [
     account,
