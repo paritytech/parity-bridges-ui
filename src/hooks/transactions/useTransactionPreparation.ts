@@ -28,20 +28,20 @@ interface Props {
 }
 
 export default function useTransactionPreparation({ input, type, weightInput, isValidCall = true }: Props) {
-  const { payload } = useTransactionContext();
+  const { payload, receiverAddress, unformattedReceiverAddress } = useTransactionContext();
   const { call, weight } = useTransactionType({ input, type, weightInput });
 
   const calculateFee = useEstimateFee();
-  const updatePayload = usePayload({ call, weight });
+  const updatePayload = usePayload({ call, weight, input });
 
   useEffect(() => {
     calculateFee(payload);
-  }, [calculateFee, payload]);
+  }, [calculateFee, payload, unformattedReceiverAddress]);
 
   useEffect(() => {
     if (!isValidCall) {
       return;
     }
     updatePayload();
-  }, [isValidCall, updatePayload]);
+  }, [isValidCall, updatePayload, receiverAddress, input]);
 }

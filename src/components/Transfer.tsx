@@ -53,8 +53,6 @@ const useStyles = makeStyles((theme) => ({
 function Transfer() {
   const { dispatchTransaction } = useUpdateTransactionContext();
   const classes = useStyles();
-  const [isRunning, setIsRunning] = useState(false);
-
   const [amountNotCorrect, setAmountNotCorrect] = useState<boolean>(false);
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   const { account } = useAccounts();
@@ -64,8 +62,11 @@ function Transfer() {
     transferAmount,
     transferAmountError,
     receiverAddress,
-    estimatedFeeLoading
+    estimatedFeeLoading,
+    transactionRunning,
+    transactionReadyToExecute
   } = useTransactionContext();
+
   const { api } = sourceChainDetails.apiConnection;
   const balance = useBalance(api, account?.address || '');
 
@@ -83,10 +84,12 @@ function Transfer() {
 
   const [currentInput, debounced, setInput] = useDebounceState({ initialValue: '', dispatchCallback });
 
-  const { isButtonDisabled, sendLaneMessage } = useSendMessage({
+  useEffect((): void => {
+    account && dispatchTransaction(TransactionActionCreators.setSenderAccount(account.address));
+  }, [account, dispatchTransaction]);
+
+  const { sendLaneMessage } = useSendMessage({
     input: transferAmount?.toString() ?? '',
-    isRunning,
-    setIsRunning,
     type: TransactionTypes.TRANSFER
   });
 
@@ -95,6 +98,10 @@ function Transfer() {
   };
 
   // To extract estimated fee logic to specific component. Issue #171
+  useEffect((): void => {
+    transactionRunning && setInput('');
+  }, [setInput, transactionRunning]);
+
   useEffect((): void => {
     estimatedFee &&
       debounced &&
@@ -119,20 +126,20 @@ function Transfer() {
         />
       </Box>
       <Receiver />
-      <ButtonSubmit disabled={isButtonDisabled() || !!transferAmountError} onClick={sendLaneMessage}>
+      <ButtonSubmit disabled={!transactionReadyToExecute || amountNotCorrect} onClick={sendLaneMessage}>
         Send bridge transfer from {sourceChainDetails.chain} to {targetChainDetails.chain}
       </ButtonSubmit>
       {amountNotCorrect ? (
         <Alert severity="error">
           Account&apos;s amount (including fees: {estimatedFee}) is not enough for this transaction.
         </Alert>
-      ) : estimatedFeeLoading ? (
+      ) : estimatedFeeLoading && transferAmount && receiverAddress ? (
         <Typography variant="body1" color="secondary">
           Estimated source Fee loading...
         </Typography>
       ) : (
         <Typography variant="body1" color="secondary">
-          {receiverAddress && estimatedFee && `Estimated source Fee: ${estimatedFee}`}
+          {receiverAddress && estimatedFee && transferAmount && `Estimated source Fee: ${estimatedFee}`}
         </Typography>
       )}
     </>

@@ -15,7 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { TextField, Typography } from '@material-ui/core';
-import React, { useState } from 'react';
+import React from 'react';
 import { ButtonSubmit } from '../components';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
@@ -26,19 +26,15 @@ import useDebounceState from '../hooks/react/useDebounceState';
 const initialValue = '0x';
 
 const Remark = () => {
-  const [isRunning, setIsRunning] = useState(false);
   const [currentInput, remarkActualInput, setRemarkInput] = useDebounceState({ initialValue });
-
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
-
   const { estimatedFee, estimatedFeeLoading } = useTransactionContext();
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
     input: remarkActualInput,
-    isRunning,
-    setIsRunning,
     type: TransactionTypes.REMARK
   });
+
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRemarkInput(event.target.value);
   };

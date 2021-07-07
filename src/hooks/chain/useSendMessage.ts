@@ -19,7 +19,6 @@ import { SignerOptions } from '@polkadot/api/types';
 import { web3FromSource } from '@polkadot/extension-dapp';
 import type { KeyringPair } from '@polkadot/keyring/types';
 import moment from 'moment';
-
 import { MessageActionsCreators } from '../../actions/messageActions';
 import { TransactionActionCreators } from '../../actions/transactionActions';
 import { useAccountContext } from '../../contexts/AccountContextProvider';
@@ -37,15 +36,13 @@ import useLoadingApi from '../connections/useLoadingApi';
 
 interface Props {
   isValidCall?: boolean;
-  isRunning: boolean;
-  setIsRunning: (status: boolean) => void;
   input: string;
   type: string;
   weightInput?: string;
 }
 
-function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, weightInput }: Props) {
-  const { estimatedFee, receiverAddress, payload } = useTransactionContext();
+function useSendMessage({ isValidCall, input, type, weightInput }: Props) {
+  const { estimatedFee, receiverAddress, payload, transactionRunning, transferAmount } = useTransactionContext();
   const { dispatchTransaction } = useUpdateTransactionContext();
   const laneId = useLaneId();
   const sourceTargetDetails = useSourceTarget();
@@ -64,7 +61,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
   const makeCall = useCallback(
     async (id: string) => {
       try {
-        if (!account || isRunning || !payload || !input) {
+        if (!account || transactionRunning || !payload) {
           return;
         }
         //@ts-ignore
@@ -111,10 +108,12 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
               })
             );
           }
+
           if (status.isBroadcast) {
             dispatchMessage(MessageActionsCreators.triggerInfoMessage({ message: 'Transaction was broadcasted' }));
             dispatchTransaction(TransactionActionCreators.reset());
           }
+
           if (status.isInBlock) {
             events.forEach(({ event: { data, method } }) => {
               if (method.toString() === 'MessageAccepted') {
@@ -142,6 +141,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
               }
             });
           }
+
           if (status.isFinalized) {
             logger.info(`Transaction finalized at blockHash ${status.asFinalized}`);
 
@@ -152,7 +152,7 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
         dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e.message }));
         logger.error(e.message);
       } finally {
-        setIsRunning(false);
+        dispatchTransaction(TransactionActionCreators.setTransactionRunning(false));
       }
     },
     [
@@ -162,11 +162,10 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
       dispatchTransaction,
       estimatedFee,
       input,
-      isRunning,
       laneId,
       payload,
       receiverAddress,
-      setIsRunning,
+      transactionRunning,
       sourceApi.rpc.chain,
       sourceApi.tx,
       sourceChain,
@@ -177,33 +176,43 @@ function useSendMessage({ isRunning, isValidCall, setIsRunning, input, type, wei
   );
 
   const sendLaneMessage = useCallback(() => {
-    if (!account || isRunning) {
+    if (!account || transactionRunning) {
       return;
     }
     const id = moment().format('x');
-    setIsRunning(true);
+    dispatchTransaction(TransactionActionCreators.setTransactionRunning(true));
     return makeCall(id);
-  }, [account, isRunning, makeCall, setIsRunning]);
+  }, [account, transactionRunning, dispatchTransaction, makeCall]);
 
   const { areApiReady } = useLoadingApi();
 
   const isButtonDisabled = useCallback(() => {
     switch (type) {
       case TransactionTypes.REMARK:
-        return isRunning || !account || !areApiReady;
+        return transactionRunning || !account || !areApiReady;
         break;
       case TransactionTypes.TRANSFER:
-        return isRunning || !receiverAddress || !input || !account || !areApiReady;
+        return transactionRunning || !receiverAddress || !transferAmount || !account || !areApiReady;
         break;
       case TransactionTypes.CUSTOM:
-        return isRunning || !account || !input || !weightInput || !isValidCall || !areApiReady;
+        return transactionRunning || !account || !input || !weightInput || !isValidCall || !areApiReady;
         break;
       default:
         throw new Error(`Unknown type: ${type}`);
     }
-  }, [account, areApiReady, input, isRunning, isValidCall, receiverAddress, type, weightInput]);
+  }, [
+    transactionRunning,
+    receiverAddress,
+    input,
+    account,
+    areApiReady,
+    type,
+    transferAmount,
+    weightInput,
+    isValidCall
+  ]);
 
-  return { isButtonDisabled, sendLaneMessage };
+  return { sendLaneMessage, isButtonDisabled };
 }
 
 export default useSendMessage;

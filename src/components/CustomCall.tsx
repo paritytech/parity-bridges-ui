@@ -27,7 +27,6 @@ import useDebounceState from '../hooks/react/useDebounceState';
 const initialValue = '0x';
 
 const CustomCall = () => {
-  const [isRunning, setIsRunning] = useState(false);
   const [decoded, setDecoded] = useState<string | null>();
 
   const [currentCustomCallInput, customCallInput, setCustomCallInput] = useDebounceState({ initialValue });
@@ -44,9 +43,7 @@ const CustomCall = () => {
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
     input: customCallInput,
-    isRunning,
     isValidCall: Boolean(decoded),
-    setIsRunning,
     type: TransactionTypes.CUSTOM,
     weightInput
   });
