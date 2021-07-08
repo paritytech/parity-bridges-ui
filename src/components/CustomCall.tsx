@@ -14,14 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Box, TextField, Typography } from '@material-ui/core';
+import { Box, TextField } from '@material-ui/core';
 import React, { useState } from 'react';
 import { ButtonSubmit } from '../components';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useTransactionContext } from '../contexts/TransactionContext';
 import useSendMessage from '../hooks/chain/useSendMessage';
 import useApiCalls from '../hooks/api/useApiCalls';
 import { TransactionTypes } from '../types/transactionTypes';
+import { EstimatedFee } from './EstimatedFee';
 
 const CustomCall = () => {
   const [decoded, setDecoded] = useState<string | null>();
@@ -31,7 +31,6 @@ const CustomCall = () => {
   const [error, setError] = useState<string | null>();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
-  const { estimatedFee, estimatedFeeLoading } = useTransactionContext();
   const {
     targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
@@ -82,15 +81,7 @@ const CustomCall = () => {
       <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
         Send custom call from {sourceChainDetails.chain} to {targetChainDetails.chain}
       </ButtonSubmit>
-      {estimatedFeeLoading ? (
-        <Typography variant="body1" color="secondary">
-          Estimated source Fee loading...
-        </Typography>
-      ) : (
-        <Typography variant="body1" color="secondary">
-          {estimatedFee && `Estimated source Fee: ${estimatedFee}`}
-        </Typography>
-      )}
+      <EstimatedFee />
     </>
   );
 };

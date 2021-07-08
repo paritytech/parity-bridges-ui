@@ -15,7 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React, { useState, useEffect } from 'react';
-import { Box, makeStyles, TextField, Typography } from '@material-ui/core';
+import { Box, makeStyles, TextField } from '@material-ui/core';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import { TransactionActionCreators } from '../actions/transactionActions';
@@ -57,13 +57,7 @@ function Transfer() {
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   const { account } = useAccounts();
 
-  const {
-    estimatedFee,
-    transferAmount,
-    transferAmountError,
-    estimatedFeeLoading,
-    transactionRunning
-  } = useTransactionContext();
+  const { estimatedFee, transferAmount, transferAmountError, transactionRunning } = useTransactionContext();
   const { api } = sourceChainDetails.apiConnection;
   const balance = useBalance(api, account?.address || '');
 
@@ -118,10 +112,6 @@ function Transfer() {
         <Alert severity="error">
           Account&apos;s amount (including fees: {estimatedFee}) is not enough for this transaction.
         </Alert>
-      ) : estimatedFeeLoading ? (
-        <Typography variant="body1" color="secondary">
-          Estimated source Fee loading...
-        </Typography>
       ) : (
         <EstimatedFee />
       )}

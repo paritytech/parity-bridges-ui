@@ -14,11 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { TextField, Typography } from '@material-ui/core';
+import { TextField } from '@material-ui/core';
 import React, { useState } from 'react';
 import { ButtonSubmit } from '../components';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useTransactionContext } from '../contexts/TransactionContext';
 import useSendMessage from '../hooks/chain/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
 import { EstimatedFee } from './EstimatedFee';
@@ -26,8 +25,6 @@ import { EstimatedFee } from './EstimatedFee';
 const Remark = () => {
   const [remarkInput, setRemarkInput] = useState('0x');
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
-
-  const { estimatedFeeLoading } = useTransactionContext();
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
     input: remarkInput,
@@ -52,14 +49,7 @@ const Remark = () => {
       <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
         Send bridge remark from {sourceChainDetails.chain} to {targetChainDetails.chain}
       </ButtonSubmit>
-
-      {estimatedFeeLoading ? (
-        <Typography variant="body1" color="secondary">
-          Estimated source Fee loading...
-        </Typography>
-      ) : (
-        <EstimatedFee />
-      )}
+      <EstimatedFee />
     </>
   );
 };
