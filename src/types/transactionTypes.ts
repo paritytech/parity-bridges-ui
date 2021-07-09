@@ -119,11 +119,3 @@ export interface ReceiverPayload {
   sourceChainDetails: ChainState;
   targetChainDetails: ChainState;
 }
-
-export interface OverrideSourceTargetContextType {
-  targetApi: ApiPromise;
-  transaction: TransactionStatusType;
-  sourceSubscriptions: Subscriptions;
-  targetSubscriptions: Subscriptions;
-  onComplete: () => void;
-}
