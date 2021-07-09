@@ -17,19 +17,17 @@
 import React from 'react';
 import { TransactionStatusType } from '../types/transactionTypes';
 import TransactionSwitchTab from './TransactionSwitchTab';
-import OverrideSourceTarget from './OverrideSourceTarget';
-import TransactionSteps from './TransactionSteps';
+import TransactionReceipt from './TransactionReceipt';
 
 export interface TransactionDisplayProps {
   size?: 'sm';
 }
 interface Props {
   transaction: TransactionStatusType;
-  onComplete: () => void;
   transactionDisplayProps?: TransactionDisplayProps;
 }
 
-const TransactionStatus = ({ transaction, onComplete }: Props) => {
+const TransactionStatus = ({ transaction }: Props) => {
   const { payloadHex, transactionDisplayPayload } = transaction;
 
   return (
@@ -39,9 +37,12 @@ const TransactionStatus = ({ transaction, onComplete }: Props) => {
       status={transaction.status}
       type={transaction.type}
     >
-      <OverrideSourceTarget transaction={transaction} onComplete={onComplete}>
-        <TransactionSteps />
-      </OverrideSourceTarget>
+      <TransactionReceipt
+        key={transaction.id}
+        steps={transaction.steps}
+        type={transaction.type}
+        status={transaction.status}
+      />
     </TransactionSwitchTab>
   );
 };

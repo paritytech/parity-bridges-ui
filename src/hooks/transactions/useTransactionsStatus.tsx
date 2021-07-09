@@ -14,8 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { useState } from 'react';
-import { TransactionStatusType } from '../../types/transactionTypes';
+import { TransactionStatusEnum, TransactionStatusType } from '../../types/transactionTypes';
 import { useUpdateMessageContext } from '../../contexts/MessageContext';
 
 import useChainGetters from '../chain/useChainGetters';
@@ -27,9 +26,10 @@ import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
 import useLaneId from '../chain/useLaneId';
 import { useEffect } from 'react';
+import { TransactionActionCreators } from '../../actions/transactionActions';
+import isEqual from 'lodash/isEqual';
 
-export default function useTransactionsStatus(transactions: TransactionStatusType[]) {
-  const [updatedTransactions, setUpdatedTransactions] = useState(transactions);
+export default function useTransactionsStatus(transactions: TransactionStatusType[], dispatchTransaction: Function) {
   const { dispatchMessage } = useUpdateMessageContext();
   const { getValuesByChain } = useChainGetters();
 
@@ -43,8 +43,19 @@ export default function useTransactionsStatus(transactions: TransactionStatusTyp
 
   useEffect(() => {
     const getTransactionStatus = async () => {
-      const newTransactions = await Promise.all(
+      const updatedTransactions = await Promise.all(
         transactions.map(async (transaction: TransactionStatusType) => {
+          if (transaction.status === TransactionStatusEnum.COMPLETED || transaction.evaluating) {
+            return transaction;
+          }
+          dispatchTransaction(
+            TransactionActionCreators.updateTransactionStatus(
+              {
+                evaluating: true
+              },
+              transaction.id
+            )
+          );
           const { sourceChain, targetChain } = transaction;
           const { api: targetApi } = getValuesByChain(targetChain);
           const { sourceRole, targetRole } = getChainSubscriptionsKey({
@@ -66,15 +77,36 @@ export default function useTransactionsStatus(transactions: TransactionStatusTyp
             laneId,
             dispatchMessage
           });
+
+          if (isEqual(transaction, updatedTransaction)) {
+            dispatchTransaction(
+              TransactionActionCreators.updateTransactionStatus(
+                {
+                  evaluating: false
+                },
+                transaction.id
+              )
+            );
+          }
+
           return updatedTransaction;
         })
       );
 
-      setUpdatedTransactions(newTransactions);
+      if (!isEqual(transactions, updatedTransactions)) {
+        dispatchTransaction(TransactionActionCreators.updateTransactionsStatus(updatedTransactions));
+      }
     };
 
     getTransactionStatus();
-  }, [apiCalls, currentSourceChain, dispatchMessage, getValuesByChain, laneId, subscriptions, transactions]);
-
-  return updatedTransactions;
+  }, [
+    apiCalls,
+    currentSourceChain,
+    dispatchMessage,
+    dispatchTransaction,
+    getValuesByChain,
+    laneId,
+    subscriptions,
+    transactions
+  ]);
 }

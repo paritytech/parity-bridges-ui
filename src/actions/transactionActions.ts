@@ -33,6 +33,7 @@ enum TransactionActionTypes {
   UPDATE_CURRENT_TRANSACTION_STATUS = 'UPDATE_CURRENT_TRANSACTION_STATUS',
   SET_TRANSACTION_COMPLETED = 'SET_TRANSACTION_COMPLETED',
   SET_TRANSACTION_RUNNING = 'SET_TRANSACTION_RUNNING',
+  UPDATE_TRANSACTIONS_STATUS = 'UPDATE_TRANSACTIONS_STATUS',
   RESET = 'RESET'
 }
 
@@ -93,6 +94,11 @@ const setTransactionRunning = (transactionRunning: boolean) => ({
   type: TransactionActionTypes.SET_TRANSACTION_RUNNING
 });
 
+const updateTransactionsStatus = (transactions: TransactionStatusType[]) => ({
+  payload: { transactions },
+  type: TransactionActionTypes.UPDATE_TRANSACTIONS_STATUS
+});
+
 const TransactionActionCreators = {
   setTransferAmount,
   setEstimatedFee,
@@ -102,7 +108,8 @@ const TransactionActionCreators = {
   updateTransactionStatus,
   setPayload,
   reset,
-  setTransactionRunning
+  setTransactionRunning,
+  updateTransactionsStatus
 };
 
 export { TransactionActionCreators, TransactionActionTypes };

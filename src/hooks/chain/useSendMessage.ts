@@ -29,7 +29,7 @@ import useLaneId from './useLaneId';
 import useTransactionPreparation from '../transactions/useTransactionPreparation';
 import { TransactionStatusEnum, TransactionTypes } from '../../types/transactionTypes';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
-import { getTransactionDisplayPayload } from '../../util/transactionUtils';
+import { createEmptySteps, getTransactionDisplayPayload } from '../../util/transactionUtils';
 import logger from '../../util/logger';
 import useApiCalls from '../api/useApiCalls';
 import useLoadingApi from '../connections/useLoadingApi';
@@ -81,7 +81,7 @@ function useSendMessage({ isValidCall, input, type, weightInput }: Props) {
           sourceAccount = account.address;
         }
 
-        const transactionDisplayPayload = getTransactionDisplayPayload({
+        const { transactionDisplayPayload } = getTransactionDisplayPayload({
           payload,
           account: account.address,
           createType,
@@ -105,7 +105,9 @@ function useSendMessage({ isValidCall, input, type, weightInput }: Props) {
                 type,
                 payloadHex,
                 transactionDisplayPayload,
-                deliveryBlock: null
+                deliveryBlock: null,
+                steps: createEmptySteps(sourceChain, targetChain),
+                evaluating: false
               })
             );
           }

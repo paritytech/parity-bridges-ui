@@ -151,10 +151,6 @@ export const handleTransactionUpdates = async ({
 
   const { sourceChain, targetChain, deliveryBlock, status } = transaction;
 
-  if (status === TransactionStatusEnum.COMPLETED) {
-    return transaction;
-  }
-
   const nonceOfFinalTargetBlock = await getLatestReceivedNonce(
     bestBlockFinalized,
     sourceChain,
@@ -246,6 +242,46 @@ export const handleTransactionUpdates = async ({
     ...transaction,
     steps: updatedSteps,
     deliveryBlock: updateDeliveryBlock ? bestBlockOnTarget : deliveryBlock,
-    status: setTransactionComplete ? TransactionStatusEnum.COMPLETED : status
+    status: setTransactionComplete ? TransactionStatusEnum.COMPLETED : status,
+    evaluating: false
   };
 };
+
+export const createEmptySteps = (sourceChain: string, targetChain: string) => [
+  {
+    id: 'test-step-include-message-block',
+    chainType: sourceChain,
+    label: 'Include message in block',
+    status: TransactionStatusEnum.NOT_STARTED
+  },
+  {
+    id: 'test-step-finalized-block',
+    chainType: sourceChain,
+    label: 'Finalize block',
+    status: TransactionStatusEnum.NOT_STARTED
+  },
+  {
+    id: 'test-step-relay-block',
+    chainType: targetChain,
+    label: 'Relay block',
+    status: TransactionStatusEnum.NOT_STARTED
+  },
+  {
+    id: 'test-step-deliver-message-block',
+    chainType: targetChain,
+    label: 'Deliver message in target block',
+    status: TransactionStatusEnum.NOT_STARTED
+  },
+  {
+    id: 'test-step-finalized-message',
+    chainType: targetChain,
+    label: 'Finalize message',
+    status: TransactionStatusEnum.NOT_STARTED
+  },
+  {
+    id: 'test-step-confirm-delivery',
+    chainType: sourceChain,
+    label: 'Confirm delivery',
+    status: TransactionStatusEnum.NOT_STARTED
+  }
+];

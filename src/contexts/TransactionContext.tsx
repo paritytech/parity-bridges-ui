@@ -56,7 +56,6 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     derivedReceiverAccount: null,
     genericReceiverAccount: null,
     transactions: [],
-    refactoredTransactions: [],
     transactionDisplayPayload: {} as TransactionDisplayPayload,
     transactionRunning: false,
     addressValidationError: null,
@@ -67,11 +66,10 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     payloadHex: null
   });
 
-  const refactoredTransactions = useTransactionsStatus(transaction.transactions);
-  console.log('refactored', refactoredTransactions);
+  useTransactionsStatus(transaction.transactions, dispatchTransaction);
 
   return (
-    <TransactionContext.Provider value={{ ...transaction, refactoredTransactions }}>
+    <TransactionContext.Provider value={transaction}>
       <UpdateTransactionContext.Provider value={{ dispatchTransaction }}>{children}</UpdateTransactionContext.Provider>
     </TransactionContext.Provider>
   );
