@@ -104,7 +104,8 @@ function useSendMessage({ isValidCall, input, type, weightInput }: Props) {
                 targetChain,
                 type,
                 payloadHex,
-                transactionDisplayPayload
+                transactionDisplayPayload,
+                deliveryBlock: null
               })
             );
           }

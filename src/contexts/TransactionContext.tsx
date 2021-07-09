@@ -15,6 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React, { useContext, useReducer } from 'react';
+import useTransactionsStatus from '../hooks/transactions/useTransactionsStatus';
 
 import transactionReducer from '../reducers/transactionReducer';
 import { TransactionState, TransactionsActionType, TransactionDisplayPayload } from '../types/transactionTypes';
@@ -55,6 +56,7 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     derivedReceiverAccount: null,
     genericReceiverAccount: null,
     transactions: [],
+    refactoredTransactions: [],
     transactionDisplayPayload: {} as TransactionDisplayPayload,
     transactionRunning: false,
     addressValidationError: null,
@@ -65,8 +67,11 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     payloadHex: null
   });
 
+  const refactoredTransactions = useTransactionsStatus(transaction.transactions);
+  console.log('refactored', refactoredTransactions);
+
   return (
-    <TransactionContext.Provider value={transaction}>
+    <TransactionContext.Provider value={{ ...transaction, refactoredTransactions }}>
       <UpdateTransactionContext.Provider value={{ dispatchTransaction }}>{children}</UpdateTransactionContext.Provider>
     </TransactionContext.Provider>
   );

@@ -65,6 +65,7 @@ export interface TransactionStatusType extends UpdatedTransactionStatusType {
   receiverAddress: null | string;
   type: string;
   status: TransactionStatusEnum;
+  deliveryBlock: string | null;
 }
 
 export interface TransactionState {
@@ -78,6 +79,7 @@ export interface TransactionState {
   derivedReceiverAccount: string | null;
   genericReceiverAccount: string | null;
   transactions: Array<TransactionStatusType>;
+  refactoredTransactions: Array<TransactionStatusType>;
   transactionDisplayPayload: TransactionDisplayPayload;
   transactionRunning: boolean;
   addressValidationError: string | null;
