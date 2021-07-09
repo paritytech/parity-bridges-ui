@@ -69,7 +69,7 @@ export const StorageDrawer = () => {
           <IconButton onClick={handleDrawerClose} color="secondary" className={classes.closeDrawerIcon}>
             <CloseIcon />
           </IconButton>
-          <Transactions />
+          <Transactions size="sm" />
         </div>
       </Fade>
     </Box>

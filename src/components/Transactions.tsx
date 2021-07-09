@@ -22,13 +22,13 @@ import TransactionStatusMock from './TransactionStatusMock';
 
 import useResetTransactionState from '../hooks/transactions/useResetTransactionState';
 import { TransactionStatusType } from '../types/transactionTypes';
-import TransactionStatus from './TransactionStatus';
+import TransactionStatus, { TransactionDisplayProps } from './TransactionStatus';
 
-interface Props {
+interface Props extends TransactionDisplayProps {
   type?: string;
 }
 
-const Transactions = ({ type }: Props) => {
+const Transactions = ({ type, ...transactionDisplayProps }: Props) => {
   const { transactions } = useTransactionContext();
   useResetTransactionState(type);
 
@@ -37,7 +37,13 @@ const Transactions = ({ type }: Props) => {
       <TransactionStatusMock type={type} />
       {Boolean(transactions.length) &&
         transactions.map((transaction: TransactionStatusType) => {
-          return <TransactionStatus key={transaction.id} transaction={transaction} />;
+          return (
+            <TransactionStatus
+              key={transaction.id}
+              transaction={transaction}
+              transactionDisplayProps={{ ...transactionDisplayProps }}
+            />
+          );
         })}
     </>
   );
