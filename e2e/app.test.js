@@ -57,7 +57,7 @@ const ids = {
 const chooseSender = async (page) => {
   logger.info('  >>> Choosing Sender');
   await page.waitForSelector(ids.senderComponent);
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(2000);
   await page.click(ids.senderComponent).then(() => logger.info('     -- Open Sender dropdown'));
   await page.waitForTimeout(1000);
   const [aliceOption] = await page.$x("//div[contains(., '5sauUX')]");
@@ -78,7 +78,7 @@ const enterAmount = async (page) => {
 
 const checkEnabledButton = async (page) => {
   logger.info('  >>> Checking if execution button is enabled');
-
+  await page.waitForTimeout(4000);
   await page.waitForSelector(ids.transferButton);
   await page.waitForTimeout(500);
   await page
@@ -232,7 +232,7 @@ describe('<App />', () => {
         await page
           .click('#test-button-submit')
           .then(() => logger.info('     -- Click send button to initiate the transaction'));
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(2000);
         await page
           .waitForXPath('//div[contains(text(), "Transaction was broadcasted")]')
           .then(() => logger.info('     -- Transaction was broadcasted.'));
