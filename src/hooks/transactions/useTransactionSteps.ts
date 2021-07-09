@@ -17,47 +17,29 @@
 import BN from 'bn.js';
 import { useEffect, useState } from 'react';
 import useTransactionNonces from './useTransactionNonces';
-import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
-import { useSubscriptionsContext } from '../../contexts/SubscriptionsContextProvider';
+import { useOverrideSourceTargetContext } from '../../components/OverrideSourceTarget';
+import { Step, TransactionStatusEnum } from '../../types/transactionTypes';
 
-import useLoadingApi from '../connections/useLoadingApi';
-import { getChainSubscriptionsKey } from '../../util/chainsUtils';
-import { Step, TransactionStatusEnum, TransactionStatusType } from '../../types/transactionTypes';
-
-interface Props {
-  transaction: TransactionStatusType;
-  onComplete: () => void;
-}
-
-const useTransactionSteps = ({ transaction, onComplete }: Props) => {
+const useTransactionSteps = () => {
+  const { transaction, onComplete, sourceSubscriptions, targetSubscriptions } = useOverrideSourceTargetContext();
+  const { sourceChain, targetChain } = transaction;
   const [steps, setSteps] = useState<Array<Step>>([]);
   const [deliveryBlock, setDeliveryBlock] = useState<string | null>();
   const [finished, setFinished] = useState(false);
-  const subscriptions = useSubscriptionsContext();
-  const { nonceOfBestTargetBlock, nonceOfFinalTargetBlock } = useTransactionNonces({
-    transaction
-  });
 
-  const { areApiReady } = useLoadingApi();
-
-  const { sourceChain, targetChain } = transaction;
-  const { sourceRole, targetRole } = getChainSubscriptionsKey({
-    useSourceTarget,
-    sourceChain
-  });
+  const { nonceOfBestTargetBlock, nonceOfFinalTargetBlock } = useTransactionNonces();
 
   const {
     bestBlockFinalized,
     outboundLanes: { latestReceivedNonce: latestReceivedNonceOnSource }
-  } = subscriptions[sourceRole];
+  } = sourceSubscriptions;
   const {
     bestBridgedFinalizedBlock: bestBridgedFinalizedBlockOnTarget,
-    bestBlockFinalized: bestBlockFinalizedOnTarget,
     bestBlock: bestBlockOnTarget
-  } = subscriptions[targetRole];
+  } = targetSubscriptions;
 
   useEffect(() => {
-    if (!areApiReady || !transaction || finished) {
+    if (!transaction || finished) {
       return;
     }
 
@@ -143,9 +125,7 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
       setFinished(true);
     }
   }, [
-    areApiReady,
     bestBlockFinalized,
-    bestBlockFinalizedOnTarget,
     bestBlockOnTarget,
     bestBridgedFinalizedBlockOnTarget,
     deliveryBlock,
@@ -154,7 +134,6 @@ const useTransactionSteps = ({ transaction, onComplete }: Props) => {
     nonceOfBestTargetBlock,
     nonceOfFinalTargetBlock,
     onComplete,
-    setDeliveryBlock,
     sourceChain,
     targetChain,
     transaction

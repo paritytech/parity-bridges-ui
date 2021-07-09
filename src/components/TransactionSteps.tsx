@@ -14,18 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ChainSubscriptions } from '../types/subscriptionsTypes';
+import React from 'react';
+import { useOverrideSourceTargetContext } from './OverrideSourceTarget';
 
-interface Input {
-  currentSourceChain: string;
-  sourceChain: string;
+import useTransactionSteps from '../hooks/transactions/useTransactionSteps';
+import TransactionReceipt from './TransactionReceipt';
+
+export interface TransactionDisplayProps {
+  size?: 'sm';
 }
 
-export function getChainSubscriptionsKey({ currentSourceChain, sourceChain }: Input) {
-  const sourceChainsMatch = sourceChain === currentSourceChain;
+const TransactionSteps = () => {
+  const { transaction } = useOverrideSourceTargetContext();
+  const steps = useTransactionSteps();
 
-  const sourceRole = sourceChainsMatch ? ChainSubscriptions.SOURCE : ChainSubscriptions.TARGET;
-  const targetRole = sourceChainsMatch ? ChainSubscriptions.TARGET : ChainSubscriptions.SOURCE;
+  return <TransactionReceipt steps={steps} type={transaction.type} status={transaction.status} />;
+};
 
-  return { sourceRole, targetRole, sourceChainsMatch };
-}
+export default TransactionSteps;

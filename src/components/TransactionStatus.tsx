@@ -15,11 +15,10 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React from 'react';
-
-import useTransactionSteps from '../hooks/transactions/useTransactionSteps';
 import { TransactionStatusType } from '../types/transactionTypes';
-import TransactionReceipt from './TransactionReceipt';
 import TransactionSwitchTab from './TransactionSwitchTab';
+import OverrideSourceTarget from './OverrideSourceTarget';
+import TransactionSteps from './TransactionSteps';
 
 export interface TransactionDisplayProps {
   size?: 'sm';
@@ -31,7 +30,6 @@ interface Props {
 }
 
 const TransactionStatus = ({ transaction, onComplete }: Props) => {
-  const steps = useTransactionSteps({ transaction, onComplete });
   const { payloadHex, transactionDisplayPayload } = transaction;
 
   return (
@@ -41,7 +39,9 @@ const TransactionStatus = ({ transaction, onComplete }: Props) => {
       status={transaction.status}
       type={transaction.type}
     >
-      <TransactionReceipt steps={steps} type={transaction.type} status={transaction.status} />
+      <OverrideSourceTarget transaction={transaction} onComplete={onComplete}>
+        <TransactionSteps />
+      </OverrideSourceTarget>
     </TransactionSwitchTab>
   );
 };

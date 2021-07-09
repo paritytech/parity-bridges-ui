@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import { Subscriptions } from '../types/subscriptionsTypes';
+import { ApiPromise } from '@polkadot/api';
 import { TransactionActionTypes } from '../actions/transactionActions';
 import { ChainState } from './sourceTargetTypes';
 import BN from 'bn.js';
@@ -114,4 +116,12 @@ export interface ReceiverPayload {
   unformattedReceiverAddress: string | null;
   sourceChainDetails: ChainState;
   targetChainDetails: ChainState;
+}
+
+export interface OverrideSourceTargetContextType {
+  targetApi: ApiPromise;
+  transaction: TransactionStatusType;
+  sourceSubscriptions: Subscriptions;
+  targetSubscriptions: Subscriptions;
+  onComplete: () => void;
 }

@@ -15,44 +15,26 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { useEffect } from 'react';
-import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
-import { useSubscriptionsContext } from '../../contexts/SubscriptionsContextProvider';
-
+import { useOverrideSourceTargetContext } from '../../components/OverrideSourceTarget';
 import useLaneId from '../chain/useLaneId';
-import useLoadingApi from '../connections/useLoadingApi';
 import { useMountedState } from '../react/useMountedState';
-import useChainGetters from '../chain/useChainGetters';
 import { isTransactionCompleted } from '../../util/transactionUtils';
-import { getChainSubscriptionsKey } from '../../util/chainsUtils';
-import { TransactionStatusType } from '../../types/transactionTypes';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
 import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
 
-interface Props {
-  transaction: TransactionStatusType;
-}
-
-const useTransactionNonces = ({ transaction }: Props) => {
+const useTransactionNonces = () => {
   const [nonceOfBestTargetBlock, setNonceOfBestTargetBlock] = useMountedState<null | number>(null);
   const [nonceOfFinalTargetBlock, setNonceOfFinalTargetBlock] = useMountedState<null | number>(null);
-  const subscriptions = useSubscriptionsContext();
-  const { getValuesByChain } = useChainGetters();
+  const { targetApi, transaction, targetSubscriptions } = useOverrideSourceTargetContext();
+
   const laneId = useLaneId();
-  const { areApiReady } = useLoadingApi();
   const { sourceChain, targetChain } = transaction;
-  const { api: targetApi } = getValuesByChain(targetChain);
-  const { targetRole } = getChainSubscriptionsKey({
-    useSourceTarget,
-    sourceChain
-  });
   const { createType, stateCall } = useApiCallsContext();
-
-  const { bestBlockFinalized, bestBlock } = subscriptions[targetRole];
-
+  const { bestBlockFinalized, bestBlock } = targetSubscriptions;
   const { latestReceivedNonceMethodName } = getSubstrateDynamicNames(sourceChain);
 
   useEffect(() => {
-    if (!areApiReady || !transaction || !transaction || isTransactionCompleted(transaction)) {
+    if (!transaction || isTransactionCompleted(transaction)) {
       return;
     }
 
@@ -81,18 +63,17 @@ const useTransactionNonces = ({ transaction }: Props) => {
 
     updateNonces();
   }, [
-    areApiReady,
-    transaction,
+    bestBlock,
+    bestBlockFinalized,
+    createType,
     laneId,
     latestReceivedNonceMethodName,
     setNonceOfBestTargetBlock,
     setNonceOfFinalTargetBlock,
-    bestBlock,
-    bestBlockFinalized,
     stateCall,
+    targetApi.rpc.chain,
     targetChain,
-    createType,
-    targetApi.rpc.chain
+    transaction
   ]);
 
   return { nonceOfBestTargetBlock, nonceOfFinalTargetBlock };
