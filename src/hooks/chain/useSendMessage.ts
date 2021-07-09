@@ -131,6 +131,7 @@ function useSendMessage({ isValidCall, input, type, weightInput }: Props) {
                           block,
                           blockHash: status.asInBlock.toString(),
                           messageNonce,
+                          evaluating: false,
                           status: TransactionStatusEnum.IN_PROGRESS
                         },
                         id
