@@ -23,6 +23,7 @@ import useSendMessage from '../hooks/chain/useSendMessage';
 import useApiCalls from '../hooks/api/useApiCalls';
 import { TransactionTypes } from '../types/transactionTypes';
 import useDebounceState from '../hooks/react/useDebounceState';
+import logger from '../util/logger';
 
 const initialValue = '0x';
 
@@ -57,6 +58,7 @@ const CustomCall = () => {
         const call = createType(targetChain, 'Call', input);
         setDecoded(JSON.stringify(call, null, 4));
       } catch (e) {
+        logger.error('Wrong call', e);
         setError('Wrong call provided');
         setDecoded(null);
       }
