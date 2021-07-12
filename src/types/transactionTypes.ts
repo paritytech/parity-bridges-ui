@@ -66,6 +66,7 @@ export interface TransactionStatusType extends UpdatedTransactionStatusType {
 }
 
 export interface TransactionState {
+  senderAccount: string | null;
   transferAmount: BN | null;
   transferAmountError: string | null;
   estimatedFee: string | null;
@@ -78,6 +79,7 @@ export interface TransactionState {
   transactions: Array<TransactionStatusType>;
   transactionDisplayPayload: TransactionDisplayPayload;
   transactionRunning: boolean;
+  transactionReadyToExecute: boolean;
   addressValidationError: string | null;
   showBalance: boolean;
   formatFound: string | null;
