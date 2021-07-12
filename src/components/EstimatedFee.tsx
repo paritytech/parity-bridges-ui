@@ -49,9 +49,10 @@ export const EstimatedFee = (): React.ReactElement => {
   return (
     <div>
       <Typography variant="body1" color="secondary">
-        {`Estimated source Fee ${estimatedFeeLoading ? 'Loading' : ''}`}
-        <span className={`${estimatedFeeLoading ? classes.blurred : ''} ${classes.amount}`}>{amount}</span>
-        {!estimatedFeeLoading && chainTokens}
+        {`Estimated ${sourceChainDetails.chain} fee ${estimatedFeeLoading ? '...' : ''}`}
+        <span className={`${estimatedFeeLoading ? classes.blurred : ''} ${classes.amount}`}>
+          {amount} {chainTokens}
+        </span>
       </Typography>
     </div>
   );
