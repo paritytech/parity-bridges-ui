@@ -14,22 +14,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { TextField } from '@material-ui/core';
-import React, { useState } from 'react';
+import { TextField, Typography } from '@material-ui/core';
+import React from 'react';
 import { ButtonSubmit } from '../components';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useSendMessage from '../hooks/chain/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
 import { EstimatedFee } from './EstimatedFee';
+import useDebounceState from '../hooks/react/useDebounceState';
+
+const initialValue = '0x';
 
 const Remark = () => {
-  const [remarkInput, setRemarkInput] = useState('0x');
+  const [currentInput, setRemarkInput, remarkDebouncedInput] = useDebounceState({ initialValue });
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
-    input: remarkInput,
+    input: remarkDebouncedInput,
     type: TransactionTypes.REMARK
   });
+
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRemarkInput(event.target.value);
   };
@@ -39,7 +43,7 @@ const Remark = () => {
     <>
       <TextField
         label="Remark"
-        value={remarkInput}
+        value={currentInput}
         variant="outlined"
         fullWidth
         multiline

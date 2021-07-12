@@ -20,16 +20,17 @@ import { useCallback } from 'react';
 import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import { TransactionActionCreators } from '../../actions/transactionActions';
-import { useUpdateTransactionContext } from '../../contexts/TransactionContext';
+import { useUpdateTransactionContext, useTransactionContext } from '../../contexts/TransactionContext';
 import useDispatchGenericCall from '../api/useDispatchGenericCall';
 import logger from '../../util/logger';
 
 interface Input {
+  input: string;
   call: Uint8Array | null;
   weight: number | null;
 }
 
-export const usePayload = ({ call, weight }: Input) => {
+export const usePayload = () => {
   const { createType } = useApiCallsContext();
   const {
     sourceChainDetails: { chain: sourceChain },
@@ -38,27 +39,32 @@ export const usePayload = ({ call, weight }: Input) => {
     }
   } = useSourceTarget();
   const { dispatchTransaction } = useUpdateTransactionContext();
+  const { receiverAddress } = useTransactionContext();
   const { account } = useAccountContext();
 
-  const payloadCallback = useCallback(() => {
-    if (!account || !call || !weight) {
-      return null;
-    }
+  const payloadCallback = useCallback(
+    ({ call, weight }: Input) => {
+      if (!account || !call || !weight || !receiverAddress) {
+        return null;
+      }
 
-    const payload = {
-      call: compactAddLength(call!),
-      origin: {
-        SourceAccount: account!.addressRaw
-      },
-      spec_version: targetApi.consts.system.version.specVersion.toNumber(),
-      weight
-    };
-    // @ts-ignore
-    const payloadType = createType(sourceChain, 'OutboundPayload', payload);
-    logger.info(`OutboundPayload: ${JSON.stringify(payload)}`);
-    logger.info(`OutboundPayload.toHex(): ${payloadType.toHex()}`);
-    return payload;
-  }, [account, call, createType, sourceChain, targetApi, weight]);
+      const payload = {
+        call: compactAddLength(call!),
+        origin: {
+          SourceAccount: account!.addressRaw
+        },
+        spec_version: targetApi.consts.system.version.specVersion.toNumber(),
+        weight
+      };
+
+      // @ts-ignore
+      const payloadType = createType(sourceChain, 'OutboundPayload', payload);
+      logger.info(`OutboundPayload: ${JSON.stringify(payload)}`);
+      logger.info(`OutboundPayload.toHex(): ${payloadType.toHex()}`);
+      return payload;
+    },
+    [account, createType, receiverAddress, sourceChain, targetApi.consts.system.version.specVersion]
+  );
 
   const dispatch = useCallback(
     (error: string | null, data: any) => dispatchTransaction(TransactionActionCreators.setPayload(error, data)),
