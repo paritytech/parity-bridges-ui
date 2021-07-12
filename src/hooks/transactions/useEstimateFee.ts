@@ -39,6 +39,7 @@ export const useEstimateFee = () => {
       if (!payloadInput) {
         return null;
       }
+
       // Ignoring custom types missed for TS for now.
       // Need to apply: https://polkadot.js.org/docs/api/start/typescript.user
       const payloadType = createType(sourceChain as keyof InterfaceTypes, 'OutboundPayload', payloadInput);

@@ -29,6 +29,7 @@ enum TransactionActionTypes {
   SET_RECEIVER = 'SET_RECEIVER',
   SET_RECEIVER_ADDRESS = 'SET_RECEIVER_ADDRESS',
   SET_RECEIVER_VALIDATION = 'SET_RECEIVER_VALIDATION',
+  SET_SENDER_ACCOUNT = 'SET_SENDER_ACCOUNT',
   CREATE_TRANSACTION_STATUS = 'CREATE_TRANSACTION_STATUS',
   UPDATE_CURRENT_TRANSACTION_STATUS = 'UPDATE_CURRENT_TRANSACTION_STATUS',
   SET_TRANSACTION_COMPLETED = 'SET_TRANSACTION_COMPLETED',
@@ -93,16 +94,22 @@ const setTransactionRunning = (transactionRunning: boolean) => ({
   type: TransactionActionTypes.SET_TRANSACTION_RUNNING
 });
 
+const setSenderAccount = (senderAccount: string | null) => ({
+  payload: { senderAccount },
+  type: TransactionActionTypes.SET_SENDER_ACCOUNT
+});
+
 const TransactionActionCreators = {
-  setTransferAmount,
-  setEstimatedFee,
-  createTransactionStatus,
+  setSenderAccount,
   setReceiverAddress,
   setReceiver,
+  setTransferAmount,
+  setEstimatedFee,
+  setTransactionRunning,
+  createTransactionStatus,
   updateTransactionStatus,
   setPayload,
-  reset,
-  setTransactionRunning
+  reset
 };
 
 export { TransactionActionCreators, TransactionActionTypes };
