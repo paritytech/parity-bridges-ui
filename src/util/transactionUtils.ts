@@ -28,6 +28,7 @@ import { encodeAddress } from '@polkadot/util-crypto';
 import { SourceTargetState } from '../types/sourceTargetTypes';
 import { MessageActionsCreators } from '../actions/messageActions';
 import { getSubstrateDynamicNames } from './getSubstrateDynamicNames';
+import isEmpty from 'lodash/isEmpty';
 
 export function isTransactionCompleted(transaction: TransactionStatusType): boolean {
   return transaction.status === TransactionStatusEnum.COMPLETED;
@@ -198,44 +199,12 @@ export const handleTransactionUpdates = async ({
   }
 
   const updatedSteps = [
-    {
-      id: 'test-step-include-message-block',
-      chainType: sourceChain,
-      label: 'Include message in block',
-      labelOnChain: transaction.block,
-      status: completionStatus(!!transaction.block)
-    },
-    {
-      id: 'test-step-finalized-block',
-      chainType: sourceChain,
-      label: 'Finalize block',
-      status: completionStatus(sourceTransactionFinalized)
-    },
-    {
-      id: 'test-step-relay-block',
-      chainType: targetChain,
-      label: 'Relay block',
-      status: completionStatus(blockFinalityRelayed)
-    },
-    {
-      id: 'test-step-deliver-message-block',
-      chainType: targetChain,
-      label: 'Deliver message in target block',
-      labelOnChain: onChainCompleted(messageDelivered) && deliveryBlock,
-      status: completionStatus(messageDelivered)
-    },
-    {
-      id: 'test-step-finalized-message',
-      chainType: targetChain,
-      label: 'Finalize message',
-      status: completionStatus(messageFinalizedOnTarget)
-    },
-    {
-      id: 'test-step-confirm-delivery',
-      chainType: sourceChain,
-      label: 'Confirm delivery',
-      status: completionStatus(sourceConfirmationReceived)
-    }
+    step(1, sourceChain, completionStatus(!!transaction.block), transaction.block),
+    step(2, sourceChain, completionStatus(sourceTransactionFinalized)),
+    step(3, targetChain, completionStatus(blockFinalityRelayed)),
+    step(4, targetChain, completionStatus(messageDelivered), onChainCompleted(messageDelivered) && deliveryBlock),
+    step(5, targetChain, completionStatus(messageFinalizedOnTarget)),
+    step(6, sourceChain, completionStatus(sourceConfirmationReceived))
   ];
 
   return {
@@ -247,41 +216,33 @@ export const handleTransactionUpdates = async ({
   };
 };
 
-export const createEmptySteps = (sourceChain: string, targetChain: string) => [
-  {
-    id: 'test-step-include-message-block',
-    chainType: sourceChain,
-    label: 'Include message in block',
-    status: TransactionStatusEnum.NOT_STARTED
-  },
-  {
-    id: 'test-step-finalized-block',
-    chainType: sourceChain,
-    label: 'Finalize block',
-    status: TransactionStatusEnum.NOT_STARTED
-  },
-  {
-    id: 'test-step-relay-block',
-    chainType: targetChain,
-    label: 'Relay block',
-    status: TransactionStatusEnum.NOT_STARTED
-  },
-  {
-    id: 'test-step-deliver-message-block',
-    chainType: targetChain,
-    label: 'Deliver message in target block',
-    status: TransactionStatusEnum.NOT_STARTED
-  },
-  {
-    id: 'test-step-finalized-message',
-    chainType: targetChain,
-    label: 'Finalize message',
-    status: TransactionStatusEnum.NOT_STARTED
-  },
-  {
-    id: 'test-step-confirm-delivery',
-    chainType: sourceChain,
-    label: 'Confirm delivery',
-    status: TransactionStatusEnum.NOT_STARTED
+const steps = [
+  ['include-message-block', 'Include message in block'],
+  ['finalized-block', 'Finalize block'],
+  ['relay-block', 'Relay block'],
+  ['deliver-message-block', 'Deliver message in target block'],
+  ['finalized-message', 'Finalize message'],
+  ['confirm-delivery', 'Confirm delivery']
+];
+
+const step = (step: number, chainType: string, status?: TransactionStatusEnum, labelOnChain?: any) => {
+  const obj = {
+    id: 'test-step-' + steps[step - 1][0],
+    chainType,
+    label: steps[step - 1][1],
+    status: status || TransactionStatusEnum.NOT_STARTED
+  };
+  if (!isEmpty(labelOnChain)) {
+    return { ...obj, labelOnChain };
   }
+  return obj;
+};
+
+export const createEmptySteps = (sourceChain: string, targetChain: string) => [
+  step(1, sourceChain),
+  step(2, sourceChain),
+  step(3, targetChain),
+  step(4, targetChain),
+  step(5, targetChain),
+  step(6, sourceChain)
 ];
