@@ -29,7 +29,7 @@ interface Input<T> {
 
 export const useDebounceState = <T>({
   initialValue,
-  wait = 250,
+  wait = 500,
   transformCallback,
   dispatchCallback
 }: Input<T>): Output<T> => {
@@ -52,7 +52,7 @@ export const useDebounceState = <T>({
   );
 
   useEffect(() => {
-    previousDebounced && previousDebounced !== debounced && dispatchCallback && dispatchCallback(debounced);
+    previousDebounced !== debounced && dispatchCallback && dispatchCallback(debounced);
   }, [debounced, dispatchCallback, previousDebounced]);
 
   return [value, setValueCallback, debounced];
