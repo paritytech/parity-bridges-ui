@@ -47,7 +47,7 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
   const { children = null } = props;
   const { account } = useAccountContext();
 
-  const [transaction, dispatchTransaction] = useReducer(transactionReducer, {
+  const [transactionsState, dispatchTransaction] = useReducer(transactionReducer, {
     senderAccount: null,
     transferAmount: null,
     transferAmountError: null,
@@ -70,12 +70,14 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     payloadHex: null
   });
 
+  useTransactionsStatus(transactionsState.transactions, dispatchTransaction);
+
   useEffect((): void => {
     dispatchTransaction(TransactionActionCreators.setSenderAccount(account ? account.address : null));
   }, [account, dispatchTransaction]);
 
   return (
-    <TransactionContext.Provider value={transaction}>
+    <TransactionContext.Provider value={transactionsState}>
       <UpdateTransactionContext.Provider value={{ dispatchTransaction }}>{children}</UpdateTransactionContext.Provider>
     </TransactionContext.Provider>
   );
