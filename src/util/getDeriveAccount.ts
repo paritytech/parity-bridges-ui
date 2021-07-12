@@ -26,6 +26,9 @@ interface Data {
 }
 
 export default function getDeriveAccount({ ss58Format = 42, bridgeId, address }: Data): string {
+  if (!address) {
+    return address;
+  }
   const input = [...compactAddLength(stringToU8a(accountDerivation)), ...bridgeId, ...decodeAddress(address)];
   return encodeAddress(blake2AsHex(Uint8Array.from(input)), ss58Format);
 }

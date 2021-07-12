@@ -20,6 +20,14 @@ export default function accountReducer(state: AccountState, action: AccountsActi
   switch (action.type) {
     case AccountActionsTypes.SET_ACCOUNT:
       return { ...state, account: action.payload.account };
+    case AccountActionsTypes.SET_SENDER_COMPANION_ACCOUNT:
+      return { ...state, companionAccount: action.payload.companionAccount };
+    case AccountActionsTypes.SET_SENDER_BALANCES:
+      return {
+        ...state,
+        senderAccountBalance: action.payload.senderAccountBalance,
+        senderCompanionAccountBalance: action.payload.senderCompanionAccountBalance
+      };
     default:
       throw new Error(`Unknown type: ${action.type}`);
   }
