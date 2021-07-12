@@ -35,9 +35,9 @@ const chromeOptions = {
     await page.goto(globals.SERVER_URL, { waitUntil: 'domcontentloaded' });
 
     // Run happy path test for submitting a transaction
-    await page.waitForSelector('#test_sender_component');
+    await page.waitForSelector('#test-sender-component');
     await page.waitForTimeout(1000);
-    await page.click('#test_sender_component').then(() => console.log('-- Open Sender dropdown'));
+    await page.click('#test-sender-component').then(() => console.log('-- Open Sender dropdown'));
     await page.waitForTimeout(1000);
     const [aliceOption] = await page.$x("//div[contains(., '5sauUX')]");
     await page.waitForTimeout(500);
