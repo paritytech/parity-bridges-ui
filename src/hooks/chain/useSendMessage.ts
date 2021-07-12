@@ -18,6 +18,7 @@ import { useCallback } from 'react';
 import { SignerOptions } from '@polkadot/api/types';
 import { web3FromSource } from '@polkadot/extension-dapp';
 import type { KeyringPair } from '@polkadot/keyring/types';
+import type { InterfaceTypes } from '@polkadot/types/types';
 import moment from 'moment';
 import { MessageActionsCreators } from '../../actions/messageActions';
 import { TransactionActionCreators } from '../../actions/transactionActions';
@@ -64,8 +65,7 @@ function useSendMessage({ isValidCall, input, type, weightInput }: Props) {
         if (!account || transactionRunning || !payload) {
           return;
         }
-        //@ts-ignore
-        const payloadType = createType(sourceChain, 'OutboundPayload', payload);
+        const payloadType = createType(sourceChain as keyof InterfaceTypes, 'OutboundPayload', payload);
         const payloadHex = payloadType.toHex();
 
         const { bridgedMessages } = getSubstrateDynamicNames(targetChain);
