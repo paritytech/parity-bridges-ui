@@ -91,6 +91,23 @@ export function evalUnits(input: string, chainDecimals: number): [BN | null, str
 }
 
 export function transformToBaseUnit(estFee: string, chainDecimals: number): string {
-  const est = parseInt(estFee) / 10 ** chainDecimals;
-  return est.toString();
+  const t = estFee.length - chainDecimals;
+  let s = '';
+  // if chainDecimals are more than the estFee length
+  if (t < 0) {
+    // add 0 in front (1 less as we want the 0.)
+    for (let i = 0; i < Math.abs(t) - 1; i++) {
+      s += '0';
+    }
+    s = s + estFee;
+    // remove trailing 0s
+    for (let i = 0; i < s.length; i++) {
+      if (s.slice(s.length - 1) !== '0') break;
+      s = s.substring(0, s.length - 1);
+    }
+    s = '0.' + s;
+  } else {
+    s = (parseInt(estFee) / 10 ** chainDecimals).toString();
+  }
+  return parseFloat(s) !== 0 ? s : '0';
 }
