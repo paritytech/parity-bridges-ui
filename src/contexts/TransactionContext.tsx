@@ -70,7 +70,7 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
   });
 
   useEffect((): void => {
-    account && dispatchTransaction(TransactionActionCreators.setSenderAccount(account.address));
+    dispatchTransaction(TransactionActionCreators.setSenderAccount(account ? account.address : null));
   }, [account, dispatchTransaction]);
 
   return (
