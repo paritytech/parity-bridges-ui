@@ -24,9 +24,6 @@ import { useTransactionContext } from '../contexts/TransactionContext';
 import { transformToBaseUnit } from '../util/evalUnits';
 
 const useStyles = makeStyles(() => ({
-  blurred: {
-    filter: 'blur(3px)'
-  },
   amount: {
     padding: '0 10px',
     width: '50%'
@@ -50,7 +47,7 @@ export const EstimatedFee = (): React.ReactElement => {
     <div>
       <Typography variant="body1" color="secondary">
         {`Estimated ${sourceChainDetails.chain} fee ${estimatedFeeLoading ? '...' : ''}`}
-        <span className={`${estimatedFeeLoading ? classes.blurred : ''} ${classes.amount}`}>
+        <span className={classes.amount}>
           {amount} {chainTokens}
         </span>
       </Typography>
