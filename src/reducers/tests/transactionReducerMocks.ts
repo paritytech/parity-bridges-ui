@@ -18,6 +18,7 @@ import { ApiPromise } from '@polkadot/api';
 import { TransactionDisplayPayload } from '../../types/transactionTypes';
 
 export const state = {
+  senderAccount: null,
   transferAmount: null,
   transferAmountError: null,
   estimatedFee: null,
@@ -30,6 +31,7 @@ export const state = {
   transactions: [],
   transactionDisplayPayload: {} as TransactionDisplayPayload,
   transactionRunning: false,
+  transactionReadyToExecute: false,
   addressValidationError: null,
   showBalance: false,
   formatFound: null,

@@ -61,9 +61,10 @@ function useSendMessage({ isValidCall, input, type, weightInput }: Props) {
   const makeCall = useCallback(
     async (id: string) => {
       try {
-        if (!account || transactionRunning || !payload) {
+        if (!account || !payload) {
           return;
         }
+
         //@ts-ignore
         const payloadType = createType(sourceChain, 'OutboundPayload', payload);
         const payloadHex = payloadType.toHex();
@@ -169,7 +170,6 @@ function useSendMessage({ isValidCall, input, type, weightInput }: Props) {
       laneId,
       payload,
       receiverAddress,
-      transactionRunning,
       sourceApi.rpc.chain,
       sourceApi.tx,
       sourceChain,
@@ -180,13 +180,10 @@ function useSendMessage({ isValidCall, input, type, weightInput }: Props) {
   );
 
   const sendLaneMessage = useCallback(() => {
-    if (!account || transactionRunning) {
-      return;
-    }
     const id = moment().format('x');
     dispatchTransaction(TransactionActionCreators.setTransactionRunning(true));
     return makeCall(id);
-  }, [account, transactionRunning, dispatchTransaction, makeCall]);
+  }, [dispatchTransaction, makeCall]);
 
   const { areApiReady } = useLoadingApi();
 
@@ -195,18 +192,15 @@ function useSendMessage({ isValidCall, input, type, weightInput }: Props) {
       case TransactionTypes.REMARK:
         return transactionRunning || !account || !areApiReady;
         break;
-      case TransactionTypes.TRANSFER:
-        return transactionRunning || !receiverAddress || !input || !account || !areApiReady;
-        break;
       case TransactionTypes.CUSTOM:
         return transactionRunning || !account || !input || !weightInput || !isValidCall || !areApiReady;
         break;
       default:
         throw new Error(`Unknown type: ${type}`);
     }
-  }, [account, areApiReady, input, transactionRunning, isValidCall, receiverAddress, type, weightInput]);
+  }, [account, areApiReady, input, isValidCall, transactionRunning, type, weightInput]);
 
-  return { isButtonDisabled, sendLaneMessage };
+  return { sendLaneMessage, isButtonDisabled };
 }
 
 export default useSendMessage;
