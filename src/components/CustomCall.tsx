@@ -58,10 +58,7 @@ const CustomCall = () => {
         setDecoded(JSON.stringify(call, null, 4));
       } catch (e) {
         logger.error('Wrong call', e);
-        setError('Wrong call provided');<<<<<<< nik-fix-estimated-Fee-component-and-transform
-25
- 
-
+        setError('Wrong call provided');
         setDecoded(null);
       }
     },

@@ -135,5 +135,4 @@ describe('Tests suite - transformToBaseUnit', () => {
     const result = transformToBaseUnit('0.0000', 20);
     expect(result).toBe('0');
   });
-
 });
