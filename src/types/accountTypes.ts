@@ -30,6 +30,7 @@ interface Payload {
 
 export interface AccountState {
   account: Account;
+  derivedAccount: Account;
 }
 
 export type AccountsActionType = { type: AccountActionsTypes; payload: Payload };
