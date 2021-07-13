@@ -20,10 +20,6 @@ import { AccountActionsTypes } from '../actions/accountActions';
 
 export type Account = KeyringPair | null;
 
-export interface AccountContextType {
-  account: Account;
-}
-
 interface Payload {
   [propName: string]: any;
 }

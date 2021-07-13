@@ -20,16 +20,12 @@ import { encodeAddress } from '@polkadot/util-crypto';
 import { AccountActionCreators } from '../../actions/accountActions';
 import { SourceTargetActionsCreators } from '../../actions/sourceTargetActions';
 import { useUpdateAccountContext } from '../../contexts/AccountContextProvider';
-import { useAccountContext } from '../../contexts/AccountContextProvider';
 import { useKeyringContext } from '../../contexts/KeyringContextProvider';
 import { useUpdateSourceTarget } from '../../contexts/SourceTargetContextProvider';
-import useDerivedAccount from './useDerivedAccount';
 import useChainGetters from '../chain/useChainGetters';
 
 interface Accounts {
-  account: KeyringPair | null;
   accounts: Array<KeyringPair> | [];
-  derivedAccount: string | null;
   setCurrentAccount: (value: string, chain: string) => void;
 }
 
@@ -38,8 +34,6 @@ const useAccounts = (): Accounts => {
   const [accounts, setAccounts] = useState<Array<KeyringPair> | []>([]);
   const { dispatchAccount } = useUpdateAccountContext();
   const { dispatchChangeSourceTarget } = useUpdateSourceTarget();
-  const derivedAccount = useDerivedAccount();
-  const { account } = useAccountContext();
   const { getSS58PrefixByChain } = useChainGetters();
 
   useEffect(() => {
@@ -62,9 +56,7 @@ const useAccounts = (): Accounts => {
   );
 
   return {
-    account,
     accounts,
-    derivedAccount,
     setCurrentAccount
   };
 };

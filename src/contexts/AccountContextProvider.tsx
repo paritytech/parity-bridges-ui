@@ -17,7 +17,7 @@
 import React, { useContext, useReducer } from 'react';
 import useSourceAccountsBalances from '../hooks/accounts/useSourceAccountsBalances';
 import accountReducer from '../reducers/accountReducer';
-import { AccountContextType, AccountsActionType } from '../types/accountTypes';
+import { AccountState, AccountsActionType } from '../types/accountTypes';
 
 interface AccountContextProviderProps {
   children: React.ReactElement;
@@ -27,7 +27,7 @@ export interface UpdateAccountContext {
   dispatchAccount: React.Dispatch<AccountsActionType>;
 }
 
-export const AccountContext: React.Context<AccountContextType> = React.createContext({} as AccountContextType);
+export const AccountContext: React.Context<AccountState> = React.createContext({} as AccountState);
 
 export const UpdateAccountContext: React.Context<UpdateAccountContext> = React.createContext(
   {} as UpdateAccountContext

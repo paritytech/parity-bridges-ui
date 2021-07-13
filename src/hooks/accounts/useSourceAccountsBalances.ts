@@ -19,10 +19,10 @@ import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import { getBridgeId } from '../../util/getConfigs';
 import getDeriveAccount from '../../util/getDeriveAccount';
 import useBalance from '../subscriptions/useBalance';
-import { AccountContextType } from '../../types/accountTypes';
+import { AccountState } from '../../types/accountTypes';
 import { AccountActionCreators } from '../../actions/accountActions';
 
-const useSourceAccountsBalances = (accountState: AccountContextType, dispatchAccount: Function) => {
+const useSourceAccountsBalances = (accountState: AccountState, dispatchAccount: Function) => {
   const {
     targetChainDetails: {
       apiConnection: { api: targetApi },
