@@ -14,10 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useContext, useReducer } from 'react';
+import React, { useContext, useReducer, useEffect } from 'react';
 import useSourceAccountsBalances from '../hooks/accounts/useSourceAccountsBalances';
+import { AccountActionCreators } from '../actions/accountActions';
 import accountReducer from '../reducers/accountReducer';
-import { AccountContextType, AccountsActionType } from '../types/accountTypes';
+import { AccountState, AccountsActionType } from '../types/accountTypes';
+import { useKeyringContext } from './KeyringContextProvider';
 
 interface AccountContextProviderProps {
   children: React.ReactElement;
@@ -27,7 +29,7 @@ export interface UpdateAccountContext {
   dispatchAccount: React.Dispatch<AccountsActionType>;
 }
 
-export const AccountContext: React.Context<AccountContextType> = React.createContext({} as AccountContextType);
+export const AccountContext: React.Context<AccountState> = React.createContext({} as AccountState);
 
 export const UpdateAccountContext: React.Context<UpdateAccountContext> = React.createContext(
   {} as UpdateAccountContext
@@ -43,15 +45,22 @@ export function useUpdateAccountContext() {
 
 export function AccountContextProvider(props: AccountContextProviderProps): React.ReactElement {
   const { children = null } = props;
-
+  const { keyringPairs, keyringPairsReady } = useKeyringContext();
   const [accountState, dispatchAccount] = useReducer(accountReducer, {
     account: null,
+    accounts: [],
     companionAccount: null,
     senderAccountBalance: null,
     senderCompanionAccountBalance: null
   });
 
   useSourceAccountsBalances(accountState, dispatchAccount);
+
+  useEffect(() => {
+    if (keyringPairsReady && keyringPairs.length) {
+      dispatchAccount(AccountActionCreators.setAccounts(keyringPairs));
+    }
+  }, [keyringPairsReady, keyringPairs, dispatchAccount]);
 
   return (
     <AccountContext.Provider value={accountState}>

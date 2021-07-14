@@ -15,6 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { useCallback } from 'react';
+import { Text, Bytes } from '@polkadot/types';
 import { Codec } from '@polkadot/types/types';
 import { ApiCallsContextType } from '../../types/apiCallsTypes';
 import useChainGetters from '../chain/useChainGetters';
@@ -31,14 +32,14 @@ const useApiCalls = (): ApiCallsContextType => {
   );
 
   const stateCall = useCallback(
-    (chain, methodName, data, at) => {
+    (chain: string, methodName: string | Text, data: string | Uint8Array | Bytes, at) => {
       const { api } = getValuesByChain(chain);
 
-      const params = [methodName, data];
+      const params: [string | Text, string | Uint8Array | Bytes] = [methodName, data];
       if (at) {
         params.push(at);
       }
-      // @ts-ignore
+
       return api.rpc.state.call<Codec>(...params);
     },
     [getValuesByChain]

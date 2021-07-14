@@ -28,6 +28,8 @@ export default function accountReducer(state: AccountState, action: AccountsActi
         senderAccountBalance: action.payload.senderAccountBalance,
         senderCompanionAccountBalance: action.payload.senderCompanionAccountBalance
       };
+    case AccountActionsTypes.SET_ACCOUNTS:
+      return { ...state, accounts: action.payload.accounts };
     default:
       throw new Error(`Unknown type: ${action.type}`);
   }
