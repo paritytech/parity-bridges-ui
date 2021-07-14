@@ -17,7 +17,6 @@ import { AccountActionsTypes } from '../actions/accountActions';
 import type { AccountsActionType, AccountState } from '../types/accountTypes';
 
 export default function accountReducer(state: AccountState, action: AccountsActionType): AccountState {
-  console.log(action);
   switch (action.type) {
     case AccountActionsTypes.SET_ACCOUNT:
       return { ...state, account: action.payload.account };
