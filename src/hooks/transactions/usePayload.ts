@@ -23,6 +23,7 @@ import { TransactionActionCreators } from '../../actions/transactionActions';
 import { useUpdateTransactionContext, useTransactionContext } from '../../contexts/TransactionContext';
 import useDispatchGenericCall from '../api/useDispatchGenericCall';
 import logger from '../../util/logger';
+import type { InterfaceTypes } from '@polkadot/types/types';
 
 interface Input {
   input: string;
@@ -57,8 +58,7 @@ export const usePayload = () => {
         weight
       };
 
-      // @ts-ignore
-      const payloadType = createType(sourceChain, 'OutboundPayload', payload);
+      const payloadType = createType(sourceChain as keyof InterfaceTypes, 'OutboundPayload', payload);
       logger.info(`OutboundPayload: ${JSON.stringify(payload)}`);
       logger.info(`OutboundPayload.toHex(): ${payloadType.toHex()}`);
       return payload;

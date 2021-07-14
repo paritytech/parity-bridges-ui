@@ -15,21 +15,16 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import type { KeyringPair } from '@polkadot/keyring/types';
-
 import { AccountActionsTypes } from '../actions/accountActions';
 
 export type Account = KeyringPair | null;
 
-export interface AccountContextType {
-  account: Account;
+export interface Payload {
+  [propName: string]: any;
 }
-
-interface Payload {
-  [propName: string]: Account;
-}
-
 export interface AccountState {
   account: Account;
+  accounts: Array<KeyringPair> | [];
 }
 
 export type AccountsActionType = { type: AccountActionsTypes; payload: Payload };

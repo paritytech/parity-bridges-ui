@@ -29,6 +29,7 @@ import { SourceTargetState } from '../types/sourceTargetTypes';
 import { MessageActionsCreators } from '../actions/messageActions';
 import { getSubstrateDynamicNames } from './getSubstrateDynamicNames';
 import isEmpty from 'lodash/isEmpty';
+import type { InterfaceTypes } from '@polkadot/types/types';
 
 export function isTransactionCompleted(transaction: TransactionStatusType): boolean {
   return transaction.status === TransactionStatusEnum.COMPLETED;
@@ -59,13 +60,10 @@ export function getTransactionDisplayPayload({
     },
     targetChainDetails: { chain: targetChain }
   } = sourceTargetDetails;
-  //@ts-ignore
-  const payloadType = createType(sourceChain, 'OutboundPayload', payload);
+  const payloadType = createType(sourceChain as keyof InterfaceTypes, 'OutboundPayload', payload);
   const payloadHex = payloadType.toHex();
-  //@ts-ignore
-  const callType = createType(targetChain, 'BridgedOpaqueCall', payload.call);
-  //@ts-ignore
-  const call = createType(targetChain, 'Call', callType.toHex());
+  const callType = createType(targetChain as keyof InterfaceTypes, 'BridgedOpaqueCall', payload.call);
+  const call = createType(targetChain as keyof InterfaceTypes, 'Call', callType.toHex());
   const formatedAccount = encodeAddress(account, ss58Format);
 
   const transactionDisplayPayload = {} as TransactionDisplayPayload;
@@ -89,9 +87,6 @@ const stepEvaluator = (transactionValue: string | number | null, chainValue: str
 };
 
 const completionStatus = (isCompleted: boolean): TransactionStatusEnum => {
-  /*   if (transaction.id === 0) {
-    return TransactionStatusEnum.NOT_STARTED;
-  } */
   return isCompleted ? TransactionStatusEnum.COMPLETED : TransactionStatusEnum.IN_PROGRESS;
 };
 
