@@ -48,6 +48,7 @@ jobs:
       uses: actions/setup-node@v2
       env:
         PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
+        REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS: 'true'
       with:
         node-version: '14'
     - run: yarn
