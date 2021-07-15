@@ -15,6 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 module.exports = {
+  setupFiles: ["dotenv/config"],
   launch: {
     command: 'yarn start',
     port: 3000,

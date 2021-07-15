@@ -24,6 +24,7 @@ module.exports = {
   transform: {
     '\\.js$': 'react-scripts/config/jest/babelTransform'
   },
+  setupFiles: ["dotenv/config"],
   globalSetup: "./global-setup.js",
   globalTeardown: "./global-teardown.js",
   verbose: true,
