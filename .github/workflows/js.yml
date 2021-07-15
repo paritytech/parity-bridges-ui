@@ -50,7 +50,6 @@ jobs:
         PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
       with:
         args: install
-    - name: Run Jest
     - run: yarn test
     - name: Run Puppeteer
       uses: mujo-code/puppeteer-headful@master
