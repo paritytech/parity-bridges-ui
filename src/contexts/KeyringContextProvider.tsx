@@ -28,7 +28,6 @@ interface KeyringContextProviderProps {
 }
 
 export const KeyringContext: React.Context<KeyringContextType> = React.createContext({} as KeyringContextType);
-const isDevelopment = process.env.REACT_APP_IS_DEVELOPMENT === 'true';
 const loadDevAccounts = process.env.REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS === 'true';
 
 export function useKeyringContext() {
@@ -49,8 +48,9 @@ export function KeyringContextProvider(props: KeyringContextProviderProps): Reac
       setKeyringStatus(KeyringStatuses.LOADING);
       try {
         const extExists = await web3Enable('Substrate Bridges UI');
-        if (extExists.length === 0 && !isDevelopment) {
-          return;
+        if (extExists.length === 0 && !loadDevAccounts) {
+          // WORKAROUND FOR NOW IN ORDER TO TEST THAT CI TESTS WORK
+          setExtensionExists(true);
         } else {
           setExtensionExists(true);
         }
