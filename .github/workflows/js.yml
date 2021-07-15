@@ -27,7 +27,12 @@ jobs:
     - run: yarn
     - run: yarn downloadCustomTypes
     - run: yarn lint
+    # run normal tests
     - run: yarn test
+    # run ui puppeteer tests
+    - run: yarn test:e2e
+    # run end to end puppeteer test
+    - run: yarn test:e2e-alone
 
   build:
     name: Build & Deploy
