@@ -11,7 +11,7 @@ on:
 
 jobs:
   lint:
-    name: Lint
+    name: Lint & test
     runs-on: ubuntu-latest
 
     steps:
@@ -52,7 +52,6 @@ jobs:
         PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
       with:
         args: install
-    - name: Jest Test
     - run: yarn test
     - name: Test Puppeteer
       uses: mujo-code/puppeteer-headful@master
