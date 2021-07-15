@@ -127,8 +127,13 @@ const Sender = () => {
   const AccountSelected = () => {
     if (account) {
       const text = getName(account);
-      <AccountDisplay friendlyName={text} address={account.address} balance={senderAccountBalance?.formattedBalance} />;
-      return <Account friendlyName={text} value={value} chain={sourceChain} />;
+      return (
+        <AccountDisplay
+          friendlyName={text}
+          address={account.address}
+          balance={senderAccountBalance?.formattedBalance}
+        />
+      );
     }
     return <AccountDisplay friendlyName="Select sender account" hideAddress />;
   };
