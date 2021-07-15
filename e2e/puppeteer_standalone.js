@@ -17,7 +17,8 @@ const puppeteer = require('puppeteer');
 const { globals } = require('./jest.config');
 
 const chromeOptions = {
-  executablePath:process.env.chrome,
+  args: ['--no-sandbox'],
+  executablePath: process.env.PUPPETEER_EXEC_PATH, // set by docker container
   headless: false
 };
 

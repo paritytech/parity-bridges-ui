@@ -11,7 +11,7 @@ on:
 
 jobs:
   lint:
-    name: Lint & Test
+    name: Lint
     runs-on: ubuntu-latest
 
     steps:
@@ -27,12 +27,37 @@ jobs:
     - run: yarn
     - run: yarn downloadCustomTypes
     - run: yarn lint
-    # run normal tests
+    # # run normal tests
+    # - run: yarn test
+    # # run ui puppeteer tests
+    # - run: yarn test:e2e
+    # # run end to end puppeteer test
+    # - run: yarn test:e2e-alone
+
+  test:
+    name: Jest & Puppeteer tests
+    runs-on: ubuntu-latest
+    - name: Cancel Previous Runs
+      uses: styfle/cancel-workflow-action@0.4.1
+      with:
+        access_token: ${{ github.token }}
+    - uses: actions/checkout@v2
+    - name: Set-up node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+      env:
+        PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
+      with:
+        args: install
+    - name: Jest Test
     - run: yarn test
-    # run ui puppeteer tests
-    - run: yarn test:e2e
-    # run end to end puppeteer test
-    - run: yarn test:e2e-alone
+    - name: Test Puppeteer
+      uses: mujo-code/puppeteer-headful@master
+      env:
+        CI: 'true'
+      with:
+        args: yarn test:e2e
 
   build:
     name: Build & Deploy
