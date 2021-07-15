@@ -32,4 +32,5 @@ export type StateCall = (
 export interface ApiCallsContextType {
   createType: CreateType;
   stateCall: StateCall;
+  updateSenderBalances: () => Promise<any>;
 }

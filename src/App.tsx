@@ -46,11 +46,11 @@ function App() {
 
   return (
     <SourceTargetContextProvider connections={connections}>
-      <ApiCallsContextProvider>
-        <SubscriptionsContextProvider>
-          <MessageContextProvider>
-            <SnackbarProvider>
-              <KeyringContextProvider>
+      <KeyringContextProvider>
+        <ApiCallsContextProvider>
+          <SubscriptionsContextProvider>
+            <MessageContextProvider>
+              <SnackbarProvider>
                 <AccountContextProvider>
                   <TransactionContextProvider>
                     <BrowserRouter>
@@ -64,11 +64,11 @@ function App() {
                     </BrowserRouter>
                   </TransactionContextProvider>
                 </AccountContextProvider>
-              </KeyringContextProvider>
-            </SnackbarProvider>
-          </MessageContextProvider>
-        </SubscriptionsContextProvider>
-      </ApiCallsContextProvider>
+              </SnackbarProvider>
+            </MessageContextProvider>
+          </SubscriptionsContextProvider>
+        </ApiCallsContextProvider>
+      </KeyringContextProvider>
     </SourceTargetContextProvider>
   );
 }

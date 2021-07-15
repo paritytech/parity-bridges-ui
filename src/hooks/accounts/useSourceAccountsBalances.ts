@@ -22,7 +22,7 @@ import useBalance from '../subscriptions/useBalance';
 import { AccountState } from '../../types/accountTypes';
 import { AccountActionCreators } from '../../actions/accountActions';
 import { useKeyringContext } from '../../contexts/KeyringContextProvider';
-import { formatBalance } from '@polkadot/util';
+import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
 
 const useSourceAccountsBalances = (accountState: AccountState, dispatchAccount: Function) => {
   const {
@@ -36,6 +36,7 @@ const useSourceAccountsBalances = (accountState: AccountState, dispatchAccount: 
     }
   } = useSourceTarget();
   const { keyringPairs } = useKeyringContext();
+  const { updateSenderBalances } = useApiCallsContext();
   const accountBalance = useBalance(sourceApi, accountState.account?.address || '', true);
 
   const toDerive = {
@@ -52,57 +53,9 @@ const useSourceAccountsBalances = (accountState: AccountState, dispatchAccount: 
   }, [accountBalance, companionAccount, companionBalance, dispatchAccount]);
 
   useEffect(() => {
-    const getAccounts = async () => {
-      const formatBalanceAddress = (data: any) => {
-        return {
-          chainTokens: data.registry.chainTokens[0],
-          formattedBalance: formatBalance(data.free, {
-            decimals: sourceApi.registry.chainDecimals[0],
-            withUnit: sourceApi.registry.chainTokens[0],
-            withSi: true
-          }),
-          free: data.free
-        };
-      };
-
-      const addresses = await Promise.all(
-        keyringPairs.map(async ({ address }) => {
-          const toDerive = {
-            ss58Format: configs.ss58Format,
-            address: address || '',
-            bridgeId: getBridgeId(configs, chainName)
-          };
-
-          const { data } = await sourceApi.query.system.account(address);
-          const sourceBalance = formatBalanceAddress(data);
-          const companionAddress = getDeriveAccount(toDerive);
-          const { data: dataCompanion } = await targetApi.query.system.account(companionAddress);
-          const targetBalance = formatBalanceAddress(dataCompanion);
-
-          return {
-            account: { address, balance: sourceBalance },
-            companionAccount: { address: companionAddress, balance: targetBalance }
-          };
-        })
-      );
-
-      console.log('addresses', addresses);
-    };
-
-    if (keyringPairs.length) {
-      getAccounts();
-    }
-  }, [
-    chainName,
-    configs,
-    keyringPairs,
-    sourceApi.query.system,
-    sourceApi.query.system.account,
-    sourceApi.registry.chainDecimals,
-    sourceApi.registry.chainTokens,
-    targetApi.query.system,
-    targetApi.query.system.account
-  ]);
+    console.log('useEffect keyringPairs', keyringPairs);
+    updateSenderBalances();
+  }, [keyringPairs, updateSenderBalances]);
 };
 
 export default useSourceAccountsBalances;
