@@ -30,9 +30,10 @@ const ExtensionAccountCheck = ({ component }: Props): JSX.Element => {
   // TODO #176: Move this to a more generic error-show component
   const { sourceReady, targetReady } = useLoadingApi();
   const isDevelopment = process.env.REACT_APP_IS_DEVELOPMENT === 'true';
+  const loadDevAccounts = process.env.REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS === 'true';
 
   let msg: string = '';
-  if (isDevelopment) {
+  if (isDevelopment || loadDevAccounts) {
     return component;
   }
 
