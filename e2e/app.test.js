@@ -54,6 +54,7 @@ const ids = {
 };
 
 const chooseSender = async (page) => {
+  console.log('->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', process.env);
   logger.info('  >>> Choosing Sender');
   await page.waitForSelector(ids.senderComponent);
   await page.waitForTimeout(1000);
