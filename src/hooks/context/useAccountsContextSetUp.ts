@@ -21,6 +21,7 @@ import { AccountActionCreators } from '../../actions/accountActions';
 import accountReducer from '../../reducers/accountReducer';
 import { useKeyringContext } from '../../contexts/KeyringContextProvider';
 import { DisplayAccounts } from '../../types/accountTypes';
+import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
 
 const useAccountsContextSetUp = () => {
   const {
@@ -33,7 +34,7 @@ const useAccountsContextSetUp = () => {
   } = useSourceTarget();
 
   const { keyringPairs, keyringPairsReady } = useKeyringContext();
-
+  const { updateSenderBalances } = useApiCallsContext();
   const [accountState, dispatchAccount] = useReducer(accountReducer, {
     account: null,
     accounts: [],
@@ -53,8 +54,9 @@ const useAccountsContextSetUp = () => {
   useEffect(() => {
     if (keyringPairsReady && keyringPairs.length) {
       dispatchAccount(AccountActionCreators.setAccounts(keyringPairs));
+      updateSenderBalances(dispatchAccount);
     }
-  }, [keyringPairsReady, keyringPairs, dispatchAccount]);
+  }, [keyringPairsReady, keyringPairs, dispatchAccount, updateSenderBalances]);
 
   return { accountState, dispatchAccount };
 };

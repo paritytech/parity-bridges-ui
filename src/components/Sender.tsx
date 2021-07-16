@@ -29,7 +29,6 @@ import { AddressKind } from '../types/accountTypes';
 import { SelectLabel, styleAccountCompanion } from '../components';
 import useChainGetters from '../hooks/chain/useChainGetters';
 import { useAccountContext } from '../contexts/AccountContextProvider';
-import { useApiCallsContext } from '../contexts/ApiCallsContextProvider';
 
 // TODO replace MUI Select with MUI Popover it wraps around or Autocomplete to have more control over appearance
 
@@ -80,7 +79,6 @@ const Sender = () => {
     targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
   const { getSS58PrefixByChain } = useChainGetters();
-  const { updateSenderBalances } = useApiCallsContext();
 
   const { areApiReady } = useLoadingApi();
 
@@ -149,7 +147,6 @@ const Sender = () => {
         disabled={!areApiReady}
         className={classes.accountMain}
         value={value}
-        onOpen={() => updateSenderBalances()}
         renderValue={(): React.ReactNode => (
           <>
             <SelectLabel>Sender</SelectLabel>

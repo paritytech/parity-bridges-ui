@@ -28,10 +28,12 @@ interface DisplayAccount {
   account: {
     address: string;
     balance: string;
+    name: string;
   };
   companionAccount: {
     address: string;
     balance: string;
+    name: string;
   };
 }
 
