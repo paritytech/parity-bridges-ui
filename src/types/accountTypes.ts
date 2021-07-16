@@ -20,12 +20,13 @@ import { AccountActionsTypes } from '../actions/accountActions';
 
 export type Account = KeyringPair | null;
 
-interface Payload {
+export interface Payload {
   [propName: string]: any;
 }
 
 export interface AccountState {
   account: Account;
+  accounts: Array<KeyringPair> | [];
   companionAccount: string | null;
   senderAccountBalance: BalanceState | null;
   senderCompanionAccountBalance: BalanceState | null;

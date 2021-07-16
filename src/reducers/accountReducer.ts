@@ -15,19 +15,37 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 import { AccountActionsTypes } from '../actions/accountActions';
 import type { AccountsActionType, AccountState } from '../types/accountTypes';
+import { getBridgeId } from '../util/getConfigs';
+import getDeriveAccount from '../util/getDeriveAccount';
 
 export default function accountReducer(state: AccountState, action: AccountsActionType): AccountState {
   switch (action.type) {
-    case AccountActionsTypes.SET_ACCOUNT:
-      return { ...state, account: action.payload.account };
-    case AccountActionsTypes.SET_SENDER_COMPANION_ACCOUNT:
-      return { ...state, companionAccount: action.payload.companionAccount };
+    case AccountActionsTypes.SET_ACCOUNT: {
+      const { account, sourceTarget } = action.payload;
+      const {
+        targetChainDetails: { configs },
+        sourceChainDetails: {
+          configs: { chainName: sourceChainName }
+        }
+      } = sourceTarget;
+
+      const toDerive = {
+        ss58Format: configs.ss58Format,
+        address: account?.address || '',
+        bridgeId: getBridgeId(configs, sourceChainName)
+      };
+      const companionAccount = getDeriveAccount(toDerive);
+
+      return { ...state, account, companionAccount };
+    }
     case AccountActionsTypes.SET_SENDER_BALANCES:
       return {
         ...state,
         senderAccountBalance: action.payload.senderAccountBalance,
         senderCompanionAccountBalance: action.payload.senderCompanionAccountBalance
       };
+    case AccountActionsTypes.SET_ACCOUNTS:
+      return { ...state, accounts: action.payload.accounts };
     default:
       throw new Error(`Unknown type: ${action.type}`);
   }

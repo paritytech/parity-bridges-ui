@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useContext, useReducer } from 'react';
-import useSourceAccountsBalances from '../hooks/accounts/useSourceAccountsBalances';
-import accountReducer from '../reducers/accountReducer';
+import React, { useContext } from 'react';
+import useAccountsContextSetUp from '../hooks/context/useAccountsContextSetUp';
+
 import { AccountState, AccountsActionType } from '../types/accountTypes';
 
 interface AccountContextProviderProps {
@@ -43,15 +43,7 @@ export function useUpdateAccountContext() {
 
 export function AccountContextProvider(props: AccountContextProviderProps): React.ReactElement {
   const { children = null } = props;
-
-  const [accountState, dispatchAccount] = useReducer(accountReducer, {
-    account: null,
-    companionAccount: null,
-    senderAccountBalance: null,
-    senderCompanionAccountBalance: null
-  });
-
-  useSourceAccountsBalances(accountState, dispatchAccount);
+  const { accountState, dispatchAccount } = useAccountsContextSetUp();
 
   return (
     <AccountContext.Provider value={accountState}>

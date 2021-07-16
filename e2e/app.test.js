@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-// @ts-ignore due to isolatedModules flag - no import so this needed
-
 const puppeteer = require('puppeteer');
 const winston = require('winston');
 const { globals } = require('./jest.config');
