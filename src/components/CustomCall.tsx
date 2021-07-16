@@ -17,13 +17,13 @@
 import type { InterfaceTypes } from '@polkadot/types/types';
 
 import React, { useState, useCallback } from 'react';
-import { Box, TextField, Typography } from '@material-ui/core';
+import { Box, TextField } from '@material-ui/core';
 import { ButtonSubmit } from '../components';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useTransactionContext } from '../contexts/TransactionContext';
 import useSendMessage from '../hooks/chain/useSendMessage';
 import useApiCalls from '../hooks/api/useApiCalls';
 import { TransactionTypes } from '../types/transactionTypes';
+import { EstimatedFee } from './EstimatedFee';
 import useDebounceState from '../hooks/react/useDebounceState';
 import logger from '../util/logger';
 
@@ -38,7 +38,6 @@ const CustomCall = () => {
   const [error, setError] = useState<string | null>();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
-  const { estimatedFee, estimatedFeeLoading } = useTransactionContext();
   const {
     targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
@@ -92,15 +91,7 @@ const CustomCall = () => {
       <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
         Send custom call from {sourceChainDetails.chain} to {targetChainDetails.chain}
       </ButtonSubmit>
-      {estimatedFeeLoading ? (
-        <Typography variant="body1" color="secondary">
-          Estimated source Fee loading...
-        </Typography>
-      ) : (
-        <Typography variant="body1" color="secondary">
-          {estimatedFee && `Estimated source Fee: ${estimatedFee}`}
-        </Typography>
-      )}
+      <EstimatedFee />
     </>
   );
 };
