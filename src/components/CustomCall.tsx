@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import type { InterfaceTypes } from '@polkadot/types/types';
+
 import React, { useState, useCallback } from 'react';
 import { Box, TextField } from '@material-ui/core';
 import { ButtonSubmit } from '../components';
@@ -53,8 +55,7 @@ const CustomCall = () => {
       try {
         setError(null);
         setCustomCallInput(input);
-        //@ts-ignore
-        const call = createType(targetChain, 'Call', input);
+        const call = createType(targetChain as keyof InterfaceTypes, 'Call', input);
         setDecoded(JSON.stringify(call, null, 4));
       } catch (e) {
         logger.error('Wrong call', e);

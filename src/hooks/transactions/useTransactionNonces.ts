@@ -27,6 +27,7 @@ import { getChainSubscriptionsKey } from '../../util/chainsUtils';
 import { TransactionStatusType } from '../../types/transactionTypes';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
 import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
+import type { InterfaceTypes } from '@polkadot/types/types';
 
 interface Props {
   transaction: TransactionStatusType;
@@ -65,8 +66,11 @@ const useTransactionNonces = ({ transaction }: Props) => {
         blockHash.toJSON()
       );
 
-      // @ts-ignore
-      const latestReceivedNonceCallType = createType(targetChain, 'MessageNonce', latestReceivedNonceCall);
+      const latestReceivedNonceCallType = createType(
+        targetChain as keyof InterfaceTypes,
+        'MessageNonce',
+        latestReceivedNonceCall
+      );
       const latestReceivedNonce = latestReceivedNonceCallType.toString();
       return parseInt(latestReceivedNonce);
     };

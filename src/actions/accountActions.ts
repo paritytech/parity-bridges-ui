@@ -14,10 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import { KeyringPair } from '@polkadot/keyring/types';
 import type { Account } from '../types/accountTypes';
 
 enum AccountActionsTypes {
-  SET_ACCOUNT = 'SET_ACCOUNT'
+  SET_ACCOUNT = 'SET_ACCOUNT',
+  SET_ACCOUNTS = 'SET_ACCOUNTS'
 }
 
 const setAccount = (account: Account) => ({
@@ -25,8 +27,14 @@ const setAccount = (account: Account) => ({
   type: AccountActionsTypes.SET_ACCOUNT
 });
 
+const setAccounts = (accounts: KeyringPair[]) => ({
+  payload: { accounts },
+  type: AccountActionsTypes.SET_ACCOUNTS
+});
+
 const AccountActionCreators = {
-  setAccount
+  setAccount,
+  setAccounts
 };
 
 export { AccountActionsTypes, AccountActionCreators };
