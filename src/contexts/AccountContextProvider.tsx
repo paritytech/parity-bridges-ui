@@ -14,12 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useContext, useReducer, useEffect } from 'react';
-import { AccountActionCreators } from '../actions/accountActions';
+import React, { useContext } from 'react';
+import useAccountsContextSetUp from '../hooks/context/useAccountsContextSetUp';
 
-import accountReducer from '../reducers/accountReducer';
 import { AccountState, AccountsActionType } from '../types/accountTypes';
-import { useKeyringContext } from './KeyringContextProvider';
 
 interface AccountContextProviderProps {
   children: React.ReactElement;
@@ -45,20 +43,10 @@ export function useUpdateAccountContext() {
 
 export function AccountContextProvider(props: AccountContextProviderProps): React.ReactElement {
   const { children = null } = props;
-  const { keyringPairs, keyringPairsReady } = useKeyringContext();
-  const [account, dispatchAccount] = useReducer(accountReducer, {
-    account: null,
-    accounts: []
-  });
-
-  useEffect(() => {
-    if (keyringPairsReady && keyringPairs.length) {
-      dispatchAccount(AccountActionCreators.setAccounts(keyringPairs));
-    }
-  }, [keyringPairsReady, keyringPairs, dispatchAccount]);
+  const { accountState, dispatchAccount } = useAccountsContextSetUp();
 
   return (
-    <AccountContext.Provider value={account}>
+    <AccountContext.Provider value={accountState}>
       <UpdateAccountContext.Provider value={{ dispatchAccount }}>{children}</UpdateAccountContext.Provider>
     </AccountContext.Provider>
   );
