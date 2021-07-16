@@ -58,7 +58,7 @@ jobs:
       env:
         CI: 'true'
       with:
-        args: yarn test:e2e
+        args: yarn test:e2e-alone
 
   build:
     name: Build & Deploy
