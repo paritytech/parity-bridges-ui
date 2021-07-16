@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { useCallback } from 'react';
+import { Dispatch, useCallback } from 'react';
 import { Text, Bytes } from '@polkadot/types';
 import { Codec } from '@polkadot/types/types';
 import { ApiCallsContextType } from '../../types/apiCallsTypes';
@@ -26,6 +26,8 @@ import getDeriveAccount from '../../util/getDeriveAccount';
 import { useKeyringContext } from '../../contexts/KeyringContextProvider';
 import { ApiPromise } from '@polkadot/api';
 import { encodeAddress } from '@polkadot/util-crypto';
+import { AccountsActionType } from '../../types/accountTypes';
+import { AccountActionCreators } from '../../actions/accountActions';
 
 const useApiCalls = (): ApiCallsContextType => {
   const {
@@ -66,7 +68,7 @@ const useApiCalls = (): ApiCallsContextType => {
   );
 
   const updateSenderBalances = useCallback(
-    async (dispatch) => {
+    async (dispatch: Dispatch<AccountsActionType>) => {
       const formatBalanceAddress = (data: any, api: ApiPromise) => {
         return {
           chainTokens: data.registry.chainTokens[0],
@@ -131,6 +133,9 @@ const useApiCalls = (): ApiCallsContextType => {
         })
       );
 
+      dispatch(
+        AccountActionCreators.setNewAccounts({ [sourceChain]: sourceAddresses, [targetChain]: targetAddresses })
+      );
       console.log('addresses', { [sourceChain]: sourceAddresses, [targetChain]: targetAddresses });
     },
     [keyringPairsReady, keyringPairs, sourceChain, targetChain, sourceConfigs, targetConfigs, sourceApi, targetApi]

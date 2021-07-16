@@ -21,7 +21,8 @@ enum AccountActionsTypes {
   SET_ACCOUNT = 'SET_ACCOUNT',
   SET_ACCOUNTS = 'SET_ACCOUNTS',
   SET_SENDER_COMPANION_ACCOUNT = 'SET_SENDER_COMPANION_ACCOUNT',
-  SET_SENDER_BALANCES = 'SET_SENDER_BALANCES'
+  SET_SENDER_BALANCES = 'SET_SENDER_BALANCES',
+  SET_NEW_ACCOUNTS = 'SET_NEW_ACCOUNTS'
 }
 
 const setAccount = (account: Account) => ({
@@ -47,9 +48,15 @@ const setAccounts = (accounts: KeyringPair[]) => ({
   type: AccountActionsTypes.SET_ACCOUNTS
 });
 
+const setNewAccounts = (newAccounts: Object) => ({
+  payload: { newAccounts },
+  type: AccountActionsTypes.SET_NEW_ACCOUNTS
+});
+
 const AccountActionCreators = {
   setAccount,
   setAccounts,
+  setNewAccounts,
   setSenderCompanionAccount,
   setSenderBalances
 };

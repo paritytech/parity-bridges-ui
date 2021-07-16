@@ -53,8 +53,7 @@ const useSourceAccountsBalances = (accountState: AccountState, dispatchAccount: 
   }, [accountBalance, companionAccount, companionBalance, dispatchAccount]);
 
   useEffect(() => {
-    console.log('useEffect keyringPairs', keyringPairs);
-    updateSenderBalances();
+    updateSenderBalances(dispatchAccount);
   }, [keyringPairs, updateSenderBalances]);
 };
 
