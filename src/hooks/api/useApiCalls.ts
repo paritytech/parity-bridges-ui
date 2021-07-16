@@ -24,16 +24,18 @@ import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import { getBridgeId } from '../../util/getConfigs';
 import getDeriveAccount from '../../util/getDeriveAccount';
 import { useKeyringContext } from '../../contexts/KeyringContextProvider';
+import { ApiPromise } from '@polkadot/api';
+import { encodeAddress } from '@polkadot/util-crypto';
 
 const useApiCalls = (): ApiCallsContextType => {
   const {
-    targetChainDetails: {
-      apiConnection: { api: targetApi },
+    sourceChainDetails: {
+      apiConnection: { api: sourceApi },
       chain: sourceChain,
       configs: sourceConfigs
     },
-    sourceChainDetails: {
-      apiConnection: { api: sourceApi },
+    targetChainDetails: {
+      apiConnection: { api: targetApi },
       chain: targetChain,
       configs: targetConfigs
     }
@@ -63,78 +65,76 @@ const useApiCalls = (): ApiCallsContextType => {
     [getValuesByChain]
   );
 
-  const updateSenderBalances = useCallback(async () => {
-    const formatBalanceAddress = (data: any) => {
-      return {
-        chainTokens: data.registry.chainTokens[0],
-        formattedBalance: formatBalance(data.free, {
-          decimals: sourceApi.registry.chainDecimals[0],
-          withUnit: sourceApi.registry.chainTokens[0],
-          withSi: true
-        }),
-        free: data.free
+  const updateSenderBalances = useCallback(
+    async (dispatch) => {
+      const formatBalanceAddress = (data: any, api: ApiPromise) => {
+        return {
+          chainTokens: data.registry.chainTokens[0],
+          formattedBalance: formatBalance(data.free, {
+            decimals: api.registry.chainDecimals[0],
+            withUnit: api.registry.chainTokens[0],
+            withSi: true
+          }),
+          free: data.free
+        };
       };
-    };
 
-    if (!keyringPairsReady || !keyringPairs.length) {
-      return {};
-    }
+      if (!keyringPairsReady || !keyringPairs.length) {
+        return {};
+      }
 
-    const sourceAddresses = await Promise.all(
-      keyringPairs.map(async ({ address }) => {
-        const toDerive = {
-          ss58Format: targetConfigs.ss58Format,
-          address: address || '',
-          bridgeId: getBridgeId(targetConfigs, targetChain)
-        };
+      const sourceAddresses = await Promise.all(
+        keyringPairs.map(async ({ address }) => {
+          const sourceAddress = encodeAddress(address, sourceConfigs.ss58Format);
+          const toDerive = {
+            ss58Format: targetConfigs.ss58Format,
+            address: sourceAddress || '',
+            bridgeId: getBridgeId(targetConfigs, sourceChain)
+          };
+          const { data } = await sourceApi.query.system.account(sourceAddress);
+          const sourceBalance = formatBalanceAddress(data, sourceApi);
 
-        const { data } = await sourceApi.query.system.account(address);
-        const sourceBalance = formatBalanceAddress(data);
-        const companionAddress = getDeriveAccount(toDerive);
-        const { data: dataCompanion } = await targetApi.query.system.account(companionAddress);
-        const targetBalance = formatBalanceAddress(dataCompanion);
+          const companionAddress = getDeriveAccount(toDerive);
+          const { data: dataCompanion } = await targetApi.query.system.account(companionAddress);
+          const targetBalance = formatBalanceAddress(dataCompanion, targetApi);
 
-        return {
-          account: { address, balance: sourceBalance },
-          companionAccount: { address: companionAddress, balance: targetBalance }
-        };
-      })
-    );
+          console.log({
+            account: { address: sourceAddress, balance: sourceBalance },
+            companionAccount: { address: companionAddress, balance: targetBalance }
+          });
 
-    const targetAddresses = await Promise.all(
-      keyringPairs.map(async ({ address }) => {
-        const toDerive = {
-          ss58Format: sourceConfigs.ss58Format,
-          address: address || '',
-          bridgeId: getBridgeId(sourceConfigs, sourceChain)
-        };
+          return {
+            account: { address: sourceAddress, balance: sourceBalance },
+            companionAccount: { address: companionAddress, balance: targetBalance }
+          };
+        })
+      );
 
-        const { data } = await targetApi.query.system.account(address);
-        const sourceBalance = formatBalanceAddress(data);
-        const companionAddress = getDeriveAccount(toDerive);
-        const { data: dataCompanion } = await sourceApi.query.system.account(companionAddress);
-        const targetBalance = formatBalanceAddress(dataCompanion);
+      const targetAddresses = await Promise.all(
+        keyringPairs.map(async ({ address }) => {
+          const toDerive = {
+            ss58Format: sourceConfigs.ss58Format,
+            address: address || '',
+            bridgeId: getBridgeId(sourceConfigs, targetChain)
+          };
 
-        return {
-          account: { address, balance: sourceBalance },
-          companionAccount: { address: companionAddress, balance: targetBalance }
-        };
-      })
-    );
+          const { data } = await targetApi.query.system.account(address);
+          const sourceBalance = formatBalanceAddress(data, targetApi);
+          const companionAddress = getDeriveAccount(toDerive);
+          const { data: dataCompanion } = await sourceApi.query.system.account(companionAddress);
+          const targetBalance = formatBalanceAddress(dataCompanion, sourceApi);
 
-    console.log('addresses', { [sourceChain]: sourceAddresses, [targetChain]: targetAddresses });
-  }, [
-    keyringPairsReady,
-    keyringPairs,
-    sourceChain,
-    targetChain,
-    sourceApi.registry.chainDecimals,
-    sourceApi.registry.chainTokens,
-    sourceApi.query.system,
-    targetConfigs,
-    targetApi.query.system,
-    sourceConfigs
-  ]);
+          return {
+            account: { address: encodeAddress(address, targetConfigs.ss58Format), balance: sourceBalance },
+            companionAccount: { address: companionAddress, balance: targetBalance }
+          };
+        })
+      );
+
+      console.log('addresses', { [sourceChain]: sourceAddresses, [targetChain]: targetAddresses });
+    },
+    [keyringPairsReady, keyringPairs, sourceChain, targetChain, sourceConfigs, targetConfigs, sourceApi, targetApi]
+  );
 
   return { createType, stateCall, updateSenderBalances };
 };

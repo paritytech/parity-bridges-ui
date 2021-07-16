@@ -18,7 +18,7 @@ import React, { useContext, useReducer, useEffect } from 'react';
 import useSourceAccountsBalances from '../hooks/accounts/useSourceAccountsBalances';
 import { AccountActionCreators } from '../actions/accountActions';
 import accountReducer from '../reducers/accountReducer';
-import { AccountState, AccountsActionType } from '../types/accountTypes';
+import { AccountState, AccountsActionType, DisplayAccounts } from '../types/accountTypes';
 import { useKeyringContext } from './KeyringContextProvider';
 
 interface AccountContextProviderProps {
@@ -51,7 +51,8 @@ export function AccountContextProvider(props: AccountContextProviderProps): Reac
     accounts: [],
     companionAccount: null,
     senderAccountBalance: null,
-    senderCompanionAccountBalance: null
+    senderCompanionAccountBalance: null,
+    newAccounts: {} as DisplayAccounts
   });
 
   useSourceAccountsBalances(accountState, dispatchAccount);

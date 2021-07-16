@@ -24,12 +24,28 @@ export interface Payload {
   [propName: string]: any;
 }
 
+interface DisplayAccount {
+  account: {
+    address: string;
+    balance: string;
+  };
+  companionAccount: {
+    address: string;
+    balance: string;
+  };
+}
+
+export interface DisplayAccounts {
+  [chain: string]: DisplayAccount[];
+}
+
 export interface AccountState {
   account: Account;
   accounts: Array<KeyringPair> | [];
   companionAccount: string | null;
   senderAccountBalance: BalanceState | null;
   senderCompanionAccountBalance: BalanceState | null;
+  newAccounts: DisplayAccounts;
 }
 
 export type AccountsActionType = { type: AccountActionsTypes; payload: Payload };
