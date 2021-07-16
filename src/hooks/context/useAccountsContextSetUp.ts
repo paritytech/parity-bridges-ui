@@ -14,40 +14,47 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { useEffect } from 'react';
+import { useEffect, useReducer } from 'react';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
-import { getBridgeId } from '../../util/getConfigs';
-import getDeriveAccount from '../../util/getDeriveAccount';
 import useBalance from '../subscriptions/useBalance';
-import { AccountState } from '../../types/accountTypes';
 import { AccountActionCreators } from '../../actions/accountActions';
+import accountReducer from '../../reducers/accountReducer';
+import { useKeyringContext } from '../../contexts/KeyringContextProvider';
 
-const useSourceAccountsBalances = (accountState: AccountState, dispatchAccount: Function) => {
+const useAccountsContextSetUp = () => {
   const {
     targetChainDetails: {
-      apiConnection: { api: targetApi },
-      configs
+      apiConnection: { api: targetApi }
     },
     sourceChainDetails: {
-      apiConnection: { api: sourceApi },
-      configs: { chainName }
+      apiConnection: { api: sourceApi }
     }
   } = useSourceTarget();
 
-  const accountBalance = useBalance(sourceApi, accountState.account?.address || '', true);
+  const { keyringPairs, keyringPairsReady } = useKeyringContext();
 
-  const toDerive = {
-    ss58Format: configs.ss58Format,
-    address: accountState.account?.address || '',
-    bridgeId: getBridgeId(configs, chainName)
-  };
-  const companionAccount = getDeriveAccount(toDerive);
-  const companionBalance = useBalance(targetApi, companionAccount || '', true);
+  const [accountState, dispatchAccount] = useReducer(accountReducer, {
+    account: null,
+    accounts: [],
+    companionAccount: null,
+    senderAccountBalance: null,
+    senderCompanionAccountBalance: null
+  });
+
+  const accountBalance = useBalance(sourceApi, accountState.account?.address || '', true);
+  const companionBalance = useBalance(targetApi, accountState.companionAccount || '', true);
 
   useEffect(() => {
     dispatchAccount(AccountActionCreators.setSenderBalances(accountBalance, companionBalance));
-    dispatchAccount(AccountActionCreators.setSenderCompanionAccount(companionAccount));
-  }, [accountBalance, companionAccount, companionBalance, dispatchAccount]);
+  }, [accountBalance, companionBalance, dispatchAccount]);
+
+  useEffect(() => {
+    if (keyringPairsReady && keyringPairs.length) {
+      dispatchAccount(AccountActionCreators.setAccounts(keyringPairs));
+    }
+  }, [keyringPairsReady, keyringPairs, dispatchAccount]);
+
+  return { accountState, dispatchAccount };
 };
 
-export default useSourceAccountsBalances;
+export default useAccountsContextSetUp;
