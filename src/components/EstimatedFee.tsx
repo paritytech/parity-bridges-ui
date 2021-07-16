@@ -13,8 +13,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
-
-import { makeStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
 import React from 'react';
 import { useEffect } from 'react';
@@ -23,15 +21,7 @@ import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import { transformToBaseUnit } from '../util/evalUnits';
 
-const useStyles = makeStyles(() => ({
-  amount: {
-    padding: '0 10px',
-    width: '50%'
-  }
-}));
-
 export const EstimatedFee = (): React.ReactElement => {
-  const classes = useStyles();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   const { estimatedFee, estimatedFeeLoading } = useTransactionContext();
   const srcChainDecimals = sourceChainDetails.apiConnection.api.registry.chainDecimals[0];
@@ -46,10 +36,10 @@ export const EstimatedFee = (): React.ReactElement => {
   return (
     <div>
       <Typography variant="body1" color="secondary">
-        {`Estimated ${sourceChainDetails.chain} fee ${estimatedFeeLoading ? '...' : ''}`}
-        <span className={classes.amount}>
+        {`Estimated ${sourceChainDetails.chain} fee ${estimatedFeeLoading ? '...' : ':'}`}
+        <Typography variant="subtitle2" component="span">
           {amount} {chainTokens}
-        </span>
+        </Typography>
       </Typography>
     </div>
   );
