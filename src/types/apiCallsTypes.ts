@@ -19,8 +19,6 @@ import type { Bytes } from '@polkadot/types/primitive';
 
 import type { BlockHash } from '@polkadot/types/interfaces';
 import { Codec } from '@polkadot/types/types';
-import { Dispatch } from 'react';
-import { AccountsActionType } from './accountTypes';
 
 export type CreateType = Registry['createType'];
 
@@ -34,5 +32,5 @@ export type StateCall = (
 export interface ApiCallsContextType {
   createType: CreateType;
   stateCall: StateCall;
-  updateSenderBalances: (dispatch: Dispatch<AccountsActionType>) => void;
+  updateSenderBalances: () => void;
 }

@@ -18,9 +18,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Box, makeStyles, TextField, Typography } from '@material-ui/core';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
+import { useAccountContext } from '../contexts/AccountContextProvider';
 import { TransactionActionCreators } from '../actions/transactionActions';
 import { useUpdateTransactionContext } from '../contexts/TransactionContext';
-import useAccounts from '../hooks/accounts/useAccounts';
 import useBalance from '../hooks/subscriptions/useBalance';
 import useSendMessage from '../hooks/chain/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
@@ -53,8 +53,7 @@ function Transfer() {
   const classes = useStyles();
   const [amountNotCorrect, setAmountNotCorrect] = useState<boolean>(false);
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
-  const { account } = useAccounts();
-
+  const { account } = useAccountContext();
   const {
     estimatedFee,
     transferAmount,

@@ -28,6 +28,8 @@ import AccountDisplay from './AccountDisplay';
 import { AddressKind } from '../types/accountTypes';
 import { SelectLabel, styleAccountCompanion } from '../components';
 import useChainGetters from '../hooks/chain/useChainGetters';
+import { useAccountContext } from '../contexts/AccountContextProvider';
+import { useApiCallsContext } from '../contexts/ApiCallsContextProvider';
 
 // TODO replace MUI Select with MUI Popover it wraps around or Autocomplete to have more control over appearance
 
@@ -68,7 +70,8 @@ const useStyles = makeStyles((theme) => ({
 const Sender = () => {
   const classes = useStyles();
   const [chains, setChains] = useState<Array<string[]>>([]);
-  const { account, accounts, derivedAccount, setCurrentAccount } = useAccounts();
+  const { accounts, setCurrentAccount } = useAccounts();
+  const { account, companionAccount, senderAccountBalance, senderCompanionAccountBalance } = useAccountContext();
   const {
     sourceChainDetails: {
       chain: sourceChain,
@@ -77,6 +80,7 @@ const Sender = () => {
     targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
   const { getSS58PrefixByChain } = useChainGetters();
+  const { updateSenderBalances } = useApiCallsContext();
 
   const { areApiReady } = useLoadingApi();
 
@@ -125,7 +129,13 @@ const Sender = () => {
   const AccountSelected = () => {
     if (account) {
       const text = getName(account);
-      return <Account friendlyName={text} value={value} chain={sourceChain} />;
+      return (
+        <AccountDisplay
+          friendlyName={text}
+          address={account.address}
+          balance={senderAccountBalance?.formattedBalance}
+        />
+      );
     }
     return <AccountDisplay friendlyName="Select sender account" hideAddress />;
   };
@@ -139,6 +149,7 @@ const Sender = () => {
         disabled={!areApiReady}
         className={classes.accountMain}
         value={value}
+        onOpen={() => updateSenderBalances()}
         renderValue={(): React.ReactNode => (
           <>
             <SelectLabel>Sender</SelectLabel>
@@ -149,12 +160,12 @@ const Sender = () => {
         {chains.map((chain) => renderAccounts(chain))}
       </Select>
       <div className={classes.accountCompanion}>
-        {derivedAccount ? (
-          <Account
+        {companionAccount && senderCompanionAccountBalance ? (
+          <AccountDisplay
             friendlyName={getName(account)}
-            value={value}
-            chain={targetChain}
-            isDerived
+            address={companionAccount}
+            addressKind={AddressKind.COMPANION}
+            balance={senderCompanionAccountBalance.formattedBalance}
             hideAddress
             withTooltip
           />
