@@ -56,7 +56,7 @@ const useApiCalls = (): ApiCallsContextType => {
     [getValuesByChain]
   );
 
-  const updateSenderAccountsBalances = useCallback(
+  const updateSenderAccountsInformation = useCallback(
     async (dispatchAccount) => {
       const formatBalanceAddress = (data: any, api: ApiPromise): BalanceState => {
         return {
@@ -125,7 +125,7 @@ const useApiCalls = (): ApiCallsContextType => {
     [keyringPairs, keyringPairsReady, sourceChainDetails, targetChainDetails]
   );
 
-  return { createType, stateCall, updateSenderAccountsBalances };
+  return { createType, stateCall, updateSenderAccountsInformation };
 };
 
 export default useApiCalls;

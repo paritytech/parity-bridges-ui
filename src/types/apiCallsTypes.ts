@@ -34,5 +34,5 @@ export type StateCall = (
 export interface ApiCallsContextType {
   createType: CreateType;
   stateCall: StateCall;
-  updateSenderAccountsBalances: (dispatchAccount: Dispatch<AccountsActionType>) => void;
+  updateSenderAccountsInformation: (dispatchAccount: Dispatch<AccountsActionType>) => void;
 }
