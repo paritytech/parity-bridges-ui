@@ -27,6 +27,7 @@ import { useKeyringContext } from '../../contexts/KeyringContextProvider';
 import { ApiPromise } from '@polkadot/api';
 import { encodeAddress } from '@polkadot/util-crypto';
 import { AccountActionCreators } from '../../actions/accountActions';
+import { BalanceState } from '../../types/accountTypes';
 
 const useApiCalls = (): ApiCallsContextType => {
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
@@ -57,7 +58,7 @@ const useApiCalls = (): ApiCallsContextType => {
 
   const updateSenderBalances = useCallback(
     async (dispatchAccount) => {
-      const formatBalanceAddress = (data: any, api: ApiPromise) => {
+      const formatBalanceAddress = (data: any, api: ApiPromise): BalanceState => {
         return {
           chainTokens: data.registry.chainTokens[0],
           formattedBalance: formatBalance(data.free, {
