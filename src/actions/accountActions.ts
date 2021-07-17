@@ -22,7 +22,7 @@ import { KeyringPair } from '@polkadot/keyring/types';
 enum AccountActionsTypes {
   SET_ACCOUNT = 'SET_ACCOUNT',
   SET_ACCOUNTS = 'SET_ACCOUNTS',
-  SET_NEW_ACCOUNTS = 'SET_NEW_ACCOUNTS',
+  SET_DISPLAY_SENDER_ACCOUNTS = 'SET_DISPLAY_SENDER_ACCOUNTS',
   SET_SENDER_BALANCES = 'SET_SENDER_BALANCES'
 }
 
@@ -46,7 +46,7 @@ const setAccounts = (accounts: KeyringPair[]) => ({
 
 const setDisplaySenderAccounts = (displaySenderAccounts: DisplayAccounts) => ({
   payload: { displaySenderAccounts },
-  type: AccountActionsTypes.SET_NEW_ACCOUNTS
+  type: AccountActionsTypes.SET_DISPLAY_SENDER_ACCOUNTS
 });
 
 const AccountActionCreators = {

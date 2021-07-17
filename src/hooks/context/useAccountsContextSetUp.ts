@@ -34,7 +34,7 @@ const useAccountsContextSetUp = () => {
   } = useSourceTarget();
 
   const { keyringPairs, keyringPairsReady } = useKeyringContext();
-  const { updateSenderBalances } = useApiCallsContext();
+  const { updateSenderAccountsBalances } = useApiCallsContext();
   const [accountState, dispatchAccount] = useReducer(accountReducer, {
     account: null,
     accounts: [],
@@ -54,9 +54,9 @@ const useAccountsContextSetUp = () => {
   useEffect(() => {
     if (keyringPairsReady && keyringPairs.length) {
       dispatchAccount(AccountActionCreators.setAccounts(keyringPairs));
-      updateSenderBalances(dispatchAccount);
+      updateSenderAccountsBalances(dispatchAccount);
     }
-  }, [keyringPairsReady, keyringPairs, dispatchAccount, updateSenderBalances]);
+  }, [keyringPairsReady, keyringPairs, dispatchAccount, updateSenderAccountsBalances]);
 
   return { accountState, dispatchAccount };
 };
