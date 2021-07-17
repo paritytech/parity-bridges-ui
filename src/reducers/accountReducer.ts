@@ -47,7 +47,7 @@ export default function accountReducer(state: AccountState, action: AccountsActi
     case AccountActionsTypes.SET_ACCOUNTS:
       return { ...state, accounts: action.payload.accounts };
     case AccountActionsTypes.SET_NEW_ACCOUNTS:
-      return { ...state, newAccounts: action.payload.newAccounts };
+      return { ...state, displaySenderAccounts: action.payload.displaySenderAccounts };
     default:
       throw new Error(`Unknown type: ${action.type}`);
   }

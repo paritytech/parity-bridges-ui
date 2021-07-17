@@ -41,7 +41,7 @@ const useAccountsContextSetUp = () => {
     companionAccount: null,
     senderAccountBalance: null,
     senderCompanionAccountBalance: null,
-    newAccounts: {} as DisplayAccounts
+    displaySenderAccounts: {} as DisplayAccounts
   });
 
   const accountBalance = useBalance(sourceApi, accountState.account?.address || '', true);

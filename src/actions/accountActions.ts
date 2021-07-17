@@ -45,15 +45,15 @@ const setAccounts = (accounts: KeyringPair[]) => ({
   type: AccountActionsTypes.SET_ACCOUNTS
 });
 
-const setNewAccounts = (newAccounts: Object) => ({
-  payload: { newAccounts },
+const setDisplaySenderAccounts = (displaySenderAccounts: Object) => ({
+  payload: { displaySenderAccounts },
   type: AccountActionsTypes.SET_NEW_ACCOUNTS
 });
 
 const AccountActionCreators = {
   setAccount,
   setAccounts,
-  setNewAccounts,
+  setDisplaySenderAccounts,
   setSenderBalances
 };
 

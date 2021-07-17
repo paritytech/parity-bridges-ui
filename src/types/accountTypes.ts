@@ -47,7 +47,7 @@ export interface AccountState {
   companionAccount: string | null;
   senderAccountBalance: BalanceState | null;
   senderCompanionAccountBalance: BalanceState | null;
-  newAccounts: DisplayAccounts;
+  displaySenderAccounts: DisplayAccounts;
 }
 
 export type AccountsActionType = { type: AccountActionsTypes; payload: Payload };
