@@ -15,7 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Box, makeStyles, TextField, Typography } from '@material-ui/core';
+import { Box, makeStyles, TextField } from '@material-ui/core';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import { useAccountContext } from '../contexts/AccountContextProvider';
@@ -27,6 +27,7 @@ import { TransactionTypes } from '../types/transactionTypes';
 import { TokenSymbol } from './TokenSymbol';
 import Receiver from './Receiver';
 import { Alert, ButtonSubmit } from '../components';
+import { EstimatedFee } from '../components/EstimatedFee';
 import useDebounceState from '../hooks/react/useDebounceState';
 import BN from 'bn.js';
 
@@ -58,12 +59,9 @@ function Transfer() {
     estimatedFee,
     transferAmount,
     transferAmountError,
-    receiverAddress,
-    estimatedFeeLoading,
     transactionRunning,
     transactionReadyToExecute
   } = useTransactionContext();
-
   const { api } = sourceChainDetails.apiConnection;
   const balance = useBalance(api, account?.address || '');
 
@@ -125,14 +123,8 @@ function Transfer() {
         <Alert severity="error">
           Account&apos;s amount (including fees: {estimatedFee}) is not enough for this transaction.
         </Alert>
-      ) : estimatedFeeLoading && transferAmount && receiverAddress ? (
-        <Typography variant="body1" color="secondary">
-          Estimated source Fee loading...
-        </Typography>
       ) : (
-        <Typography variant="body1" color="secondary">
-          {receiverAddress && estimatedFee && transferAmount && `Estimated source Fee: ${estimatedFee}`}
-        </Typography>
+        <EstimatedFee />
       )}
     </>
   );
