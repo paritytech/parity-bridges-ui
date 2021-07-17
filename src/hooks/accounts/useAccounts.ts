@@ -21,7 +21,7 @@ import { AccountActionCreators } from '../../actions/accountActions';
 import { SourceTargetActionsCreators } from '../../actions/sourceTargetActions';
 import { useUpdateAccountContext } from '../../contexts/AccountContextProvider';
 import { useAccountContext } from '../../contexts/AccountContextProvider';
-import { useUpdateSourceTarget } from '../../contexts/SourceTargetContextProvider';
+import { useUpdateSourceTarget, useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import useDerivedAccount from './useDerivedAccount';
 import useChainGetters from '../chain/useChainGetters';
 
@@ -35,6 +35,7 @@ interface Accounts {
 const useAccounts = (): Accounts => {
   const { dispatchAccount } = useUpdateAccountContext();
   const { dispatchChangeSourceTarget } = useUpdateSourceTarget();
+  const sourceTarget = useSourceTarget();
   const derivedAccount = useDerivedAccount();
   const { account, accounts } = useAccountContext();
   const { getSS58PrefixByChain } = useChainGetters();
@@ -46,10 +47,10 @@ const useAccounts = (): Accounts => {
       const account = accounts.find(({ address }) => encodeAddress(address, ss58Format) === value);
       if (account) {
         dispatchChangeSourceTarget(SourceTargetActionsCreators.switchChains(chain));
-        dispatchAccount(AccountActionCreators.setAccount(account));
+        dispatchAccount(AccountActionCreators.setAccount(account, sourceTarget));
       }
     },
-    [accounts, dispatchAccount, dispatchChangeSourceTarget, getSS58PrefixByChain]
+    [accounts, dispatchAccount, dispatchChangeSourceTarget, getSS58PrefixByChain, sourceTarget]
   );
 
   return {
