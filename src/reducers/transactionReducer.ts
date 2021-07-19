@@ -22,7 +22,7 @@ import getReceiverAddress from '../util/getReceiverAddress';
 import { Payload, TransactionsActionType, TransactionState, ReceiverPayload } from '../types/transactionTypes';
 import { ChainState } from '../types/sourceTargetTypes';
 import logger from '../util/logger';
-import { evalUnits, transformToBaseUnit } from '../util/evalUnits';
+import { evalUnits } from '../util/evalUnits';
 
 const updateTransaction = (state: TransactionState, payload: Payload): TransactionState => {
   if (state.transactions) {
@@ -161,20 +161,23 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
   switch (action.type) {
     case TransactionActionTypes.SET_ESTIMATED_FEE: {
-      const { estimatedFeeError, estimatedFeeLoading, srcChainDecimals } = action.payload;
+      const { estimatedFeeError, estimatedFeeLoading } = action.payload;
 
       let estimatedFee = null;
-      let estimatedFeeTransformed = null;
 
-      if (!estimatedFeeError && !estimatedFeeLoading && action.payload.estimatedFee) {
+      if (
+        !estimatedFeeError &&
+        !estimatedFeeLoading &&
+        action.payload.estimatedFee &&
+        !state.estimatedFeeError &&
+        !state.transferAmountError
+      ) {
         estimatedFee = action.payload.estimatedFee;
-        estimatedFeeTransformed = transformToBaseUnit(estimatedFee || '0', srcChainDecimals);
       }
 
       return {
         ...state,
         estimatedFee,
-        estimatedFeeTransformed,
         estimatedFeeError: estimatedFeeError,
         estimatedFeeLoading: estimatedFeeLoading,
         transactionReadyToExecute: estimatedFeeLoading ? false : isReadyToExecute(state) && estimatedFee
@@ -198,8 +201,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
         ...state,
         payload: action.payload.payloadError ? null : action.payload.payload,
         payloadError: action.payload.payloadError,
-        estimatedFee: null,
-        estimatedFeeTransformed: null
+        estimatedFee: null
       };
     }
     case TransactionActionTypes.RESET:
@@ -208,7 +210,6 @@ export default function transactionReducer(state: TransactionState, action: Tran
         derivedReceiverAccount: null,
         estimatedFee: null,
         estimatedFeeError: null,
-        estimatedFeeTransformed: null,
         genericReceiverAccount: null,
         receiverAddress: null,
         transferAmount: null,
