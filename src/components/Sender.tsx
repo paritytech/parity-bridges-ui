@@ -29,6 +29,7 @@ import { AddressKind } from '../types/accountTypes';
 import { SelectLabel, styleAccountCompanion } from '../components';
 import useChainGetters from '../hooks/chain/useChainGetters';
 import { useAccountContext } from '../contexts/AccountContextProvider';
+import isNull from 'lodash/isNull';
 
 // TODO replace MUI Select with MUI Popover it wraps around or Autocomplete to have more control over appearance
 
@@ -69,8 +70,14 @@ const useStyles = makeStyles((theme) => ({
 const Sender = () => {
   const classes = useStyles();
   const [chains, setChains] = useState<Array<string[]>>([]);
-  const { accounts, setCurrentAccount } = useAccounts();
-  const { account, companionAccount, senderAccountBalance, senderCompanionAccountBalance } = useAccountContext();
+  const { setCurrentAccount } = useAccounts();
+  const {
+    account,
+    accounts,
+    companionAccount,
+    senderAccountBalance,
+    senderCompanionAccountBalance
+  } = useAccountContext();
   const {
     sourceChainDetails: {
       chain: sourceChain,
@@ -157,12 +164,12 @@ const Sender = () => {
         {chains.map((chain) => renderAccounts(chain))}
       </Select>
       <div className={classes.accountCompanion}>
-        {companionAccount && senderCompanionAccountBalance ? (
+        {companionAccount && !isNull(senderCompanionAccountBalance) ? (
           <AccountDisplay
             friendlyName={getName(account)}
             address={companionAccount}
             addressKind={AddressKind.COMPANION}
-            balance={senderCompanionAccountBalance.formattedBalance}
+            balance={senderCompanionAccountBalance!.formattedBalance}
             hideAddress
             withTooltip
           />
