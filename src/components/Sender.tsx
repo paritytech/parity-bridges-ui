@@ -31,6 +31,8 @@ import { SelectLabel, styleAccountCompanion } from '../components';
 import useChainGetters from '../hooks/chain/useChainGetters';
 import IsBridged from '../components/IsBridged';
 import { useGUIContext } from '../contexts/GUIContextProvider';
+import { useAccountContext } from '../contexts/AccountContextProvider';
+import isNull from 'lodash/isNull';
 
 // TODO replace MUI Select with MUI Popover it wraps around or Autocomplete to have more control over appearance
 
@@ -76,7 +78,14 @@ const Sender = () => {
   const { isBridged } = useGUIContext();
   const classes = useStyles();
   const [chains, setChains] = useState<Array<string[]>>([]);
-  const { account, accounts, derivedAccount, setCurrentAccount } = useAccounts();
+  const { setCurrentAccount } = useAccounts();
+  const {
+    account,
+    accounts,
+    companionAccount,
+    senderAccountBalance,
+    senderCompanionAccountBalance
+  } = useAccountContext();
   const {
     sourceChainDetails: {
       chain: sourceChain,
@@ -135,7 +144,13 @@ const Sender = () => {
   const AccountSelected = () => {
     if (account) {
       const text = getName(account);
-      return <Account friendlyName={text} value={value} chain={sourceChain} />;
+      return (
+        <AccountDisplay
+          friendlyName={text}
+          address={account.address}
+          balance={senderAccountBalance?.formattedBalance}
+        />
+      );
     }
     return <AccountDisplay friendlyName="Select sender account" hideAddress />;
   };
@@ -160,12 +175,12 @@ const Sender = () => {
       </Select>
       <IsBridged>
         <div className={classes.accountCompanion}>
-          {derivedAccount ? (
-            <Account
+          {companionAccount && !isNull(senderCompanionAccountBalance) ? (
+            <AccountDisplay
               friendlyName={getName(account)}
-              value={value}
-              chain={targetChain}
-              isDerived
+              address={companionAccount}
+              addressKind={AddressKind.COMPANION}
+              balance={senderCompanionAccountBalance!.formattedBalance}
               hideAddress
               withTooltip
             />

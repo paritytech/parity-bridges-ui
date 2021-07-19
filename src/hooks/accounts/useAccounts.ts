@@ -20,15 +20,13 @@ import { encodeAddress } from '@polkadot/util-crypto';
 import { AccountActionCreators } from '../../actions/accountActions';
 import { SourceTargetActionsCreators } from '../../actions/sourceTargetActions';
 import { useUpdateAccountContext } from '../../contexts/AccountContextProvider';
+import { useUpdateSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import { useAccountContext } from '../../contexts/AccountContextProvider';
-import { useUpdateSourceTarget, useSourceTarget } from '../../contexts/SourceTargetContextProvider';
-import useDerivedAccount from './useDerivedAccount';
+import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import useChainGetters from '../chain/useChainGetters';
 
 interface Accounts {
-  account: KeyringPair | null;
   accounts: Array<KeyringPair> | [];
-  derivedAccount: string | null;
   setCurrentAccount: (value: string, chain: string) => void;
 }
 
@@ -36,8 +34,7 @@ const useAccounts = (): Accounts => {
   const { dispatchAccount } = useUpdateAccountContext();
   const { dispatchChangeSourceTarget } = useUpdateSourceTarget();
   const sourceTarget = useSourceTarget();
-  const derivedAccount = useDerivedAccount();
-  const { account, accounts } = useAccountContext();
+  const { accounts } = useAccountContext();
   const { getSS58PrefixByChain } = useChainGetters();
 
   const setCurrentAccount = useCallback(
@@ -54,9 +51,7 @@ const useAccounts = (): Accounts => {
   );
 
   return {
-    account,
     accounts,
-    derivedAccount,
     setCurrentAccount
   };
 };
