@@ -14,9 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Box, FormControlLabel, Switch, Typography } from '@material-ui/core';
 import React, { useState } from 'react';
-
+import { Box, Typography } from '@material-ui/core';
+import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import { makeStyles } from '@material-ui/core/styles';
 import { BoxSidebar, BoxUI, ButtonExt, StorageDrawer, MenuAction, NetworkSides, NetworkStats } from '../components';
 import CustomCall from '../components/CustomCall';
 import ExtensionAccountCheck from '../components/ExtensionAccountCheck';
@@ -35,6 +36,8 @@ interface MenuActionItemsProps {
   isEnabled: boolean;
   component: React.ReactElement;
 }
+
+const useStyles = makeStyles(() => ({}));
 
 const MenuContents = [
   {
@@ -58,11 +61,16 @@ const MenuContents = [
 ];
 
 function Main() {
+  const classes = useStyles();
   const [items] = useState<MenuActionItemsProps[]>(MenuContents as MenuActionItemsProps[]);
   const [index, setIndex] = useState<number>(0);
   const { isBridged, setBridged } = useGUIContext();
 
   const searchItems = (choice: number) => items.find((x) => x.idx === choice);
+
+  const handleOnSwitch = (event: React.MouseEvent<HTMLElement>, newAlignment: string | null) => {
+    setBridged(Boolean(newAlignment));
+  };
 
   return (
     <>
@@ -79,12 +87,11 @@ function Main() {
       </BoxSidebar>
       <BoxUI>
         <MenuAction items={items} menuIdx={index} changeMenu={setIndex} />
-        <FormControlLabel
-          value={isBridged ? 'Bridge' : 'Local'}
-          control={<Switch checked={isBridged} onChange={() => setBridged(!isBridged)} name="bridged" />}
-          label={isBridged ? 'Bridge' : 'Local'}
-          labelPlacement={isBridged ? 'end' : 'start'}
-        />
+
+        <ToggleButtonGroup color="secondary" value={isBridged} exclusive onChange={handleOnSwitch}>
+          <ToggleButton value={false}>Local</ToggleButton>
+          <ToggleButton value={true}>Bridge</ToggleButton>
+        </ToggleButtonGroup>
 
         <ExtensionAccountCheck component={<Sender />} />
         <Box marginY={2} textAlign="center" width="100%">
