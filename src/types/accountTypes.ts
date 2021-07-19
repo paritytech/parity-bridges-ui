@@ -31,17 +31,15 @@ export type BalanceState = {
   free: Balance;
 };
 
+type AccountInfo = {
+  address: string;
+  balance: BalanceState;
+  name: string;
+};
+
 interface DisplayAccount {
-  account: {
-    address: string;
-    balance: BalanceState;
-    name: string;
-  };
-  companionAccount: {
-    address: string;
-    balance: BalanceState;
-    name: string;
-  };
+  account: AccountInfo;
+  companionAccount: AccountInfo;
 }
 
 export interface DisplayAccounts {
