@@ -15,14 +15,17 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
-import React, { useContext } from 'react';
+import React, { useContext, useState, Dispatch } from 'react';
 import useLocalStorage from '../hooks/transactions/useLocalStorage';
 import { light } from '../components';
 
 interface DrawerContextProps {
   drawer: string;
-  setDrawer: React.Dispatch<React.SetStateAction<string>>;
+  setDrawer: Dispatch<React.SetStateAction<string>>;
+  setBridged: Dispatch<React.SetStateAction<boolean>>;
+  isBridged: boolean;
 }
+
 interface GUIContextProviderProps {
   children: React.ReactElement;
 }
@@ -35,7 +38,9 @@ export function useGUIContext() {
 
 export function GUIContextProvider({ children }: GUIContextProviderProps): React.ReactElement {
   const [drawer, setDrawer] = useLocalStorage('storageDrawer');
-  const value = { drawer, setDrawer };
+  const [isBridged, setBridged] = useState(true);
+
+  const value = { drawer, setDrawer, isBridged, setBridged };
 
   return (
     <ThemeProvider theme={createMuiTheme(light)}>

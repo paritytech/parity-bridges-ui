@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Box, Typography } from '@material-ui/core';
+import { Box, FormControlLabel, Switch, Typography } from '@material-ui/core';
 import React, { useState } from 'react';
 
 import { BoxSidebar, BoxUI, ButtonExt, StorageDrawer, MenuAction, NetworkSides, NetworkStats } from '../components';
@@ -26,6 +26,8 @@ import SnackBar from '../components/SnackBar';
 import Transfer from '../components/Transfer';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import Transactions from '../components/Transactions';
+import { useGUIContext } from '../contexts/GUIContextProvider';
+import IsBridged from '../components/IsBridged';
 
 interface MenuActionItemsProps {
   idx: number;
@@ -58,6 +60,7 @@ const MenuContents = [
 function Main() {
   const [items] = useState<MenuActionItemsProps[]>(MenuContents as MenuActionItemsProps[]);
   const [index, setIndex] = useState<number>(0);
+  const { isBridged, setBridged } = useGUIContext();
 
   const searchItems = (choice: number) => items.find((x) => x.idx === choice);
 
@@ -67,13 +70,22 @@ function Main() {
         <div>
           <Typography variant="button">Bridges UI</Typography>
           <NetworkSides />
-          <NetworkStats />
+          <IsBridged blurred>
+            <NetworkStats />
+          </IsBridged>
           <StorageDrawer />
         </div>
         <ButtonExt> Help & Feedback </ButtonExt>
       </BoxSidebar>
       <BoxUI>
         <MenuAction items={items} menuIdx={index} changeMenu={setIndex} />
+        <FormControlLabel
+          value={isBridged ? 'Bridge' : 'Local'}
+          control={<Switch checked={isBridged} onChange={() => setBridged(!isBridged)} name="bridged" />}
+          label={isBridged ? 'Bridge' : 'Local'}
+          labelPlacement={isBridged ? 'end' : 'start'}
+        />
+
         <ExtensionAccountCheck component={<Sender />} />
         <Box marginY={2} textAlign="center" width="100%">
           <ArrowDownwardIcon fontSize="large" color="primary" />
