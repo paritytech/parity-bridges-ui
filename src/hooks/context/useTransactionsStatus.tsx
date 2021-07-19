@@ -89,7 +89,7 @@ export default function useTransactionsStatus(
     };
     const transactionsInProgress = transactions.find(({ status }) => status === TransactionStatusEnum.IN_PROGRESS);
 
-    if (!evaluatingTransactions && transactions.length && transactionsInProgress) {
+    if (!evaluatingTransactions && transactionsInProgress) {
       try {
         getTransactionStatus();
       } catch (e) {
