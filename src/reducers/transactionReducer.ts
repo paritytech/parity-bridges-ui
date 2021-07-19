@@ -200,10 +200,11 @@ export default function transactionReducer(state: TransactionState, action: Tran
       };
     }
     case TransactionActionTypes.SET_PAYLOAD: {
+      const { payloadError, payload } = action.payload;
       return {
         ...state,
-        payload: action.payload.payloadError ? null : action.payload.payload,
-        payloadError: action.payload.payloadError,
+        payload: payloadError ? null : payload,
+        payloadError: payloadError,
         estimatedFee: null
       };
     }
