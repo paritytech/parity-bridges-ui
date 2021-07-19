@@ -13,10 +13,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
+
+import { useEffect, useState } from 'react';
 import { Typography, makeStyles } from '@material-ui/core';
 import React from 'react';
-import { useEffect } from 'react';
-import { useState } from 'react';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import { transformToBaseUnit } from '../util/evalUnits';
@@ -40,22 +40,12 @@ export const EstimatedFee = (): React.ReactElement => {
     !estimatedFeeLoading && setAmount(estimatedFee ? transformToBaseUnit(estimatedFee, srcChainDecimals) : null);
   }, [estimatedFee, estimatedFeeLoading, srcChainDecimals]);
 
-  if (!amount) {
-    return <div className={classes.container}></div>;
-  }
+  const feeLabel = `Estimated ${sourceChainDetails.chain} fee`;
 
   return (
     <div className={classes.container}>
       <Typography variant="body1" color="secondary">
-        Estimated {sourceChainDetails.chain} fee
-        {estimatedFeeLoading ? (
-          '...'
-        ) : (
-          <Typography variant="subtitle2" component="span">
-            {': '}
-            {amount} {chainTokens}
-          </Typography>
-        )}
+        {estimatedFeeLoading ? `${feeLabel}...` : amount ? `${feeLabel}: ${amount} ${chainTokens}` : null}
       </Typography>
     </div>
   );
