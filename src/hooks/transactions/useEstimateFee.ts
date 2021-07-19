@@ -28,12 +28,15 @@ export const useEstimateFee = () => {
   const { createType, stateCall } = useApiCallsContext();
   const laneId = useLaneId();
   const {
-    sourceChainDetails: { chain: sourceChain },
+    sourceChainDetails: {
+      chain: sourceChain,
+      apiConnection: { api: sourceApi }
+    },
     targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
   const { dispatchTransaction } = useUpdateTransactionContext();
   const { estimatedFeeMethodName } = getSubstrateDynamicNames(targetChain);
-
+  const srcChainDecimals = sourceApi.registry.chainDecimals[0];
   const estimateFeeCallback = useCallback(
     async (payloadInput: Object | null) => {
       if (!payloadInput) {
@@ -59,8 +62,8 @@ export const useEstimateFee = () => {
 
   const dispatch = useCallback(
     (error: string | null, data: any, loading: boolean) =>
-      dispatchTransaction(TransactionActionCreators.setEstimatedFee(error, data, loading)),
-    [dispatchTransaction]
+      dispatchTransaction(TransactionActionCreators.setEstimatedFee(error, data, loading, srcChainDecimals)),
+    [dispatchTransaction, srcChainDecimals]
   );
 
   const { execute: calculateEstimateFee } = useDispatchGenericCall({

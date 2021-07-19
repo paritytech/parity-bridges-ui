@@ -47,10 +47,11 @@ const setTransferAmount = (transferAmount: string | null, chainDecimals?: number
 const setEstimatedFee = (
   estimatedFeeError: string | null,
   estimatedFee: string | null,
-  estimatedFeeLoading: boolean
+  estimatedFeeLoading: boolean,
+  srcChainDecimals: number
 ) => {
   return {
-    payload: { estimatedFee, estimatedFeeError, estimatedFeeLoading },
+    payload: { estimatedFee, estimatedFeeError, estimatedFeeLoading, srcChainDecimals },
     type: TransactionActionTypes.SET_ESTIMATED_FEE
   };
 };

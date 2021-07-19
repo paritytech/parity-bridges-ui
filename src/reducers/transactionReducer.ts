@@ -22,7 +22,7 @@ import getReceiverAddress from '../util/getReceiverAddress';
 import { Payload, TransactionsActionType, TransactionState, ReceiverPayload } from '../types/transactionTypes';
 import { ChainState } from '../types/sourceTargetTypes';
 import logger from '../util/logger';
-import { evalUnits } from '../util/evalUnits';
+import { evalUnits, transformToBaseUnit } from '../util/evalUnits';
 
 const updateTransaction = (state: TransactionState, payload: Payload): TransactionState => {
   if (state.transactions) {
@@ -160,16 +160,27 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
   switch (action.type) {
-    case TransactionActionTypes.SET_ESTIMATED_FEE:
+    case TransactionActionTypes.SET_ESTIMATED_FEE: {
+      const { estimatedFeeError, estimatedFeeLoading, srcChainDecimals } = action.payload;
+
+      let estimatedFee = null;
+      let estimatedFeeTransformed = null;
+
+      if (!estimatedFeeError && !estimatedFeeLoading && action.payload.estimatedFee) {
+        estimatedFee = action.payload.estimatedFee;
+        estimatedFeeTransformed = transformToBaseUnit(estimatedFee || '0', srcChainDecimals);
+      }
+
       return {
         ...state,
-        estimatedFee: action.payload.estimatedFeeError ? null : action.payload.estimatedFee,
-        estimatedFeeError: action.payload.estimatedFeeError,
-        estimatedFeeLoading: action.payload.estimatedFeeLoading,
-        transactionReadyToExecute: action.payload.estimatedFeeLoading
-          ? false
-          : isReadyToExecute(state) && action.payload.estimatedFee
+        estimatedFee,
+        estimatedFeeTransformed,
+        estimatedFeeError: estimatedFeeError,
+        estimatedFeeLoading: estimatedFeeLoading,
+        transactionReadyToExecute: estimatedFeeLoading ? false : isReadyToExecute(state) && estimatedFee
       };
+    }
+
     case TransactionActionTypes.SET_TRANSFER_AMOUNT: {
       const { transferAmount, chainDecimals } = action.payload;
       const [actualValue, message] = evalUnits(transferAmount, chainDecimals);
@@ -186,7 +197,9 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return {
         ...state,
         payload: action.payload.payloadError ? null : action.payload.payload,
-        payloadError: action.payload.payloadError
+        payloadError: action.payload.payloadError,
+        estimatedFee: null,
+        estimatedFeeTransformed: null
       };
     }
     case TransactionActionTypes.RESET:
@@ -195,6 +208,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
         derivedReceiverAccount: null,
         estimatedFee: null,
         estimatedFeeError: null,
+        estimatedFeeTransformed: null,
         genericReceiverAccount: null,
         receiverAddress: null,
         transferAmount: null,

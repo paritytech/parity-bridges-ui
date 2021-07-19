@@ -53,6 +53,7 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     estimatedFee: null,
     estimatedFeeError: null,
     estimatedFeeLoading: false,
+    estimatedFeeTransformed: null,
     receiverAddress: null,
     unformattedReceiverAddress: null,
     derivedReceiverAccount: null,
