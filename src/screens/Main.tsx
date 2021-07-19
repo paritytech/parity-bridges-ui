@@ -37,7 +37,12 @@ interface MenuActionItemsProps {
   component: React.ReactElement;
 }
 
-const useStyles = makeStyles(() => ({}));
+const useStyles = makeStyles(() => ({
+  root: {
+    marginLeft: 'auto',
+    maxHeight: '25px'
+  }
+}));
 
 const MenuContents = [
   {
@@ -72,6 +77,11 @@ function Main() {
     setBridged(Boolean(newAlignment));
   };
 
+  // To remove this check once the whole functionality is ready.
+  const isDev = Boolean(process.env.REACT_APP_IS_DEVELOPMENT);
+  // TODO: ToggleButtonGroup needs to contain the colors designed by custom css.
+  // color property is not working for some reason.
+
   return (
     <>
       <BoxSidebar>
@@ -86,12 +96,21 @@ function Main() {
         <ButtonExt> Help & Feedback </ButtonExt>
       </BoxSidebar>
       <BoxUI>
-        <MenuAction items={items} menuIdx={index} changeMenu={setIndex} />
-
-        <ToggleButtonGroup color="secondary" value={isBridged} exclusive onChange={handleOnSwitch}>
-          <ToggleButton value={false}>Local</ToggleButton>
-          <ToggleButton value={true}>Bridge</ToggleButton>
-        </ToggleButtonGroup>
+        <Box component="div" display="flex" marginY={2} textAlign="left" width="100%">
+          <MenuAction items={items} menuIdx={index} changeMenu={setIndex} />
+          {isDev && (
+            <ToggleButtonGroup
+              size="small"
+              value={isBridged}
+              exclusive
+              onChange={handleOnSwitch}
+              classes={{ root: classes.root }}
+            >
+              <ToggleButton value={false}>Local</ToggleButton>
+              <ToggleButton value={true}>Bridge</ToggleButton>
+            </ToggleButtonGroup>
+          )}
+        </Box>
 
         <ExtensionAccountCheck component={<Sender />} />
         <Box marginY={2} textAlign="center" width="100%">
