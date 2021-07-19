@@ -129,7 +129,7 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
       showBalance: true,
       formatFound,
       transactionReadyToExecute,
-      estimatedFeeLoading: true
+      estimatedFeeLoading: Boolean(state.transferAmount)
     };
   }
 
@@ -144,7 +144,7 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
       showBalance: true,
       formatFound,
       transactionReadyToExecute,
-      estimatedFeeLoading: true
+      estimatedFeeLoading: Boolean(state.transferAmount)
     };
   }
 
@@ -195,7 +195,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
         transferAmount: actualValue || null,
         transferAmountError: message,
         transactionReadyToExecute: false,
-        estimatedFeeLoading: Boolean(actualValue) && true,
+        estimatedFeeLoading: Boolean(actualValue) && Boolean(state.receiverAddress),
         estimatedFee: null
       };
     }
