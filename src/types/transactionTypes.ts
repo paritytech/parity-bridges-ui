@@ -64,7 +64,6 @@ export interface TransactionStatusType extends UpdatedTransactionStatusType {
   type: string;
   status: TransactionStatusEnum;
   deliveryBlock: string | null;
-  evaluating: boolean;
 }
 
 export interface TransactionState {
@@ -79,6 +78,7 @@ export interface TransactionState {
   derivedReceiverAccount: string | null;
   genericReceiverAccount: string | null;
   transactions: Array<TransactionStatusType>;
+  evaluatingTransactions: boolean;
   transactionDisplayPayload: TransactionDisplayPayload;
   transactionRunning: boolean;
   transactionReadyToExecute: boolean;

@@ -28,8 +28,13 @@ import useLaneId from '../chain/useLaneId';
 import { useEffect } from 'react';
 import { TransactionActionCreators } from '../../actions/transactionActions';
 import isEqual from 'lodash/isEqual';
+import { MessageActionsCreators } from '../../actions/messageActions';
 
-export default function useTransactionsStatus(transactions: TransactionStatusType[], dispatchTransaction: Function) {
+export default function useTransactionsStatus(
+  transactions: TransactionStatusType[],
+  evaluatingTransactions: boolean,
+  dispatchTransaction: Function
+) {
   const { dispatchMessage } = useUpdateMessageContext();
   const { getValuesByChain } = useChainGetters();
 
@@ -43,19 +48,13 @@ export default function useTransactionsStatus(transactions: TransactionStatusTyp
 
   useEffect(() => {
     const getTransactionStatus = async () => {
+      dispatchTransaction(TransactionActionCreators.setEvaluatingTransactionsStatus(true));
       const updatedTransactions = await Promise.all(
         transactions.map(async (transaction: TransactionStatusType) => {
-          if (transaction.status === TransactionStatusEnum.COMPLETED || transaction.evaluating) {
+          if (transaction.status === TransactionStatusEnum.COMPLETED) {
             return transaction;
           }
-          dispatchTransaction(
-            TransactionActionCreators.updateTransactionStatus(
-              {
-                evaluating: true
-              },
-              transaction.id
-            )
-          );
+
           const { sourceChain, targetChain } = transaction;
           const { api: targetApi } = getValuesByChain(targetChain);
           const { sourceRole, targetRole } = getChainSubscriptionsKey({
@@ -78,17 +77,6 @@ export default function useTransactionsStatus(transactions: TransactionStatusTyp
             dispatchMessage
           });
 
-          if (isEqual(transaction, updatedTransaction)) {
-            dispatchTransaction(
-              TransactionActionCreators.updateTransactionStatus(
-                {
-                  evaluating: false
-                },
-                transaction.id
-              )
-            );
-          }
-
           return updatedTransaction;
         })
       );
@@ -96,14 +84,26 @@ export default function useTransactionsStatus(transactions: TransactionStatusTyp
       if (!isEqual(transactions, updatedTransactions)) {
         dispatchTransaction(TransactionActionCreators.updateTransactionsStatus(updatedTransactions));
       }
-    };
 
-    getTransactionStatus();
+      dispatchTransaction(TransactionActionCreators.setEvaluatingTransactionsStatus(false));
+    };
+    const transactionsInProgress = transactions.find(({ status }) => status === TransactionStatusEnum.IN_PROGRESS);
+
+    if (!evaluatingTransactions && transactions.length && transactionsInProgress) {
+      try {
+        getTransactionStatus();
+      } catch (e) {
+        dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e }));
+      }
+    }
+
+    return () => dispatchTransaction(TransactionActionCreators.setEvaluatingTransactionsStatus(false));
   }, [
     apiCalls,
     currentSourceChain,
     dispatchMessage,
     dispatchTransaction,
+    evaluatingTransactions,
     getValuesByChain,
     laneId,
     subscriptions,

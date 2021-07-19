@@ -107,8 +107,7 @@ function useSendMessage({ isValidCall, input, type, weightInput }: Props) {
                 payloadHex,
                 transactionDisplayPayload,
                 deliveryBlock: null,
-                steps: createEmptySteps(sourceChain, targetChain),
-                evaluating: false
+                steps: createEmptySteps(sourceChain, targetChain)
               })
             );
           }
@@ -132,7 +131,6 @@ function useSendMessage({ isValidCall, input, type, weightInput }: Props) {
                           block,
                           blockHash: status.asInBlock.toString(),
                           messageNonce,
-                          evaluating: false,
                           status: TransactionStatusEnum.IN_PROGRESS
                         },
                         id

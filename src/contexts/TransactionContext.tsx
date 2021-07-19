@@ -15,7 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React, { useContext, useReducer, useEffect } from 'react';
-import useTransactionsStatus from '../hooks/transactions/useTransactionsStatus';
+import useTransactionsStatus from '../hooks/context/useTransactionsStatus';
 import transactionReducer from '../reducers/transactionReducer';
 import { TransactionState, TransactionsActionType, TransactionDisplayPayload } from '../types/transactionTypes';
 import { TransactionActionCreators } from '../actions/transactionActions';
@@ -58,6 +58,7 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     unformattedReceiverAddress: null,
     derivedReceiverAccount: null,
     genericReceiverAccount: null,
+    evaluatingTransactions: false,
     transactions: [],
     transactionDisplayPayload: {} as TransactionDisplayPayload,
     transactionRunning: false,
@@ -70,7 +71,7 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     payloadHex: null
   });
 
-  useTransactionsStatus(transactionsState.transactions, dispatchTransaction);
+  useTransactionsStatus(transactionsState.transactions, transactionsState.evaluatingTransactions, dispatchTransaction);
 
   useEffect((): void => {
     dispatchTransaction(TransactionActionCreators.setSenderAccount(account ? account.address : null));
