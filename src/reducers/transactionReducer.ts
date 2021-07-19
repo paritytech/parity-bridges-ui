@@ -204,7 +204,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return {
         ...state,
         payload: payloadError ? null : payload,
-        payloadError: payloadError,
+        payloadError,
         estimatedFee: null
       };
     }
