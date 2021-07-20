@@ -70,12 +70,7 @@ const useApiCalls = (): ApiCallsContextType => {
       dispatchTransaction(TransactionActionCreators.setTransactionRunning(true));
 
       try {
-        if (!account || !receiverAddress || !transferAmount) {
-          return;
-        }
-
         const transfer = sourceApi.tx.balances.transfer(receiverAddress, transferAmount);
-
         const options: Partial<SignerOptions> = {
           nonce: -1
         };
