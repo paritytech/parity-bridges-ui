@@ -14,11 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import { Dispatch } from 'react';
 import type { Registry } from '@polkadot/types/types';
 import type { Bytes } from '@polkadot/types/primitive';
 
 import type { BlockHash } from '@polkadot/types/interfaces';
 import { Codec } from '@polkadot/types/types';
+import { Account } from './accountTypes';
+import BN from 'bn.js';
+import { MessagesActionType } from './messageTypes';
+import { TransactionsActionType } from './transactionTypes';
 
 export type CreateType = Registry['createType'];
 
@@ -29,7 +34,22 @@ export type StateCall = (
   at?: BlockHash | string | Uint8Array
 ) => Promise<Codec>;
 
+type TransferData = {
+  receiverAddress: string | null;
+  transferAmount: BN | null;
+  account: Account;
+};
+
+export type LocalTransfer = (
+  dispatchers: {
+    dispatchTransaction: Dispatch<TransactionsActionType>;
+    dispatchMessage: Dispatch<MessagesActionType>;
+  },
+  transfersData: TransferData
+) => void;
+
 export interface ApiCallsContextType {
   createType: CreateType;
   stateCall: StateCall;
+  localTransfer: LocalTransfer;
 }
