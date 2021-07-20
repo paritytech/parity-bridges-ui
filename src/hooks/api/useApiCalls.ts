@@ -109,7 +109,7 @@ const useApiCalls = (): ApiCallsContextType => {
 
           if (status.isBroadcast) {
             dispatchMessage(MessageActionsCreators.triggerInfoMessage({ message: 'Transaction was broadcasted' }));
-            // dispatchTransaction(TransactionActionCreators.reset());
+            dispatchTransaction(TransactionActionCreators.reset());
           }
 
           if (status.isInBlock) {
