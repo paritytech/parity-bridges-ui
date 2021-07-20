@@ -30,6 +30,7 @@ enum TransactionActionTypes {
   SET_RECEIVER_ADDRESS = 'SET_RECEIVER_ADDRESS',
   SET_RECEIVER_VALIDATION = 'SET_RECEIVER_VALIDATION',
   SET_SENDER_ACCOUNT = 'SET_SENDER_ACCOUNT',
+  SET_PAYLOAD_ESTIMATED_FEE = 'SET_PAYLOAD_ESTIMATED_FEE',
   CREATE_TRANSACTION_STATUS = 'CREATE_TRANSACTION_STATUS',
   UPDATE_CURRENT_TRANSACTION_STATUS = 'UPDATE_CURRENT_TRANSACTION_STATUS',
   SET_TRANSACTION_COMPLETED = 'SET_TRANSACTION_COMPLETED',
@@ -54,6 +55,20 @@ const setEstimatedFee = (
     type: TransactionActionTypes.SET_ESTIMATED_FEE
   };
 };
+
+type PayloadEstimatedFee = {
+  payload: TransactionPayload | null;
+  estimatedFee: string | null;
+};
+
+const setPayloadEstimatedFee = (
+  payloadEstimatedFeeError: string | null,
+  payloadEstimatedFee: PayloadEstimatedFee,
+  payloadEstimatedFeeLoading: boolean
+) => ({
+  payload: { payloadEstimatedFee, payloadEstimatedFeeError, payloadEstimatedFeeLoading },
+  type: TransactionActionTypes.SET_PAYLOAD
+});
 
 const setPayload = (payloadError: string | null, payload: TransactionPayload | null) => ({
   payload: { payload, payloadError },
@@ -104,6 +119,7 @@ const TransactionActionCreators = {
   setReceiverAddress,
   setReceiver,
   setTransferAmount,
+  setPayloadEstimatedFee,
   setEstimatedFee,
   setTransactionRunning,
   createTransactionStatus,

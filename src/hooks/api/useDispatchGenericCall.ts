@@ -18,24 +18,25 @@ import { useCallback } from 'react';
 interface DispatchGenericCallInput {
   call: Function;
   dispatch: (error: string | null, data: any, loading: boolean) => void;
+  initialData?: unknown;
 }
 
-export const useDispatchGenericCall = ({ call, dispatch }: DispatchGenericCallInput) => {
+export const useDispatchGenericCall = ({ call, dispatch, initialData = null }: DispatchGenericCallInput) => {
   const execute = useCallback(
     async (...params: any[]) => {
       let data;
       let error;
       try {
-        dispatch(null, null, true);
+        dispatch(null, initialData, true);
         data = await call(...params);
         dispatch(null, data, false);
       } catch (e) {
         error = e;
-        dispatch(e, null, false);
+        dispatch(e, initialData, false);
       }
       return { data, error };
     },
-    [call, dispatch]
+    [call, dispatch, initialData]
   );
 
   return {

@@ -189,6 +189,22 @@ export default function transactionReducer(state: TransactionState, action: Tran
         payloadError: action.payload.payloadError
       };
     }
+    case TransactionActionTypes.SET_PAYLOAD_ESTIMATED_FEE: {
+      const {
+        payloadEstimatedFeeError,
+        payloadEstimatedFee: { estimatedFee, payload },
+        payloadEstimatedFeeLoading
+      } = action.payload;
+      return {
+        ...state,
+        estimatedFee: payloadEstimatedFeeError ? null : estimatedFee,
+        estimatedFeeError: payloadEstimatedFeeError,
+        payloadEstimatedFeeLoading,
+        payload: payloadEstimatedFeeError ? null : payload,
+        transactionReadyToExecute: payloadEstimatedFeeLoading ? false : isReadyToExecute(state) && Boolean(estimatedFee)
+      };
+    }
+
     case TransactionActionTypes.RESET:
       return {
         ...state,

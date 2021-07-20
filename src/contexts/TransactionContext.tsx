@@ -66,7 +66,9 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     formatFound: null,
     payload: null,
     payloadError: null,
-    payloadHex: null
+    payloadHex: null,
+    payloadEstimatedFeeError: null,
+    payloadEstimatedFeeLoading: false
   });
 
   useEffect((): void => {
