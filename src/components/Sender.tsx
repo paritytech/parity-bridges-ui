@@ -29,7 +29,7 @@ import AccountDisplay from './AccountDisplay';
 import { AddressKind } from '../types/accountTypes';
 import { SelectLabel, styleAccountCompanion } from '../components';
 import useChainGetters from '../hooks/chain/useChainGetters';
-import IsBridged from '../components/IsBridged';
+import BridgedLocalWrapper from '../components/BridgedLocalWrapper';
 import { useGUIContext } from '../contexts/GUIContextProvider';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import isNull from 'lodash/isNull';
@@ -126,9 +126,9 @@ const Sender = () => {
         }}
       >
         <Account friendlyName={text} value={value} chain={source} />
-        <IsBridged>
+        <BridgedLocalWrapper>
           <Account friendlyName={text} value={value} chain={target} isDerived hideAddress />
-        </IsBridged>
+        </BridgedLocalWrapper>
       </MenuItem>
     ));
     return [
@@ -173,7 +173,7 @@ const Sender = () => {
       >
         {chains.map((chain) => renderAccounts(chain))}
       </Select>
-      <IsBridged>
+      <BridgedLocalWrapper>
         <div className={classes.accountCompanion}>
           {companionAccount && !isNull(senderCompanionAccountBalance) ? (
             <AccountDisplay
@@ -188,7 +188,7 @@ const Sender = () => {
             <AccountDisplay friendlyName="Sender" addressKind={AddressKind.COMPANION} hideAddress />
           )}
         </div>
-      </IsBridged>
+      </BridgedLocalWrapper>
     </>
   );
 };

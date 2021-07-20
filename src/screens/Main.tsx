@@ -28,7 +28,7 @@ import Transfer from '../components/Transfer';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import Transactions from '../components/Transactions';
 import { useGUIContext } from '../contexts/GUIContextProvider';
-import IsBridged from '../components/IsBridged';
+import BridgedLocalWrapper from '../components/BridgedLocalWrapper';
 
 interface MenuActionItemsProps {
   idx: number;
@@ -88,9 +88,9 @@ function Main() {
         <div>
           <Typography variant="button">Bridges UI</Typography>
           <NetworkSides />
-          <IsBridged blurred>
+          <BridgedLocalWrapper blurred>
             <NetworkStats />
-          </IsBridged>
+          </BridgedLocalWrapper>
           <StorageDrawer />
         </div>
         <ButtonExt> Help & Feedback </ButtonExt>

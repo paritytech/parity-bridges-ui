@@ -17,7 +17,7 @@
 import React from 'react';
 import ReceiverInput from './ReceiverInput';
 import ReceiverDerivedAccount from './ReceiverDerivedAccount';
-import IsBridged from './IsBridged';
+import BridgedLocalWrapper from './BridgedLocalWrapper';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import { Typography } from '@material-ui/core';
 
@@ -27,14 +27,14 @@ const Receiver = () => {
   return (
     <>
       <ReceiverInput />
-      <IsBridged>
+      <BridgedLocalWrapper>
         <>
           <ReceiverDerivedAccount />
           <Typography variant="body2" color="error">
             {addressValidationError}
           </Typography>
         </>
-      </IsBridged>
+      </BridgedLocalWrapper>
     </>
   );
 };

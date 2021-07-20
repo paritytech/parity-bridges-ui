@@ -23,7 +23,7 @@ import { useSubscriptionsContext } from '../contexts/SubscriptionsContextProvide
 
 import useLoadingApi from '../hooks/connections/useLoadingApi';
 import { IconApiStatus } from './Icons';
-import IsBridged from './IsBridged';
+import BridgedLocalWrapper from './BridgedLocalWrapper';
 
 // As this is placed as a child in the Material UI Select component, for some reason style components classes are not working.
 // This way to inject the styles works.
@@ -82,7 +82,7 @@ export const NetworkSides = () => {
       <IconButton size="small">
         <ArrowDownwardIcon fontSize="small" />
       </IconButton>
-      <IsBridged blurred>
+      <BridgedLocalWrapper blurred>
         <Box p={1} className={classes.statsEntry}>
           <Typography variant="h4">
             <IconApiStatus className={classes.svg} status={targetReady} />
@@ -92,7 +92,7 @@ export const NetworkSides = () => {
           </Typography>
           <span style={{ opacity: 0.4 }}># {targetSubscriptions.bestBlock}</span>
         </Box>
-      </IsBridged>
+      </BridgedLocalWrapper>
     </Box>
   );
 };
