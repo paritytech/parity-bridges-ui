@@ -54,6 +54,7 @@ const useAccountsContextSetUp = () => {
   useEffect(() => {
     if (keyringPairsReady && keyringPairs.length) {
       dispatchAccount(AccountActionCreators.setAccounts(keyringPairs));
+      // This initial load might be temporary or it might change based on what it was disscussed in issue #224
       updateSenderAccountsInformation(dispatchAccount);
     }
   }, [keyringPairsReady, keyringPairs, dispatchAccount, updateSenderAccountsInformation]);
