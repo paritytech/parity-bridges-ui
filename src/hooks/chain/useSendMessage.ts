@@ -28,22 +28,20 @@ import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import { useTransactionContext, useUpdateTransactionContext } from '../../contexts/TransactionContext';
 import useLaneId from './useLaneId';
 import useTransactionPreparation from '../transactions/useTransactionPreparation';
-import { TransactionStatusEnum, TransactionTypes } from '../../types/transactionTypes';
+import { TransactionStatusEnum } from '../../types/transactionTypes';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
 import { getTransactionDisplayPayload } from '../../util/transactionUtils';
 import logger from '../../util/logger';
 import useApiCalls from '../api/useApiCalls';
-import useLoadingApi from '../connections/useLoadingApi';
 
 interface Props {
-  isValidCall?: boolean;
   input: string;
   type: string;
   weightInput?: string;
 }
 
-function useSendMessage({ isValidCall, input, type, weightInput }: Props) {
-  const { estimatedFee, receiverAddress, payload, transactionRunning } = useTransactionContext();
+function useSendMessage({ input, type, weightInput }: Props) {
+  const { estimatedFee, receiverAddress, payload } = useTransactionContext();
   const { dispatchTransaction } = useUpdateTransactionContext();
   const laneId = useLaneId();
   const sourceTargetDetails = useSourceTarget();
@@ -55,7 +53,7 @@ function useSendMessage({ isValidCall, input, type, weightInput }: Props) {
     targetChainDetails: { chain: targetChain }
   } = sourceTargetDetails;
   const { account } = useAccountContext();
-  useTransactionPreparation({ input, isValidCall, type, weightInput });
+  useTransactionPreparation({ input, type, weightInput });
   const { createType } = useApiCalls();
   const { dispatchMessage } = useUpdateMessageContext();
 
@@ -181,22 +179,7 @@ function useSendMessage({ isValidCall, input, type, weightInput }: Props) {
     return makeCall(id);
   }, [dispatchTransaction, makeCall]);
 
-  const { areApiReady } = useLoadingApi();
-
-  const isButtonDisabled = useCallback(() => {
-    switch (type) {
-      case TransactionTypes.REMARK:
-        return transactionRunning || !account || !areApiReady;
-        break;
-      case TransactionTypes.CUSTOM:
-        return transactionRunning || !account || !input || !weightInput || !isValidCall || !areApiReady;
-        break;
-      default:
-        throw new Error(`Unknown type: ${type}`);
-    }
-  }, [account, areApiReady, input, isValidCall, transactionRunning, type, weightInput]);
-
-  return { sendLaneMessage, isButtonDisabled };
+  return sendLaneMessage;
 }
 
 export default useSendMessage;

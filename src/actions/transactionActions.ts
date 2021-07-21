@@ -16,6 +16,7 @@
 
 import {
   TransactionStatusType,
+  TransactionTypes,
   UpdatedTransactionStatusType,
   ReceiverPayload,
   TransactionPayload
@@ -30,7 +31,7 @@ enum TransactionActionTypes {
   SET_RECEIVER = 'SET_RECEIVER',
   SET_RECEIVER_ADDRESS = 'SET_RECEIVER_ADDRESS',
   SET_RECEIVER_VALIDATION = 'SET_RECEIVER_VALIDATION',
-  SET_SENDER_ACCOUNT = 'SET_SENDER_ACCOUNT',
+  COMBINE_REDUCERS = 'COMBINE_REDUCERS',
   CREATE_TRANSACTION_STATUS = 'CREATE_TRANSACTION_STATUS',
   UPDATE_CURRENT_TRANSACTION_STATUS = 'UPDATE_CURRENT_TRANSACTION_STATUS',
   SET_TRANSACTION_COMPLETED = 'SET_TRANSACTION_COMPLETED',
@@ -97,9 +98,13 @@ const setTransactionRunning = (transactionRunning: boolean) => ({
   type: TransactionActionTypes.SET_TRANSACTION_RUNNING
 });
 
-const setSenderAccount = (senderAccount: string | null) => ({
-  payload: { senderAccount },
-  type: TransactionActionTypes.SET_SENDER_ACCOUNT
+type CombineReducersInput = {
+  senderAccount: string | null;
+  action: TransactionTypes;
+};
+const combineReducers = ({ senderAccount, action }: CombineReducersInput) => ({
+  payload: { senderAccount, action },
+  type: TransactionActionTypes.COMBINE_REDUCERS
 });
 
 const setRemarkInput = (remarkInput: string | null) => ({
@@ -118,7 +123,7 @@ const setWeightInput = (weightInput: string | null) => ({
 });
 
 const TransactionActionCreators = {
-  setSenderAccount,
+  combineReducers,
   setReceiverAddress,
   setReceiver,
   setTransferAmount,

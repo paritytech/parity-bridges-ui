@@ -89,6 +89,7 @@ export interface TransactionState {
   payload: TransactionPayload | null;
   payloadError: string | null;
   payloadHex: string | null;
+  action: TransactionTypes;
 }
 
 export type TransactionsActionType = { type: TransactionActionTypes; payload: Payload };

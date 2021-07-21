@@ -27,7 +27,7 @@ import { useTransactionContext, useUpdateTransactionContext } from '../contexts/
 
 export default function Remark() {
   const { dispatchTransaction } = useUpdateTransactionContext();
-  const { remarkInput } = useTransactionContext();
+  const { remarkInput, transactionReadyToExecute } = useTransactionContext();
 
   const dispatchCallback = useCallback(
     (value: string) => {
@@ -43,7 +43,7 @@ export default function Remark() {
 
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
-  const { isButtonDisabled, sendLaneMessage } = useSendMessage({
+  const sendLaneMessage = useSendMessage({
     input: remarkDebouncedInput,
     type: TransactionTypes.REMARK
   });
@@ -63,7 +63,7 @@ export default function Remark() {
         rows={4}
         onChange={onChange}
       />
-      <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
+      <ButtonSubmit disabled={!transactionReadyToExecute} onClick={sendLaneMessage}>
         Send bridge remark from {sourceChainDetails.chain} to {targetChainDetails.chain}
       </ButtonSubmit>
       <EstimatedFee />

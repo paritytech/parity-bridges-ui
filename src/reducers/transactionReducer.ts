@@ -16,7 +16,7 @@
 
 import { INCORRECT_FORMAT, GENERIC } from '../constants';
 import { TransactionActionTypes } from '../actions/transactionActions';
-import { TransactionDisplayPayload } from '../types/transactionTypes';
+import { TransactionDisplayPayload, TransactionTypes } from '../types/transactionTypes';
 
 import getReceiverAddress from '../util/getReceiverAddress';
 import { Payload, TransactionsActionType, TransactionState, ReceiverPayload } from '../types/transactionTypes';
@@ -63,9 +63,24 @@ const validateAccount = (receiver: string, sourceChainDetails: ChainState, targe
   }
 };
 
+const isInputReady = (state: TransactionState): boolean => {
+  switch (state.action) {
+    case TransactionTypes.TRANSFER: {
+      return Boolean(state.transferAmount) && Boolean(state.receiverAddress);
+    }
+    case TransactionTypes.CUSTOM: {
+      return Boolean(state.weightInput) && Boolean(state.customCallInput);
+    }
+    case TransactionTypes.REMARK: {
+      return Boolean(state.remarkInput);
+    }
+  }
+};
+
 const isReadyToExecute = (state: TransactionState): boolean => {
-  const { transactionRunning, receiverAddress, transferAmount, senderAccount } = state;
-  return Boolean(!transactionRunning && receiverAddress && transferAmount && senderAccount);
+  const { transactionRunning, senderAccount } = state;
+  const inputReady = isInputReady(state);
+  return Boolean(!transactionRunning && inputReady && senderAccount);
 };
 
 const setReceiver = (state: TransactionState, payload: ReceiverPayload): TransactionState => {
@@ -162,6 +177,7 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
   console.log(action);
+  const transactionReadyToExecute = isReadyToExecute(state);
   switch (action.type) {
     case TransactionActionTypes.SET_ESTIMATED_FEE: {
       const { estimatedFeeError, estimatedFeeLoading } = action.payload;
@@ -183,7 +199,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
         estimatedFee,
         estimatedFeeError: estimatedFeeError,
         estimatedFeeLoading: estimatedFeeLoading,
-        transactionReadyToExecute: estimatedFeeLoading ? false : isReadyToExecute(state) && estimatedFee
+        transactionReadyToExecute: estimatedFeeLoading ? false : transactionReadyToExecute && estimatedFee
       };
     }
 
@@ -199,6 +215,14 @@ export default function transactionReducer(state: TransactionState, action: Tran
         estimatedFee: null
       };
     }
+    case TransactionActionTypes.SET_REMARK_INPUT: {
+      return { ...state, remarkInput: action.payload.remarkInput, transactionReadyToExecute };
+    }
+    case TransactionActionTypes.SET_CUSTOM_CALL_INPUT: {
+      return { ...state, customCallInput: action.payload.customCallInput, transactionReadyToExecute };
+    }
+    case TransactionActionTypes.SET_WEIGHT_INPUT:
+      return { ...state, weightInput: action.payload.weightInput, transactionReadyToExecute };
     case TransactionActionTypes.SET_PAYLOAD: {
       const { payloadError, payload } = action.payload;
       return {
@@ -230,7 +254,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return {
         ...state,
         receiverAddress: action.payload.receiverAddress,
-        transactionReadyToExecute: isReadyToExecute(state)
+        transactionReadyToExecute
       };
     case TransactionActionTypes.CREATE_TRANSACTION_STATUS:
       return { ...state, transactions: [action.payload.initialTransaction, ...state.transactions] };
@@ -238,17 +262,10 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return updateTransaction(state, action.payload);
     case TransactionActionTypes.SET_RECEIVER:
       return setReceiver(state, action.payload.receiverPayload);
-    case TransactionActionTypes.SET_TRANSACTION_RUNNING: {
+    case TransactionActionTypes.SET_TRANSACTION_RUNNING:
       return { ...state, transactionRunning: action.payload.transactionRunning };
-    }
-    case TransactionActionTypes.SET_SENDER_ACCOUNT:
-      return { ...state, senderAccount: action.payload.senderAccount };
-    case TransactionActionTypes.SET_REMARK_INPUT:
-      return { ...state, remarkInput: action.payload.remarkInput };
-    case TransactionActionTypes.SET_CUSTOM_CALL_INPUT:
-      return { ...state, customCallInput: action.payload.customCallInput };
-    case TransactionActionTypes.SET_WEIGHT_INPUT:
-      return { ...state, weightInput: action.payload.weightInput };
+    case TransactionActionTypes.COMBINE_REDUCERS:
+      return { ...state, senderAccount: action.payload.senderAccount, action: action.payload.action };
     default:
       throw new Error(`Unknown type: ${action.type}`);
   }

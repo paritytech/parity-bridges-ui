@@ -19,6 +19,7 @@ import transactionReducer from '../reducers/transactionReducer';
 import { TransactionState, TransactionsActionType, TransactionDisplayPayload } from '../types/transactionTypes';
 import { TransactionActionCreators } from '../actions/transactionActions';
 import { useAccountContext } from './AccountContextProvider';
+import { useGUIContext } from './GUIContextProvider';
 
 interface TransactionContextProviderProps {
   children: React.ReactElement;
@@ -45,6 +46,7 @@ export function useUpdateTransactionContext() {
 export function TransactionContextProvider(props: TransactionContextProviderProps): React.ReactElement {
   const { children = null } = props;
   const { account } = useAccountContext();
+  const { action } = useGUIContext();
 
   const [transaction, dispatchTransaction] = useReducer(transactionReducer, {
     senderAccount: null,
@@ -69,12 +71,15 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     formatFound: null,
     payload: null,
     payloadError: null,
-    payloadHex: null
+    payloadHex: null,
+    action
   });
 
   useEffect((): void => {
-    dispatchTransaction(TransactionActionCreators.setSenderAccount(account ? account.address : null));
-  }, [account, dispatchTransaction]);
+    dispatchTransaction(
+      TransactionActionCreators.combineReducers({ senderAccount: account ? account.address : null, action })
+    );
+  }, [account, action, dispatchTransaction]);
 
   return (
     <TransactionContext.Provider value={transaction}>

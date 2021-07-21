@@ -80,7 +80,7 @@ function Transfer() {
 
   const [currentInput, setInput] = useDebounceState({ initialValue: '0', dispatchCallback });
 
-  const { sendLaneMessage } = useSendMessage({
+  const sendLaneMessage = useSendMessage({
     input: transferAmount?.toString() ?? '',
     type: TransactionTypes.TRANSFER
   });

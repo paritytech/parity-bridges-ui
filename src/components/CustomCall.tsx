@@ -32,16 +32,13 @@ import logger from '../util/logger';
 const initialValue = '0x';
 
 const CustomCall = () => {
-  const [decoded, setDecoded] = useState<string | null>();
+  const [decoded, setDecoded] = useState<string | null>(null);
   const { dispatchTransaction } = useUpdateTransactionContext();
-  const { customCallInput, weightInput } = useTransactionContext();
+  const { customCallInput, weightInput, transactionReadyToExecute } = useTransactionContext();
 
-  const dispatchCallbackCustomCall = useCallback(
-    (value: string) => {
-      dispatchTransaction(TransactionActionCreators.setCustomCallInput(value));
-    },
-    [dispatchTransaction]
-  );
+  const dispatchCallbackCustomCall = useCallback(() => {
+    dispatchTransaction(TransactionActionCreators.setCustomCallInput(decoded));
+  }, [decoded, dispatchTransaction]);
 
   const [currentCustomCallInput, setCustomCallInput] = useDebounceState({
     initialValue,
@@ -68,9 +65,8 @@ const CustomCall = () => {
   } = useSourceTarget();
   const { createType } = useApiCalls();
 
-  const { isButtonDisabled, sendLaneMessage } = useSendMessage({
+  const sendLaneMessage = useSendMessage({
     input: customCallInput,
-    isValidCall: Boolean(decoded),
     type: TransactionTypes.CUSTOM,
     weightInput
   });
@@ -113,7 +109,7 @@ const CustomCall = () => {
         />
       </Box>
       <TextField onChange={onWeightChange} value={currentWeightInput} label="Weight" variant="outlined" fullWidth />
-      <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
+      <ButtonSubmit disabled={!transactionReadyToExecute} onClick={sendLaneMessage}>
         Send custom call from {sourceChainDetails.chain} to {targetChainDetails.chain}
       </ButtonSubmit>
       <EstimatedFee />
