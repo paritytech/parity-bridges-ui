@@ -27,6 +27,7 @@ import type { InterfaceTypes } from '@polkadot/types/types';
 import useLaneId from '../chain/useLaneId';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
 import useTransactionType from './useTransactionType';
+import { useGUIContext } from '../../contexts/GUIContextProvider';
 
 interface Input {
   input: string;
@@ -49,7 +50,8 @@ export const useEstimatedFeePayload = () => {
   const { receiverAddress } = useTransactionContext();
   const { account } = useAccountContext();
   const { estimatedFeeMethodName } = getSubstrateDynamicNames(targetChain);
-  const { call, weight } = useTransactionType({ input, type, weightInput });
+  const { action } = useGUIContext();
+  const { call, weight } = useTransactionType({ input, action, weightInput });
 
   const calculateCallback = useCallback(
     async ({ call, weight }: Input) => {

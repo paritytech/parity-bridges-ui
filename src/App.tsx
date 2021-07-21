@@ -52,17 +52,17 @@ function App() {
             <SnackbarProvider>
               <KeyringContextProvider>
                 <AccountContextProvider>
-                  <TransactionContextProvider>
-                    <BrowserRouter>
-                      <Switch>
-                        <Route path={'/'}>
-                          <GUIContextProvider>
+                  <GUIContextProvider>
+                    <TransactionContextProvider>
+                      <BrowserRouter>
+                        <Switch>
+                          <Route path={'/'}>
                             <Main />
-                          </GUIContextProvider>
-                        </Route>
-                      </Switch>
-                    </BrowserRouter>
-                  </TransactionContextProvider>
+                          </Route>
+                        </Switch>
+                      </BrowserRouter>
+                    </TransactionContextProvider>
+                  </GUIContextProvider>
                 </AccountContextProvider>
               </KeyringContextProvider>
             </SnackbarProvider>

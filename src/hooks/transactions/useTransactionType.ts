@@ -31,11 +31,11 @@ interface TransactionFunction {
 
 interface Props {
   input: string;
-  type: string;
+  action: TransactionTypes;
   weightInput?: string;
 }
 
-export default function useTransactionType({ input, type, weightInput }: Props): TransactionFunction {
+export default function useTransactionType({ input, action, weightInput }: Props): TransactionFunction {
   const { areApiReady } = useLoadingApi();
   const {
     targetChainDetails: {
@@ -57,7 +57,7 @@ export default function useTransactionType({ input, type, weightInput }: Props):
       let call: Uint8Array | null = null;
 
       if (account) {
-        switch (type) {
+        switch (action) {
           case TransactionTypes.REMARK:
             call = (await targetApi.tx.system.remark(input)).toU8a();
             logger.info(`system::remark: ${u8aToHex(call)}`);
@@ -81,7 +81,7 @@ export default function useTransactionType({ input, type, weightInput }: Props):
             weight = parseInt(weightInput!);
             break;
           default:
-            throw new Error(`Unknown type: ${type}`);
+            throw new Error(`Unknown type: ${action}`);
         }
         setValues({ call, weight });
       }
@@ -98,7 +98,7 @@ export default function useTransactionType({ input, type, weightInput }: Props):
     targetApi.tx.balances,
     targetApi.tx.system,
     transferAmount,
-    type,
+    action,
     weightInput
   ]);
 
