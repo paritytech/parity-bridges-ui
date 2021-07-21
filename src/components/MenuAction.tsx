@@ -17,7 +17,9 @@
 import { ButtonBase, Popover } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import React, { Dispatch, SetStateAction, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { MenuActionItemsProps } from '../types/guiTypes';
+import { TransactionTypes } from '../types/transactionTypes';
 
 // As this is placed as a child in the Material UI Select component, for some reason style components classes are not working.
 // This way to inject the styles works.
@@ -53,18 +55,13 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-interface MenuActionItemsProps {
-  idx: number;
-  title: string;
-  isEnabled: boolean;
-}
 interface MenuActionProps {
-  items: Array<MenuActionItemsProps>;
-  menuIdx: number;
-  changeMenu: Dispatch<SetStateAction<number>>;
+  actions: Array<MenuActionItemsProps>;
+  action: TransactionTypes;
+  changeMenu: (type: TransactionTypes) => void;
 }
 
-export const MenuAction = ({ items, changeMenu, menuIdx }: MenuActionProps) => {
+export const MenuAction = ({ actions, changeMenu, action }: MenuActionProps) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
   const [id, setId] = React.useState<string | undefined>(undefined);
@@ -80,10 +77,12 @@ export const MenuAction = ({ items, changeMenu, menuIdx }: MenuActionProps) => {
     setId(anchorEl ? 'simple-popover' : undefined);
   }, [anchorEl]);
 
+  const item = actions.find(({ type }) => type === action);
+
   return (
     <>
       <ButtonBase className={`${classes.item} current`} onClick={handleClick}>
-        {items[menuIdx]?.title || '-'}
+        {item!.title || '-'}
         <ArrowDropDownIcon />
       </ButtonBase>
       <Popover
@@ -103,13 +102,13 @@ export const MenuAction = ({ items, changeMenu, menuIdx }: MenuActionProps) => {
           className: classes.menu
         }}
       >
-        {items.map((i, n) => (
+        {actions.map((i, n) => (
           <ButtonBase
             className={`${classes.item} ${!i.isEnabled && 'disabled'}`}
             key={n}
             onClick={() => {
               setOpen(!open);
-              changeMenu(i.idx);
+              changeMenu(i.type);
             }}
           >
             {i.title}
