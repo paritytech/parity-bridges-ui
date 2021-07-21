@@ -23,6 +23,7 @@ import {
 
 enum TransactionActionTypes {
   SET_TRANSFER_AMOUNT = 'SET_TRANSFER_AMOUNT',
+  SET_REMARK_INPUT = 'SET_REMARK_INPUT',
   SET_ESTIMATED_FEE = 'SET_ESTIMATED_FEE',
   SET_PAYLOAD = 'SET_PAYLOAD',
   SET_PAYLOAD_ERROR = 'SET_PAYLOAD_ERROR',
@@ -34,6 +35,8 @@ enum TransactionActionTypes {
   UPDATE_CURRENT_TRANSACTION_STATUS = 'UPDATE_CURRENT_TRANSACTION_STATUS',
   SET_TRANSACTION_COMPLETED = 'SET_TRANSACTION_COMPLETED',
   SET_TRANSACTION_RUNNING = 'SET_TRANSACTION_RUNNING',
+  SET_CUSTOM_CALL_INPUT = 'SET_CUSTOM_CALL_INPUT',
+  SET_WEIGHT_INPUT = 'SET_WEIGHT_INPUT',
   RESET = 'RESET'
 }
 
@@ -99,11 +102,29 @@ const setSenderAccount = (senderAccount: string | null) => ({
   type: TransactionActionTypes.SET_SENDER_ACCOUNT
 });
 
+const setRemarkInput = (remarkInput: string | null) => ({
+  payload: { remarkInput },
+  type: TransactionActionTypes.SET_REMARK_INPUT
+});
+
+const setCustomCallInput = (customCallInput: string | null) => ({
+  payload: { customCallInput },
+  type: TransactionActionTypes.SET_CUSTOM_CALL_INPUT
+});
+
+const setWeightInput = (weightInput: string | null) => ({
+  payload: { weightInput },
+  type: TransactionActionTypes.SET_WEIGHT_INPUT
+});
+
 const TransactionActionCreators = {
   setSenderAccount,
   setReceiverAddress,
   setReceiver,
   setTransferAmount,
+  setCustomCallInput,
+  setWeightInput,
+  setRemarkInput,
   setEstimatedFee,
   setTransactionRunning,
   createTransactionStatus,

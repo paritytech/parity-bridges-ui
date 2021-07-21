@@ -243,7 +243,12 @@ export default function transactionReducer(state: TransactionState, action: Tran
     }
     case TransactionActionTypes.SET_SENDER_ACCOUNT:
       return { ...state, senderAccount: action.payload.senderAccount };
-
+    case TransactionActionTypes.SET_REMARK_INPUT:
+      return { ...state, remarkInput: action.payload.remarkInput };
+    case TransactionActionTypes.SET_CUSTOM_CALL_INPUT:
+      return { ...state, customCallInput: action.payload.customCallInput };
+    case TransactionActionTypes.SET_WEIGHT_INPUT:
+      return { ...state, weightInput: action.payload.weightInput };
     default:
       throw new Error(`Unknown type: ${action.type}`);
   }

@@ -15,18 +15,32 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { TextField } from '@material-ui/core';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { ButtonSubmit } from '../components';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useSendMessage from '../hooks/chain/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
 import { EstimatedFee } from './EstimatedFee';
 import useDebounceState from '../hooks/react/useDebounceState';
+import { TransactionActionCreators } from '../actions/transactionActions';
+import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
 
-const initialValue = '0x';
+export default function Remark() {
+  const { dispatchTransaction } = useUpdateTransactionContext();
+  const { remarkInput } = useTransactionContext();
 
-const Remark = () => {
-  const [currentInput, setRemarkInput, remarkDebouncedInput] = useDebounceState({ initialValue });
+  const dispatchCallback = useCallback(
+    (value: string) => {
+      dispatchTransaction(TransactionActionCreators.setRemarkInput(value));
+    },
+    [dispatchTransaction]
+  );
+
+  const [currentInput, setRemarkInput, remarkDebouncedInput] = useDebounceState({
+    initialValue: remarkInput,
+    dispatchCallback
+  });
+
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
@@ -38,7 +52,6 @@ const Remark = () => {
     setRemarkInput(event.target.value);
   };
 
-  // To extract estimated fee logic to specific component. Issue #171
   return (
     <>
       <TextField
@@ -56,6 +69,4 @@ const Remark = () => {
       <EstimatedFee />
     </>
   );
-};
-
-export default Remark;
+}
