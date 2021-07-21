@@ -36,9 +36,12 @@ const CustomCall = () => {
   const { dispatchTransaction } = useUpdateTransactionContext();
   const { customCallInput, weightInput, transactionReadyToExecute } = useTransactionContext();
 
-  const dispatchCallbackCustomCall = useCallback(() => {
-    dispatchTransaction(TransactionActionCreators.setCustomCallInput(decoded));
-  }, [decoded, dispatchTransaction]);
+  const dispatchCallbackCustomCall = useCallback(
+    (value: string | null) => {
+      dispatchTransaction(TransactionActionCreators.setCustomCallInput(value));
+    },
+    [dispatchTransaction]
+  );
 
   const [currentCustomCallInput, setCustomCallInput] = useDebounceState({
     initialValue,
@@ -47,9 +50,9 @@ const CustomCall = () => {
 
   const dispatchCallbackWeight = useCallback(
     (value: string) => {
-      dispatchTransaction(TransactionActionCreators.setWeightInput(value));
+      dispatchTransaction(TransactionActionCreators.setWeightInput(decoded ? value : null));
     },
-    [dispatchTransaction]
+    [decoded, dispatchTransaction]
   );
 
   const [currentWeightInput, setWeightInput] = useDebounceState({

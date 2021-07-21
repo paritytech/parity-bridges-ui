@@ -69,7 +69,7 @@ const isInputReady = (state: TransactionState): boolean => {
       return Boolean(state.transferAmount) && Boolean(state.receiverAddress);
     }
     case TransactionTypes.CUSTOM: {
-      return Boolean(state.weightInput) && Boolean(state.customCallInput);
+      return Boolean(state.weightInput && state.customCallInput);
     }
     case TransactionTypes.REMARK: {
       return Boolean(state.remarkInput);
@@ -221,8 +221,10 @@ export default function transactionReducer(state: TransactionState, action: Tran
     case TransactionActionTypes.SET_CUSTOM_CALL_INPUT: {
       return { ...state, customCallInput: action.payload.customCallInput, transactionReadyToExecute };
     }
-    case TransactionActionTypes.SET_WEIGHT_INPUT:
+    case TransactionActionTypes.SET_WEIGHT_INPUT: {
       return { ...state, weightInput: action.payload.weightInput, transactionReadyToExecute };
+    }
+
     case TransactionActionTypes.SET_PAYLOAD: {
       const { payloadError, payload } = action.payload;
       return {
