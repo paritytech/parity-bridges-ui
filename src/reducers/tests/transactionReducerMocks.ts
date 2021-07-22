@@ -15,9 +15,9 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import { TransactionDisplayPayload, TransactionTypes } from '../../types/transactionTypes';
+import { TransactionDisplayPayload, TransactionState, TransactionTypes } from '../../types/transactionTypes';
 
-export const state = {
+export const state: TransactionState = {
   senderAccount: null,
   transferAmount: null,
   remarkInput: '0x',
@@ -25,7 +25,6 @@ export const state = {
   weightInput: '',
   transferAmountError: null,
   estimatedFee: null,
-  estimatedFeeError: null,
   estimatedFeeLoading: false,
   receiverAddress: null,
   unformattedReceiverAddress: null,
@@ -39,7 +38,6 @@ export const state = {
   showBalance: false,
   formatFound: null,
   payload: null,
-  payloadError: null,
   payloadHex: null,
   payloadEstimatedFeeError: null,
   payloadEstimatedFeeLoading: false,

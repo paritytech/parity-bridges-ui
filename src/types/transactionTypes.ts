@@ -73,7 +73,6 @@ export interface TransactionState {
   transferAmount: BN | null;
   transferAmountError: string | null;
   estimatedFee: string | null;
-  estimatedFeeError: string | null;
   estimatedFeeLoading: boolean;
   receiverAddress: string | null;
   unformattedReceiverAddress: string | null;
@@ -87,7 +86,6 @@ export interface TransactionState {
   showBalance: boolean;
   formatFound: string | null;
   payload: TransactionPayload | null;
-  payloadError: string | null;
   payloadHex: string | null;
   payloadEstimatedFeeError: string | null;
   payloadEstimatedFeeLoading: boolean;

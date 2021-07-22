@@ -186,10 +186,11 @@ export default function transactionReducer(state: TransactionState, action: Tran
         payloadEstimatedFee: { estimatedFee, payload },
         payloadEstimatedFeeLoading
       } = action.payload;
+
       return {
         ...state,
         estimatedFee: !payloadEstimatedFeeError && transactionReadyToExecute ? estimatedFee : null,
-        estimatedFeeError: payloadEstimatedFeeError,
+        payloadEstimatedFeeError: payloadEstimatedFeeError,
         payloadEstimatedFeeLoading,
         payload: payloadEstimatedFeeError ? null : payload,
         transactionReadyToExecute: payloadEstimatedFeeLoading ? false : transactionReadyToExecute
@@ -222,7 +223,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
         ...state,
         derivedReceiverAccount: null,
         estimatedFee: null,
-        estimatedFeeError: null,
+        payloadEstimatedFeeError: null,
         genericReceiverAccount: null,
         receiverAddress: null,
         transferAmount: null,
@@ -230,7 +231,6 @@ export default function transactionReducer(state: TransactionState, action: Tran
         unformattedReceiverAddress: null,
         addressValidationError: null,
         payload: null,
-        payloadError: null,
         transactionDisplayPayload: {} as TransactionDisplayPayload,
         showBalance: false,
         formatFound: null

@@ -25,9 +25,6 @@ import {
 enum TransactionActionTypes {
   SET_TRANSFER_AMOUNT = 'SET_TRANSFER_AMOUNT',
   SET_REMARK_INPUT = 'SET_REMARK_INPUT',
-  SET_ESTIMATED_FEE = 'SET_ESTIMATED_FEE',
-  SET_PAYLOAD = 'SET_PAYLOAD',
-  SET_PAYLOAD_ERROR = 'SET_PAYLOAD_ERROR',
   SET_RECEIVER = 'SET_RECEIVER',
   SET_RECEIVER_ADDRESS = 'SET_RECEIVER_ADDRESS',
   SET_RECEIVER_VALIDATION = 'SET_RECEIVER_VALIDATION',
@@ -49,17 +46,6 @@ const setTransferAmount = (transferAmount: string | null, chainDecimals?: number
   };
 };
 
-const setEstimatedFee = (
-  estimatedFeeError: string | null,
-  estimatedFee: string | null,
-  estimatedFeeLoading: boolean
-) => {
-  return {
-    payload: { estimatedFee, estimatedFeeError, estimatedFeeLoading },
-    type: TransactionActionTypes.SET_ESTIMATED_FEE
-  };
-};
-
 type PayloadEstimatedFee = {
   payload: TransactionPayload | null;
   estimatedFee: string | null;
@@ -72,11 +58,6 @@ const setPayloadEstimatedFee = (
 ) => ({
   payload: { payloadEstimatedFee, payloadEstimatedFeeError, payloadEstimatedFeeLoading },
   type: TransactionActionTypes.SET_PAYLOAD_ESTIMATED_FEE
-});
-
-const setPayload = (payloadError: string | null, payload: TransactionPayload | null) => ({
-  payload: { payload, payloadError },
-  type: TransactionActionTypes.SET_PAYLOAD
 });
 
 const setReceiverAddress = (receiverAddress: string | null) => ({
@@ -146,11 +127,9 @@ const TransactionActionCreators = {
   setCustomCallInput,
   setWeightInput,
   setRemarkInput,
-  setEstimatedFee,
   setTransactionRunning,
   createTransactionStatus,
   updateTransactionStatus,
-  setPayload,
   reset
 };
 
