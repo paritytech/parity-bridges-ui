@@ -146,7 +146,7 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
       showBalance: true,
       formatFound,
       transactionReadyToExecute,
-      estimatedFeeLoading: Boolean(state.transferAmount)
+      payloadEstimatedFeeLoading: Boolean(state.transferAmount)
     };
   }
 
@@ -161,7 +161,7 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
       showBalance: true,
       formatFound,
       transactionReadyToExecute,
-      estimatedFeeLoading: Boolean(state.transferAmount)
+      payloadEstimatedFeeLoading: Boolean(state.transferAmount)
     };
   }
 

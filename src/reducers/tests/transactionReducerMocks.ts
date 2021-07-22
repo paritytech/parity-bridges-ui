@@ -25,7 +25,6 @@ export const state: TransactionState = {
   weightInput: '',
   transferAmountError: null,
   estimatedFee: null,
-  estimatedFeeLoading: false,
   receiverAddress: null,
   unformattedReceiverAddress: null,
   derivedReceiverAccount: null,

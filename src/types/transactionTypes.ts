@@ -73,7 +73,6 @@ export interface TransactionState {
   transferAmount: BN | null;
   transferAmountError: string | null;
   estimatedFee: string | null;
-  estimatedFeeLoading: boolean;
   receiverAddress: string | null;
   unformattedReceiverAddress: string | null;
   derivedReceiverAccount: string | null;
