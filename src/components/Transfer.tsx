@@ -45,7 +45,8 @@ const useStyles = makeStyles((theme) => ({
         fontSize: theme.typography.h1.fontSize,
         color: theme.palette.primary.main
       }
-    }
+    },
+    minHeight: '95px'
   }
 }));
 
@@ -109,6 +110,7 @@ function Transfer() {
           className={classes.inputAmount}
           fullWidth
           variant="outlined"
+          autoComplete="off"
           helperText={transferAmountError || ''}
           InputProps={{
             endAdornment: <TokenSymbol position="start" />

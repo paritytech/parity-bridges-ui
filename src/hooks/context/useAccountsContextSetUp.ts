@@ -20,6 +20,8 @@ import useBalance from '../subscriptions/useBalance';
 import { AccountActionCreators } from '../../actions/accountActions';
 import accountReducer from '../../reducers/accountReducer';
 import { useKeyringContext } from '../../contexts/KeyringContextProvider';
+import { DisplayAccounts } from '../../types/accountTypes';
+import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
 
 const useAccountsContextSetUp = () => {
   const {
@@ -32,13 +34,14 @@ const useAccountsContextSetUp = () => {
   } = useSourceTarget();
 
   const { keyringPairs, keyringPairsReady } = useKeyringContext();
-
+  const { updateSenderAccountsInformation } = useApiCallsContext();
   const [accountState, dispatchAccount] = useReducer(accountReducer, {
     account: null,
     accounts: [],
     companionAccount: null,
     senderAccountBalance: null,
-    senderCompanionAccountBalance: null
+    senderCompanionAccountBalance: null,
+    displaySenderAccounts: {} as DisplayAccounts
   });
 
   const accountBalance = useBalance(sourceApi, accountState.account?.address || '', true);
@@ -51,8 +54,10 @@ const useAccountsContextSetUp = () => {
   useEffect(() => {
     if (keyringPairsReady && keyringPairs.length) {
       dispatchAccount(AccountActionCreators.setAccounts(keyringPairs));
+      // This initial load might be temporary or it might change based on what it was disscussed in issue #224
+      updateSenderAccountsInformation(dispatchAccount);
     }
-  }, [keyringPairsReady, keyringPairs, dispatchAccount]);
+  }, [keyringPairsReady, keyringPairs, dispatchAccount, updateSenderAccountsInformation]);
 
   return { accountState, dispatchAccount };
 };

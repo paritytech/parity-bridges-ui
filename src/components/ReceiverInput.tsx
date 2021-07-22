@@ -71,6 +71,7 @@ function ReceiverInput() {
           className={classes.address}
           fullWidth
           onChange={onReceiverChange}
+          autoComplete="off"
           value={addressInput}
           placeholder="Recipient address"
         />

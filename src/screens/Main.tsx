@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
@@ -28,14 +28,10 @@ import Transfer from '../components/Transfer';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import Transactions from '../components/Transactions';
 import { useGUIContext } from '../contexts/GUIContextProvider';
-import BridgedLocalWrapper from '../components/BridgedLocalWrapper';
+import { TransactionTypes } from '../types/transactionTypes';
+import { MenuActionItemsProps } from '../types/guiTypes';
 
-interface MenuActionItemsProps {
-  idx: number;
-  title: string;
-  isEnabled: boolean;
-  component: React.ReactElement;
-}
+import BridgedLocalWrapper from '../components/BridgedLocalWrapper';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -44,34 +40,16 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-const MenuContents = [
-  {
-    idx: 0,
-    title: 'Transfer',
-    isEnabled: true,
-    component: <Transfer />
-  },
-  {
-    idx: 1,
-    title: 'Remark',
-    isEnabled: true,
-    component: <Remark />
-  },
-  {
-    idx: 2,
-    title: 'Custom Call',
-    isEnabled: true,
-    component: <CustomCall />
-  }
-];
+const ActionComponents = {
+  [TransactionTypes.TRANSFER]: <Transfer />,
+  [TransactionTypes.REMARK]: <Remark />,
+  [TransactionTypes.CUSTOM]: <CustomCall />
+};
 
 function Main() {
   const classes = useStyles();
-  const [items] = useState<MenuActionItemsProps[]>(MenuContents as MenuActionItemsProps[]);
-  const [index, setIndex] = useState<number>(0);
-  const { isBridged, setBridged } = useGUIContext();
-
-  const searchItems = (choice: number) => items.find((x) => x.idx === choice);
+  const { actions, action, setAction, isBridged, setBridged } = useGUIContext();
+  const searchItems = (choice: TransactionTypes) => actions.find((x: MenuActionItemsProps) => x.type === choice);
 
   const handleOnSwitch = (event: React.MouseEvent<HTMLElement>, newAlignment: string | null) => {
     setBridged(Boolean(newAlignment));
@@ -97,7 +75,7 @@ function Main() {
       </BoxSidebar>
       <BoxUI>
         <Box component="div" display="flex" marginY={2} textAlign="left" width="100%">
-          <MenuAction items={items} menuIdx={index} changeMenu={setIndex} />
+          <MenuAction actions={actions} action={action} changeMenu={setAction} />
           {isDev && (
             <ToggleButtonGroup
               size="small"
@@ -116,8 +94,8 @@ function Main() {
         <Box marginY={2} textAlign="center" width="100%">
           <ArrowDownwardIcon fontSize="large" color="primary" />
         </Box>
-        <>{searchItems(index)?.component}</>
-        <Transactions type={searchItems(index)?.title} />
+        <>{ActionComponents[action]}</>
+        <Transactions type={searchItems(action)?.title} />
         <SnackBar />
       </BoxUI>
     </>

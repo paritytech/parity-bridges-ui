@@ -14,16 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import React, { useContext, useState, Dispatch } from 'react';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import useLocalStorage from '../hooks/transactions/useLocalStorage';
+import { TransactionTypes } from '../types/transactionTypes';
 import { light } from '../components';
-
+import { MenuActionItemsProps } from '../types/guiTypes';
+import useResetTransactionState from '../hooks/transactions/useResetTransactionState';
 interface DrawerContextProps {
   drawer: string;
   setDrawer: Dispatch<React.SetStateAction<string>>;
   setBridged: Dispatch<React.SetStateAction<boolean>>;
   isBridged: boolean;
+  actions: MenuActionItemsProps[];
+  action: TransactionTypes;
+  setAction: (type: TransactionTypes) => void;
 }
 
 interface GUIContextProviderProps {
@@ -32,6 +37,24 @@ interface GUIContextProviderProps {
 
 const DrawerContext = React.createContext({} as DrawerContextProps);
 
+const actions = [
+  {
+    title: 'Transfer',
+    isEnabled: true,
+    type: TransactionTypes.TRANSFER
+  },
+  {
+    title: 'Remark',
+    isEnabled: true,
+    type: TransactionTypes.REMARK
+  },
+  {
+    title: 'Custom Call',
+    isEnabled: true,
+    type: TransactionTypes.CUSTOM
+  }
+];
+
 export function useGUIContext() {
   return useContext(DrawerContext);
 }
@@ -39,8 +62,9 @@ export function useGUIContext() {
 export function GUIContextProvider({ children }: GUIContextProviderProps): React.ReactElement {
   const [drawer, setDrawer] = useLocalStorage('storageDrawer');
   const [isBridged, setBridged] = useState(true);
-
-  const value = { drawer, setDrawer, isBridged, setBridged };
+  const [action, setAction] = useState<TransactionTypes>(TransactionTypes.TRANSFER);
+  const value = { drawer, setDrawer, actions, action, setAction, isBridged, setBridged };
+  useResetTransactionState(action);
 
   return (
     <ThemeProvider theme={createMuiTheme(light)}>
