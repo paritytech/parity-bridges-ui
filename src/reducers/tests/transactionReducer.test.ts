@@ -88,7 +88,7 @@ describe('transactionReducer', () => {
         ...state,
         unformattedReceiverAddress: 'tH95Ew4kVD9VcwsyXaSdC74Noe3H8o6fJfnKhZezXHKHEcs',
         addressValidationError: 'Unsupported address SS58 prefix: 8',
-        formatFound: '8'
+        formatFound: 8
       });
     });
   });

@@ -190,7 +190,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return {
         ...state,
         estimatedFee: !payloadEstimatedFeeError && transactionReadyToExecute ? estimatedFee : null,
-        payloadEstimatedFeeError: payloadEstimatedFeeError,
+        payloadEstimatedFeeError,
         payloadEstimatedFeeLoading,
         payload: payloadEstimatedFeeError ? null : payload,
         transactionReadyToExecute: payloadEstimatedFeeLoading ? false : transactionReadyToExecute

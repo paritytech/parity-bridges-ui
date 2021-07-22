@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import React, { useContext, useEffect, useReducer } from 'react';
 import { TransactionActionCreators } from '../actions/transactionActions';
 import useEstimatedFeePayload from '../hooks/transactions/useEstimatedFeePayload';
