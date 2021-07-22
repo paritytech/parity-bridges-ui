@@ -78,7 +78,7 @@ function Main() {
   };
 
   // To remove this check once the whole functionality is ready.
-  const isDev = Boolean(process.env.REACT_APP_IS_DEVELOPMENT);
+  const isDev = process.env.REACT_APP_IS_DEVELOPMENT === 'true';
   // TODO: ToggleButtonGroup needs to contain the colors designed by custom css.
   // color property is not working for some reason.
 
