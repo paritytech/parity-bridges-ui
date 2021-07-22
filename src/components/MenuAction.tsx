@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface MenuActionProps {
-  actions: Array<MenuActionItemsProps>;
+  actions: MenuActionItemsProps[];
   action: TransactionTypes;
   changeMenu: (type: TransactionTypes) => void;
 }
@@ -82,7 +82,7 @@ export const MenuAction = ({ actions, changeMenu, action }: MenuActionProps) => 
   return (
     <>
       <ButtonBase className={`${classes.item} current`} onClick={handleClick}>
-        {item!.title || '-'}
+        {item?.title || '-'}
         <ArrowDropDownIcon />
       </ButtonBase>
       <Popover

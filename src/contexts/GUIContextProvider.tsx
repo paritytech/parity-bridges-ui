@@ -74,6 +74,8 @@ export function GUIContextProvider({ children }: GUIContextProviderProps): React
     );
   }, [account, action, dispatchTransaction]);
 
+  useResetTransactionState(action);
+
   return (
     <ThemeProvider theme={createMuiTheme(light)}>
       <DrawerContext.Provider value={value}>{children}</DrawerContext.Provider>
