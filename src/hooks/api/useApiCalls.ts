@@ -81,7 +81,7 @@ const useApiCalls = (): ApiCallsContextType => {
           sourceAccount = account.address;
         }
 
-        const unsub = await transfer.signAndSend(sourceAccount, { ...options }, ({ status }) => {
+        const unsub = await transfer.signAndSend(sourceAccount, { ...options }, async ({ status }) => {
           if (status.isReady) {
             dispatchTransaction(
               TransactionActionCreators.createTransactionStatus({
@@ -108,7 +108,7 @@ const useApiCalls = (): ApiCallsContextType => {
           }
 
           if (status.isInBlock) {
-            sourceApi.rpc.chain
+            /*             sourceApi.rpc.chain
               .getBlock(status.asInBlock)
               .then((res) => {
                 const block = res.block.header.number.toString();
@@ -126,7 +126,24 @@ const useApiCalls = (): ApiCallsContextType => {
               .catch((e) => {
                 logger.error(e.message);
                 throw new Error('Issue reading block information.');
-              });
+              }); */
+            try {
+              const res = await sourceApi.rpc.chain.getBlock(status.asInBlock);
+              const block = res.block.header.number.toString();
+              dispatchTransaction(
+                TransactionActionCreators.updateTransactionStatus(
+                  {
+                    block,
+                    blockHash: status.asInBlock.toString(),
+                    status: TransactionStatusEnum.COMPLETED
+                  },
+                  id
+                )
+              );
+            } catch (e) {
+              logger.error(e.message);
+              throw new Error('Issue reading block information.');
+            }
           }
 
           if (status.isFinalized) {
