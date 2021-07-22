@@ -94,6 +94,8 @@ export default function useTransactionsStatus(
         getTransactionStatus();
       } catch (e) {
         dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e }));
+      } finally {
+        dispatchTransaction(TransactionActionCreators.setEvaluatingTransactionsStatus(false));
       }
     }
 
