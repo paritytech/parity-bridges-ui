@@ -108,25 +108,6 @@ const useApiCalls = (): ApiCallsContextType => {
           }
 
           if (status.isInBlock) {
-            /*             sourceApi.rpc.chain
-              .getBlock(status.asInBlock)
-              .then((res) => {
-                const block = res.block.header.number.toString();
-                dispatchTransaction(
-                  TransactionActionCreators.updateTransactionStatus(
-                    {
-                      block,
-                      blockHash: status.asInBlock.toString(),
-                      status: TransactionStatusEnum.COMPLETED
-                    },
-                    id
-                  )
-                );
-              })
-              .catch((e) => {
-                logger.error(e.message);
-                throw new Error('Issue reading block information.');
-              }); */
             try {
               const res = await sourceApi.rpc.chain.getBlock(status.asInBlock);
               const block = res.block.header.number.toString();
