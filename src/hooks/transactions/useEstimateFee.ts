@@ -22,6 +22,7 @@ import { useUpdateTransactionContext } from '../../contexts/TransactionContext';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
 import useDispatchGenericCall from '../api/useDispatchGenericCall';
 import useLaneId from '../chain/useLaneId';
+import type { InterfaceTypes } from '@polkadot/types/types';
 
 export const useEstimateFee = () => {
   const { createType, stateCall } = useApiCallsContext();
@@ -32,26 +33,23 @@ export const useEstimateFee = () => {
   } = useSourceTarget();
   const { dispatchTransaction } = useUpdateTransactionContext();
   const { estimatedFeeMethodName } = getSubstrateDynamicNames(targetChain);
-
   const estimateFeeCallback = useCallback(
     async (payloadInput: Object | null) => {
       if (!payloadInput) {
         return null;
       }
+
       // Ignoring custom types missed for TS for now.
       // Need to apply: https://polkadot.js.org/docs/api/start/typescript.user
-      // @ts-ignore
-      const payloadType = createType(sourceChain, 'OutboundPayload', payloadInput);
-      // @ts-ignore
-      const messageFeeType = createType(sourceChain, 'MessageFeeData', {
+      const payloadType = createType(sourceChain as keyof InterfaceTypes, 'OutboundPayload', payloadInput);
+      const messageFeeType = createType(sourceChain as keyof InterfaceTypes, 'MessageFeeData', {
         lane_id: laneId,
         payload: payloadType.toHex()
       });
 
       const estimatedFeeCall = await stateCall(sourceChain, estimatedFeeMethodName, messageFeeType.toHex());
 
-      // @ts-ignore
-      const estimatedFeeType = createType(sourceChain, 'Option<Balance>', estimatedFeeCall);
+      const estimatedFeeType = createType(sourceChain as keyof InterfaceTypes, 'Option<Balance>', estimatedFeeCall);
       const estimatedFee = estimatedFeeType.toString();
       return estimatedFee;
     },

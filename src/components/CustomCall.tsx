@@ -14,59 +14,64 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Box, TextField, Typography } from '@material-ui/core';
-import React, { useState } from 'react';
+import type { InterfaceTypes } from '@polkadot/types/types';
+
+import React, { useState, useCallback } from 'react';
+import { Box, TextField } from '@material-ui/core';
 import { ButtonSubmit } from '../components';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useTransactionContext } from '../contexts/TransactionContext';
 import useSendMessage from '../hooks/chain/useSendMessage';
 import useApiCalls from '../hooks/api/useApiCalls';
 import { TransactionTypes } from '../types/transactionTypes';
+import { EstimatedFee } from './EstimatedFee';
+import useDebounceState from '../hooks/react/useDebounceState';
+import logger from '../util/logger';
+
+const initialValue = '0x';
 
 const CustomCall = () => {
-  const [isRunning, setIsRunning] = useState(false);
   const [decoded, setDecoded] = useState<string | null>();
 
-  const [customCallInput, setCustomCallInput] = useState('0x');
-  const [weightInput, setWeightInput] = useState<string>();
+  const [currentCustomCallInput, setCustomCallInput, customCallDebouncedInput] = useDebounceState({ initialValue });
+  const [currentWeightInput, setWeightInput, weightDebouncedInput] = useDebounceState({ initialValue: '' });
+
   const [error, setError] = useState<string | null>();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
-  const { estimatedFee, estimatedFeeLoading } = useTransactionContext();
   const {
     targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
   const { createType } = useApiCalls();
 
   const { isButtonDisabled, sendLaneMessage } = useSendMessage({
-    input: customCallInput,
-    isRunning,
+    input: customCallDebouncedInput,
     isValidCall: Boolean(decoded),
-    setIsRunning,
     type: TransactionTypes.CUSTOM,
-    weightInput
+    weightInput: weightDebouncedInput
   });
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    decodePayload(event.target.value);
-    setCustomCallInput(event.target.value);
-  };
+  const onChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const input = event.target.value;
+      try {
+        setError(null);
+        setCustomCallInput(input);
+        const call = createType(targetChain as keyof InterfaceTypes, 'Call', input);
+        setDecoded(JSON.stringify(call, null, 4));
+      } catch (e) {
+        logger.error('Wrong call', e);
+        setError('Wrong call provided');
+        setDecoded(null);
+      }
+    },
+    [createType, setCustomCallInput, targetChain]
+  );
 
-  const onWeightChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setWeightInput(event.target.value);
-  };
-
-  function decodePayload(input: string) {
-    try {
-      setError(null);
-
-      //@ts-ignore
-      const call = createType(targetChain, 'Call', input);
-      setDecoded(JSON.stringify(call, null, 4));
-    } catch (e) {
-      setError('Wrong call provided');
-      setDecoded(null);
-    }
-  }
+  const onWeightChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setWeightInput(event.target.value);
+    },
+    [setWeightInput]
+  );
 
   // To extract estimated fee logic to specific component. Issue #171
   return (
@@ -74,26 +79,19 @@ const CustomCall = () => {
       <Box mb={2}>
         <TextField
           onChange={onChange}
-          value={customCallInput}
+          value={currentCustomCallInput}
+          placeholder={initialValue}
           label="Call"
           variant="outlined"
           fullWidth
           helperText={error && `${error}`}
         />
       </Box>
-      <TextField onChange={onWeightChange} value={weightInput} label="Weight" variant="outlined" fullWidth />
+      <TextField onChange={onWeightChange} value={currentWeightInput} label="Weight" variant="outlined" fullWidth />
       <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
         Send custom call from {sourceChainDetails.chain} to {targetChainDetails.chain}
       </ButtonSubmit>
-      {estimatedFeeLoading ? (
-        <Typography variant="body1" color="secondary">
-          Estimated source Fee loading...
-        </Typography>
-      ) : (
-        <Typography variant="body1" color="secondary">
-          {estimatedFee && `Estimated source Fee: ${estimatedFee}`}
-        </Typography>
-      )}
+      <EstimatedFee />
     </>
   );
 };

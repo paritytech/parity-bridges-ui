@@ -32,7 +32,7 @@ export default function useTransactionPreparation({ input, type, weightInput, is
   const { call, weight } = useTransactionType({ input, type, weightInput });
 
   const calculateFee = useEstimateFee();
-  const updatePayload = usePayload({ call, weight });
+  const updatePayload = usePayload();
 
   useEffect(() => {
     calculateFee(payload);
@@ -42,6 +42,7 @@ export default function useTransactionPreparation({ input, type, weightInput, is
     if (!isValidCall) {
       return;
     }
-    updatePayload();
-  }, [isValidCall, updatePayload]);
+
+    updatePayload({ call, weight });
+  }, [call, isValidCall, updatePayload, weight]);
 }

@@ -15,21 +15,21 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import type { KeyringPair } from '@polkadot/keyring/types';
-
+import { Balance } from '@polkadot/types/interfaces';
 import { AccountActionsTypes } from '../actions/accountActions';
 
 export type Account = KeyringPair | null;
 
-export interface AccountContextType {
-  account: Account;
-}
-
-interface Payload {
-  [propName: string]: Account;
+export interface Payload {
+  [propName: string]: any;
 }
 
 export interface AccountState {
   account: Account;
+  accounts: Array<KeyringPair> | [];
+  companionAccount: string | null;
+  senderAccountBalance: BalanceState | null;
+  senderCompanionAccountBalance: BalanceState | null;
 }
 
 export type AccountsActionType = { type: AccountActionsTypes; payload: Payload };
@@ -38,3 +38,9 @@ export enum AddressKind {
   NATIVE = 'native',
   COMPANION = 'companion'
 }
+
+export type BalanceState = {
+  chainTokens: string;
+  formattedBalance: string;
+  free: Balance;
+};
