@@ -15,12 +15,10 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { useEffect } from 'react';
-import { useUpdateTransactionContext } from '../../contexts/TransactionContext';
 import { TransactionActionCreators } from '../../actions/transactionActions';
 import usePrevious from '../react/usePrevious';
 
-const useResetTransactionState = (action: string | number | undefined) => {
-  const { dispatchTransaction } = useUpdateTransactionContext();
+const useResetTransactionState = (action: string | number | undefined, dispatchTransaction: any) => {
   const prevAction = usePrevious(action);
 
   useEffect(() => {

@@ -20,7 +20,7 @@ import useLocalStorage from '../hooks/transactions/useLocalStorage';
 import { TransactionTypes } from '../types/transactionTypes';
 import { light } from '../components';
 import { MenuActionItemsProps } from '../types/guiTypes';
-import useResetTransactionState from '../hooks/transactions/useResetTransactionState';
+
 interface DrawerContextProps {
   drawer: string;
   setDrawer: React.Dispatch<React.SetStateAction<string>>;
@@ -59,8 +59,8 @@ export function useGUIContext() {
 export function GUIContextProvider({ children }: GUIContextProviderProps): React.ReactElement {
   const [drawer, setDrawer] = useLocalStorage('storageDrawer');
   const [action, setAction] = useState<TransactionTypes>(TransactionTypes.TRANSFER);
+
   const value = { drawer, setDrawer, actions, action, setAction };
-  useResetTransactionState(action);
 
   return (
     <ThemeProvider theme={createMuiTheme(light)}>

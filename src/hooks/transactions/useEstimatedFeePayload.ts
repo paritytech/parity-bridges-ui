@@ -20,22 +20,14 @@ import { useCallback, useEffect } from 'react';
 import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import { TransactionActionCreators } from '../../actions/transactionActions';
-import { useUpdateTransactionContext, useTransactionContext } from '../../contexts/TransactionContext';
 import useDispatchGenericCall from '../api/useDispatchGenericCall';
 import logger from '../../util/logger';
 import type { InterfaceTypes } from '@polkadot/types/types';
 import useLaneId from '../chain/useLaneId';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
 import useTransactionType from './useTransactionType';
-import { useGUIContext } from '../../contexts/GUIContextProvider';
 
-interface Input {
-  input: string;
-  call: Uint8Array | null;
-  weight: number | null;
-}
-
-export const useEstimatedFeePayload = () => {
+export const useEstimatedFeePayload = (transactionState: any, dispatchTransaction: any) => {
   const { createType, stateCall } = useApiCallsContext();
 
   const laneId = useLaneId();
@@ -46,16 +38,16 @@ export const useEstimatedFeePayload = () => {
       chain: targetChain
     }
   } = useSourceTarget();
-  const { dispatchTransaction } = useUpdateTransactionContext();
-  const { receiverAddress } = useTransactionContext();
   const { account } = useAccountContext();
   const { estimatedFeeMethodName } = getSubstrateDynamicNames(targetChain);
-  const { action } = useGUIContext();
-  const { call, weight } = useTransactionType({ input, action, weightInput });
+  const { call, weight } = useTransactionType(transactionState);
 
-  const calculateCallback = useCallback(
-    async ({ call, weight }: Input) => {
-      if (!account || !call || !weight || !receiverAddress) {
+  useEffect(() => {
+    const getPayloadEstimatedFee = async () => {
+      dispatchTransaction(
+        TransactionActionCreators.setPayloadEstimatedFee(null, { payload: null, estimatedFee: null }, true)
+      );
+      if (!account || !call || !weight) {
         return null;
       }
 
@@ -80,22 +72,27 @@ export const useEstimatedFeePayload = () => {
 
       const estimatedFeeType = createType(sourceChain as keyof InterfaceTypes, 'Option<Balance>', estimatedFeeCall);
       const estimatedFee = estimatedFeeType.toString();
-      return { estimatedFee, payload };
-    },
-    [
-      account,
-      createType,
-      estimatedFeeMethodName,
-      laneId,
-      receiverAddress,
-      sourceChain,
-      stateCall,
-      targetApi.consts.system.version.specVersion
-    ]
-  );
+      console.log({ estimatedFee, payload });
+      dispatchTransaction(TransactionActionCreators.setPayloadEstimatedFee(null, { estimatedFee, payload }, false));
+    };
 
-  const dispatch = useCallback(
-    (error: string | null, data: any) => dispatchTransaction(TransactionActionCreators.setPayload(error, data)),
+    getPayloadEstimatedFee();
+  }, [
+    account,
+    call,
+    createType,
+    dispatchTransaction,
+    estimatedFeeMethodName,
+    laneId,
+    sourceChain,
+    stateCall,
+    targetApi.consts.system.version.specVersion,
+    weight
+  ]);
+
+  /*   const dispatch = useCallback(
+    (error: string | null, data: any, loading: boolean) =>
+      dispatchTransaction(TransactionActionCreators.setPayloadEstimatedFee(error, data, loading)),
     [dispatchTransaction]
   );
 
@@ -104,12 +101,15 @@ export const useEstimatedFeePayload = () => {
     dispatch,
     initialData: { payload: null, estimatedFee: null }
   });
+*/
 
-  useEffect(() => {
-    execute();
-  }, [execute]);
+  /*   useEffect(() => {
+    if (account && call && weight) {
+      execute();
+    }
+  }, [account, call, weight]);
 
-  return execute;
+  return execute; */
 };
 
 export default useEstimatedFeePayload;

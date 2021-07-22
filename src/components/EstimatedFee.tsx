@@ -13,33 +13,39 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
-import { Typography } from '@material-ui/core';
+
+import { useEffect, useState } from 'react';
+import { Typography, makeStyles } from '@material-ui/core';
 import React from 'react';
-import { useEffect } from 'react';
-import { useState } from 'react';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import { transformToBaseUnit } from '../util/evalUnits';
 
+const useStyles = makeStyles(() => ({
+  container: {
+    minHeight: '20px'
+  }
+}));
+
 export const EstimatedFee = (): React.ReactElement => {
+  const classes = useStyles();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
-  const { estimatedFee, estimatedFeeLoading } = useTransactionContext();
+  const { estimatedFee, payloadEstimatedFeeLoading } = useTransactionContext();
   const srcChainDecimals = sourceChainDetails.apiConnection.api.registry.chainDecimals[0];
   const { chainTokens } = targetChainDetails.apiConnection.api.registry;
 
-  const [amount, setAmount] = useState<string>('0');
+  const [amount, setAmount] = useState<string | null>(null);
 
   useEffect(() => {
-    !estimatedFeeLoading && setAmount(transformToBaseUnit(estimatedFee || '0', srcChainDecimals));
-  }, [estimatedFee, estimatedFeeLoading, srcChainDecimals]);
+    !payloadEstimatedFeeLoading && setAmount(estimatedFee ? transformToBaseUnit(estimatedFee, srcChainDecimals) : null);
+  }, [estimatedFee, payloadEstimatedFeeLoading, srcChainDecimals]);
+
+  const feeLabel = `Estimated ${sourceChainDetails.chain} fee`;
 
   return (
-    <div>
+    <div className={classes.container}>
       <Typography variant="body1" color="secondary">
-        {`Estimated ${sourceChainDetails.chain} fee ${estimatedFeeLoading ? '...' : ':'}`}
-        <Typography variant="subtitle2" component="span">
-          {amount} {chainTokens}
-        </Typography>
+        {payloadEstimatedFeeLoading ? `${feeLabel}...` : amount ? `${feeLabel}: ${amount} ${chainTokens}` : null}
       </Typography>
     </div>
   );

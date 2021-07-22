@@ -23,28 +23,23 @@ import { useTransactionContext } from '../../contexts/TransactionContext';
 import useLoadingApi from '../connections/useLoadingApi';
 import { TransactionTypes } from '../../types/transactionTypes';
 import logger from '../../util/logger';
+import { useGUIContext } from '../../contexts/GUIContextProvider';
 
 interface TransactionFunction {
   call: Uint8Array | null;
   weight: number | null;
 }
 
-interface Props {
-  input: string;
-  action: TransactionTypes;
-  weightInput?: string;
-}
-
-export default function useTransactionType({ input, action, weightInput }: Props): TransactionFunction {
+export default function useTransactionType(transactionState: any): TransactionFunction {
   const { areApiReady } = useLoadingApi();
   const {
     targetChainDetails: {
       apiConnection: { api: targetApi }
     }
   } = useSourceTarget();
-
+  const { action } = useGUIContext();
   const { account } = useAccountContext();
-  const { receiverAddress, transferAmount } = useTransactionContext();
+  const { receiverAddress, transferAmount, remarkInput, customCallInput, weightInput } = transactionState;
 
   const [values, setValues] = useState<TransactionFunction>({
     call: null,
@@ -59,11 +54,11 @@ export default function useTransactionType({ input, action, weightInput }: Props
       if (account) {
         switch (action) {
           case TransactionTypes.REMARK:
-            call = (await targetApi.tx.system.remark(input)).toU8a();
+            call = (await targetApi.tx.system.remark(remarkInput)).toU8a();
             logger.info(`system::remark: ${u8aToHex(call)}`);
             // TODO [#121] Figure out what the extra bytes are about
             call = call.slice(2);
-            weight = (await targetApi.tx.system.remark(input).paymentInfo(account)).weight.toNumber();
+            weight = (await targetApi.tx.system.remark(remarkInput).paymentInfo(account)).weight.toNumber();
             break;
           case TransactionTypes.TRANSFER:
             if (receiverAddress) {
@@ -77,8 +72,11 @@ export default function useTransactionType({ input, action, weightInput }: Props
             }
             break;
           case TransactionTypes.CUSTOM:
-            call = isHex(input) ? hexToU8a(input) : null;
-            weight = parseInt(weightInput!);
+            if (customCallInput) {
+              call = isHex(customCallInput) ? hexToU8a(customCallInput.toString()) : null;
+              weight = parseInt(weightInput!);
+            }
+
             break;
           default:
             throw new Error(`Unknown type: ${action}`);
@@ -92,13 +90,14 @@ export default function useTransactionType({ input, action, weightInput }: Props
     }
   }, [
     account,
+    action,
     areApiReady,
-    input,
+    customCallInput,
     receiverAddress,
+    remarkInput,
     targetApi.tx.balances,
     targetApi.tx.system,
     transferAmount,
-    action,
     weightInput
   ]);
 

@@ -14,11 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useContext, useReducer, useEffect } from 'react';
-import transactionReducer from '../reducers/transactionReducer';
-import { TransactionState, TransactionsActionType, TransactionDisplayPayload } from '../types/transactionTypes';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
+import React, { useContext, useEffect, useReducer } from 'react';
 import { TransactionActionCreators } from '../actions/transactionActions';
+import useEstimatedFeePayload from '../hooks/transactions/useEstimatedFeePayload';
+import useResetTransactionState from '../hooks/transactions/useResetTransactionState';
+import transactionReducer from '../reducers/transactionReducer';
+import {
+  TransactionState,
+  TransactionsActionType,
+  TransactionDisplayPayload,
+  TransactionTypes
+} from '../types/transactionTypes';
 import { useAccountContext } from './AccountContextProvider';
+import { useGUIContext } from './GUIContextProvider';
 
 interface TransactionContextProviderProps {
   children: React.ReactElement;
@@ -45,10 +55,13 @@ export function useUpdateTransactionContext() {
 export function TransactionContextProvider(props: TransactionContextProviderProps): React.ReactElement {
   const { children = null } = props;
   const { account } = useAccountContext();
-
-  const [transaction, dispatchTransaction] = useReducer(transactionReducer, {
+  const { action } = useGUIContext();
+  const [transactionState, dispatchTransaction] = useReducer(transactionReducer, {
     senderAccount: null,
     transferAmount: null,
+    remarkInput: '0x',
+    customCallInput: '0x',
+    weightInput: '',
     transferAmountError: null,
     estimatedFee: null,
     estimatedFeeError: null,
@@ -68,15 +81,21 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     payloadError: null,
     payloadHex: null,
     payloadEstimatedFeeError: null,
-    payloadEstimatedFeeLoading: false
+    payloadEstimatedFeeLoading: false,
+    action: TransactionTypes.TRANSFER
   });
 
+  useResetTransactionState(action, dispatchTransaction);
+  useEstimatedFeePayload(transactionState, dispatchTransaction);
+
   useEffect((): void => {
-    dispatchTransaction(TransactionActionCreators.setSenderAccount(account ? account.address : null));
-  }, [account, dispatchTransaction]);
+    dispatchTransaction(
+      TransactionActionCreators.combineReducers({ senderAccount: account ? account.address : null, action })
+    );
+  }, [account, action]);
 
   return (
-    <TransactionContext.Provider value={transaction}>
+    <TransactionContext.Provider value={transactionState}>
       <UpdateTransactionContext.Provider value={{ dispatchTransaction }}>{children}</UpdateTransactionContext.Provider>
     </TransactionContext.Provider>
   );
