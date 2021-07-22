@@ -66,8 +66,6 @@ const validateAccount = (receiver: string, sourceChainDetails: ChainState, targe
 const isInputReady = (state: TransactionState): boolean => {
   switch (state.action) {
     case TransactionTypes.TRANSFER: {
-      console.log('Boolean(state.transferAmount) state.transferAmount', Boolean(state.transferAmount));
-      console.log('Boolean(state.receiverAddress) state.receiverAddress', Boolean(state.receiverAddress));
       return Boolean(state.transferAmount) && Boolean(state.receiverAddress);
     }
     case TransactionTypes.CUSTOM: {
@@ -97,7 +95,9 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
       receiverAddress: null,
       genericReceiverAccount: null,
       formatFound: null,
-      transactionReadyToExecute
+      transactionReadyToExecute,
+      estimatedFee: null,
+      payloadEstimatedFeeLoading: false
     };
   }
 
@@ -178,7 +178,6 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
 };
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
-  console.log(action);
   const transactionReadyToExecute = isReadyToExecute({ ...state, ...action.payload });
   switch (action.type) {
     case TransactionActionTypes.SET_PAYLOAD_ESTIMATED_FEE: {
@@ -189,11 +188,11 @@ export default function transactionReducer(state: TransactionState, action: Tran
       } = action.payload;
       return {
         ...state,
-        estimatedFee: payloadEstimatedFeeError ? null : estimatedFee,
+        estimatedFee: !payloadEstimatedFeeError && transactionReadyToExecute ? estimatedFee : null,
         estimatedFeeError: payloadEstimatedFeeError,
         payloadEstimatedFeeLoading,
         payload: payloadEstimatedFeeError ? null : payload,
-        transactionReadyToExecute: payloadEstimatedFeeLoading ? false : isReadyToExecute(state)
+        transactionReadyToExecute: payloadEstimatedFeeLoading ? false : transactionReadyToExecute
       };
     }
 

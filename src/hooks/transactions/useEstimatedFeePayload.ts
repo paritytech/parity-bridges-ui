@@ -14,20 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import { Dispatch, useEffect } from 'react';
 import { compactAddLength } from '@polkadot/util';
 import { useAccountContext } from '../../contexts/AccountContextProvider';
-import { useCallback, useEffect } from 'react';
 import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import { TransactionActionCreators } from '../../actions/transactionActions';
-import useDispatchGenericCall from '../api/useDispatchGenericCall';
 import logger from '../../util/logger';
 import type { InterfaceTypes } from '@polkadot/types/types';
 import useLaneId from '../chain/useLaneId';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
 import useTransactionType from './useTransactionType';
+import { TransactionsActionType, TransactionState } from '../../types/transactionTypes';
 
-export const useEstimatedFeePayload = (transactionState: any, dispatchTransaction: any) => {
+export const useEstimatedFeePayload = (
+  transactionState: TransactionState,
+  dispatchTransaction: Dispatch<TransactionsActionType>
+) => {
   const { createType, stateCall } = useApiCallsContext();
 
   const laneId = useLaneId();
@@ -44,12 +47,13 @@ export const useEstimatedFeePayload = (transactionState: any, dispatchTransactio
 
   useEffect(() => {
     const getPayloadEstimatedFee = async () => {
-      dispatchTransaction(
-        TransactionActionCreators.setPayloadEstimatedFee(null, { payload: null, estimatedFee: null }, true)
-      );
       if (!account || !call || !weight) {
         return null;
       }
+
+      dispatchTransaction(
+        TransactionActionCreators.setPayloadEstimatedFee(null, { payload: null, estimatedFee: null }, true)
+      );
 
       const payload = {
         call: compactAddLength(call!),
@@ -72,11 +76,16 @@ export const useEstimatedFeePayload = (transactionState: any, dispatchTransactio
 
       const estimatedFeeType = createType(sourceChain as keyof InterfaceTypes, 'Option<Balance>', estimatedFeeCall);
       const estimatedFee = estimatedFeeType.toString();
-      console.log({ estimatedFee, payload });
       dispatchTransaction(TransactionActionCreators.setPayloadEstimatedFee(null, { estimatedFee, payload }, false));
     };
 
-    getPayloadEstimatedFee();
+    try {
+      getPayloadEstimatedFee();
+    } catch (e) {
+      dispatchTransaction(
+        TransactionActionCreators.setPayloadEstimatedFee(e, { payload: null, estimatedFee: null }, false)
+      );
+    }
   }, [
     account,
     call,
@@ -89,27 +98,6 @@ export const useEstimatedFeePayload = (transactionState: any, dispatchTransactio
     targetApi.consts.system.version.specVersion,
     weight
   ]);
-
-  /*   const dispatch = useCallback(
-    (error: string | null, data: any, loading: boolean) =>
-      dispatchTransaction(TransactionActionCreators.setPayloadEstimatedFee(error, data, loading)),
-    [dispatchTransaction]
-  );
-
-  const { execute } = useDispatchGenericCall({
-    call: calculateCallback,
-    dispatch,
-    initialData: { payload: null, estimatedFee: null }
-  });
-*/
-
-  /*   useEffect(() => {
-    if (account && call && weight) {
-      execute();
-    }
-  }, [account, call, weight]);
-
-  return execute; */
 };
 
 export default useEstimatedFeePayload;

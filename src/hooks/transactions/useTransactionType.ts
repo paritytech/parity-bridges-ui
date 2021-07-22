@@ -16,12 +16,10 @@
 
 import { hexToU8a, isHex, u8aToHex } from '@polkadot/util';
 import { useEffect, useState } from 'react';
-
 import { useAccountContext } from '../../contexts/AccountContextProvider';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
-import { useTransactionContext } from '../../contexts/TransactionContext';
 import useLoadingApi from '../connections/useLoadingApi';
-import { TransactionTypes } from '../../types/transactionTypes';
+import { TransactionState, TransactionTypes } from '../../types/transactionTypes';
 import logger from '../../util/logger';
 import { useGUIContext } from '../../contexts/GUIContextProvider';
 
@@ -30,7 +28,7 @@ interface TransactionFunction {
   weight: number | null;
 }
 
-export default function useTransactionType(transactionState: any): TransactionFunction {
+export default function useTransactionType(transactionState: TransactionState): TransactionFunction {
   const { areApiReady } = useLoadingApi();
   const {
     targetChainDetails: {
