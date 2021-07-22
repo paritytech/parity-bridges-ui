@@ -28,14 +28,22 @@ import { TransactionDisplayPayload, TransactionStatusEnum, TransactionTypes } fr
 import moment from 'moment';
 import { MessageActionsCreators } from '../../actions/messageActions';
 import logger from '../../util/logger';
+import { formatBalance } from '@polkadot/util';
+import { getBridgeId } from '../../util/getConfigs';
+import getDeriveAccount from '../../util/getDeriveAccount';
+import { useKeyringContext } from '../../contexts/KeyringContextProvider';
+import { ApiPromise } from '@polkadot/api';
+import { encodeAddress } from '@polkadot/util-crypto';
+import { AccountActionCreators } from '../../actions/accountActions';
+import { BalanceState } from '../../types/accountTypes';
 
 const useApiCalls = (): ApiCallsContextType => {
+  const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   const {
-    sourceChainDetails: {
-      apiConnection: { api: sourceApi },
-      chain: sourceChain
-    }
-  } = useSourceTarget();
+    apiConnection: { api: sourceApi },
+    chain: sourceChain
+  } = sourceChainDetails;
+  const { keyringPairs, keyringPairsReady } = useKeyringContext();
   const { getValuesByChain } = useChainGetters();
 
   const createType = useCallback(
@@ -142,7 +150,76 @@ const useApiCalls = (): ApiCallsContextType => {
     [sourceApi.rpc.chain, sourceApi.tx.balances, sourceChain]
   );
 
-  return { createType, stateCall, localTransfer };
+  const updateSenderAccountsInformation = useCallback(
+    async (dispatchAccount) => {
+      const formatBalanceAddress = (data: any, api: ApiPromise): BalanceState => {
+        return {
+          chainTokens: data.registry.chainTokens[0],
+          formattedBalance: formatBalance(data.free, {
+            decimals: api.registry.chainDecimals[0],
+            withUnit: api.registry.chainTokens[0],
+            withSi: true
+          }),
+          free: data.free
+        };
+      };
+
+      if (!keyringPairsReady || !keyringPairs.length) {
+        return {};
+      }
+
+      const getAccountInformation = async (sourceRole: any, targetRole: any) => {
+        const {
+          apiConnection: { api: sourceApi },
+          chain: sourceChain,
+          configs: sourceConfigs
+        } = sourceRole;
+        const {
+          apiConnection: { api: targetApi },
+          configs: targetConfigs
+        } = targetRole;
+
+        const accounts = await Promise.all(
+          keyringPairs.map(async ({ address, meta }) => {
+            const sourceAddress = encodeAddress(address, sourceConfigs.ss58Format);
+            const toDerive = {
+              ss58Format: targetConfigs.ss58Format,
+              address: sourceAddress || '',
+              bridgeId: getBridgeId(targetConfigs, sourceChain)
+            };
+            const { data } = await sourceApi.query.system.account(sourceAddress);
+            const sourceBalance = formatBalanceAddress(data, sourceApi);
+
+            const companionAddress = getDeriveAccount(toDerive);
+            const { data: dataCompanion } = await targetApi.query.system.account(companionAddress);
+            const targetBalance = formatBalanceAddress(dataCompanion, targetApi);
+
+            const name = (meta.name as string).toLocaleUpperCase();
+
+            return {
+              account: { address: sourceAddress, balance: sourceBalance, name },
+              companionAccount: { address: companionAddress, balance: targetBalance, name }
+            };
+          })
+        );
+
+        return accounts;
+      };
+
+      const sourceAddresses = await getAccountInformation(sourceChainDetails, targetChainDetails);
+      const targetAddresses = await getAccountInformation(targetChainDetails, sourceChainDetails);
+
+      dispatchAccount(
+        AccountActionCreators.setDisplaySenderAccounts({
+          [sourceChainDetails.chain]: sourceAddresses,
+          [targetChainDetails.chain]: targetAddresses
+        })
+      );
+    },
+    [keyringPairs, keyringPairsReady, sourceChainDetails, targetChainDetails]
+  );
+
+  return { createType, stateCall, localTransfer, updateSenderAccountsInformation };
 };
 
 export default useApiCalls;

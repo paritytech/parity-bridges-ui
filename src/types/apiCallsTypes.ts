@@ -24,6 +24,7 @@ import { Account } from './accountTypes';
 import BN from 'bn.js';
 import { MessagesActionType } from './messageTypes';
 import { TransactionsActionType } from './transactionTypes';
+import { AccountsActionType } from './accountTypes';
 
 export type CreateType = Registry['createType'];
 
@@ -52,4 +53,5 @@ export interface ApiCallsContextType {
   createType: CreateType;
   stateCall: StateCall;
   localTransfer: LocalTransfer;
+  updateSenderAccountsInformation: (dispatchAccount: Dispatch<AccountsActionType>) => void;
 }

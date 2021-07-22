@@ -33,7 +33,6 @@ export const useEstimateFee = () => {
   } = useSourceTarget();
   const { dispatchTransaction } = useUpdateTransactionContext();
   const { estimatedFeeMethodName } = getSubstrateDynamicNames(targetChain);
-
   const estimateFeeCallback = useCallback(
     async (payloadInput: Object | null) => {
       if (!payloadInput) {
