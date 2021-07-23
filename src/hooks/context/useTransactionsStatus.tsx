@@ -98,8 +98,6 @@ export default function useTransactionsStatus(
         dispatchTransaction(TransactionActionCreators.setEvaluatingTransactionsStatus(false));
       }
     }
-
-    return () => dispatchTransaction(TransactionActionCreators.setEvaluatingTransactionsStatus(false));
   }, [
     apiCalls,
     currentSourceChain,
