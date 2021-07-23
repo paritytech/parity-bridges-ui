@@ -81,6 +81,7 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
   });
 
   useResetTransactionState(action, dispatchTransaction);
+
   useEstimatedFeePayload(transactionState, dispatchTransaction);
 
   useEffect((): void => {
