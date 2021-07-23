@@ -25,6 +25,7 @@ import {
 } from '../types/transactionTypes';
 import { useAccountContext } from './AccountContextProvider';
 import { useGUIContext } from './GUIContextProvider';
+import useResetTransactionState from '../hooks/transactions/useResetTransactionState';
 
 interface TransactionContextProviderProps {
   children: React.ReactElement;
@@ -78,6 +79,8 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     payloadHex: null,
     action: TransactionTypes.TRANSFER
   });
+
+  useResetTransactionState(action, dispatchTransaction);
 
   useEffect((): void => {
     dispatchTransaction(
