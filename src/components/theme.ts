@@ -19,12 +19,14 @@ import red from '@material-ui/core/colors/red';
 import { ThemeOptions } from '@material-ui/core/styles';
 import { PaletteOptions } from '@material-ui/core/styles/createPalette';
 import { Shadows } from '@material-ui/core/styles/shadows';
+import Web3Regular from '../fonts/Web3-Regular.woff';
+import Web3Regular2 from '../fonts/Web3-Regular.woff2';
 
 export const bridgesBlue = {
   100: '#2E99E5',
   300: '#2E99E5',
   400: '#2E99E5',
-  500: '#2E99E5'
+  500: '#1a73b3'
 };
 export const substrateGray = {
   50: '#FCFCFC',
@@ -187,6 +189,27 @@ export const light: ThemeOptions = {
       fontSize: 14,
       letterSpacing: 0.3,
       textTransform: 'uppercase'
+    }
+  },
+  overrides: {
+    MuiCssBaseline: {
+      '@global': {
+        '@font-face': {
+          fontFamily: 'Web3-Regular',
+          fontStyle: 'normal',
+          fontDisplay: 'swap',
+          fontWeight: 400,
+          src: `
+              local('Web3-Regular'),
+              url(${Web3Regular}) format('woff'),
+              url(${Web3Regular2}) format('woff2')
+            `
+        },
+        '.Web3Icon': {
+          fontFamily: 'Web3-Regular',
+          letterSpacing: 0
+        }
+      }
     }
   },
   palette: paletteLight,
