@@ -20,6 +20,8 @@ import transactionReducer from '../reducers/transactionReducer';
 import { TransactionState, TransactionsActionType, TransactionDisplayPayload } from '../types/transactionTypes';
 import { TransactionActionCreators } from '../actions/transactionActions';
 import { useAccountContext } from './AccountContextProvider';
+import { useGUIContext } from './GUIContextProvider';
+import useResetTransactionState from '../hooks/transactions/useResetTransactionState';
 
 interface TransactionContextProviderProps {
   children: React.ReactElement;
@@ -46,7 +48,7 @@ export function useUpdateTransactionContext() {
 export function TransactionContextProvider(props: TransactionContextProviderProps): React.ReactElement {
   const { children = null } = props;
   const { account } = useAccountContext();
-
+  const { action } = useGUIContext();
   const [transactionsState, dispatchTransaction] = useReducer(transactionReducer, {
     senderAccount: null,
     transferAmount: null,
@@ -70,6 +72,8 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     payloadError: null,
     payloadHex: null
   });
+
+  useResetTransactionState(action, dispatchTransaction);
 
   useTransactionsStatus(transactionsState.transactions, transactionsState.evaluatingTransactions, dispatchTransaction);
 

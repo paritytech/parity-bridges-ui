@@ -49,23 +49,23 @@ function App() {
       <KeyringContextProvider>
         <ApiCallsContextProvider>
           <AccountContextProvider>
-            <SubscriptionsContextProvider>
-              <MessageContextProvider>
-                <SnackbarProvider>
-                  <TransactionContextProvider>
-                    <BrowserRouter>
-                      <Switch>
-                        <Route path={'/'}>
-                          <GUIContextProvider>
+            <GUIContextProvider>
+              <SubscriptionsContextProvider>
+                <MessageContextProvider>
+                  <SnackbarProvider>
+                    <TransactionContextProvider>
+                      <BrowserRouter>
+                        <Switch>
+                          <Route path={'/'}>
                             <Main />
-                          </GUIContextProvider>
-                        </Route>
-                      </Switch>
-                    </BrowserRouter>
-                  </TransactionContextProvider>
-                </SnackbarProvider>
-              </MessageContextProvider>
-            </SubscriptionsContextProvider>
+                          </Route>
+                        </Switch>
+                      </BrowserRouter>
+                    </TransactionContextProvider>
+                  </SnackbarProvider>
+                </MessageContextProvider>
+              </SubscriptionsContextProvider>
+            </GUIContextProvider>
           </AccountContextProvider>
         </ApiCallsContextProvider>
       </KeyringContextProvider>

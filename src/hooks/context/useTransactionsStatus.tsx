@@ -29,6 +29,7 @@ import { useEffect } from 'react';
 import { TransactionActionCreators } from '../../actions/transactionActions';
 import isEqual from 'lodash/isEqual';
 import { MessageActionsCreators } from '../../actions/messageActions';
+import usePrevious from '../react/usePrevious';
 
 export default function useTransactionsStatus(
   transactions: TransactionStatusType[],
@@ -39,6 +40,7 @@ export default function useTransactionsStatus(
   const { getValuesByChain } = useChainGetters();
 
   const subscriptions = useSubscriptionsContext();
+  const prevSubscriptions = usePrevious(subscriptions);
 
   const {
     sourceChainDetails: { chain: currentSourceChain }
@@ -88,13 +90,13 @@ export default function useTransactionsStatus(
       dispatchTransaction(TransactionActionCreators.setEvaluatingTransactionsStatus(false));
     };
     const transactionsInProgress = transactions.find(({ status }) => status === TransactionStatusEnum.IN_PROGRESS);
+    const updatedSubscriptions = prevSubscriptions !== subscriptions;
 
-    if (!evaluatingTransactions && transactionsInProgress) {
+    if (!evaluatingTransactions && transactionsInProgress && updatedSubscriptions) {
       try {
         getTransactionStatus();
       } catch (e) {
         dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e }));
-      } finally {
         dispatchTransaction(TransactionActionCreators.setEvaluatingTransactionsStatus(false));
       }
     }
@@ -106,6 +108,7 @@ export default function useTransactionsStatus(
     evaluatingTransactions,
     getValuesByChain,
     laneId,
+    prevSubscriptions,
     subscriptions,
     transactions
   ]);
