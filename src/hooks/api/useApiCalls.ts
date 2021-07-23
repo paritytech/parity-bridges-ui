@@ -19,8 +19,19 @@ import { Text, Bytes } from '@polkadot/types';
 import { Codec } from '@polkadot/types/types';
 import { ApiCallsContextType } from '../../types/apiCallsTypes';
 import useChainGetters from '../chain/useChainGetters';
+import { formatBalance } from '@polkadot/util';
+import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
+import { getBridgeId } from '../../util/getConfigs';
+import getDeriveAccount from '../../util/getDeriveAccount';
+import { useKeyringContext } from '../../contexts/KeyringContextProvider';
+import { ApiPromise } from '@polkadot/api';
+import { encodeAddress } from '@polkadot/util-crypto';
+import { AccountActionCreators } from '../../actions/accountActions';
+import { BalanceState } from '../../types/accountTypes';
 
 const useApiCalls = (): ApiCallsContextType => {
+  const { sourceChainDetails, targetChainDetails } = useSourceTarget();
+  const { keyringPairs, keyringPairsReady } = useKeyringContext();
   const { getValuesByChain } = useChainGetters();
 
   const createType = useCallback(
@@ -45,7 +56,76 @@ const useApiCalls = (): ApiCallsContextType => {
     [getValuesByChain]
   );
 
-  return { createType, stateCall };
+  const updateSenderAccountsInformation = useCallback(
+    async (dispatchAccount) => {
+      const formatBalanceAddress = (data: any, api: ApiPromise): BalanceState => {
+        return {
+          chainTokens: data.registry.chainTokens[0],
+          formattedBalance: formatBalance(data.free, {
+            decimals: api.registry.chainDecimals[0],
+            withUnit: api.registry.chainTokens[0],
+            withSi: true
+          }),
+          free: data.free
+        };
+      };
+
+      if (!keyringPairsReady || !keyringPairs.length) {
+        return {};
+      }
+
+      const getAccountInformation = async (sourceRole: any, targetRole: any) => {
+        const {
+          apiConnection: { api: sourceApi },
+          chain: sourceChain,
+          configs: sourceConfigs
+        } = sourceRole;
+        const {
+          apiConnection: { api: targetApi },
+          configs: targetConfigs
+        } = targetRole;
+
+        const accounts = await Promise.all(
+          keyringPairs.map(async ({ address, meta }) => {
+            const sourceAddress = encodeAddress(address, sourceConfigs.ss58Format);
+            const toDerive = {
+              ss58Format: targetConfigs.ss58Format,
+              address: sourceAddress || '',
+              bridgeId: getBridgeId(targetConfigs, sourceChain)
+            };
+            const { data } = await sourceApi.query.system.account(sourceAddress);
+            const sourceBalance = formatBalanceAddress(data, sourceApi);
+
+            const companionAddress = getDeriveAccount(toDerive);
+            const { data: dataCompanion } = await targetApi.query.system.account(companionAddress);
+            const targetBalance = formatBalanceAddress(dataCompanion, targetApi);
+
+            const name = (meta.name as string).toLocaleUpperCase();
+
+            return {
+              account: { address: sourceAddress, balance: sourceBalance, name },
+              companionAccount: { address: companionAddress, balance: targetBalance, name }
+            };
+          })
+        );
+
+        return accounts;
+      };
+
+      const sourceAddresses = await getAccountInformation(sourceChainDetails, targetChainDetails);
+      const targetAddresses = await getAccountInformation(targetChainDetails, sourceChainDetails);
+
+      dispatchAccount(
+        AccountActionCreators.setDisplaySenderAccounts({
+          [sourceChainDetails.chain]: sourceAddresses,
+          [targetChainDetails.chain]: targetAddresses
+        })
+      );
+    },
+    [keyringPairs, keyringPairsReady, sourceChainDetails, targetChainDetails]
+  );
+
+  return { createType, stateCall, updateSenderAccountsInformation };
 };
 
 export default useApiCalls;

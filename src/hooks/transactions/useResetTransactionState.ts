@@ -19,15 +19,15 @@ import { useUpdateTransactionContext } from '../../contexts/TransactionContext';
 import { TransactionActionCreators } from '../../actions/transactionActions';
 import usePrevious from '../react/usePrevious';
 
-const useResetTransactionState = (type: string | number | undefined) => {
+const useResetTransactionState = (action: string | number | undefined) => {
   const { dispatchTransaction } = useUpdateTransactionContext();
-  const prevType = usePrevious(type);
+  const prevAction = usePrevious(action);
 
   useEffect(() => {
-    if (prevType === type) {
+    if (prevAction === action) {
       dispatchTransaction(TransactionActionCreators.reset());
     }
-  }, [dispatchTransaction, prevType, type]);
+  }, [dispatchTransaction, prevAction, action]);
 };
 
 export default useResetTransactionState;

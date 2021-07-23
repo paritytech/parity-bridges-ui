@@ -20,7 +20,6 @@ import { useTransactionContext } from '../contexts/TransactionContext';
 
 import TransactionStatusMock from './TransactionStatusMock';
 
-import useResetTransactionState from '../hooks/transactions/useResetTransactionState';
 import { TransactionStatusType } from '../types/transactionTypes';
 import TransactionStatus, { TransactionDisplayProps } from './TransactionStatus';
 
@@ -30,7 +29,6 @@ interface Props extends TransactionDisplayProps {
 
 const Transactions = ({ type, ...transactionDisplayProps }: Props) => {
   const { transactions } = useTransactionContext();
-  useResetTransactionState(type);
 
   return (
     <>

@@ -128,7 +128,8 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
       addressValidationError: null,
       showBalance: true,
       formatFound,
-      transactionReadyToExecute
+      transactionReadyToExecute,
+      estimatedFeeLoading: Boolean(state.transferAmount)
     };
   }
 
@@ -142,7 +143,8 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
       addressValidationError: null,
       showBalance: true,
       formatFound,
-      transactionReadyToExecute
+      transactionReadyToExecute,
+      estimatedFeeLoading: Boolean(state.transferAmount)
     };
   }
 
@@ -159,17 +161,32 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
 };
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
+  console.log(action);
   switch (action.type) {
-    case TransactionActionTypes.SET_ESTIMATED_FEE:
+    case TransactionActionTypes.SET_ESTIMATED_FEE: {
+      const { estimatedFeeError, estimatedFeeLoading } = action.payload;
+
+      let estimatedFee = null;
+
+      if (
+        !estimatedFeeError &&
+        !estimatedFeeLoading &&
+        action.payload.estimatedFee &&
+        !state.estimatedFeeError &&
+        !state.transferAmountError
+      ) {
+        estimatedFee = action.payload.estimatedFee;
+      }
+
       return {
         ...state,
-        estimatedFee: action.payload.estimatedFeeError ? null : action.payload.estimatedFee,
-        estimatedFeeError: action.payload.estimatedFeeError,
-        estimatedFeeLoading: action.payload.estimatedFeeLoading,
-        transactionReadyToExecute: action.payload.estimatedFeeLoading
-          ? false
-          : isReadyToExecute(state) && action.payload.estimatedFee
+        estimatedFee,
+        estimatedFeeError: estimatedFeeError,
+        estimatedFeeLoading: estimatedFeeLoading,
+        transactionReadyToExecute: estimatedFeeLoading ? false : isReadyToExecute(state) && estimatedFee
       };
+    }
+
     case TransactionActionTypes.SET_TRANSFER_AMOUNT: {
       const { transferAmount, chainDecimals } = action.payload;
       const [actualValue, message] = evalUnits(transferAmount, chainDecimals);
@@ -178,15 +195,17 @@ export default function transactionReducer(state: TransactionState, action: Tran
         transferAmount: actualValue || null,
         transferAmountError: message,
         transactionReadyToExecute: false,
-        estimatedFeeLoading: true,
+        estimatedFeeLoading: Boolean(actualValue) && Boolean(state.receiverAddress),
         estimatedFee: null
       };
     }
     case TransactionActionTypes.SET_PAYLOAD: {
+      const { payloadError, payload } = action.payload;
       return {
         ...state,
-        payload: action.payload.payloadError ? null : action.payload.payload,
-        payloadError: action.payload.payloadError
+        payload: payloadError ? null : payload,
+        payloadError,
+        estimatedFee: null
       };
     }
     case TransactionActionTypes.RESET:
