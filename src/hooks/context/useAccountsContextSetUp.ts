@@ -23,6 +23,8 @@ import { useKeyringContext } from '../../contexts/KeyringContextProvider';
 import { DisplayAccounts } from '../../types/accountTypes';
 import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
 
+const informationUpdateFrequency = parseInt(process.env.REACT_APP_ACCOUNTS_INFORMATION_UPDATE_FREQUENCY!);
+
 const useAccountsContextSetUp = () => {
   const {
     targetChainDetails: {
@@ -54,10 +56,14 @@ const useAccountsContextSetUp = () => {
   useEffect(() => {
     if (keyringPairsReady && keyringPairs.length) {
       dispatchAccount(AccountActionCreators.setAccounts(keyringPairs));
-      // This initial load might be temporary or it might change based on what it was disscussed in issue #224
       updateSenderAccountsInformation(dispatchAccount);
     }
   }, [keyringPairsReady, keyringPairs, dispatchAccount, updateSenderAccountsInformation]);
+
+  useEffect(() => {
+    const id = setInterval(() => updateSenderAccountsInformation(dispatchAccount), informationUpdateFrequency);
+    return () => clearInterval(id);
+  }, [updateSenderAccountsInformation]);
 
   return { accountState, dispatchAccount };
 };
