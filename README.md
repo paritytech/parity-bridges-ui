@@ -17,6 +17,7 @@ REACT_APP_CHAIN_2_CUSTOM_TYPES_URL=https://raw.githubusercontent.com/paritytech/
 REACT_APP_CHAIN_2_SUBSTRATE_PROVIDER=wss://wss.millau.brucke.link
 
 REACT_APP_LANE_ID=0x00000000
+REACT_APP_ACCOUNTS_INFORMATION_UPDATE_FREQUENCY=30000
 REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS=false
 REACT_APP_IS_DEVELOPMENT=false
 ```
@@ -55,13 +56,15 @@ Runs the linter & formatter.
 ## Execute E2E test
 
 [Puppeteer](https://developers.google.com/web/tools/puppeteer/) is used for running E2E test for bridges (Only chrome for now).
+
 ##### Requirements:
+
 a) Have chrome installed on your computer. (This test requires it and will not download it when running);
 b) ensure that in your `env.local` file the `REACT_APP_IS_DEVELOPMENT` and `REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS` are true;
 c) Make sure all steps mentioned above have run in a seperate terminal (`yarn` - `yarn start`) and the application of bridges is running;
 d) In a different terminal window run the following command:
-#### `yarn run test:e2e-alone`
 
+#### `yarn run test:e2e-alone`
 
 ## customTypes config files process.
 
@@ -78,11 +81,13 @@ For additional information about the Bridges Project please refer to [parity-bri
 ## Docker
 
 To build the image run the:
+
 ```
 docker build -t parity-bridges-ui:dev .
 ```
 
 Now that image is built, container can start with the following command, which will serve our app on port 8080.
+
 ```
 docker run --rm -it -p 8080:80 parity-bridges-ui:dev
 ```
