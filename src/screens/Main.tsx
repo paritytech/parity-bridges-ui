@@ -42,6 +42,7 @@ const useStyles = makeStyles(() => ({
 
 const ActionComponents = {
   [TransactionTypes.TRANSFER]: <Transfer />,
+  [TransactionTypes.LOCAL_TRANSFER]: <Transfer />,
   [TransactionTypes.REMARK]: <Remark />,
   [TransactionTypes.CUSTOM]: <CustomCall />
 };
