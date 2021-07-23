@@ -19,8 +19,16 @@ import { Text, Bytes } from '@polkadot/types';
 import { Codec } from '@polkadot/types/types';
 import { ApiCallsContextType } from '../../types/apiCallsTypes';
 import useChainGetters from '../chain/useChainGetters';
-import { formatBalance } from '@polkadot/util';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
+import { TransactionActionCreators } from '../../actions/transactionActions';
+import { web3FromSource } from '@polkadot/extension-dapp';
+import { KeyringPair } from '@polkadot/keyring/types';
+import { SignerOptions } from '@polkadot/api/types';
+import { TransactionDisplayPayload, TransactionStatusEnum, TransactionTypes } from '../../types/transactionTypes';
+import moment from 'moment';
+import { MessageActionsCreators } from '../../actions/messageActions';
+import logger from '../../util/logger';
+import { formatBalance } from '@polkadot/util';
 import { getBridgeId } from '../../util/getConfigs';
 import getDeriveAccount from '../../util/getDeriveAccount';
 import { useKeyringContext } from '../../contexts/KeyringContextProvider';
@@ -31,6 +39,10 @@ import { BalanceState } from '../../types/accountTypes';
 
 const useApiCalls = (): ApiCallsContextType => {
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
+  const {
+    apiConnection: { api: sourceApi },
+    chain: sourceChain
+  } = sourceChainDetails;
   const { keyringPairs, keyringPairsReady } = useKeyringContext();
   const { getValuesByChain } = useChainGetters();
 
@@ -54,6 +66,88 @@ const useApiCalls = (): ApiCallsContextType => {
       return api.rpc.state.call<Codec>(...params);
     },
     [getValuesByChain]
+  );
+
+  const localTransfer = useCallback(
+    async (dispatchers, transfersData) => {
+      const { dispatchTransaction, dispatchMessage } = dispatchers;
+      const { receiverAddress, transferAmount, account } = transfersData;
+      const type = TransactionTypes.LOCAL_TRANSFER;
+
+      const id = moment().format('x');
+      dispatchTransaction(TransactionActionCreators.setTransactionRunning(true));
+
+      try {
+        const transfer = sourceApi.tx.balances.transfer(receiverAddress, transferAmount);
+        const options: Partial<SignerOptions> = {
+          nonce: -1
+        };
+        let sourceAccount: string | KeyringPair = account;
+        if (account.meta.isInjected) {
+          const injector = await web3FromSource(account.meta.source as string);
+          options.signer = injector.signer;
+          sourceAccount = account.address;
+        }
+
+        const unsub = await transfer.signAndSend(sourceAccount, { ...options }, async ({ status }) => {
+          if (status.isReady) {
+            dispatchTransaction(
+              TransactionActionCreators.createTransactionStatus({
+                block: null,
+                blockHash: null,
+                id,
+                input: transferAmount,
+                messageNonce: null,
+                receiverAddress,
+                sourceAccount: account.address,
+                sourceChain,
+                status: TransactionStatusEnum.IN_PROGRESS,
+                targetChain: '',
+                type,
+                payloadHex: '',
+                transactionDisplayPayload: {} as TransactionDisplayPayload
+              })
+            );
+          }
+
+          if (status.isBroadcast) {
+            dispatchMessage(MessageActionsCreators.triggerInfoMessage({ message: 'Transaction was broadcasted' }));
+            dispatchTransaction(TransactionActionCreators.reset());
+          }
+
+          if (status.isInBlock) {
+            try {
+              const res = await sourceApi.rpc.chain.getBlock(status.asInBlock);
+              const block = res.block.header.number.toString();
+              dispatchTransaction(
+                TransactionActionCreators.updateTransactionStatus(
+                  {
+                    block,
+                    blockHash: status.asInBlock.toString(),
+                    status: TransactionStatusEnum.COMPLETED
+                  },
+                  id
+                )
+              );
+            } catch (e) {
+              logger.error(e.message);
+              throw new Error('Issue reading block information.');
+            }
+          }
+
+          if (status.isFinalized) {
+            logger.info(`Transaction finalized at blockHash ${status.asFinalized}`);
+            unsub();
+          }
+        });
+      } catch (e) {
+        dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e.message }));
+        logger.error(e.message);
+      } finally {
+        dispatchTransaction(TransactionActionCreators.setTransactionRunning(false));
+      }
+    },
+    [sourceApi.rpc.chain, sourceApi.tx.balances, sourceChain]
   );
 
   const updateSenderAccountsInformation = useCallback(
@@ -125,7 +219,7 @@ const useApiCalls = (): ApiCallsContextType => {
     [keyringPairs, keyringPairsReady, sourceChainDetails, targetChainDetails]
   );
 
-  return { createType, stateCall, updateSenderAccountsInformation };
+  return { createType, stateCall, localTransfer, updateSenderAccountsInformation };
 };
 
 export default useApiCalls;
