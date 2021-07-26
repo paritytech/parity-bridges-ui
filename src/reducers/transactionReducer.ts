@@ -74,6 +74,8 @@ const isInputReady = (state: TransactionState): boolean => {
     case TransactionTypes.REMARK: {
       return Boolean(state.remarkInput);
     }
+    default:
+      return false;
   }
 };
 
@@ -178,6 +180,7 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
 };
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
+  console.log(action);
   const transactionReadyToExecute = isReadyToExecute({ ...state, ...action.payload });
   switch (action.type) {
     case TransactionActionTypes.SET_PAYLOAD_ESTIMATED_FEE: {

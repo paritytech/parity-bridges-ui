@@ -121,3 +121,8 @@ export interface ReceiverPayload {
   sourceChainDetails: ChainState;
   targetChainDetails: ChainState;
 }
+
+export type PayloadEstimatedFee = {
+  payload: TransactionPayload | null;
+  estimatedFee: string | null;
+};

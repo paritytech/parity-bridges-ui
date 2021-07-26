@@ -25,7 +25,8 @@ import type { InterfaceTypes } from '@polkadot/types/types';
 import useLaneId from '../chain/useLaneId';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
 import useTransactionType from './useTransactionType';
-import { TransactionsActionType, TransactionState } from '../../types/transactionTypes';
+import { genericCall } from '../../util/apiUtlis';
+import { PayloadEstimatedFee, TransactionsActionType, TransactionState } from '../../types/transactionTypes';
 
 export const useEstimatedFeePayload = (
   transactionState: TransactionState,
@@ -47,14 +48,6 @@ export const useEstimatedFeePayload = (
 
   useEffect(() => {
     const getPayloadEstimatedFee = async () => {
-      if (!account || !call || !weight) {
-        return null;
-      }
-
-      dispatchTransaction(
-        TransactionActionCreators.setPayloadEstimatedFee(null, { payload: null, estimatedFee: null }, true)
-      );
-
       const payload = {
         call: compactAddLength(call!),
         origin: {
@@ -76,16 +69,24 @@ export const useEstimatedFeePayload = (
 
       const estimatedFeeType = createType(sourceChain as keyof InterfaceTypes, 'Option<Balance>', estimatedFeeCall);
       const estimatedFee = estimatedFeeType.toString();
-      dispatchTransaction(TransactionActionCreators.setPayloadEstimatedFee(null, { estimatedFee, payload }, false));
+      return { estimatedFee, payload };
     };
 
-    try {
-      getPayloadEstimatedFee();
-    } catch (e) {
-      dispatchTransaction(
-        TransactionActionCreators.setPayloadEstimatedFee(e, { payload: null, estimatedFee: null }, false)
-      );
-    }
+    const dispatch = (error: string | null, data: PayloadEstimatedFee, loading: boolean) =>
+      dispatchTransaction(TransactionActionCreators.setPayloadEstimatedFee(error, data, loading));
+
+    /*     if (account && call && weight) {
+      genericCall({
+        call: getPayloadEstimatedFee,
+        dispatch,
+        emptyData: { payload: null, estimatedFee: null }
+      });
+    } */
+    genericCall({
+      call: getPayloadEstimatedFee,
+      dispatch,
+      emptyData: { payload: null, estimatedFee: null }
+    });
   }, [
     account,
     call,

@@ -19,7 +19,7 @@ import {
   TransactionTypes,
   UpdatedTransactionStatusType,
   ReceiverPayload,
-  TransactionPayload
+  PayloadEstimatedFee
 } from '../types/transactionTypes';
 
 enum TransactionActionTypes {
@@ -44,11 +44,6 @@ const setTransferAmount = (transferAmount: string | null, chainDecimals?: number
     payload: { transferAmount, chainDecimals },
     type: TransactionActionTypes.SET_TRANSFER_AMOUNT
   };
-};
-
-type PayloadEstimatedFee = {
-  payload: TransactionPayload | null;
-  estimatedFee: string | null;
 };
 
 const setPayloadEstimatedFee = (
