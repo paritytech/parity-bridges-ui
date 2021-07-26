@@ -36,8 +36,8 @@ export const genericCall = async ({ call, emptyData = null, dispatch }: Dispatch
     data = await call();
     executeDispatch(null, data, false);
   } catch (e) {
-    error = e;
-    executeDispatch(e, emptyData, false);
+    error = e.message;
+    executeDispatch(error, emptyData, false);
   }
   return { data, error };
 };
