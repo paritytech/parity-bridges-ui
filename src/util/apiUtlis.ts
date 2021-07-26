@@ -14,33 +14,38 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-interface DispatchGenericCallInput {
-  call: Function;
-  dispatch?: (error: string | null, data: any, loading: boolean) => void;
-  emptyData?: unknown;
-}
+import logger from '../util/logger';
 
-interface Result {
+interface Result<T> {
   error: string | null;
-  data: unknown | null;
+  data: T | null;
+}
+interface DispatchGenericCallInput<T> {
+  call: (...args: any[]) => Promise<T>;
+  dispatch?: (error: string | null, data: T | null, loading: boolean) => void;
+  emptyData?: T | null;
 }
 
-export const genericCall = async ({ call, emptyData = null, dispatch }: DispatchGenericCallInput): Promise<Result> => {
+export const genericCall = async <T>({
+  call,
+  emptyData = null,
+  dispatch
+}: DispatchGenericCallInput<T>): Promise<Result<T>> => {
   let data = emptyData;
   let error = null;
-  const executeDispatch = (error: string | null, data: any, loading: boolean) =>
+  const executeDispatch = (error: string | null, data: T | null, loading: boolean) =>
     dispatch && dispatch(error, data, loading);
 
   try {
     executeDispatch(null, emptyData, true);
     data = await call();
-    executeDispatch(null, data, false);
-    return { data, error };
   } catch (e) {
     error = e.message;
-    executeDispatch(error, emptyData, false);
-    return { data: emptyData, error };
+    logger.error(error);
+  } finally {
+    executeDispatch(error, data, false);
   }
+  return { data, error };
 };
 
 export default { genericCall };

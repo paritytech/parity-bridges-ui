@@ -48,7 +48,7 @@ const setTransferAmount = (transferAmount: string | null, chainDecimals?: number
 
 const setPayloadEstimatedFee = (
   payloadEstimatedFeeError: string | null,
-  payloadEstimatedFee: PayloadEstimatedFee,
+  payloadEstimatedFee: PayloadEstimatedFee | null,
   payloadEstimatedFeeLoading: boolean
 ) => ({
   payload: { payloadEstimatedFee, payloadEstimatedFeeError, payloadEstimatedFeeLoading },

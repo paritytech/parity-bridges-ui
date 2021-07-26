@@ -25,7 +25,7 @@ import { useGUIContext } from '../../contexts/GUIContextProvider';
 
 interface TransactionFunction {
   call: Uint8Array | null;
-  weight: number | null;
+  weight: number;
 }
 
 export default function useTransactionType(transactionState: TransactionState): TransactionFunction {
@@ -41,7 +41,7 @@ export default function useTransactionType(transactionState: TransactionState): 
 
   const [values, setValues] = useState<TransactionFunction>({
     call: null,
-    weight: null
+    weight: 0
   });
 
   useEffect(() => {
