@@ -26,7 +26,7 @@ interface Result {
 }
 
 export const genericCall = async ({ call, emptyData = null, dispatch }: DispatchGenericCallInput): Promise<Result> => {
-  let data = null;
+  let data = emptyData;
   let error = null;
   const executeDispatch = (error: string | null, data: any, loading: boolean) =>
     dispatch && dispatch(error, data, loading);
