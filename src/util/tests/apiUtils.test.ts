@@ -17,23 +17,22 @@
 import { genericCall } from '../apiUtlis';
 
 describe('genericCall', () => {
-  let successCall: jest.Mock;
+  let successCall: jest.Mock<any[], any>;
   let failedCall: jest.Mock;
   const testData = 'this is a data message';
   const message = 'this is an error message';
-
+  const emptyData = { testData: 'empty' };
   beforeEach(() => {
-    successCall = jest.fn().mockResolvedValue(testData);
+    successCall = jest.fn().mockResolvedValue({ testData });
     failedCall = jest.fn().mockRejectedValue({ message });
   });
 
   describe('returned values', () => {
     describe('without emptyData', () => {
       it('should return expected data with no errors', async () => {
-        const testData = 'this is a data message';
         const { data, error } = await genericCall({ call: successCall });
         expect(error).toBeNull();
-        expect(data).toEqual(testData);
+        expect(data).toEqual({ testData });
       });
 
       it('should fail and null data and error mesage', async () => {
@@ -44,9 +43,7 @@ describe('genericCall', () => {
     });
 
     describe('with emptyData', () => {
-      const emptyData = { data: 'empty' };
       it('should return expected data with no errors', async () => {
-        const testData = 'this is a data message';
         const { data, error } = await genericCall({ call: successCall, emptyData });
         expect(error).toBeNull();
         expect(data).toEqual(testData);
@@ -81,7 +78,6 @@ describe('genericCall', () => {
     });
 
     describe('with emptyData', () => {
-      const emptyData = { data: 'empty' };
       it('should call dispatch according to successful execution with no empty data provided', async () => {
         await genericCall({ call: successCall, dispatch, emptyData });
         expect(dispatch.mock.calls[0]).toEqual([null, emptyData, true]);
