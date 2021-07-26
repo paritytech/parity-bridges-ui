@@ -96,7 +96,8 @@ export type TransactionsActionType = { type: TransactionActionTypes; payload: Pa
 export enum TransactionTypes {
   CUSTOM = 'CUSTOM',
   TRANSFER = 'TRANSFER',
-  REMARK = 'REMARK'
+  REMARK = 'REMARK',
+  LOCAL_TRANSFER = 'LOCAL_TRANSFER'
 }
 
 export enum EvalMessages {
