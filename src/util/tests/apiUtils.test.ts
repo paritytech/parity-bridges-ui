@@ -46,7 +46,7 @@ describe('genericCall', () => {
       it('should return expected data with no errors', async () => {
         const { data, error } = await genericCall({ call: successCall, emptyData });
         expect(error).toBeNull();
-        expect(data).toEqual(testData);
+        expect(data).toEqual({ testData });
       });
 
       it('should fail and null data and error mesage', async () => {
@@ -68,7 +68,7 @@ describe('genericCall', () => {
       it('should call dispatch according to successful execution with no empty data provided', async () => {
         await genericCall({ call: successCall, dispatch });
         expect(dispatch.mock.calls[0]).toEqual([null, null, true]);
-        expect(dispatch.mock.calls[1]).toEqual([null, testData, false]);
+        expect(dispatch.mock.calls[1]).toEqual([null, { testData }, false]);
       });
       it('should call dispatch according to a failed execution with no empty data provided', async () => {
         await genericCall({ call: failedCall, dispatch });
@@ -81,7 +81,7 @@ describe('genericCall', () => {
       it('should call dispatch according to successful execution with no empty data provided', async () => {
         await genericCall({ call: successCall, dispatch, emptyData });
         expect(dispatch.mock.calls[0]).toEqual([null, emptyData, true]);
-        expect(dispatch.mock.calls[1]).toEqual([null, testData, false]);
+        expect(dispatch.mock.calls[1]).toEqual([null, { testData }, false]);
       });
       it('should call dispatch according to a failed execution with no empty data provided', async () => {
         await genericCall({ call: failedCall, dispatch, emptyData });

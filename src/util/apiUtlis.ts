@@ -21,7 +21,7 @@ interface Result<T> {
   data: T | null;
 }
 interface DispatchGenericCallInput<T> {
-  call: (...args: any[]) => T;
+  call: (...args: any[]) => Promise<T>;
   dispatch?: (error: string | null, data: T | null, loading: boolean) => void;
   emptyData?: T | null;
 }
@@ -33,20 +33,19 @@ export const genericCall = async <T>({
 }: DispatchGenericCallInput<T>): Promise<Result<T>> => {
   let data = emptyData;
   let error = null;
-  const executeDispatch = (error: string | null, data: any, loading: boolean) =>
+  const executeDispatch = (error: string | null, data: T | null, loading: boolean) =>
     dispatch && dispatch(error, data, loading);
 
   try {
     executeDispatch(null, emptyData, true);
     data = await call();
-    executeDispatch(null, data, false);
-    return { data, error };
   } catch (e) {
     error = e.message;
     logger.error(error);
-    executeDispatch(error, emptyData, false);
-    return { data: emptyData, error };
+  } finally {
+    executeDispatch(error, data, false);
   }
+  return { data, error };
 };
 
 export default { genericCall };
