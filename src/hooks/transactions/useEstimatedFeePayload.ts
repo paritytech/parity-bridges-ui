@@ -75,18 +75,13 @@ export const useEstimatedFeePayload = (
     const dispatch = (error: string | null, data: PayloadEstimatedFee, loading: boolean) =>
       dispatchTransaction(TransactionActionCreators.setPayloadEstimatedFee(error, data, loading));
 
-    /*     if (account && call && weight) {
+    if (account && call && weight) {
       genericCall({
         call: getPayloadEstimatedFee,
         dispatch,
         emptyData: { payload: null, estimatedFee: null }
       });
-    } */
-    genericCall({
-      call: getPayloadEstimatedFee,
-      dispatch,
-      emptyData: { payload: null, estimatedFee: null }
-    });
+    }
   }, [
     account,
     call,
