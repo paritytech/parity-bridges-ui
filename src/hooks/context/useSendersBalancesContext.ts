@@ -20,9 +20,8 @@ import { AccountsActionType, AccountState } from '../../types/accountTypes';
 import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
 import { useSubscriptionsContext } from '../../contexts/SubscriptionsContextProvider';
 import { useMountedState } from '../react/useMountedState';
+import { BLOCK_DURATION, TIMER_DURATION } from '../../constants';
 
-const BLOCK_DURATION = new BN('4');
-const TIMER_DURATION = 30000;
 const increaseBlock = (current: BN) => current.add(BLOCK_DURATION);
 const getBlockAsBN = (block: string) => new BN(block);
 
