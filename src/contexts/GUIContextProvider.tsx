@@ -14,14 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import React, { useContext, useState } from 'react';
 import { createMuiTheme, CssBaseline, ThemeProvider } from '@material-ui/core';
-import React, { useContext } from 'react';
 import useLocalStorage from '../hooks/transactions/useLocalStorage';
+import { TransactionTypes } from '../types/transactionTypes';
 import { light } from '../components';
-
+import { MenuActionItemsProps } from '../types/guiTypes';
+import useResetTransactionState from '../hooks/transactions/useResetTransactionState';
 interface DrawerContextProps {
   drawer: string;
   setDrawer: React.Dispatch<React.SetStateAction<string>>;
+  actions: MenuActionItemsProps[];
+  action: TransactionTypes;
+  setAction: (type: TransactionTypes) => void;
 }
 interface GUIContextProviderProps {
   children: React.ReactElement;
@@ -29,13 +34,33 @@ interface GUIContextProviderProps {
 
 const DrawerContext = React.createContext({} as DrawerContextProps);
 
+const actions = [
+  {
+    title: 'Transfer',
+    isEnabled: true,
+    type: TransactionTypes.TRANSFER
+  },
+  {
+    title: 'Remark',
+    isEnabled: true,
+    type: TransactionTypes.REMARK
+  },
+  {
+    title: 'Custom Call',
+    isEnabled: true,
+    type: TransactionTypes.CUSTOM
+  }
+];
+
 export function useGUIContext() {
   return useContext(DrawerContext);
 }
 
 export function GUIContextProvider({ children }: GUIContextProviderProps): React.ReactElement {
   const [drawer, setDrawer] = useLocalStorage('storageDrawer');
-  const value = { drawer, setDrawer };
+  const [action, setAction] = useState<TransactionTypes>(TransactionTypes.TRANSFER);
+  const value = { drawer, setDrawer, actions, action, setAction };
+  useResetTransactionState(action);
 
   return (
     <ThemeProvider theme={createMuiTheme(light)}>
