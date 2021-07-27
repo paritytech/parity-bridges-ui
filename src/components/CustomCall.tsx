@@ -14,9 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { InterfaceTypes } from '@polkadot/types/types';
-
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { Box, TextField } from '@material-ui/core';
 import { ButtonSubmit } from '../components';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
@@ -26,16 +24,13 @@ import { TransactionTypes } from '../types/transactionTypes';
 import { EstimatedFee } from './EstimatedFee';
 import { TransactionActionCreators } from '../actions/transactionActions';
 import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
-import logger from '../util/logger';
 
 const initialValue = '0x';
 
 const CustomCall = () => {
-  const [currentCallInput, setCurrentCallInput] = useState<string | null>(null);
   const { dispatchTransaction } = useUpdateTransactionContext();
-  const { customCallInput, weightInput, transactionReadyToExecute } = useTransactionContext();
+  const { customCallInput, weightInput, transactionReadyToExecute, customCallError } = useTransactionContext();
 
-  const [error, setError] = useState<string | null>();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
   const {
@@ -52,15 +47,7 @@ const CustomCall = () => {
   const onChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const input = event.target.value;
-      try {
-        setError(null);
-        setCurrentCallInput(input);
-        createType(targetChain as keyof InterfaceTypes, 'Call', input);
-        dispatchTransaction(TransactionActionCreators.setCustomCallInput(input));
-      } catch (e) {
-        logger.error('Wrong call', e);
-        setError('Wrong call provided');
-      }
+      dispatchTransaction(TransactionActionCreators.setCustomCallInput(input, createType, targetChain));
     },
     [createType, dispatchTransaction, targetChain]
   );
@@ -77,12 +64,12 @@ const CustomCall = () => {
       <Box mb={2}>
         <TextField
           onChange={onChange}
-          value={currentCallInput}
+          value={customCallInput}
           placeholder={initialValue}
           label="Call"
           variant="outlined"
           fullWidth
-          helperText={error && `${error}`}
+          helperText={customCallError && `${customCallError}`}
         />
       </Box>
       <TextField onChange={onWeightChange} value={weightInput} label="Weight" variant="outlined" fullWidth />

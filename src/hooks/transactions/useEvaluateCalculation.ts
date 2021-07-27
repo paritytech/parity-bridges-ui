@@ -29,6 +29,7 @@ export default function useEvaluateCalculation(transactionState: TransactionStat
     transferAmount,
     remarkInput,
     customCallInput,
+    customCallError,
     weightInput,
     senderAccount,
     payloadEstimatedFeeLoading
@@ -60,6 +61,7 @@ export default function useEvaluateCalculation(transactionState: TransactionStat
         case TransactionTypes.CUSTOM: {
           return (
             Boolean(debouncedWeightInput && debouncedCustomCall) &&
+            !customCallError &&
             (prevWeightInput !== debouncedWeightInput || prevCustomCallInput !== debouncedCustomCall)
           );
         }
@@ -75,6 +77,7 @@ export default function useEvaluateCalculation(transactionState: TransactionStat
     setShouldEvaluate(prevSenderAccount !== senderAccount || inputChanged);
   }, [
     action,
+    customCallError,
     customCallInput,
     debouncedCustomCall,
     debouncedRemarkInput,

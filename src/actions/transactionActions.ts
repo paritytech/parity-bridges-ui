@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import { CreateType } from '../types/apiCallsTypes';
+
 import {
   TransactionStatusType,
   TransactionTypes,
@@ -103,8 +105,8 @@ const setRemarkInput = (remarkInput: string | null) => ({
   type: TransactionActionTypes.SET_REMARK_INPUT
 });
 
-const setCustomCallInput = (customCallInput: string | null) => ({
-  payload: { customCallInput },
+const setCustomCallInput = (customCallInput: string | null, createType: CreateType, targetChain: string) => ({
+  payload: { customCallInput, createType, targetChain },
   type: TransactionActionTypes.SET_CUSTOM_CALL_INPUT
 });
 

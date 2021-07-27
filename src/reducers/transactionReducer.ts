@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import type { InterfaceTypes } from '@polkadot/types/types';
 import { INCORRECT_FORMAT, GENERIC } from '../constants';
 import { TransactionActionTypes } from '../actions/transactionActions';
 import { TransactionDisplayPayload, TransactionTypes } from '../types/transactionTypes';
@@ -180,7 +181,6 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
 };
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
-  console.log(action);
   const transactionReadyToExecute = isReadyToExecute({ ...state, ...action.payload });
   switch (action.type) {
     case TransactionActionTypes.SET_PAYLOAD_ESTIMATED_FEE: {
@@ -215,7 +215,22 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return { ...state, remarkInput: action.payload.remarkInput, transactionReadyToExecute };
     }
     case TransactionActionTypes.SET_CUSTOM_CALL_INPUT: {
-      return { ...state, customCallInput: action.payload.customCallInput, transactionReadyToExecute };
+      const { customCallInput, createType, targetChain } = action.payload;
+      let customCallError = null;
+      try {
+        createType(targetChain as keyof InterfaceTypes, 'Call', customCallInput);
+      } catch (e) {
+        customCallError = e;
+        logger.error('Wrong call', e);
+      }
+
+      return {
+        ...state,
+        customCallInput,
+        transactionReadyToExecute: transactionReadyToExecute && !customCallError,
+        estimatedFee: customCallError ? null : state.estimatedFee,
+        customCallError
+      };
     }
     case TransactionActionTypes.SET_WEIGHT_INPUT: {
       return { ...state, weightInput: action.payload.weightInput, transactionReadyToExecute };
@@ -233,7 +248,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
         transferAmountError: null,
         remarkInput: '',
         customCallInput: '',
-        weightInput: null,
+        weightInput: '',
         unformattedReceiverAddress: null,
         addressValidationError: null,
         payload: null,

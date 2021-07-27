@@ -59,6 +59,7 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     transferAmount: null,
     remarkInput: '0x',
     customCallInput: '0x',
+    customCallError: null,
     weightInput: '',
     transferAmountError: null,
     estimatedFee: null,
