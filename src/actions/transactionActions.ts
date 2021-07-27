@@ -113,11 +113,6 @@ const setWeightInput = (weightInput: string | null) => ({
   type: TransactionActionTypes.SET_WEIGHT_INPUT
 });
 
-const setCustomCallInputs = (customCallInput: string | null, weightInput: string | null) => ({
-  payload: { customCallInput, weightInput },
-  type: TransactionActionTypes.SET_CUSTOM_CALL_INPUTS
-});
-
 const TransactionActionCreators = {
   combineReducers,
   setReceiverAddress,
