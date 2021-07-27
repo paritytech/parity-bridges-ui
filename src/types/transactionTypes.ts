@@ -69,7 +69,7 @@ export interface TransactionState {
   senderAccount: string | null;
   remarkInput: string;
   customCallInput: string;
-  weightInput: string;
+  weightInput: string | null;
   transferAmount: BN | null;
   transferAmountError: string | null;
   estimatedFee: string | null;

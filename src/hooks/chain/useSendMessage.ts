@@ -36,7 +36,7 @@ import useApiCalls from '../api/useApiCalls';
 interface Props {
   input: string;
   type: string;
-  weightInput?: string;
+  weightInput?: string | null;
 }
 
 function useSendMessage({ input, type }: Props) {

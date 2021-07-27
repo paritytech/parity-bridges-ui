@@ -14,8 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { TextField } from '@material-ui/core';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import { ButtonSubmit } from '../components';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useSendMessage from '../hooks/chain/useSendMessage';
@@ -26,8 +27,7 @@ import { useTransactionContext, useUpdateTransactionContext } from '../contexts/
 
 export default function Remark() {
   const { dispatchTransaction } = useUpdateTransactionContext();
-  const { remarkInput, transactionReadyToExecute, transactionRunning } = useTransactionContext();
-  const [currentInput, setRemarkInput] = useState<string>(remarkInput);
+  const { remarkInput, transactionReadyToExecute } = useTransactionContext();
 
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
@@ -36,28 +36,19 @@ export default function Remark() {
     type: TransactionTypes.REMARK
   });
 
-  const onChangeCallback = useCallback(
-    (value: string) => {
-      setRemarkInput(value);
+  const onChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value;
       dispatchTransaction(TransactionActionCreators.setRemarkInput(value));
     },
     [dispatchTransaction]
   );
 
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    onChangeCallback(value);
-  };
-
-  useEffect((): void => {
-    transactionRunning && remarkInput && onChangeCallback('');
-  }, [dispatchTransaction, onChangeCallback, remarkInput, transactionRunning]);
-
   return (
     <>
       <TextField
         label="Remark"
-        value={currentInput}
+        value={remarkInput}
         variant="outlined"
         fullWidth
         multiline

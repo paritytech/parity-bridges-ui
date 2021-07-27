@@ -87,7 +87,7 @@ const isReadyToExecute = (state: TransactionState): boolean => {
 
 const setReceiver = (state: TransactionState, payload: ReceiverPayload): TransactionState => {
   const { unformattedReceiverAddress, sourceChainDetails, targetChainDetails } = payload;
-  const transactionReadyToExecute = isReadyToExecute(state);
+  const transactionReadyToExecute = isReadyToExecute({ ...state, ...payload });
   if (!unformattedReceiverAddress) {
     return {
       ...state,
@@ -231,6 +231,9 @@ export default function transactionReducer(state: TransactionState, action: Tran
         receiverAddress: null,
         transferAmount: null,
         transferAmountError: null,
+        remarkInput: '',
+        customCallInput: '',
+        weightInput: null,
         unformattedReceiverAddress: null,
         addressValidationError: null,
         payload: null,
@@ -251,7 +254,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
     case TransactionActionTypes.SET_RECEIVER:
       return setReceiver(state, action.payload.receiverPayload);
     case TransactionActionTypes.SET_TRANSACTION_RUNNING:
-      return { ...state, transactionRunning: action.payload.transactionRunning };
+      return { ...state, transactionRunning: action.payload.transactionRunning, transactionReadyToExecute: false };
     case TransactionActionTypes.SET_SENDER_AND_ACTION:
       return { ...state, senderAccount: action.payload.senderAccount, action: action.payload.action };
     default:
