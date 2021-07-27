@@ -14,18 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { useEffect, useReducer } from 'react';
+import { Dispatch, useEffect } from 'react';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import useBalance from '../subscriptions/useBalance';
 import { AccountActionCreators } from '../../actions/accountActions';
-import accountReducer from '../../reducers/accountReducer';
 import { useKeyringContext } from '../../contexts/KeyringContextProvider';
-import { DisplayAccounts } from '../../types/accountTypes';
+import { AccountsActionType, AccountState } from '../../types/accountTypes';
 import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
+import usePrevious from '../react/usePrevious';
 
-const informationUpdateFrequency = parseInt(process.env.REACT_APP_ACCOUNTS_INFORMATION_UPDATE_FREQUENCY!);
-
-const useAccountsContextSetUp = () => {
+const useAccountsContextSetUp = (accountState: AccountState, dispatchAccount: Dispatch<AccountsActionType>) => {
   const {
     targetChainDetails: {
       apiConnection: { api: targetApi }
@@ -37,35 +35,23 @@ const useAccountsContextSetUp = () => {
 
   const { keyringPairs, keyringPairsReady } = useKeyringContext();
   const { updateSenderAccountsInformation } = useApiCallsContext();
-  const [accountState, dispatchAccount] = useReducer(accountReducer, {
-    account: null,
-    accounts: [],
-    companionAccount: null,
-    senderAccountBalance: null,
-    senderCompanionAccountBalance: null,
-    displaySenderAccounts: {} as DisplayAccounts
-  });
 
   const accountBalance = useBalance(sourceApi, accountState.account?.address || '', true);
   const companionBalance = useBalance(targetApi, accountState.companionAccount || '', true);
+  const prevAccountBalance = usePrevious(accountBalance);
+  const prevCompanionBalance = usePrevious(companionBalance);
 
   useEffect(() => {
-    dispatchAccount(AccountActionCreators.setSenderBalances(accountBalance, companionBalance));
-  }, [accountBalance, companionBalance, dispatchAccount]);
+    if (accountBalance !== prevAccountBalance || companionBalance !== prevCompanionBalance) {
+      dispatchAccount(AccountActionCreators.setSenderBalances(accountBalance, companionBalance));
+    }
+  }, [accountBalance, companionBalance, dispatchAccount, prevAccountBalance, prevCompanionBalance]);
 
   useEffect(() => {
     if (keyringPairsReady && keyringPairs.length) {
       dispatchAccount(AccountActionCreators.setAccounts(keyringPairs));
-      updateSenderAccountsInformation(dispatchAccount);
     }
   }, [keyringPairsReady, keyringPairs, dispatchAccount, updateSenderAccountsInformation]);
-
-  useEffect(() => {
-    const id = setInterval(() => updateSenderAccountsInformation(dispatchAccount), informationUpdateFrequency);
-    return () => clearInterval(id);
-  }, [updateSenderAccountsInformation]);
-
-  return { accountState, dispatchAccount };
 };
 
 export default useAccountsContextSetUp;
