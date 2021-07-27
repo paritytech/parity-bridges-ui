@@ -24,7 +24,6 @@ import useSendMessage from '../hooks/chain/useSendMessage';
 import useApiCalls from '../hooks/api/useApiCalls';
 import { TransactionTypes } from '../types/transactionTypes';
 import { EstimatedFee } from './EstimatedFee';
-import useDebounceState from '../hooks/react/useDebounceState';
 import { TransactionActionCreators } from '../actions/transactionActions';
 import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
 import logger from '../util/logger';
@@ -32,33 +31,9 @@ import logger from '../util/logger';
 const initialValue = '0x';
 
 const CustomCall = () => {
-  const [decoded, setDecoded] = useState<string | null>(null);
+  const [currentCallInput, setCurrentCallInput] = useState<string | null>(null);
   const { dispatchTransaction } = useUpdateTransactionContext();
   const { customCallInput, weightInput, transactionReadyToExecute } = useTransactionContext();
-
-  const dispatchCallbackCustomCall = useCallback(
-    (value: string | null) => {
-      dispatchTransaction(TransactionActionCreators.setCustomCallInput(value));
-    },
-    [dispatchTransaction]
-  );
-
-  const [currentCustomCallInput, setCustomCallInput] = useDebounceState({
-    initialValue,
-    dispatchCallback: dispatchCallbackCustomCall
-  });
-
-  const dispatchCallbackWeight = useCallback(
-    (value: string) => {
-      dispatchTransaction(TransactionActionCreators.setWeightInput(decoded ? value : null));
-    },
-    [decoded, dispatchTransaction]
-  );
-
-  const [currentWeightInput, setWeightInput] = useDebounceState({
-    initialValue: '',
-    dispatchCallback: dispatchCallbackWeight
-  });
 
   const [error, setError] = useState<string | null>();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
@@ -79,23 +54,22 @@ const CustomCall = () => {
       const input = event.target.value;
       try {
         setError(null);
-        setCustomCallInput(input);
-        const call = createType(targetChain as keyof InterfaceTypes, 'Call', input);
-        setDecoded(JSON.stringify(call, null, 4));
+        setCurrentCallInput(input);
+        createType(targetChain as keyof InterfaceTypes, 'Call', input);
+        dispatchTransaction(TransactionActionCreators.setCustomCallInput(input));
       } catch (e) {
         logger.error('Wrong call', e);
         setError('Wrong call provided');
-        setDecoded(null);
       }
     },
-    [createType, setCustomCallInput, targetChain]
+    [createType, dispatchTransaction, targetChain]
   );
 
   const onWeightChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      setWeightInput(event.target.value);
+      dispatchTransaction(TransactionActionCreators.setWeightInput(event.target.value));
     },
-    [setWeightInput]
+    [dispatchTransaction]
   );
 
   return (
@@ -103,7 +77,7 @@ const CustomCall = () => {
       <Box mb={2}>
         <TextField
           onChange={onChange}
-          value={currentCustomCallInput}
+          value={currentCallInput}
           placeholder={initialValue}
           label="Call"
           variant="outlined"
@@ -111,7 +85,7 @@ const CustomCall = () => {
           helperText={error && `${error}`}
         />
       </Box>
-      <TextField onChange={onWeightChange} value={currentWeightInput} label="Weight" variant="outlined" fullWidth />
+      <TextField onChange={onWeightChange} value={weightInput} label="Weight" variant="outlined" fullWidth />
       <ButtonSubmit disabled={!transactionReadyToExecute} onClick={sendLaneMessage}>
         Send custom call from {sourceChainDetails.chain} to {targetChainDetails.chain}
       </ButtonSubmit>

@@ -35,6 +35,7 @@ enum TransactionActionTypes {
   SET_TRANSACTION_COMPLETED = 'SET_TRANSACTION_COMPLETED',
   SET_TRANSACTION_RUNNING = 'SET_TRANSACTION_RUNNING',
   SET_CUSTOM_CALL_INPUT = 'SET_CUSTOM_CALL_INPUT',
+  SET_CUSTOM_CALL_INPUTS = 'SET_CUSTOM_CALL_INPUTS',
   SET_WEIGHT_INPUT = 'SET_WEIGHT_INPUT',
   RESET = 'RESET'
 }
@@ -113,6 +114,11 @@ const setWeightInput = (weightInput: string | null) => ({
   type: TransactionActionTypes.SET_WEIGHT_INPUT
 });
 
+const setCustomCallInputs = (customCallInput: string | null, weightInput: string | null) => ({
+  payload: { customCallInput, weightInput },
+  type: TransactionActionTypes.SET_CUSTOM_CALL_INPUTS
+});
+
 const TransactionActionCreators = {
   combineReducers,
   setReceiverAddress,
@@ -125,6 +131,7 @@ const TransactionActionCreators = {
   setTransactionRunning,
   createTransactionStatus,
   updateTransactionStatus,
+  setCustomCallInputs,
   reset
 };
 

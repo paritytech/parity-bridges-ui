@@ -28,7 +28,6 @@ import { TokenSymbol } from './TokenSymbol';
 import Receiver from './Receiver';
 import { Alert, ButtonSubmit } from '../components';
 import { EstimatedFee } from '../components/EstimatedFee';
-import useDebounceState from '../hooks/react/useDebounceState';
 import BN from 'bn.js';
 
 const useStyles = makeStyles((theme) => ({
@@ -51,6 +50,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Transfer() {
+  const [currentInput, setInput] = useState('0');
   const { dispatchTransaction } = useUpdateTransactionContext();
   const classes = useStyles();
   const [amountNotCorrect, setAmountNotCorrect] = useState<boolean>(false);
@@ -74,11 +74,10 @@ function Transfer() {
           api.registry.chainDecimals[0]
         )
       );
+      setInput(value);
     },
     [api.registry.chainDecimals, dispatchTransaction]
   );
-
-  const [currentInput, setInput] = useDebounceState({ initialValue: '0', dispatchCallback });
 
   const sendLaneMessage = useSendMessage({
     input: transferAmount?.toString() ?? '',
@@ -86,12 +85,13 @@ function Transfer() {
   });
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(event.target.value);
+    const value = event.target.value;
+    dispatchCallback(value);
   };
 
   useEffect((): void => {
-    transactionRunning && setInput('');
-  }, [setInput, transactionRunning]);
+    transactionRunning && dispatchCallback('');
+  }, [dispatchCallback, transactionRunning]);
 
   useEffect((): void => {
     estimatedFee &&
