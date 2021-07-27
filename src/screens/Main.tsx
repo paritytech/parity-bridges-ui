@@ -32,6 +32,7 @@ import { TransactionTypes } from '../types/transactionTypes';
 import { MenuActionItemsProps } from '../types/guiTypes';
 
 import BridgedLocalWrapper from '../components/BridgedLocalWrapper';
+import { useCallback } from 'react';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -50,11 +51,17 @@ const ActionComponents = {
 function Main() {
   const classes = useStyles();
   const { actions, action, setAction, isBridged, setBridged } = useGUIContext();
-  const searchItems = (choice: TransactionTypes) => actions.find((x: MenuActionItemsProps) => x.type === choice);
+  const searchItems = useCallback(
+    (choice: TransactionTypes) => actions.find((x: MenuActionItemsProps) => x.type === choice),
+    [actions]
+  );
 
-  const handleOnSwitch = (event: React.MouseEvent<HTMLElement>, newAlignment: string | null) => {
-    setBridged(Boolean(newAlignment));
-  };
+  const handleOnSwitch = useCallback(
+    (event: React.MouseEvent<HTMLElement>, newAlignment: string | null) => {
+      setBridged(Boolean(newAlignment));
+    },
+    [setBridged]
+  );
 
   // TODO #242: ToggleButtonGroup needs to contain the colors designed by custom css.
 
