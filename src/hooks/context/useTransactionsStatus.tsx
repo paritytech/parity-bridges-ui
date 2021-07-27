@@ -20,16 +20,16 @@ import { useUpdateMessageContext } from '../../contexts/MessageContext';
 import useChainGetters from '../chain/useChainGetters';
 import { useSubscriptionsContext } from '../../contexts/SubscriptionsContextProvider';
 import { getChainSubscriptionsKey } from '../../util/chainsUtils';
-import { handleTransactionUpdates } from '../../util/transactionUtils';
 
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
 import useLaneId from '../chain/useLaneId';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { TransactionActionCreators } from '../../actions/transactionActions';
 import isEqual from 'lodash/isEqual';
-import { MessageActionsCreators } from '../../actions/messageActions';
 import usePrevious from '../react/usePrevious';
+import { genericCall } from '../../util/apiUtlis';
+import { handleTransactionUpdates } from '../../util/transactionUtils';
 
 export default function useTransactionsStatus(
   transactions: TransactionStatusType[],
@@ -48,9 +48,14 @@ export default function useTransactionsStatus(
   const apiCalls = useApiCallsContext();
   const laneId = useLaneId();
 
+  const dispatch = useCallback(
+    (error: string | null, data: TransactionStatusType[] | null, loading: boolean) =>
+      dispatchTransaction(TransactionActionCreators.updateTransactionsStatus(error, data, loading)),
+    [dispatchTransaction]
+  );
+
   useEffect(() => {
     const getTransactionStatus = async () => {
-      dispatchTransaction(TransactionActionCreators.setEvaluatingTransactionsStatus(true));
       const updatedTransactions = await Promise.all(
         transactions.map(async (transaction: TransactionStatusType) => {
           if (transaction.status === TransactionStatusEnum.COMPLETED) {
@@ -84,25 +89,23 @@ export default function useTransactionsStatus(
       );
 
       if (!isEqual(transactions, updatedTransactions)) {
-        dispatchTransaction(TransactionActionCreators.updateTransactionsStatus(updatedTransactions));
+        return updatedTransactions;
       }
-
-      dispatchTransaction(TransactionActionCreators.setEvaluatingTransactionsStatus(false));
+      return transactions;
     };
     const transactionsInProgress = transactions.find(({ status }) => status === TransactionStatusEnum.IN_PROGRESS);
     const updatedSubscriptions = prevSubscriptions !== subscriptions;
 
     if (!evaluatingTransactions && transactionsInProgress && updatedSubscriptions) {
-      try {
-        getTransactionStatus();
-      } catch (e) {
-        dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e }));
-        dispatchTransaction(TransactionActionCreators.setEvaluatingTransactionsStatus(false));
-      }
+      genericCall({
+        call: getTransactionStatus,
+        dispatch
+      });
     }
   }, [
     apiCalls,
     currentSourceChain,
+    dispatch,
     dispatchMessage,
     dispatchTransaction,
     evaluatingTransactions,

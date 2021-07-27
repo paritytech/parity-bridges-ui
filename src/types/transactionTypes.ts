@@ -82,6 +82,7 @@ export interface TransactionState {
   transactionDisplayPayload: TransactionDisplayPayload;
   transactionRunning: boolean;
   transactionReadyToExecute: boolean;
+  evaludateTransactionStatusError: string | null;
   addressValidationError: string | null;
   showBalance: boolean;
   formatFound: string | null;

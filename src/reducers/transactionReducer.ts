@@ -240,10 +240,16 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return setReceiver(state, action.payload.receiverPayload);
     case TransactionActionTypes.SET_TRANSACTION_RUNNING:
       return { ...state, transactionRunning: action.payload.transactionRunning };
-    case TransactionActionTypes.SET_EVALUATING_TRANSACTIONS:
-      return { ...state, evaluatingTransactions: action.payload.evaluatingTransactions };
-    case TransactionActionTypes.UPDATE_TRANSACTIONS_STATUS:
-      return { ...state, transactions: action.payload.transactions };
+    case TransactionActionTypes.UPDATE_TRANSACTIONS_STATUS: {
+      const { evaludateTransactionStatusError, transactions, evaluatingTransactions } = action.payload;
+      return {
+        ...state,
+        transactions: transactions && !evaludateTransactionStatusError ? transactions : state.transactions,
+        evaluatingTransactions,
+        evaludateTransactionStatusError
+      };
+    }
+
     case TransactionActionTypes.SET_SENDER_ACCOUNT:
       return { ...state, senderAccount: action.payload.senderAccount };
     default:
