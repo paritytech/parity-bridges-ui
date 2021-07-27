@@ -15,6 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React from 'react';
+import cx from 'classnames';
 import { Box, InputBase } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTransactionContext } from '../contexts/TransactionContext';
@@ -24,6 +25,7 @@ import useReceiver from '../hooks/transactions/useReceiver';
 import AccountIdenticon from './AccountIdenticon';
 import { SelectLabel } from '../components';
 import Balance from './Balance';
+import { useGUIContext } from '../contexts/GUIContextProvider';
 
 const useStyles = makeStyles((theme) => ({
   accountMain: {
@@ -32,11 +34,13 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: theme.spacing(3),
     border: `1px solid ${theme.palette.divider}`,
     borderRadius: theme.spacing(1.5),
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
     '& input': {
       color: theme.palette.text.secondary
     }
+  },
+  bridgedBottomBorders: {
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0
   },
   address: {
     marginLeft: theme.spacing(),
@@ -50,6 +54,7 @@ const useStyles = makeStyles((theme) => ({
 
 function ReceiverInput() {
   const classes = useStyles();
+  const { isBridged } = useGUIContext();
   const { onReceiverChange } = useReceiver();
   const { unformattedReceiverAddress, formatFound, showBalance } = useTransactionContext();
   const { api, address } = useApiBalance(unformattedReceiverAddress, formatFound, false);
@@ -57,7 +62,7 @@ function ReceiverInput() {
 
   const addressInput = unformattedReceiverAddress || '';
   return (
-    <div className={classes.accountMain}>
+    <div className={cx(classes.accountMain, isBridged ? classes.bridgedBottomBorders : '')}>
       <SelectLabel>Receiver</SelectLabel>
       <Box display="flex" alignItems="center">
         <AccountIdenticon address={addressInput} formatFound={formatFound} />

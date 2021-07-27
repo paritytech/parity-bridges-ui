@@ -15,6 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React, { useEffect, useState } from 'react';
+import cx from 'classnames';
 import { MenuItem, Select } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { encodeAddress } from '@polkadot/util-crypto';
@@ -28,6 +29,8 @@ import AccountDisplay from './AccountDisplay';
 import { AddressKind } from '../types/accountTypes';
 import { SelectLabel, styleAccountCompanion } from '../components';
 import useChainGetters from '../hooks/chain/useChainGetters';
+import BridgedLocalWrapper from '../components/BridgedLocalWrapper';
+import { useGUIContext } from '../contexts/GUIContextProvider';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import isNull from 'lodash/isNull';
 
@@ -57,7 +60,11 @@ const useStyles = makeStyles((theme) => ({
       paddingTop: theme.spacing(0.5),
       paddingRight: theme.spacing(3),
       border: `1px solid ${theme.palette.divider}`,
-      borderRadius: theme.spacing(1.5),
+      borderRadius: theme.spacing(1.5)
+    }
+  },
+  bridgedBottomBorders: {
+    '& .MuiSelect-select': {
       borderBottomLeftRadius: 0,
       borderBottomRightRadius: 0
     }
@@ -68,6 +75,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Sender = () => {
+  const { isBridged } = useGUIContext();
   const classes = useStyles();
   const [chains, setChains] = useState<Array<string[]>>([]);
   const { setCurrentAccount } = useAccounts();
@@ -118,7 +126,9 @@ const Sender = () => {
         }}
       >
         <Account friendlyName={text} value={value} chain={source} />
-        <Account friendlyName={text} value={value} chain={target} isDerived hideAddress />
+        <BridgedLocalWrapper>
+          <Account friendlyName={text} value={value} chain={target} isDerived hideAddress />
+        </BridgedLocalWrapper>
       </MenuItem>
     ));
     return [
@@ -152,7 +162,7 @@ const Sender = () => {
         disableUnderline
         fullWidth
         disabled={!areApiReady}
-        className={classes.accountMain}
+        className={cx(classes.accountMain, isBridged ? classes.bridgedBottomBorders : '')}
         value={value}
         renderValue={(): React.ReactNode => (
           <>
@@ -163,20 +173,22 @@ const Sender = () => {
       >
         {chains.map((chain) => renderAccounts(chain))}
       </Select>
-      <div className={classes.accountCompanion}>
-        {companionAccount && !isNull(senderCompanionAccountBalance) ? (
-          <AccountDisplay
-            friendlyName={getName(account)}
-            address={companionAccount}
-            addressKind={AddressKind.COMPANION}
-            balance={senderCompanionAccountBalance!.formattedBalance}
-            hideAddress
-            withTooltip
-          />
-        ) : (
-          <AccountDisplay friendlyName="Sender" addressKind={AddressKind.COMPANION} hideAddress />
-        )}
-      </div>
+      <BridgedLocalWrapper>
+        <div className={classes.accountCompanion}>
+          {companionAccount && !isNull(senderCompanionAccountBalance) ? (
+            <AccountDisplay
+              friendlyName={getName(account)}
+              address={companionAccount}
+              addressKind={AddressKind.COMPANION}
+              balance={senderCompanionAccountBalance!.formattedBalance}
+              hideAddress
+              withTooltip
+            />
+          ) : (
+            <AccountDisplay friendlyName="Sender" addressKind={AddressKind.COMPANION} hideAddress />
+          )}
+        </div>
+      </BridgedLocalWrapper>
     </>
   );
 };

@@ -15,28 +15,23 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React from 'react';
-import ReceiverInput from './ReceiverInput';
-import ReceiverDerivedAccount from './ReceiverDerivedAccount';
-import BridgedLocalWrapper from './BridgedLocalWrapper';
-import { useTransactionContext } from '../contexts/TransactionContext';
-import { Typography } from '@material-ui/core';
+import { useGUIContext } from '../contexts/GUIContextProvider';
 
-const Receiver = () => {
-  const { addressValidationError } = useTransactionContext();
+interface Props {
+  children: React.ReactElement | null;
+  blurred?: boolean;
+}
 
-  return (
-    <>
-      <ReceiverInput />
-      <BridgedLocalWrapper>
-        <>
-          <ReceiverDerivedAccount />
-          <Typography variant="body2" color="error">
-            {addressValidationError}
-          </Typography>
-        </>
-      </BridgedLocalWrapper>
-    </>
-  );
-};
+export default function BridgedLocalWrapper({ children, blurred = false }: Props) {
+  const { isBridged } = useGUIContext();
 
-export default Receiver;
+  if (!isBridged) {
+    if (blurred) return <div style={{ opacity: '20%' }}>{children}</div>;
+  }
+
+  if (isBridged) {
+    return children;
+  }
+
+  return null;
+}
