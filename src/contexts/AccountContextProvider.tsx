@@ -16,7 +16,7 @@
 
 import React, { useContext, useReducer } from 'react';
 import useAccountsContextSetUp from '../hooks/context/useAccountsContextSetUp';
-import useSendersBalances from '../hooks/context/useSendersBalances';
+import useSendersBalancesContext from '../hooks/context/useSendersBalancesContext';
 
 import accountReducer from '../reducers/accountReducer';
 
@@ -56,7 +56,7 @@ export function AccountContextProvider(props: AccountContextProviderProps): Reac
   });
 
   useAccountsContextSetUp(accountState, dispatchAccount);
-  useSendersBalances(accountState, dispatchAccount);
+  useSendersBalancesContext(accountState, dispatchAccount);
 
   return (
     <AccountContext.Provider value={accountState}>

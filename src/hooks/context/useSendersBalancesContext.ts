@@ -28,7 +28,7 @@ const getBlockAsBN = (block: string) => new BN(block);
 
 const convertToBNAndIncrease = (block: string) => increaseBlock(getBlockAsBN(block));
 
-export default function useAccountsContextSetUp(
+export default function useSendersBalancesContext(
   accountState: AccountState,
   dispatchAccount: Dispatch<AccountsActionType>
 ) {
