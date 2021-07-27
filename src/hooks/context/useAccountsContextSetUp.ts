@@ -15,37 +15,14 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Dispatch, useEffect } from 'react';
-import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
-import useBalance from '../subscriptions/useBalance';
 import { AccountActionCreators } from '../../actions/accountActions';
 import { useKeyringContext } from '../../contexts/KeyringContextProvider';
 import { AccountsActionType, AccountState } from '../../types/accountTypes';
 import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
-import usePrevious from '../react/usePrevious';
 
 const useAccountsContextSetUp = (accountState: AccountState, dispatchAccount: Dispatch<AccountsActionType>) => {
-  const {
-    targetChainDetails: {
-      apiConnection: { api: targetApi }
-    },
-    sourceChainDetails: {
-      apiConnection: { api: sourceApi }
-    }
-  } = useSourceTarget();
-
   const { keyringPairs, keyringPairsReady } = useKeyringContext();
   const { updateSenderAccountsInformation } = useApiCallsContext();
-
-  const accountBalance = useBalance(sourceApi, accountState.account?.address || '', true);
-  const companionBalance = useBalance(targetApi, accountState.companionAccount || '', true);
-  const prevAccountBalance = usePrevious(accountBalance);
-  const prevCompanionBalance = usePrevious(companionBalance);
-
-  useEffect(() => {
-    if (accountBalance !== prevAccountBalance || companionBalance !== prevCompanionBalance) {
-      dispatchAccount(AccountActionCreators.setSenderBalances(accountBalance, companionBalance));
-    }
-  }, [accountBalance, companionBalance, dispatchAccount, prevAccountBalance, prevCompanionBalance]);
 
   useEffect(() => {
     if (keyringPairsReady && keyringPairs.length) {
