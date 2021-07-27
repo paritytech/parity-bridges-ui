@@ -14,9 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Box, Typography } from '@material-ui/core';
 import React from 'react';
-
+import { Box, Typography } from '@material-ui/core';
 import { BoxSidebar, BoxUI, ButtonExt, StorageDrawer, MenuAction, NetworkSides, NetworkStats } from '../components';
 import CustomCall from '../components/CustomCall';
 import ExtensionAccountCheck from '../components/ExtensionAccountCheck';
@@ -32,6 +31,7 @@ import { MenuActionItemsProps } from '../types/guiTypes';
 
 const ActionComponents = {
   [TransactionTypes.TRANSFER]: <Transfer />,
+  [TransactionTypes.LOCAL_TRANSFER]: <Transfer />,
   [TransactionTypes.REMARK]: <Remark />,
   [TransactionTypes.CUSTOM]: <CustomCall />
 };
