@@ -14,16 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { TextField } from '@material-ui/core';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { ButtonSubmit } from '../components';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useSendMessage from '../hooks/chain/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
 import { EstimatedFee } from './EstimatedFee';
-//import useDebounceState from '../hooks/react/useDebounceState';
 import { TransactionActionCreators } from '../actions/transactionActions';
 import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
 
@@ -32,18 +29,6 @@ export default function Remark() {
   const { remarkInput, transactionReadyToExecute } = useTransactionContext();
   const [currentInput, setRemarkInput] = useState<string>(remarkInput);
 
-  /*   const dispatchCallback = useCallback(
-    (value: string) => {
-      dispatchTransaction(TransactionActionCreators.setRemarkInput(value));
-    },
-    [dispatchTransaction]
-  );
-
-  const [currentInput, setRemarkInput, remarkDebouncedInput] = useDebounceState({
-    initialValue: remarkInput,
-    dispatchCallback
-  });
- */
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
   const sendLaneMessage = useSendMessage({

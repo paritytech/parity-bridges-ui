@@ -35,7 +35,6 @@ enum TransactionActionTypes {
   SET_TRANSACTION_COMPLETED = 'SET_TRANSACTION_COMPLETED',
   SET_TRANSACTION_RUNNING = 'SET_TRANSACTION_RUNNING',
   SET_CUSTOM_CALL_INPUT = 'SET_CUSTOM_CALL_INPUT',
-  SET_CUSTOM_CALL_INPUTS = 'SET_CUSTOM_CALL_INPUTS',
   SET_WEIGHT_INPUT = 'SET_WEIGHT_INPUT',
   RESET = 'RESET'
 }
@@ -131,7 +130,6 @@ const TransactionActionCreators = {
   setTransactionRunning,
   createTransactionStatus,
   updateTransactionStatus,
-  setCustomCallInputs,
   reset
 };
 
