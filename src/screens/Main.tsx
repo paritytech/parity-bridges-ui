@@ -56,10 +56,7 @@ function Main() {
     setBridged(Boolean(newAlignment));
   };
 
-  // To remove this check once the whole functionality is ready.
-  const isDev = process.env.REACT_APP_IS_DEVELOPMENT === 'true';
-  // TODO: ToggleButtonGroup needs to contain the colors designed by custom css.
-  // color property is not working for some reason.
+  // TODO #242: ToggleButtonGroup needs to contain the colors designed by custom css.
 
   return (
     <>
@@ -77,18 +74,16 @@ function Main() {
       <BoxUI>
         <Box component="div" display="flex" marginY={2} textAlign="left" width="100%">
           <MenuAction actions={actions} action={action} changeMenu={setAction} />
-          {isDev && (
-            <ToggleButtonGroup
-              size="small"
-              value={isBridged}
-              exclusive
-              onChange={handleOnSwitch}
-              classes={{ root: classes.root }}
-            >
-              <ToggleButton value={false}>Local</ToggleButton>
-              <ToggleButton value={true}>Bridge</ToggleButton>
-            </ToggleButtonGroup>
-          )}
+          <ToggleButtonGroup
+            size="small"
+            value={isBridged}
+            exclusive
+            onChange={handleOnSwitch}
+            classes={{ root: classes.root }}
+          >
+            <ToggleButton value={false}>Local</ToggleButton>
+            <ToggleButton value={true}>Bridge</ToggleButton>
+          </ToggleButtonGroup>
         </Box>
 
         <ExtensionAccountCheck component={<Sender />} />
