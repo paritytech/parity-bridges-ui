@@ -84,7 +84,7 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
 
   useEffect((): void => {
     dispatchTransaction(
-      TransactionActionCreators.combineReducers({ senderAccount: account ? account.address : null, action })
+      TransactionActionCreators.setSenderAndAction({ senderAccount: account ? account.address : null, action })
     );
   }, [account, action]);
 

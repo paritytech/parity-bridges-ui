@@ -265,7 +265,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return setReceiver(state, action.payload.receiverPayload);
     case TransactionActionTypes.SET_TRANSACTION_RUNNING:
       return { ...state, transactionRunning: action.payload.transactionRunning };
-    case TransactionActionTypes.COMBINE_REDUCERS:
+    case TransactionActionTypes.SET_SENDER_AND_ACTION:
       return { ...state, senderAccount: action.payload.senderAccount, action: action.payload.action };
     default:
       throw new Error(`Unknown type: ${action.type}`);
