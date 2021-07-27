@@ -27,6 +27,11 @@ const getBlockAsBN = (block: string) => new BN(block);
 
 const convertToBNAndIncrease = (block: string) => increaseBlock(getBlockAsBN(block));
 
+interface NextBlockNumbers {
+  nextSourceBlockNumber: BN;
+  nextTargetBlockNumber: BN;
+}
+
 export default function useSendersBalancesContext(
   accountState: AccountState,
   dispatchAccount: Dispatch<AccountsActionType>
@@ -36,24 +41,26 @@ export default function useSendersBalancesContext(
     targetSubscriptions: { bestBlock: currentTargetBlock }
   } = useSubscriptionsContext();
 
-  const [nextSourceBlockNumber, setNextSourceBlockNumber] = useMountedState<BN>(
-    convertToBNAndIncrease(currentSourceBlock)
-  );
-  const [nextTargetBlockNumber, setNextTargetBlockNumber] = useMountedState<BN>(
-    convertToBNAndIncrease(currentTargetBlock)
-  );
+  const [nextBlockNumbers, setNextBlockNumber] = useMountedState<NextBlockNumbers>({
+    nextSourceBlockNumber: convertToBNAndIncrease(currentSourceBlock),
+    nextTargetBlockNumber: convertToBNAndIncrease(currentTargetBlock)
+  });
 
   const [timerId, setTimerId] = useMountedState<NodeJS.Timeout | null>(null);
 
   const { updateSenderAccountsInformation } = useApiCallsContext();
 
   useEffect(() => {
+    const { nextSourceBlockNumber, nextTargetBlockNumber } = nextBlockNumbers;
     const currentBNSource = getBlockAsBN(currentSourceBlock);
     const currentBNTarget = getBlockAsBN(currentTargetBlock);
     if (currentBNSource.gte(nextSourceBlockNumber) && currentBNTarget.gte(nextTargetBlockNumber)) {
       updateSenderAccountsInformation(dispatchAccount);
-      setNextSourceBlockNumber(increaseBlock(currentBNSource));
-      setNextTargetBlockNumber(increaseBlock(currentBNTarget));
+      setNextBlockNumber({
+        nextSourceBlockNumber: convertToBNAndIncrease(currentSourceBlock),
+        nextTargetBlockNumber: convertToBNAndIncrease(currentTargetBlock)
+      });
+
       if (timerId) {
         clearTimeout(timerId);
         setTimerId(null);
@@ -63,10 +70,8 @@ export default function useSendersBalancesContext(
     currentSourceBlock,
     currentTargetBlock,
     dispatchAccount,
-    nextSourceBlockNumber,
-    nextTargetBlockNumber,
-    setNextSourceBlockNumber,
-    setNextTargetBlockNumber,
+    nextBlockNumbers,
+    setNextBlockNumber,
     setTimerId,
     timerId,
     updateSenderAccountsInformation
@@ -76,23 +81,17 @@ export default function useSendersBalancesContext(
     if (!timerId) {
       const id = setTimeout(() => {
         updateSenderAccountsInformation(dispatchAccount);
+        const { nextSourceBlockNumber, nextTargetBlockNumber } = nextBlockNumbers;
         const increasedSourceBlock = increaseBlock(nextSourceBlockNumber);
         const increasedTargetBlock = increaseBlock(nextTargetBlockNumber);
-        setNextSourceBlockNumber(increasedSourceBlock);
-        setNextTargetBlockNumber(increasedTargetBlock);
+        setNextBlockNumber({
+          nextSourceBlockNumber: increasedSourceBlock,
+          nextTargetBlockNumber: increasedTargetBlock
+        });
         clearTimeout(timerId!);
         setTimerId(null);
       }, TIMER_DURATION);
       setTimerId(id);
     }
-  }, [
-    dispatchAccount,
-    nextSourceBlockNumber,
-    nextTargetBlockNumber,
-    setNextSourceBlockNumber,
-    setNextTargetBlockNumber,
-    setTimerId,
-    timerId,
-    updateSenderAccountsInformation
-  ]);
+  }, [dispatchAccount, nextBlockNumbers, setNextBlockNumber, setTimerId, timerId, updateSenderAccountsInformation]);
 }
