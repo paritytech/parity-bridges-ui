@@ -44,10 +44,8 @@ const useStyles = makeStyles<Theme, Web3IconProps>((theme) => ({
 export const Web3Icon = ({ color, backgroundColor, children }: Web3IconProps) => {
   const classes = useStyles({ color, backgroundColor });
   return (
-    <Box className={classes.background} color={backgroundColor}>
-      <Box className={`Web3Icon ${classes.icon}`} color={color}>
-        {children}
-      </Box>
+    <Box className={classes.background}>
+      <Box className={`Web3Icon ${classes.icon}`}>{children}</Box>
     </Box>
   );
 };
