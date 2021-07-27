@@ -74,6 +74,8 @@ const isInputReady = (state: TransactionState): boolean => {
     case TransactionTypes.REMARK: {
       return Boolean(state.remarkInput);
     }
+    default:
+      return false;
   }
 };
 
@@ -95,7 +97,9 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
       receiverAddress: null,
       genericReceiverAccount: null,
       formatFound: null,
-      transactionReadyToExecute
+      transactionReadyToExecute,
+      estimatedFee: null,
+      payloadEstimatedFeeLoading: false
     };
   }
 
@@ -144,7 +148,7 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
       showBalance: true,
       formatFound,
       transactionReadyToExecute,
-      estimatedFeeLoading: Boolean(state.transferAmount)
+      payloadEstimatedFeeLoading: Boolean(state.transferAmount)
     };
   }
 
@@ -159,7 +163,7 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
       showBalance: true,
       formatFound,
       transactionReadyToExecute,
-      estimatedFeeLoading: Boolean(state.transferAmount)
+      payloadEstimatedFeeLoading: Boolean(state.transferAmount)
     };
   }
 
@@ -176,29 +180,23 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
 };
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
-  const transactionReadyToExecute = isReadyToExecute(state);
+  console.log(action);
+  const transactionReadyToExecute = isReadyToExecute({ ...state, ...action.payload });
   switch (action.type) {
-    case TransactionActionTypes.SET_ESTIMATED_FEE: {
-      const { estimatedFeeError, estimatedFeeLoading } = action.payload;
-
-      let estimatedFee = null;
-
-      if (
-        !estimatedFeeError &&
-        !estimatedFeeLoading &&
-        action.payload.estimatedFee &&
-        !state.estimatedFeeError &&
-        !state.transferAmountError
-      ) {
-        estimatedFee = action.payload.estimatedFee;
-      }
+    case TransactionActionTypes.SET_PAYLOAD_ESTIMATED_FEE: {
+      const {
+        payloadEstimatedFeeError,
+        payloadEstimatedFee: { estimatedFee, payload },
+        payloadEstimatedFeeLoading
+      } = action.payload;
 
       return {
         ...state,
-        estimatedFee,
-        estimatedFeeError: estimatedFeeError,
-        estimatedFeeLoading: estimatedFeeLoading,
-        transactionReadyToExecute: estimatedFeeLoading ? false : transactionReadyToExecute && estimatedFee
+        estimatedFee: !payloadEstimatedFeeError && transactionReadyToExecute ? estimatedFee : null,
+        payloadEstimatedFeeError,
+        payloadEstimatedFeeLoading,
+        payload: payloadEstimatedFeeError ? null : payload,
+        transactionReadyToExecute: payloadEstimatedFeeLoading ? false : transactionReadyToExecute
       };
     }
 
@@ -210,7 +208,6 @@ export default function transactionReducer(state: TransactionState, action: Tran
         transferAmount: actualValue || null,
         transferAmountError: message,
         transactionReadyToExecute: false,
-        estimatedFeeLoading: Boolean(actualValue) && Boolean(state.receiverAddress),
         estimatedFee: null
       };
     }
@@ -224,21 +221,12 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return { ...state, weightInput: action.payload.weightInput, transactionReadyToExecute };
     }
 
-    case TransactionActionTypes.SET_PAYLOAD: {
-      const { payloadError, payload } = action.payload;
-      return {
-        ...state,
-        payload: payloadError ? null : payload,
-        payloadError,
-        estimatedFee: null
-      };
-    }
     case TransactionActionTypes.RESET:
       return {
         ...state,
         derivedReceiverAccount: null,
         estimatedFee: null,
-        estimatedFeeError: null,
+        payloadEstimatedFeeError: null,
         genericReceiverAccount: null,
         receiverAddress: null,
         transferAmount: null,
@@ -246,7 +234,6 @@ export default function transactionReducer(state: TransactionState, action: Tran
         unformattedReceiverAddress: null,
         addressValidationError: null,
         payload: null,
-        payloadError: null,
         transactionDisplayPayload: {} as TransactionDisplayPayload,
         showBalance: false,
         formatFound: null

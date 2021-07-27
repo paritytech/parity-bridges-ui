@@ -19,19 +19,17 @@ import {
   TransactionTypes,
   UpdatedTransactionStatusType,
   ReceiverPayload,
-  TransactionPayload
+  PayloadEstimatedFee
 } from '../types/transactionTypes';
 
 enum TransactionActionTypes {
   SET_TRANSFER_AMOUNT = 'SET_TRANSFER_AMOUNT',
   SET_REMARK_INPUT = 'SET_REMARK_INPUT',
-  SET_ESTIMATED_FEE = 'SET_ESTIMATED_FEE',
-  SET_PAYLOAD = 'SET_PAYLOAD',
-  SET_PAYLOAD_ERROR = 'SET_PAYLOAD_ERROR',
   SET_RECEIVER = 'SET_RECEIVER',
   SET_RECEIVER_ADDRESS = 'SET_RECEIVER_ADDRESS',
   SET_RECEIVER_VALIDATION = 'SET_RECEIVER_VALIDATION',
   SET_SENDER_AND_ACTION = 'SET_SENDER_AND_ACTION',
+  SET_PAYLOAD_ESTIMATED_FEE = 'SET_PAYLOAD_ESTIMATED_FEE',
   CREATE_TRANSACTION_STATUS = 'CREATE_TRANSACTION_STATUS',
   UPDATE_CURRENT_TRANSACTION_STATUS = 'UPDATE_CURRENT_TRANSACTION_STATUS',
   SET_TRANSACTION_COMPLETED = 'SET_TRANSACTION_COMPLETED',
@@ -48,20 +46,13 @@ const setTransferAmount = (transferAmount: string | null, chainDecimals?: number
   };
 };
 
-const setEstimatedFee = (
-  estimatedFeeError: string | null,
-  estimatedFee: string | null,
-  estimatedFeeLoading: boolean
-) => {
-  return {
-    payload: { estimatedFee, estimatedFeeError, estimatedFeeLoading },
-    type: TransactionActionTypes.SET_ESTIMATED_FEE
-  };
-};
-
-const setPayload = (payloadError: string | null, payload: TransactionPayload | null) => ({
-  payload: { payload, payloadError },
-  type: TransactionActionTypes.SET_PAYLOAD
+const setPayloadEstimatedFee = (
+  payloadEstimatedFeeError: string | null,
+  payloadEstimatedFee: PayloadEstimatedFee | null,
+  payloadEstimatedFeeLoading: boolean
+) => ({
+  payload: { payloadEstimatedFee, payloadEstimatedFeeError, payloadEstimatedFeeLoading },
+  type: TransactionActionTypes.SET_PAYLOAD_ESTIMATED_FEE
 });
 
 const setReceiverAddress = (receiverAddress: string | null) => ({
@@ -98,11 +89,11 @@ const setTransactionRunning = (transactionRunning: boolean) => ({
   type: TransactionActionTypes.SET_TRANSACTION_RUNNING
 });
 
-type CombineReducersInput = {
+type SenderAndActionInput = {
   senderAccount: string | null;
   action: TransactionTypes;
 };
-const setSenderAndAction = ({ senderAccount, action }: CombineReducersInput) => ({
+const setSenderAndAction = ({ senderAccount, action }: SenderAndActionInput) => ({
   payload: { senderAccount, action },
   type: TransactionActionTypes.SET_SENDER_AND_ACTION
 });
@@ -127,14 +118,13 @@ const TransactionActionCreators = {
   setReceiverAddress,
   setReceiver,
   setTransferAmount,
+  setPayloadEstimatedFee,
   setCustomCallInput,
   setWeightInput,
   setRemarkInput,
-  setEstimatedFee,
   setTransactionRunning,
   createTransactionStatus,
   updateTransactionStatus,
-  setPayload,
   reset
 };
 

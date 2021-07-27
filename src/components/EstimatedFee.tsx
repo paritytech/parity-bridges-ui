@@ -30,22 +30,26 @@ const useStyles = makeStyles(() => ({
 export const EstimatedFee = (): React.ReactElement => {
   const classes = useStyles();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
-  const { estimatedFee, estimatedFeeLoading } = useTransactionContext();
+  const { estimatedFee, payloadEstimatedFeeLoading, transactionRunning } = useTransactionContext();
   const srcChainDecimals = sourceChainDetails.apiConnection.api.registry.chainDecimals[0];
   const { chainTokens } = targetChainDetails.apiConnection.api.registry;
 
   const [amount, setAmount] = useState<string | null>(null);
 
   useEffect(() => {
-    !estimatedFeeLoading && setAmount(estimatedFee ? transformToBaseUnit(estimatedFee, srcChainDecimals) : null);
-  }, [estimatedFee, estimatedFeeLoading, srcChainDecimals]);
+    !payloadEstimatedFeeLoading && setAmount(estimatedFee ? transformToBaseUnit(estimatedFee, srcChainDecimals) : null);
+  }, [estimatedFee, payloadEstimatedFeeLoading, srcChainDecimals]);
 
   const feeLabel = `Estimated ${sourceChainDetails.chain} fee`;
 
   return (
     <div className={classes.container}>
       <Typography variant="body1" color="secondary">
-        {estimatedFeeLoading ? `${feeLabel}...` : amount ? `${feeLabel}: ${amount} ${chainTokens}` : null}
+        {payloadEstimatedFeeLoading && !transactionRunning
+          ? `${feeLabel}...`
+          : amount
+          ? `${feeLabel}: ${amount} ${chainTokens}`
+          : null}
       </Typography>
     </div>
   );

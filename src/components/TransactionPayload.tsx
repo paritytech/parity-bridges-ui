@@ -72,7 +72,7 @@ const TransactionPayload = ({
   status
 }: Props) => {
   const classes = useStyles();
-  const { estimatedFeeLoading } = useTransactionContext();
+  const { payloadEstimatedFeeLoading } = useTransactionContext();
   if (tab === SwitchTabEnum.RECEIPT) {
     return null;
   }
@@ -80,15 +80,15 @@ const TransactionPayload = ({
   return (
     <Card elevation={transactionDisplayProps?.size === 'sm' ? 23 : 24} className={classes.card}>
       {payloadHex && <TransactionHeader type={type} status={status} />}
-      {estimatedFeeLoading && (
+      {payloadEstimatedFeeLoading && (
         <div className={classes.loader}>
           <CircularProgress />
         </div>
       )}
-      {!estimatedFeeLoading && tab === SwitchTabEnum.PAYLOAD && (
+      {!payloadEstimatedFeeLoading && tab === SwitchTabEnum.PAYLOAD && (
         <Typography variant="subtitle2">{payloadHex}</Typography>
       )}
-      {!estimatedFeeLoading && tab === SwitchTabEnum.DECODED && transactionDisplayPayload && (
+      {!payloadEstimatedFeeLoading && tab === SwitchTabEnum.DECODED && transactionDisplayPayload && (
         <Typography variant="subtitle2">
           <ReactJson src={transactionDisplayPayload} enableClipboard name={false} />
         </Typography>

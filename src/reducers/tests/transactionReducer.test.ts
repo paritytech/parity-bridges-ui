@@ -17,6 +17,9 @@
 import { state, sourceChainDetails, targetChainDetails } from './transactionReducerMocks';
 import transactionReducer from '../transactionReducer';
 import { TransactionActionCreators } from '../../actions/transactionActions';
+import { TransactionPayload, TransactionTypes } from '../../types/transactionTypes';
+import { compactAddLength } from '@polkadot/util';
+import BN from 'bn.js';
 
 describe('transactionReducer', () => {
   describe('SET_RECEIVER', () => {
@@ -86,6 +89,131 @@ describe('transactionReducer', () => {
         unformattedReceiverAddress: 'tH95Ew4kVD9VcwsyXaSdC74Noe3H8o6fJfnKhZezXHKHEcs',
         addressValidationError: 'Unsupported address SS58 prefix: 8',
         formatFound: 8
+      });
+    });
+  });
+
+  describe('SET_PAYLOAD_ESTIMATED_FEE', () => {
+    type PayloadEstimatedFee = {
+      payload: TransactionPayload | null;
+      estimatedFee: string | null;
+    };
+
+    let payloadEstimatedFeeError: string | null;
+    let payloadEstimatedFee: PayloadEstimatedFee;
+    let payloadEstimatedFeeLoading: boolean;
+
+    beforeEach(() => {
+      payloadEstimatedFeeError = null;
+      payloadEstimatedFee = { estimatedFee: null, payload: null };
+      payloadEstimatedFeeLoading = false;
+    });
+
+    it('should return initial state regarding estimated fee', () => {
+      const action = TransactionActionCreators.setPayloadEstimatedFee(
+        payloadEstimatedFeeError,
+        payloadEstimatedFee,
+        payloadEstimatedFeeLoading
+      );
+      const result = transactionReducer(state, action);
+
+      expect(result).toEqual({
+        ...state,
+        estimatedFee: null,
+        payloadEstimatedFeeError: null,
+        payloadEstimatedFeeLoading: false,
+        payload: null,
+        transactionReadyToExecute: false
+      });
+    });
+    it('should return loading estimated fee', () => {
+      const payloadEstimatedFeeLoading = true;
+      const action = TransactionActionCreators.setPayloadEstimatedFee(
+        payloadEstimatedFeeError,
+        payloadEstimatedFee,
+        payloadEstimatedFeeLoading
+      );
+      const result = transactionReducer(state, action);
+
+      expect(result).toEqual({
+        ...state,
+        estimatedFee: null,
+        payloadEstimatedFeeError: null,
+        payloadEstimatedFeeLoading: true,
+        payload: null,
+        transactionReadyToExecute: false
+      });
+    });
+
+    it('should return corresponding error state for estimated fee', () => {
+      payloadEstimatedFeeError = 'Error';
+      const action = TransactionActionCreators.setPayloadEstimatedFee(
+        payloadEstimatedFeeError,
+        payloadEstimatedFee,
+        payloadEstimatedFeeLoading
+      );
+      const result = transactionReducer(state, action);
+
+      expect(result).toEqual({
+        ...state,
+        estimatedFee: null,
+        payloadEstimatedFeeError,
+        payloadEstimatedFeeLoading: false,
+        payload: null,
+        transactionReadyToExecute: false
+      });
+    });
+
+    it('should return corresponding error state for estimated fee', () => {
+      payloadEstimatedFeeError = 'Error';
+      const action = TransactionActionCreators.setPayloadEstimatedFee(
+        payloadEstimatedFeeError,
+        payloadEstimatedFee,
+        payloadEstimatedFeeLoading
+      );
+      const result = transactionReducer(state, action);
+
+      expect(result).toEqual({
+        ...state,
+        estimatedFee: null,
+        payloadEstimatedFeeError,
+        payloadEstimatedFeeLoading: false,
+        payload: null,
+        transactionReadyToExecute: false
+      });
+    });
+
+    it('should return corresponding estimated fee, payload and all the necessary conditions to execute the transaction', () => {
+      const payload = {
+        call: compactAddLength(new Uint8Array([0, 0, 0, 0])),
+        origin: {
+          SourceAccount: new Uint8Array([0, 0, 0, 0])
+        },
+        spec_version: 1,
+        weight: '1234'
+      };
+      const estimatedFee = '1234';
+      payloadEstimatedFee = { estimatedFee, payload };
+      const action = TransactionActionCreators.setPayloadEstimatedFee(
+        payloadEstimatedFeeError,
+        payloadEstimatedFee,
+        payloadEstimatedFeeLoading
+      );
+
+      const newState = { ...state };
+      newState.action = TransactionTypes.TRANSFER;
+      newState.transferAmount = new BN(1);
+      newState.receiverAddress = '74GNQjmkcfstRftSQPJgMREchqHM56EvAUXRc266cZ1NYVW5';
+      newState.senderAccount = '5rERgaT1Z8nM3et2epA5i1VtEBfp5wkhwHtVE8HK7BRbjAH2';
+      const result = transactionReducer(newState, action);
+
+      expect(result).toEqual({
+        ...newState,
+        estimatedFee,
+        payloadEstimatedFeeError: null,
+        payloadEstimatedFeeLoading: false,
+        payload,
+        transactionReadyToExecute: true
       });
     });
   });

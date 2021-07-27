@@ -27,7 +27,6 @@ import { useUpdateMessageContext } from '../../contexts/MessageContext';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import { useTransactionContext, useUpdateTransactionContext } from '../../contexts/TransactionContext';
 import useLaneId from './useLaneId';
-import useTransactionPreparation from '../transactions/useTransactionPreparation';
 import { TransactionStatusEnum } from '../../types/transactionTypes';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
 import { getTransactionDisplayPayload } from '../../util/transactionUtils';
@@ -40,7 +39,7 @@ interface Props {
   weightInput?: string;
 }
 
-function useSendMessage({ input, type, weightInput }: Props) {
+function useSendMessage({ input, type }: Props) {
   const { estimatedFee, receiverAddress, payload } = useTransactionContext();
   const { dispatchTransaction } = useUpdateTransactionContext();
   const laneId = useLaneId();
@@ -53,7 +52,6 @@ function useSendMessage({ input, type, weightInput }: Props) {
     targetChainDetails: { chain: targetChain }
   } = sourceTargetDetails;
   const { account } = useAccountContext();
-  useTransactionPreparation({ input, type, weightInput });
   const { createType } = useApiCalls();
   const { dispatchMessage } = useUpdateMessageContext();
 

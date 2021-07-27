@@ -15,42 +15,43 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { TextField } from '@material-ui/core';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ButtonSubmit } from '../components';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useSendMessage from '../hooks/chain/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
 import { EstimatedFee } from './EstimatedFee';
-import useDebounceState from '../hooks/react/useDebounceState';
 import { TransactionActionCreators } from '../actions/transactionActions';
 import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
 
 export default function Remark() {
   const { dispatchTransaction } = useUpdateTransactionContext();
-  const { remarkInput, transactionReadyToExecute } = useTransactionContext();
+  const { remarkInput, transactionReadyToExecute, transactionRunning } = useTransactionContext();
+  const [currentInput, setRemarkInput] = useState<string>(remarkInput);
 
-  const dispatchCallback = useCallback(
+  const { sourceChainDetails, targetChainDetails } = useSourceTarget();
+
+  const sendLaneMessage = useSendMessage({
+    input: remarkInput,
+    type: TransactionTypes.REMARK
+  });
+
+  const onChangeCallback = useCallback(
     (value: string) => {
+      setRemarkInput(value);
       dispatchTransaction(TransactionActionCreators.setRemarkInput(value));
     },
     [dispatchTransaction]
   );
 
-  const [currentInput, setRemarkInput, remarkDebouncedInput] = useDebounceState({
-    initialValue: remarkInput,
-    dispatchCallback
-  });
-
-  const { sourceChainDetails, targetChainDetails } = useSourceTarget();
-
-  const sendLaneMessage = useSendMessage({
-    input: remarkDebouncedInput,
-    type: TransactionTypes.REMARK
-  });
-
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRemarkInput(event.target.value);
+    const value = event.target.value;
+    onChangeCallback(value);
   };
+
+  useEffect((): void => {
+    transactionRunning && remarkInput && onChangeCallback('');
+  }, [dispatchTransaction, onChangeCallback, remarkInput, transactionRunning]);
 
   return (
     <>
