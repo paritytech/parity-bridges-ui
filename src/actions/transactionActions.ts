@@ -38,6 +38,7 @@ enum TransactionActionTypes {
   SET_TRANSACTION_RUNNING = 'SET_TRANSACTION_RUNNING',
   SET_CUSTOM_CALL_INPUT = 'SET_CUSTOM_CALL_INPUT',
   SET_WEIGHT_INPUT = 'SET_WEIGHT_INPUT',
+  UPDATE_TRANSACTIONS_STATUS = 'UPDATE_TRANSACTIONS_STATUS',
   RESET = 'RESET'
 }
 
@@ -55,6 +56,15 @@ const setPayloadEstimatedFee = (
 ) => ({
   payload: { payloadEstimatedFee, payloadEstimatedFeeError, payloadEstimatedFeeLoading },
   type: TransactionActionTypes.SET_PAYLOAD_ESTIMATED_FEE
+});
+
+const updateTransactionsStatus = (
+  evaluateTransactionStatusError: string | null,
+  transactions: TransactionStatusType[] | null,
+  evaluatingTransactions: boolean
+) => ({
+  payload: { evaluateTransactionStatusError, transactions, evaluatingTransactions },
+  type: TransactionActionTypes.UPDATE_TRANSACTIONS_STATUS
 });
 
 const setReceiverAddress = (receiverAddress: string | null) => ({
@@ -127,6 +137,7 @@ const TransactionActionCreators = {
   setTransactionRunning,
   createTransactionStatus,
   updateTransactionStatus,
+  updateTransactionsStatus,
   reset
 };
 

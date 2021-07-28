@@ -34,6 +34,8 @@ export const state: TransactionState = {
   transactionDisplayPayload: {} as TransactionDisplayPayload,
   transactionRunning: false,
   transactionReadyToExecute: false,
+  evaluateTransactionStatusError: null,
+  evaluatingTransactions: false,
   addressValidationError: null,
   showBalance: false,
   formatFound: null,

@@ -14,11 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useContext, useEffect, useReducer } from 'react';
+import React, { useContext, useReducer, useEffect } from 'react';
+import useTransactionsStatus from '../hooks/context/useTransactionsStatus';
+import transactionReducer from '../reducers/transactionReducer';
 import { TransactionActionCreators } from '../actions/transactionActions';
 import useEstimatedFeePayload from '../hooks/transactions/useEstimatedFeePayload';
 import useResetTransactionState from '../hooks/transactions/useResetTransactionState';
-import transactionReducer from '../reducers/transactionReducer';
 import {
   TransactionState,
   TransactionsActionType,
@@ -54,7 +55,7 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
   const { children = null } = props;
   const { account } = useAccountContext();
   const { action } = useGUIContext();
-  const [transactionState, dispatchTransaction] = useReducer(transactionReducer, {
+  const [transactionsState, dispatchTransaction] = useReducer(transactionReducer, {
     senderAccount: null,
     transferAmount: null,
     remarkInput: '0x',
@@ -67,10 +68,12 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     unformattedReceiverAddress: null,
     derivedReceiverAccount: null,
     genericReceiverAccount: null,
+    evaluatingTransactions: false,
     transactions: [],
     transactionDisplayPayload: {} as TransactionDisplayPayload,
     transactionRunning: false,
     transactionReadyToExecute: false,
+    evaluateTransactionStatusError: null,
     addressValidationError: null,
     showBalance: false,
     formatFound: null,
@@ -83,7 +86,8 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
 
   useResetTransactionState(action, dispatchTransaction);
 
-  useEstimatedFeePayload(transactionState, dispatchTransaction);
+  useEstimatedFeePayload(transactionsState, dispatchTransaction);
+  useTransactionsStatus(transactionsState.transactions, transactionsState.evaluatingTransactions, dispatchTransaction);
 
   useEffect((): void => {
     dispatchTransaction(
@@ -92,7 +96,7 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
   }, [account, action]);
 
   return (
-    <TransactionContext.Provider value={transactionState}>
+    <TransactionContext.Provider value={transactionsState}>
       <UpdateTransactionContext.Provider value={{ dispatchTransaction }}>{children}</UpdateTransactionContext.Provider>
     </TransactionContext.Provider>
   );

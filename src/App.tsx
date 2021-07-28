@@ -47,10 +47,10 @@ function App() {
   return (
     <SourceTargetContextProvider connections={connections}>
       <KeyringContextProvider>
-        <ApiCallsContextProvider>
-          <AccountContextProvider>
-            <GUIContextProvider>
-              <SubscriptionsContextProvider>
+        <SubscriptionsContextProvider>
+          <GUIContextProvider>
+            <ApiCallsContextProvider>
+              <AccountContextProvider>
                 <MessageContextProvider>
                   <SnackbarProvider>
                     <TransactionContextProvider>
@@ -64,10 +64,10 @@ function App() {
                     </TransactionContextProvider>
                   </SnackbarProvider>
                 </MessageContextProvider>
-              </SubscriptionsContextProvider>
-            </GUIContextProvider>
-          </AccountContextProvider>
-        </ApiCallsContextProvider>
+              </AccountContextProvider>
+            </ApiCallsContextProvider>
+          </GUIContextProvider>
+        </SubscriptionsContextProvider>
       </KeyringContextProvider>
     </SourceTargetContextProvider>
   );

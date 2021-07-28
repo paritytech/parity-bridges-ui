@@ -18,7 +18,6 @@ import type { InterfaceTypes } from '@polkadot/types/types';
 import { INCORRECT_FORMAT, GENERIC } from '../constants';
 import { TransactionActionTypes } from '../actions/transactionActions';
 import { TransactionDisplayPayload, TransactionTypes } from '../types/transactionTypes';
-
 import getReceiverAddress from '../util/getReceiverAddress';
 import { Payload, TransactionsActionType, TransactionState, ReceiverPayload } from '../types/transactionTypes';
 import { ChainState } from '../types/sourceTargetTypes';
@@ -272,6 +271,15 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return { ...state, transactionRunning: action.payload.transactionRunning, transactionReadyToExecute: false };
     case TransactionActionTypes.SET_SENDER_AND_ACTION:
       return { ...state, senderAccount: action.payload.senderAccount, action: action.payload.action };
+    case TransactionActionTypes.UPDATE_TRANSACTIONS_STATUS: {
+      const { evaluateTransactionStatusError, transactions, evaluatingTransactions } = action.payload;
+      return {
+        ...state,
+        transactions: transactions && !evaluateTransactionStatusError ? transactions : state.transactions,
+        evaluatingTransactions,
+        evaluateTransactionStatusError
+      };
+    }
     default:
       throw new Error(`Unknown type: ${action.type}`);
   }

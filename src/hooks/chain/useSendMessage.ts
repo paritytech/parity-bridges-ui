@@ -29,7 +29,7 @@ import { useTransactionContext, useUpdateTransactionContext } from '../../contex
 import useLaneId from './useLaneId';
 import { TransactionStatusEnum } from '../../types/transactionTypes';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
-import { getTransactionDisplayPayload } from '../../util/transactionUtils';
+import { createEmptySteps, getTransactionDisplayPayload } from '../../util/transactionUtils';
 import logger from '../../util/logger';
 import useApiCalls from '../api/useApiCalls';
 
@@ -101,7 +101,9 @@ function useSendMessage({ input, type }: Props) {
                 targetChain,
                 type,
                 payloadHex,
-                transactionDisplayPayload
+                transactionDisplayPayload,
+                deliveryBlock: null,
+                steps: createEmptySteps(sourceChain, targetChain)
               })
             );
           }

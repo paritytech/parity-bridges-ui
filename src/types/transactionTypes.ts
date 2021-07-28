@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import BN from 'bn.js';
 import { TransactionActionTypes } from '../actions/transactionActions';
 import { ChainState } from './sourceTargetTypes';
-import BN from 'bn.js';
 
 export interface Payload {
   [propName: string]: any;
@@ -63,6 +63,7 @@ export interface TransactionStatusType extends UpdatedTransactionStatusType {
   receiverAddress: null | string;
   type: string;
   status: TransactionStatusEnum;
+  deliveryBlock: string | null;
 }
 
 export interface TransactionState {
@@ -79,9 +80,11 @@ export interface TransactionState {
   derivedReceiverAccount: string | null;
   genericReceiverAccount: string | null;
   transactions: Array<TransactionStatusType>;
+  evaluatingTransactions: boolean;
   transactionDisplayPayload: TransactionDisplayPayload;
   transactionRunning: boolean;
   transactionReadyToExecute: boolean;
+  evaluateTransactionStatusError: string | null;
   addressValidationError: string | null;
   showBalance: boolean;
   formatFound: string | null;
