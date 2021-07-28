@@ -65,7 +65,7 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     transactionDisplayPayload: {} as TransactionDisplayPayload,
     transactionRunning: false,
     transactionReadyToExecute: false,
-    evaludateTransactionStatusError: null,
+    evaluateTransactionStatusError: null,
     addressValidationError: null,
     showBalance: false,
     formatFound: null,

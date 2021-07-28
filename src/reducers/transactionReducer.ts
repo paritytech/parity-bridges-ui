@@ -241,12 +241,12 @@ export default function transactionReducer(state: TransactionState, action: Tran
     case TransactionActionTypes.SET_TRANSACTION_RUNNING:
       return { ...state, transactionRunning: action.payload.transactionRunning };
     case TransactionActionTypes.UPDATE_TRANSACTIONS_STATUS: {
-      const { evaludateTransactionStatusError, transactions, evaluatingTransactions } = action.payload;
+      const { evaluateTransactionStatusError, transactions, evaluatingTransactions } = action.payload;
       return {
         ...state,
-        transactions: transactions && !evaludateTransactionStatusError ? transactions : state.transactions,
+        transactions: transactions && !evaluateTransactionStatusError ? transactions : state.transactions,
         evaluatingTransactions,
-        evaludateTransactionStatusError
+        evaluateTransactionStatusError
       };
     }
 

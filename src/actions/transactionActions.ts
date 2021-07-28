@@ -57,11 +57,11 @@ const setEstimatedFee = (
 };
 
 const updateTransactionsStatus = (
-  evaludateTransactionStatusError: string | null,
+  evaluateTransactionStatusError: string | null,
   transactions: TransactionStatusType[] | null,
   evaluatingTransactions: boolean
 ) => ({
-  payload: { evaludateTransactionStatusError, transactions, evaluatingTransactions },
+  payload: { evaluateTransactionStatusError, transactions, evaluatingTransactions },
   type: TransactionActionTypes.UPDATE_TRANSACTIONS_STATUS
 });
 
