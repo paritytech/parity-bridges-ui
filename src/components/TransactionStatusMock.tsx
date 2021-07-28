@@ -21,6 +21,7 @@ import { Step, TransactionStatusEnum } from '../types/transactionTypes';
 import TransactionReceipt from './TransactionReceipt';
 import TransactionSwitchTab from './TransactionSwitchTab';
 import useTransactionPayloadDisplay from '../hooks/transactions/useTransactionPayloadDisplay';
+import { createEmptySteps } from '../util/transactionUtils';
 interface Props {
   type?: string;
 }
@@ -35,47 +36,7 @@ const TransactionStatusMock = ({ type }: Props) => {
   const { payloadHex, transactionDisplayPayload } = useTransactionPayloadDisplay();
 
   useEffect(() => {
-    setSteps([
-      {
-        id: 'test-step-include-message-block',
-        chainType: sourceChain,
-        label: 'Include message in block',
-        labelOnChain: '',
-        status: TransactionStatusEnum.NOT_STARTED
-      },
-      {
-        id: 'test-step-finalized-block',
-        chainType: sourceChain,
-        label: 'Finalise block',
-        status: TransactionStatusEnum.NOT_STARTED
-      },
-      {
-        id: 'test-step-relay-block',
-        chainType: targetChain,
-        label: 'Relay block',
-        status: TransactionStatusEnum.NOT_STARTED
-      },
-      {
-        id: 'test-step-deliver-message-block',
-        chainType: targetChain,
-        label: 'Deliver message',
-        labelOnChain: '',
-        status: TransactionStatusEnum.NOT_STARTED
-      },
-      {
-        id: 'test-step-finalized-message',
-        chainType: targetChain,
-        label: 'Finalise message in target block',
-        labelOnChain: '',
-        status: TransactionStatusEnum.NOT_STARTED
-      },
-      {
-        id: 'test-step-confirm-delivery',
-        chainType: sourceChain,
-        label: 'Confirm delivery',
-        status: TransactionStatusEnum.NOT_STARTED
-      }
-    ]);
+    setSteps(createEmptySteps(sourceChain, targetChain));
   }, [sourceChain, targetChain]);
 
   return (

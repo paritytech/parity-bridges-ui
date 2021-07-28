@@ -161,7 +161,6 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
 };
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
-  console.log(action);
   switch (action.type) {
     case TransactionActionTypes.SET_ESTIMATED_FEE: {
       const { estimatedFeeError, estimatedFeeLoading } = action.payload;
@@ -238,12 +237,20 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return updateTransaction(state, action.payload);
     case TransactionActionTypes.SET_RECEIVER:
       return setReceiver(state, action.payload.receiverPayload);
-    case TransactionActionTypes.SET_TRANSACTION_RUNNING: {
+    case TransactionActionTypes.SET_TRANSACTION_RUNNING:
       return { ...state, transactionRunning: action.payload.transactionRunning };
+    case TransactionActionTypes.UPDATE_TRANSACTIONS_STATUS: {
+      const { evaluateTransactionStatusError, transactions, evaluatingTransactions } = action.payload;
+      return {
+        ...state,
+        transactions: transactions && !evaluateTransactionStatusError ? transactions : state.transactions,
+        evaluatingTransactions,
+        evaluateTransactionStatusError
+      };
     }
+
     case TransactionActionTypes.SET_SENDER_ACCOUNT:
       return { ...state, senderAccount: action.payload.senderAccount };
-
     default:
       throw new Error(`Unknown type: ${action.type}`);
   }

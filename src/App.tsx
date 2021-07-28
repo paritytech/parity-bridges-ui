@@ -48,25 +48,25 @@ function App() {
     <SourceTargetContextProvider connections={connections}>
       <KeyringContextProvider>
         <SubscriptionsContextProvider>
-          <ApiCallsContextProvider>
-            <AccountContextProvider>
-              <MessageContextProvider>
-                <SnackbarProvider>
-                  <TransactionContextProvider>
-                    <BrowserRouter>
-                      <Switch>
-                        <Route path={'/'}>
-                          <GUIContextProvider>
+          <GUIContextProvider>
+            <ApiCallsContextProvider>
+              <AccountContextProvider>
+                <MessageContextProvider>
+                  <SnackbarProvider>
+                    <TransactionContextProvider>
+                      <BrowserRouter>
+                        <Switch>
+                          <Route path={'/'}>
                             <Main />
-                          </GUIContextProvider>
-                        </Route>
-                      </Switch>
-                    </BrowserRouter>
-                  </TransactionContextProvider>
-                </SnackbarProvider>
-              </MessageContextProvider>
-            </AccountContextProvider>
-          </ApiCallsContextProvider>
+                          </Route>
+                        </Switch>
+                      </BrowserRouter>
+                    </TransactionContextProvider>
+                  </SnackbarProvider>
+                </MessageContextProvider>
+              </AccountContextProvider>
+            </ApiCallsContextProvider>
+          </GUIContextProvider>
         </SubscriptionsContextProvider>
       </KeyringContextProvider>
     </SourceTargetContextProvider>

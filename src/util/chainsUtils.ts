@@ -15,19 +15,13 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ChainSubscriptions } from '../types/subscriptionsTypes';
-import { SourceTargetState } from '../types/sourceTargetTypes';
 
 interface Input {
-  useSourceTarget: () => SourceTargetState;
+  currentSourceChain: string;
   sourceChain: string;
 }
 
-export function getChainSubscriptionsKey({ useSourceTarget, sourceChain }: Input) {
-  const {
-    sourceChainDetails: { chain: currentSourceChain }
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-  } = useSourceTarget();
-
+export function getChainSubscriptionsKey({ currentSourceChain, sourceChain }: Input) {
   const sourceChainsMatch = sourceChain === currentSourceChain;
 
   const sourceRole = sourceChainsMatch ? ChainSubscriptions.SOURCE : ChainSubscriptions.TARGET;

@@ -19,10 +19,28 @@ import { AccountActionCreators } from '../../actions/accountActions';
 import { useKeyringContext } from '../../contexts/KeyringContextProvider';
 import { AccountsActionType, AccountState } from '../../types/accountTypes';
 import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
+import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
+import useBalance from '../subscriptions/useBalance';
 
 const useAccountsContextSetUp = (accountState: AccountState, dispatchAccount: Dispatch<AccountsActionType>) => {
   const { keyringPairs, keyringPairsReady } = useKeyringContext();
   const { updateSenderAccountsInformation } = useApiCallsContext();
+
+  const {
+    targetChainDetails: {
+      apiConnection: { api: targetApi }
+    },
+    sourceChainDetails: {
+      apiConnection: { api: sourceApi }
+    }
+  } = useSourceTarget();
+
+  const accountBalance = useBalance(sourceApi, accountState.account?.address || '', true);
+  const companionBalance = useBalance(targetApi, accountState.companionAccount || '', true);
+
+  useEffect(() => {
+    dispatchAccount(AccountActionCreators.setSenderBalances(accountBalance, companionBalance));
+  }, [accountBalance, companionBalance, dispatchAccount]);
 
   useEffect(() => {
     if (keyringPairsReady && keyringPairs.length) {

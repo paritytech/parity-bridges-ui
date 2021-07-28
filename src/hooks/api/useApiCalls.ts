@@ -95,6 +95,7 @@ const useApiCalls = (): ApiCallsContextType => {
               TransactionActionCreators.createTransactionStatus({
                 block: null,
                 blockHash: null,
+                deliveryBlock: null,
                 id,
                 input: transferAmount,
                 messageNonce: null,
