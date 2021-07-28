@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Dispatch, useEffect } from 'react';
+import { Dispatch, useCallback, useEffect } from 'react';
 import BN from 'bn.js';
 import { AccountsActionType, AccountState } from '../../types/accountTypes';
 import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
@@ -50,48 +50,39 @@ export default function useSendersBalancesContext(
 
   const { updateSenderAccountsInformation } = useApiCallsContext();
 
-  useEffect(() => {
-    const { nextSourceBlockNumber, nextTargetBlockNumber } = nextBlockNumbers;
-    const currentBNSource = getBlockAsBN(currentSourceBlock);
-    const currentBNTarget = getBlockAsBN(currentTargetBlock);
-    if (currentBNSource.gte(nextSourceBlockNumber) && currentBNTarget.gte(nextTargetBlockNumber)) {
-      updateSenderAccountsInformation(dispatchAccount);
-      setNextBlockNumber({
-        nextSourceBlockNumber: convertToBNAndIncrease(currentSourceBlock),
-        nextTargetBlockNumber: convertToBNAndIncrease(currentTargetBlock)
-      });
+  const updateAccounts = useCallback(() => {
+    updateSenderAccountsInformation(dispatchAccount);
+    const nextSourceBlockNumber = convertToBNAndIncrease(currentSourceBlock);
+    const nextTargetBlockNumber = convertToBNAndIncrease(currentTargetBlock);
+    setNextBlockNumber({
+      nextSourceBlockNumber,
+      nextTargetBlockNumber
+    });
 
-      if (timerId) {
-        clearTimeout(timerId);
-        setTimerId(null);
-      }
+    // clear timer id if any
+    if (timerId) {
+      clearTimeout(timerId);
     }
+    // set new timer
+    const newTimerId = setTimeout(() => updateAccounts(), TIMER_DURATION);
+    setTimerId(newTimerId);
   }, [
+    dispatchAccount,
     currentSourceBlock,
     currentTargetBlock,
-    dispatchAccount,
-    nextBlockNumbers,
     setNextBlockNumber,
     setTimerId,
     timerId,
     updateSenderAccountsInformation
   ]);
 
+  const blocksReached =
+    getBlockAsBN(currentSourceBlock).gte(nextBlockNumbers.nextSourceBlockNumber) &&
+    getBlockAsBN(currentTargetBlock).gte(nextBlockNumbers.nextTargetBlockNumber);
+
   useEffect(() => {
-    if (!timerId) {
-      const id = setTimeout(() => {
-        updateSenderAccountsInformation(dispatchAccount);
-        const { nextSourceBlockNumber, nextTargetBlockNumber } = nextBlockNumbers;
-        const increasedSourceBlock = increaseBlock(nextSourceBlockNumber);
-        const increasedTargetBlock = increaseBlock(nextTargetBlockNumber);
-        setNextBlockNumber({
-          nextSourceBlockNumber: increasedSourceBlock,
-          nextTargetBlockNumber: increasedTargetBlock
-        });
-        clearTimeout(timerId!);
-        setTimerId(null);
-      }, TIMER_DURATION);
-      setTimerId(id);
+    if (blocksReached) {
+      updateAccounts();
     }
-  }, [dispatchAccount, nextBlockNumbers, setNextBlockNumber, setTimerId, timerId, updateSenderAccountsInformation]);
+  }, [blocksReached, updateAccounts, timerId]);
 }
