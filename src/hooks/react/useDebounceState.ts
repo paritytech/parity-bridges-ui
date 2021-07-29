@@ -19,7 +19,7 @@ import usePrevious from './usePrevious';
 import debounce from 'lodash/debounce';
 
 type ValueType = string | null;
-type Output = [ValueType, (value: ValueType) => void, ValueType];
+type Output = [ValueType, (event: React.ChangeEvent<HTMLInputElement>) => void, ValueType];
 
 interface Input {
   initialValue: ValueType;
@@ -35,7 +35,8 @@ export const useDebounceState = ({ initialValue, wait = 500, transformCallback, 
   const setDebouncedCallback = useMemo(() => debounce((value) => setDebounced(value), wait), [wait]);
 
   const setValueCallback = useCallback(
-    (value: ValueType) => {
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value;
       setValue(value);
       if (transformCallback) {
         const transformedValue = transformCallback(value);

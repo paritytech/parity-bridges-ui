@@ -14,9 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
-import React, { useCallback } from 'react';
+import React from 'react';
 import { TextField } from '@material-ui/core';
 import useDebounceState from '../hooks/react/useDebounceState';
 
@@ -53,14 +51,6 @@ export function DebouncedTextField({
 }: Props) {
   const [value, setValue] = useDebounceState({ initialValue, dispatchCallback });
 
-  const onChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const value = event.target.value;
-      setValue(value);
-    },
-    [setValue]
-  );
-
   return (
     <TextField
       id={id}
@@ -75,7 +65,7 @@ export function DebouncedTextField({
       helperText={helperText}
       InputProps={InputProps}
       rows={rows}
-      onChange={onChange}
+      onChange={setValue}
     />
   );
 }
