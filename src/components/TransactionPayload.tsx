@@ -63,14 +63,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const TransactionPayload = ({
-  tab,
-  transactionDisplayProps,
-  payloadHex,
-  transactionDisplayPayload,
-  type,
-  status
-}: Props) => {
+const TransactionPayload = ({ tab, payloadHex, transactionDisplayPayload, type, status }: Props) => {
   const classes = useStyles();
   const { estimatedFeeLoading } = useTransactionContext();
   if (tab === SwitchTabEnum.RECEIPT) {
@@ -78,7 +71,7 @@ const TransactionPayload = ({
   }
 
   return (
-    <Card elevation={transactionDisplayProps?.size === 'sm' ? 23 : 24} className={classes.card}>
+    <Card elevation={23} className={classes.card}>
       {payloadHex && <TransactionHeader type={type} status={status} />}
       {estimatedFeeLoading && (
         <div className={classes.loader}>

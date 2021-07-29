@@ -23,6 +23,7 @@ import { useSubscriptionsContext } from '../contexts/SubscriptionsContextProvide
 
 import useLoadingApi from '../hooks/connections/useLoadingApi';
 import { IconApiStatus } from './Icons';
+import { Web3Icon } from '.';
 
 // As this is placed as a child in the Material UI Select component, for some reason style components classes are not working.
 // This way to inject the styles works.
@@ -33,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: theme.spacing(0.5)
   },
   arrowIcon: {
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: theme.palette.background.default,
     position: 'absolute',
     top: 0,
     bottom: 0,
@@ -78,6 +79,7 @@ export const NetworkSides = () => {
         <div>
           <IconApiStatus className={classes.IconApiSvg} status={sourceReady} />
           <a target="_blank" rel="noreferrer" href={sourceChainDetails.polkadotjsUrl}>
+            <Web3Icon>{sourceChainDetails.chain}</Web3Icon>
             {sourceChainDetails.chain}
           </a>
         </div>

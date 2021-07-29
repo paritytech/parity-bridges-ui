@@ -15,37 +15,54 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React from 'react';
-import { Box, BoxProps } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Theme } from '@material-ui/core';
 
-interface Web3IconProps extends BoxProps {
+interface Web3IconStyleProps {
   color?: string;
   backgroundColor?: string;
+  size?: string;
+}
+interface Web3IconProps extends Web3IconStyleProps {
+  children: string;
 }
 
-const useStyles = makeStyles<Theme, Web3IconProps>((theme) => ({
-  background: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: theme.spacing(3),
-    height: theme.spacing(3),
-    marginRight: theme.spacing(0.25),
-    marginLeft: theme.spacing(0.25),
-    borderRadius: '50%',
-    backgroundColor: ({ backgroundColor }) => backgroundColor || 'transparent'
-  },
+const web3IconGlyphs = ['polkadot', 'kusama', 'kulupu', 'westend', 'statemine', 'rococo', 'substrate'];
+
+const useStyles = makeStyles<Theme, Web3IconStyleProps>((theme) => ({
   icon: {
-    color: ({ color }) => color || theme.palette.text.primary
+    display: 'inline-block',
+    position: 'relative',
+    zIndex: 2,
+    marginleft: ({ size }) => `calc(${size} * 0.5)`,
+    marginRight: ({ size }) => `calc(${size} * 0.5)`,
+    color: ({ color }) => color || theme.palette.text.primary,
+    fontFamily: theme.typography.subtitle1.fontFamily,
+    fontSize: ({ size }) => size,
+    textAlign: 'center',
+    '&:after': {
+      content: '" "',
+      position: 'absolute',
+      zIndex: -1,
+      display: 'block',
+      width: ({ size }) => `calc(${size} * 1.3)`,
+      height: ({ size }) => `calc(${size} * 1.3)`,
+      top: '-9999px',
+      bottom: '-9999px',
+      left: '-9999px',
+      right: '-9999px',
+      margin: 'auto',
+      borderRadius: '50%',
+      backgroundColor: ({ backgroundColor }) => backgroundColor || 'transparent'
+    }
   }
 }));
 
-export const Web3Icon = ({ color, backgroundColor, children }: Web3IconProps) => {
-  const classes = useStyles({ color, backgroundColor });
-  return (
-    <Box className={classes.background}>
-      <Box className={`Web3Icon ${classes.icon}`}>{children}</Box>
-    </Box>
-  );
+export const Web3Icon = ({ color, backgroundColor, size = '1em', children }: Web3IconProps) => {
+  const classes = useStyles({ color, backgroundColor, size });
+
+  if (web3IconGlyphs.indexOf(children.toLowerCase()) === -1) {
+    return <></>;
+  }
+  return <div className={`Web3Icon ${classes.icon}`}>{children}</div>;
 };
