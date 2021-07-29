@@ -14,223 +14,147 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { INCORRECT_FORMAT, GENERIC } from '../constants';
+import type { InterfaceTypes } from '@polkadot/types/types';
 import { TransactionActionTypes } from '../actions/transactionActions';
 import { TransactionDisplayPayload } from '../types/transactionTypes';
-
-import getReceiverAddress from '../util/getReceiverAddress';
-import { Payload, TransactionsActionType, TransactionState, ReceiverPayload } from '../types/transactionTypes';
-import { ChainState } from '../types/sourceTargetTypes';
+import {
+  updateTransaction,
+  isReadyToExecute,
+  setReceiver,
+  shouldCalculatePayloadFee
+} from '../util/transactions/reducer';
+import { TransactionsActionType, TransactionState } from '../types/transactionTypes';
 import logger from '../util/logger';
 import { evalUnits } from '../util/evalUnits';
 
-const updateTransaction = (state: TransactionState, payload: Payload): TransactionState => {
-  if (state.transactions) {
-    const newState = { ...state };
-    const { updatedValues, id } = payload;
-    newState.transactions = newState.transactions.map((stateTransaction) => {
-      const { id: transactionId } = stateTransaction;
-      if (transactionId === id) {
-        return {
-          ...stateTransaction,
-          ...updatedValues
-        };
-      }
-      return stateTransaction;
-    });
-    return newState;
-  }
-  return state;
-};
-
-const validateAccount = (receiver: string, sourceChainDetails: ChainState, targetChainDetails: ChainState) => {
-  try {
-    if (!receiver) {
-      return { formatFound: null, receiverAddress: null };
-    }
-    const { address, formatFound } = getReceiverAddress({
-      targetChainDetails,
-      sourceChainDetails,
-      receiverAddress: receiver
-    });
-
-    return { formatFound, receiverAddress: address };
-  } catch (e) {
-    logger.error(e.message);
-    if (e.message === INCORRECT_FORMAT) {
-      return { formatFound: e.message, receiverAddress: receiver };
-    }
-  }
-};
-
-const isReadyToExecute = (state: TransactionState): boolean => {
-  const { transactionRunning, receiverAddress, transferAmount, senderAccount } = state;
-  return Boolean(!transactionRunning && receiverAddress && transferAmount && senderAccount);
-};
-
-const setReceiver = (state: TransactionState, payload: ReceiverPayload): TransactionState => {
-  const { unformattedReceiverAddress, sourceChainDetails, targetChainDetails } = payload;
-  const transactionReadyToExecute = isReadyToExecute(state);
-  if (!unformattedReceiverAddress) {
-    return {
-      ...state,
-      addressValidationError: null,
-      showBalance: false,
-      unformattedReceiverAddress,
-      receiverAddress: null,
-      genericReceiverAccount: null,
-      formatFound: null,
-      transactionReadyToExecute
-    };
-  }
-
-  const { receiverAddress, formatFound } = validateAccount(
-    unformattedReceiverAddress,
-    sourceChainDetails,
-    targetChainDetails
-  )!;
-
-  const { chain: targetChain } = targetChainDetails;
-  const { chain: sourceChain } = sourceChainDetails;
-
-  if (formatFound === INCORRECT_FORMAT) {
-    return {
-      ...state,
-      addressValidationError: 'Invalid address',
-      showBalance: false,
-      unformattedReceiverAddress,
-      receiverAddress: null,
-      genericReceiverAccount: null,
-      formatFound,
-      transactionReadyToExecute: false
-    };
-  }
-
-  if (formatFound === GENERIC) {
-    return {
-      ...state,
-      unformattedReceiverAddress,
-      receiverAddress: null,
-      genericReceiverAccount: unformattedReceiverAddress,
-      addressValidationError: null,
-      showBalance: false,
-      formatFound,
-      transactionReadyToExecute: false
-    };
-  }
-
-  if (formatFound === targetChain) {
-    return {
-      ...state,
-      unformattedReceiverAddress,
-      receiverAddress,
-      genericReceiverAccount: null,
-      addressValidationError: null,
-      showBalance: true,
-      formatFound,
-      transactionReadyToExecute,
-      estimatedFeeLoading: Boolean(state.transferAmount)
-    };
-  }
-
-  if (formatFound === sourceChain) {
-    return {
-      ...state,
-      unformattedReceiverAddress,
-      receiverAddress: unformattedReceiverAddress,
-      derivedReceiverAccount: receiverAddress,
-      genericReceiverAccount: null,
-      addressValidationError: null,
-      showBalance: true,
-      formatFound,
-      transactionReadyToExecute,
-      estimatedFeeLoading: Boolean(state.transferAmount)
-    };
-  }
-
-  return {
-    ...state,
-    addressValidationError: `Unsupported address SS58 prefix: ${formatFound}`,
-    showBalance: false,
-    unformattedReceiverAddress,
-    receiverAddress: null,
-    genericReceiverAccount: null,
-    formatFound,
-    transactionReadyToExecute: false
-  };
-};
-
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
+  const transactionReadyToExecute = isReadyToExecute({ ...state, ...action.payload });
+
   switch (action.type) {
-    case TransactionActionTypes.SET_ESTIMATED_FEE: {
-      const { estimatedFeeError, estimatedFeeLoading } = action.payload;
+    case TransactionActionTypes.SET_PAYLOAD_ESTIMATED_FEE: {
+      const {
+        payloadEstimatedFeeError,
+        payloadEstimatedFee: { estimatedFee, payload },
+        payloadEstimatedFeeLoading
+      } = action.payload;
 
-      let estimatedFee = null;
-
-      if (
-        !estimatedFeeError &&
-        !estimatedFeeLoading &&
-        action.payload.estimatedFee &&
-        !state.estimatedFeeError &&
-        !state.transferAmountError
-      ) {
-        estimatedFee = action.payload.estimatedFee;
-      }
+      const readyToExecute = payloadEstimatedFeeLoading ? false : transactionReadyToExecute;
 
       return {
         ...state,
-        estimatedFee,
-        estimatedFeeError: estimatedFeeError,
-        estimatedFeeLoading: estimatedFeeLoading,
-        transactionReadyToExecute: estimatedFeeLoading ? false : isReadyToExecute(state) && estimatedFee
+        estimatedFee: !payloadEstimatedFeeError && transactionReadyToExecute ? estimatedFee : null,
+        payloadEstimatedFeeError,
+        payloadEstimatedFeeLoading,
+        payload: payloadEstimatedFeeError ? null : payload,
+        transactionReadyToExecute: readyToExecute,
+        shouldEvaluatePayloadEstimatedFee: false
+      };
+    }
+
+    case TransactionActionTypes.SET_BATCH_PAYLOAD_ESTIMATED_FEE: {
+      const { batchedTransactionState } = action.payload;
+
+      return {
+        ...state,
+        batchedTransactionState,
+        transactionReadyToExecute: Boolean(batchedTransactionState && state.estimatedFee),
+        shouldEvaluatePayloadEstimatedFee: false
       };
     }
 
     case TransactionActionTypes.SET_TRANSFER_AMOUNT: {
       const { transferAmount, chainDecimals } = action.payload;
       const [actualValue, message] = evalUnits(transferAmount, chainDecimals);
+      const shouldEvaluatePayloadEstimatedFee = shouldCalculatePayloadFee(state, { transferAmount: actualValue });
+
       return {
         ...state,
         transferAmount: actualValue || null,
         transferAmountError: message,
-        transactionReadyToExecute: false,
-        estimatedFeeLoading: Boolean(actualValue) && Boolean(state.receiverAddress),
-        estimatedFee: null
+        transactionReadyToExecute,
+        estimatedFee: null,
+        shouldEvaluatePayloadEstimatedFee
       };
     }
-    case TransactionActionTypes.SET_PAYLOAD: {
-      const { payloadError, payload } = action.payload;
+    case TransactionActionTypes.SET_REMARK_INPUT: {
+      const { remarkInput } = action.payload;
+      const shouldEvaluatePayloadEstimatedFee = shouldCalculatePayloadFee(state, { remarkInput });
+
       return {
         ...state,
-        payload: payloadError ? null : payload,
-        payloadError,
-        estimatedFee: null
+        remarkInput: remarkInput,
+        transactionReadyToExecute,
+        shouldEvaluatePayloadEstimatedFee,
+        estimatedFee: remarkInput ? state.estimatedFee : null
       };
     }
+    case TransactionActionTypes.SET_CUSTOM_CALL_INPUT: {
+      const { customCallInput, createType, targetChain } = action.payload;
+      let customCallError = null;
+      let shouldEvaluatePayloadEstimatedFee = false;
+      try {
+        createType(targetChain as keyof InterfaceTypes, 'Call', customCallInput);
+        shouldEvaluatePayloadEstimatedFee = shouldCalculatePayloadFee(state, { customCallInput });
+      } catch (e) {
+        customCallError = e;
+        logger.error('Wrong call', e);
+      }
+
+      return {
+        ...state,
+        customCallInput,
+        transactionReadyToExecute: transactionReadyToExecute && !customCallError,
+        estimatedFee: customCallError || !customCallInput ? null : state.estimatedFee,
+        customCallError,
+        shouldEvaluatePayloadEstimatedFee
+      };
+    }
+    case TransactionActionTypes.SET_WEIGHT_INPUT: {
+      const { weightInput } = action.payload;
+      const shouldEvaluatePayloadEstimatedFee = shouldCalculatePayloadFee(state, { weightInput });
+
+      return {
+        ...state,
+        weightInput: weightInput,
+        transactionReadyToExecute: transactionReadyToExecute && !state.customCallError,
+        shouldEvaluatePayloadEstimatedFee,
+        estimatedFee: weightInput ? state.estimatedFee : null
+      };
+    }
+
     case TransactionActionTypes.RESET:
       return {
         ...state,
         derivedReceiverAccount: null,
         estimatedFee: null,
-        estimatedFeeError: null,
+        payloadEstimatedFeeError: null,
+        shouldEvaluatePayloadEstimatedFee: false,
+        batchedTransactionState: null,
         genericReceiverAccount: null,
         receiverAddress: null,
         transferAmount: null,
         transferAmountError: null,
+        remarkInput: '',
+        customCallInput: '',
+        weightInput: '',
         unformattedReceiverAddress: null,
         addressValidationError: null,
         payload: null,
-        payloadError: null,
         transactionDisplayPayload: {} as TransactionDisplayPayload,
         showBalance: false,
         formatFound: null
       };
-    case TransactionActionTypes.SET_RECEIVER_ADDRESS:
+    case TransactionActionTypes.SET_RECEIVER_ADDRESS: {
+      const { receiverAddress } = action.payload;
+      const shouldEvaluatePayloadEstimatedFee = shouldCalculatePayloadFee(state, { receiverAddress });
       return {
         ...state,
-        receiverAddress: action.payload.receiverAddress,
-        transactionReadyToExecute: isReadyToExecute(state)
+        receiverAddress,
+        transactionReadyToExecute,
+        shouldEvaluatePayloadEstimatedFee
       };
+    }
+
     case TransactionActionTypes.CREATE_TRANSACTION_STATUS:
       return { ...state, transactions: [action.payload.initialTransaction, ...state.transactions] };
     case TransactionActionTypes.UPDATE_CURRENT_TRANSACTION_STATUS:
@@ -238,7 +162,21 @@ export default function transactionReducer(state: TransactionState, action: Tran
     case TransactionActionTypes.SET_RECEIVER:
       return setReceiver(state, action.payload.receiverPayload);
     case TransactionActionTypes.SET_TRANSACTION_RUNNING:
-      return { ...state, transactionRunning: action.payload.transactionRunning };
+      return { ...state, transactionRunning: action.payload.transactionRunning, transactionReadyToExecute: false };
+    case TransactionActionTypes.SET_SENDER_AND_ACTION: {
+      const { senderAccount, action: transactionType } = action.payload;
+      const shouldEvaluatePayloadEstimatedFee = shouldCalculatePayloadFee(state, {
+        senderAccount,
+        action: transactionType
+      });
+      return {
+        ...state,
+        senderAccount: senderAccount,
+        action: transactionType,
+        shouldEvaluatePayloadEstimatedFee
+      };
+    }
+
     case TransactionActionTypes.UPDATE_TRANSACTIONS_STATUS: {
       const { evaluateTransactionStatusError, transactions, evaluatingTransactions } = action.payload;
       return {
@@ -248,9 +186,6 @@ export default function transactionReducer(state: TransactionState, action: Tran
         evaluateTransactionStatusError
       };
     }
-
-    case TransactionActionTypes.SET_SENDER_ACCOUNT:
-      return { ...state, senderAccount: action.payload.senderAccount };
     default:
       throw new Error(`Unknown type: ${action.type}`);
   }

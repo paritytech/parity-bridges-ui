@@ -14,28 +14,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { InterfaceTypes } from '@polkadot/types/types';
-
-import React, { useState, useCallback } from 'react';
-import { Box, TextField } from '@material-ui/core';
+import React, { useCallback } from 'react';
+import { Box } from '@material-ui/core';
 import { ButtonSubmit } from '../components';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useSendMessage from '../hooks/chain/useSendMessage';
 import useApiCalls from '../hooks/api/useApiCalls';
 import { TransactionTypes } from '../types/transactionTypes';
 import { EstimatedFee } from './EstimatedFee';
-import useDebounceState from '../hooks/react/useDebounceState';
-import logger from '../util/logger';
+import { TransactionActionCreators } from '../actions/transactionActions';
+import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
+import { DebouncedTextField } from './DebouncedTextField';
 
 const initialValue = '0x';
 
 const CustomCall = () => {
-  const [decoded, setDecoded] = useState<string | null>();
+  const { dispatchTransaction } = useUpdateTransactionContext();
+  const { customCallInput, weightInput, transactionReadyToExecute, customCallError } = useTransactionContext();
 
-  const [currentCustomCallInput, setCustomCallInput, customCallDebouncedInput] = useDebounceState({ initialValue });
-  const [currentWeightInput, setWeightInput, weightDebouncedInput] = useDebounceState({ initialValue: '' });
-
-  const [error, setError] = useState<string | null>();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
   const {
@@ -43,52 +39,41 @@ const CustomCall = () => {
   } = useSourceTarget();
   const { createType } = useApiCalls();
 
-  const { isButtonDisabled, sendLaneMessage } = useSendMessage({
-    input: customCallDebouncedInput,
-    isValidCall: Boolean(decoded),
+  const sendLaneMessage = useSendMessage({
+    input: customCallInput,
     type: TransactionTypes.CUSTOM,
-    weightInput: weightDebouncedInput
+    weightInput
   });
+
   const onChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const input = event.target.value;
-      try {
-        setError(null);
-        setCustomCallInput(input);
-        const call = createType(targetChain as keyof InterfaceTypes, 'Call', input);
-        setDecoded(JSON.stringify(call, null, 4));
-      } catch (e) {
-        logger.error('Wrong call', e);
-        setError('Wrong call provided');
-        setDecoded(null);
-      }
+    (value: string | null) => {
+      dispatchTransaction(TransactionActionCreators.setCustomCallInput(value, createType, targetChain));
     },
-    [createType, setCustomCallInput, targetChain]
+    [createType, dispatchTransaction, targetChain]
   );
 
   const onWeightChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setWeightInput(event.target.value);
+    (value: string | null) => {
+      dispatchTransaction(TransactionActionCreators.setWeightInput(value));
     },
-    [setWeightInput]
+    [dispatchTransaction]
   );
 
-  // To extract estimated fee logic to specific component. Issue #171
   return (
     <>
       <Box mb={2}>
-        <TextField
-          onChange={onChange}
-          value={currentCustomCallInput}
+        <DebouncedTextField
+          dispatchCallback={onChange}
+          initialValue="0x"
           placeholder={initialValue}
           label="Call"
           variant="outlined"
           fullWidth
-          helperText={error && `${error}`}
+          helperText={customCallError && `${customCallError}`}
         />
       </Box>
-      <TextField onChange={onWeightChange} value={currentWeightInput} label="Weight" variant="outlined" fullWidth />
-      <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
+      <DebouncedTextField dispatchCallback={onWeightChange} label="Weight" variant="outlined" fullWidth />
+      <ButtonSubmit disabled={!transactionReadyToExecute} onClick={sendLaneMessage}>
         Send custom call from {sourceChainDetails.chain} to {targetChainDetails.chain}
       </ButtonSubmit>
       <EstimatedFee />

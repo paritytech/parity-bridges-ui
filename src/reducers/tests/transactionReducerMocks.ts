@@ -15,15 +15,17 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import { TransactionDisplayPayload } from '../../types/transactionTypes';
+import { TransactionDisplayPayload, TransactionState, TransactionTypes } from '../../types/transactionTypes';
 
-export const state = {
+export const state: TransactionState = {
   senderAccount: null,
   transferAmount: null,
+  remarkInput: '0x',
+  customCallInput: '0x',
+  customCallError: null,
+  weightInput: '',
   transferAmountError: null,
   estimatedFee: null,
-  estimatedFeeError: null,
-  estimatedFeeLoading: false,
   receiverAddress: null,
   unformattedReceiverAddress: null,
   derivedReceiverAccount: null,
@@ -33,12 +35,17 @@ export const state = {
   transactionRunning: false,
   transactionReadyToExecute: false,
   evaluateTransactionStatusError: null,
+  evaluatingTransactions: false,
   addressValidationError: null,
   showBalance: false,
   formatFound: null,
   payload: null,
-  payloadError: null,
-  payloadHex: null
+  payloadHex: null,
+  shouldEvaluatePayloadEstimatedFee: false,
+  payloadEstimatedFeeError: null,
+  payloadEstimatedFeeLoading: false,
+  batchedTransactionState: null,
+  action: TransactionTypes.TRANSFER
 };
 
 export const apiConnection = {

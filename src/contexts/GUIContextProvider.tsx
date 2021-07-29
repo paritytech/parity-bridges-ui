@@ -20,7 +20,6 @@ import useLocalStorage from '../hooks/transactions/useLocalStorage';
 import { TransactionTypes } from '../types/transactionTypes';
 import { light } from '../components';
 import { MenuActionItemsProps } from '../types/guiTypes';
-
 interface DrawerContextProps {
   drawer: string;
   setDrawer: Dispatch<React.SetStateAction<string>>;

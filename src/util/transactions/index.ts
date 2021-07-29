@@ -14,22 +14,27 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import { hexToU8a, isHex, u8aToHex } from '@polkadot/util';
 import BN from 'bn.js';
 import { ApiPromise } from '@polkadot/api';
 import {
   TransactionStatusType,
   TransactionStatusEnum,
   Payload,
-  TransactionDisplayPayload
-} from '../types/transactionTypes';
-import shortenItem from '../util/shortenItem';
-import { Subscriptions } from '../types/subscriptionsTypes';
+  TransactionDisplayPayload,
+  TransactionTypes,
+  TransactionState
+} from '../../types/transactionTypes';
+import shortenItem from '../shortenItem';
+import { Subscriptions } from '../../types/subscriptionsTypes';
 import { encodeAddress } from '@polkadot/util-crypto';
-import { SourceTargetState } from '../types/sourceTargetTypes';
-import { MessageActionsCreators } from '../actions/messageActions';
-import { getSubstrateDynamicNames } from './getSubstrateDynamicNames';
+import { SourceTargetState } from '../../types/sourceTargetTypes';
+import { MessageActionsCreators } from '../../actions/messageActions';
+import { getSubstrateDynamicNames } from '../getSubstrateDynamicNames';
 import isEmpty from 'lodash/isEmpty';
 import type { InterfaceTypes } from '@polkadot/types/types';
+import logger from '../logger';
+import { Account } from '../../types/accountTypes';
 
 export function isTransactionCompleted(transaction: TransactionStatusType): boolean {
   return transaction.status === TransactionStatusEnum.COMPLETED;
@@ -77,6 +82,55 @@ export function getTransactionDisplayPayload({
   return { transactionDisplayPayload, payloadHex };
 }
 
+interface TransactionCallWeightInput {
+  action: TransactionTypes;
+  account: Account;
+  targetApi: ApiPromise;
+  transactionState: TransactionState;
+}
+
+export async function getTransactionCallWeight({
+  action,
+  account,
+  targetApi,
+  transactionState
+}: TransactionCallWeightInput) {
+  let weight: number = 0;
+  let call: Uint8Array | null = null;
+  const { receiverAddress, transferAmount, remarkInput, customCallInput, weightInput } = transactionState;
+
+  if (account) {
+    switch (action) {
+      case TransactionTypes.REMARK:
+        call = (await targetApi.tx.system.remark(remarkInput)).toU8a();
+        // TODO [#121] Figure out what the extra bytes are about
+        call = call.slice(2);
+        logger.info(`system::remark: ${u8aToHex(call)}`);
+        weight = (await targetApi.tx.system.remark(remarkInput).paymentInfo(account)).weight.toNumber();
+        break;
+      case TransactionTypes.TRANSFER:
+        if (receiverAddress) {
+          call = (await targetApi.tx.balances.transfer(receiverAddress, transferAmount || 0)).toU8a();
+          // TODO [#121] Figure out what the extra bytes are about
+          call = call.slice(2);
+          logger.info(`balances::transfer: ${u8aToHex(call)}`);
+          weight = (
+            await targetApi.tx.balances.transfer(receiverAddress, transferAmount || 0).paymentInfo(account)
+          ).weight.toNumber();
+        }
+        break;
+      case TransactionTypes.CUSTOM:
+        if (customCallInput) {
+          call = isHex(customCallInput) ? hexToU8a(customCallInput.toString()) : null;
+          weight = parseInt(weightInput!);
+        }
+        break;
+      default:
+        throw new Error(`Unknown type: ${action}`);
+    }
+  }
+  return { call, weight };
+}
 const stepEvaluator = (transactionValue: string | number | null, chainValue: string | number | null): boolean => {
   if (!transactionValue || !chainValue) return false;
 

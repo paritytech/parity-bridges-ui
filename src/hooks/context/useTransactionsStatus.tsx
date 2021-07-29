@@ -29,7 +29,7 @@ import { TransactionActionCreators } from '../../actions/transactionActions';
 import isEqual from 'lodash/isEqual';
 import usePrevious from '../react/usePrevious';
 import { genericCall } from '../../util/apiUtlis';
-import { handleTransactionUpdates } from '../../util/transactionUtils';
+import { handleTransactionUpdates } from '../../util/transactions/';
 
 export default function useTransactionsStatus(
   transactions: TransactionStatusType[],

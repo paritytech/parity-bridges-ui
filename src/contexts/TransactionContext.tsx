@@ -17,11 +17,17 @@
 import React, { useContext, useReducer, useEffect } from 'react';
 import useTransactionsStatus from '../hooks/context/useTransactionsStatus';
 import transactionReducer from '../reducers/transactionReducer';
-import { TransactionState, TransactionsActionType, TransactionDisplayPayload } from '../types/transactionTypes';
 import { TransactionActionCreators } from '../actions/transactionActions';
+import useEstimatedFeePayload from '../hooks/transactions/useEstimatedFeePayload';
+import useResetTransactionState from '../hooks/transactions/useResetTransactionState';
+import {
+  TransactionState,
+  TransactionsActionType,
+  TransactionDisplayPayload,
+  TransactionTypes
+} from '../types/transactionTypes';
 import { useAccountContext } from './AccountContextProvider';
 import { useGUIContext } from './GUIContextProvider';
-import useResetTransactionState from '../hooks/transactions/useResetTransactionState';
 
 interface TransactionContextProviderProps {
   children: React.ReactElement;
@@ -52,10 +58,12 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
   const [transactionsState, dispatchTransaction] = useReducer(transactionReducer, {
     senderAccount: null,
     transferAmount: null,
+    remarkInput: '0x',
+    customCallInput: '0x',
+    customCallError: null,
+    weightInput: '',
     transferAmountError: null,
     estimatedFee: null,
-    estimatedFeeError: null,
-    estimatedFeeLoading: false,
     receiverAddress: null,
     unformattedReceiverAddress: null,
     derivedReceiverAccount: null,
@@ -70,17 +78,24 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     showBalance: false,
     formatFound: null,
     payload: null,
-    payloadError: null,
-    payloadHex: null
+    payloadHex: null,
+    shouldEvaluatePayloadEstimatedFee: false,
+    payloadEstimatedFeeError: null,
+    payloadEstimatedFeeLoading: false,
+    batchedTransactionState: null,
+    action: TransactionTypes.TRANSFER
   });
 
   useResetTransactionState(action, dispatchTransaction);
 
+  useEstimatedFeePayload(transactionsState, dispatchTransaction);
   useTransactionsStatus(transactionsState.transactions, transactionsState.evaluatingTransactions, dispatchTransaction);
 
   useEffect((): void => {
-    dispatchTransaction(TransactionActionCreators.setSenderAccount(account ? account.address : null));
-  }, [account, dispatchTransaction]);
+    dispatchTransaction(
+      TransactionActionCreators.setSenderAndAction({ senderAccount: account ? account.address : null, action })
+    );
+  }, [account, action]);
 
   return (
     <TransactionContext.Provider value={transactionsState}>

@@ -42,7 +42,7 @@ export enum SwitchTabEnum {
 export interface TransactionPayload {
   call: Uint8Array;
   origin: {
-    SourceAccount: string;
+    SourceAccount: Uint8Array;
   };
   spec_version: number;
   weight: number;
@@ -68,11 +68,13 @@ export interface TransactionStatusType extends UpdatedTransactionStatusType {
 
 export interface TransactionState {
   senderAccount: string | null;
+  remarkInput: string;
+  customCallInput: string;
+  customCallError: string | null;
+  weightInput: string | null;
   transferAmount: BN | null;
   transferAmountError: string | null;
   estimatedFee: string | null;
-  estimatedFeeError: string | null;
-  estimatedFeeLoading: boolean;
   receiverAddress: string | null;
   unformattedReceiverAddress: string | null;
   derivedReceiverAccount: string | null;
@@ -87,8 +89,12 @@ export interface TransactionState {
   showBalance: boolean;
   formatFound: string | null;
   payload: TransactionPayload | null;
-  payloadError: string | null;
   payloadHex: string | null;
+  shouldEvaluatePayloadEstimatedFee: boolean;
+  payloadEstimatedFeeError: string | null;
+  payloadEstimatedFeeLoading: boolean;
+  batchedTransactionState: TransactionState | null;
+  action: TransactionTypes;
 }
 
 export type TransactionsActionType = { type: TransactionActionTypes; payload: Payload };
@@ -121,3 +127,8 @@ export interface ReceiverPayload {
   sourceChainDetails: ChainState;
   targetChainDetails: ChainState;
 }
+
+export type PayloadEstimatedFee = {
+  payload: TransactionPayload | null;
+  estimatedFee: string | null;
+};
