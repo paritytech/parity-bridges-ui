@@ -69,7 +69,9 @@ function Main() {
     <>
       <BoxSidebar>
         <div>
-          <Typography variant="button">Bridges UI</Typography>
+          <Typography variant="button" color="secondary">
+            Bridges UI
+          </Typography>
           <NetworkSides />
           <BridgedLocalWrapper blurred>
             <NetworkStats />

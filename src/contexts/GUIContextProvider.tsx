@@ -15,7 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React, { useContext, useState, Dispatch } from 'react';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core';
+import { createMuiTheme, CssBaseline, ThemeProvider } from '@material-ui/core';
 import useLocalStorage from '../hooks/transactions/useLocalStorage';
 import { TransactionTypes } from '../types/transactionTypes';
 import { light } from '../components';
@@ -68,6 +68,7 @@ export function GUIContextProvider({ children }: GUIContextProviderProps): React
 
   return (
     <ThemeProvider theme={createMuiTheme(light)}>
+      <CssBaseline />
       <DrawerContext.Provider value={value}>{children}</DrawerContext.Provider>
     </ThemeProvider>
   );

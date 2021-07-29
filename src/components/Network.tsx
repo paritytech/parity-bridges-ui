@@ -15,7 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React from 'react';
-import { Box, Divider, IconButton, Typography } from '@material-ui/core';
+import { Box, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
@@ -23,6 +23,7 @@ import { useSubscriptionsContext } from '../contexts/SubscriptionsContextProvide
 
 import useLoadingApi from '../hooks/connections/useLoadingApi';
 import { IconApiStatus } from './Icons';
+import { Web3Icon } from '.';
 import BridgedLocalWrapper from './BridgedLocalWrapper';
 
 // As this is placed as a child in the Material UI Select component, for some reason style components classes are not working.
@@ -31,18 +32,19 @@ const useStyles = makeStyles((theme) => ({
   main: {
     position: 'relative',
     border: `1px solid ${theme.palette.divider}`,
-    borderRadius: theme.spacing(0.5),
-    '& .MuiIconButton-root': {
-      backgroundColor: theme.palette.background.paper,
-      position: 'absolute',
-      top: 0,
-      bottom: 0,
-      right: theme.spacing(-1.5),
-      width: theme.spacing(3),
-      height: theme.spacing(3),
-      margin: 'auto',
-      border: `1px solid ${theme.palette.divider}`
-    }
+    borderRadius: theme.spacing(0.5)
+  },
+  arrowIcon: {
+    backgroundColor: theme.palette.background.default,
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    right: theme.spacing(-1),
+    margin: 'auto',
+    width: theme.spacing(2),
+    height: theme.spacing(2),
+    borderRadius: theme.spacing(2),
+    color: theme.palette.secondary.main
   },
   statsEntry: {
     display: 'flex',
@@ -52,11 +54,16 @@ const useStyles = makeStyles((theme) => ({
     fontSize: theme.typography.subtitle2.fontSize,
     '& span': {
       ...theme.typography.subtitle2
+    },
+    '& a': {
+      ...theme.typography.h4,
+      '&:hover': {
+        color: theme.palette.common.black
+      }
     }
   },
-  svg: {
-    marginBottom: '0.2em',
-    fontSize: '0.5em',
+  IconApiSvg: {
+    fontSize: '1em',
     marginRight: theme.spacing()
   }
 }));
@@ -70,26 +77,25 @@ export const NetworkSides = () => {
   return (
     <Box marginY={2} className={classes.main}>
       <Box p={1} className={classes.statsEntry}>
-        <Typography variant="h4">
-          <IconApiStatus className={classes.svg} status={sourceReady} />
+        <div>
+          <IconApiStatus className={classes.IconApiSvg} status={sourceReady} />
           <a target="_blank" rel="noreferrer" href={sourceChainDetails.polkadotjsUrl}>
+            <Web3Icon>{sourceChainDetails.chain}</Web3Icon>
             {sourceChainDetails.chain}
           </a>
-        </Typography>
+        </div>
         <span># {sourceSubscriptions.bestBlock}</span>
       </Box>
       <Divider />
-      <IconButton size="small">
-        <ArrowDownwardIcon fontSize="small" />
-      </IconButton>
+      <ArrowDownwardIcon className={classes.arrowIcon} />
       <BridgedLocalWrapper blurred>
         <Box p={1} className={classes.statsEntry}>
-          <Typography variant="h4">
-            <IconApiStatus className={classes.svg} status={targetReady} />
+          <div>
+            <IconApiStatus className={classes.IconApiSvg} status={targetReady} />
             <a target="_blank" rel="noreferrer" href={targetChainDetails.polkadotjsUrl}>
               {targetChainDetails.chain}
             </a>
-          </Typography>
+          </div>
           <span style={{ opacity: 0.4 }}># {targetSubscriptions.bestBlock}</span>
         </Box>
       </BridgedLocalWrapper>
