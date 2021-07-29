@@ -179,7 +179,7 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
       showBalance: true,
       formatFound,
       transactionReadyToExecute,
-      payloadEstimatedFeeLoading: Boolean(state.transferAmount),
+      // payloadEstimatedFeeLoading: Boolean(state.transferAmount),
       shouldEvaluatePayloadEstimatedFee
     };
   }

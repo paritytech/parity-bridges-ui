@@ -29,7 +29,7 @@ describe('transactionReducer', () => {
       targetChainDetails
     };
 
-    it('should return the according transaction state for a companion address and its corresponding derived account.', () => {
+    it('should return the according transaction state for a companion address and its corresponding companion account.', () => {
       payload.unformattedReceiverAddress = '5rERgaT1Z8nM3et2epA5i1VtEBfp5wkhwHtVE8HK7BRbjAH2';
       const action = TransactionActionCreators.setReceiver(payload);
       const result = transactionReducer(state, action);
@@ -39,7 +39,11 @@ describe('transactionReducer', () => {
         receiverAddress: '5rERgaT1Z8nM3et2epA5i1VtEBfp5wkhwHtVE8HK7BRbjAH2',
         unformattedReceiverAddress: '5rERgaT1Z8nM3et2epA5i1VtEBfp5wkhwHtVE8HK7BRbjAH2',
         showBalance: true,
-        formatFound: 'chain1'
+        formatFound: 'chain1',
+        transactionReadyToExecute: false,
+        payloadEstimatedFeeLoading: false,
+        shouldEvaluatePayloadEstimatedFee: false,
+        estimatedFee: null
       });
     });
 
@@ -52,7 +56,9 @@ describe('transactionReducer', () => {
         receiverAddress: '74GNQjmkcfstRftSQPJgMREchqHM56EvAUXRc266cZ1NYVW5',
         unformattedReceiverAddress: '74GNQjmkcfstRftSQPJgMREchqHM56EvAUXRc266cZ1NYVW5',
         showBalance: true,
-        formatFound: 'chain2'
+        formatFound: 'chain2',
+        transactionReadyToExecute: false,
+        shouldEvaluatePayloadEstimatedFee: false
       });
     });
 
@@ -64,7 +70,10 @@ describe('transactionReducer', () => {
         ...state,
         genericReceiverAccount: '5H3ZryLmpNwrochemdVFTq9WMJW39NCo5HWFEwRtjbVtrThD',
         unformattedReceiverAddress: '5H3ZryLmpNwrochemdVFTq9WMJW39NCo5HWFEwRtjbVtrThD',
-        formatFound: 'GENERIC'
+        formatFound: 'GENERIC',
+        transactionReadyToExecute: false,
+        shouldEvaluatePayloadEstimatedFee: false,
+        estimatedFee: null
       });
     });
 
@@ -76,7 +85,9 @@ describe('transactionReducer', () => {
         ...state,
         unformattedReceiverAddress: 'invalid',
         addressValidationError: 'Invalid address',
-        formatFound: 'INCORRECT_FORMAT'
+        formatFound: 'INCORRECT_FORMAT',
+        transactionReadyToExecute: false,
+        shouldEvaluatePayloadEstimatedFee: false
       });
     });
 
@@ -88,7 +99,9 @@ describe('transactionReducer', () => {
         ...state,
         unformattedReceiverAddress: 'tH95Ew4kVD9VcwsyXaSdC74Noe3H8o6fJfnKhZezXHKHEcs',
         addressValidationError: 'Unsupported address SS58 prefix: 8',
-        formatFound: 8
+        formatFound: 8,
+        transactionReadyToExecute: false,
+        shouldEvaluatePayloadEstimatedFee: false
       });
     });
   });
