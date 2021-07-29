@@ -44,6 +44,7 @@ export const state: TransactionState = {
   shouldEvaluatePayloadEstimatedFee: false,
   payloadEstimatedFeeError: null,
   payloadEstimatedFeeLoading: false,
+  batchedTransactionState: null,
   action: TransactionTypes.TRANSFER
 };
 

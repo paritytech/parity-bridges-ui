@@ -28,6 +28,7 @@ import { genericCall } from '../../util/apiUtlis';
 import { PayloadEstimatedFee, TransactionsActionType, TransactionState } from '../../types/transactionTypes';
 import { getTransactionCallWeight } from '../../util/transactions/';
 import { useGUIContext } from '../../contexts/GUIContextProvider';
+import usePrevious from '../react/usePrevious';
 
 const emptyData = { payload: null, estimatedFee: null } as PayloadEstimatedFee;
 
@@ -48,6 +49,7 @@ export const useEstimatedFeePayload = (
   const { account } = useAccountContext();
   const { action } = useGUIContext();
   const { estimatedFeeMethodName } = getSubstrateDynamicNames(targetChain);
+  const previousPayloadEstimatedFeeLoading = usePrevious(transactionState.payloadEstimatedFeeLoading);
 
   const dispatch = useCallback(
     (error: string | null, data: PayloadEstimatedFee | null, loading: boolean) =>
@@ -55,61 +57,81 @@ export const useEstimatedFeePayload = (
     [dispatchTransaction]
   );
 
-  const calculateFeeAndPayload = useCallback(async () => {
-    const { call, weight } = await getTransactionCallWeight({
-      action,
-      account,
-      targetApi,
-      transactionState
-    });
+  const calculateFeeAndPayload = useCallback(
+    async (currentTransactionState: TransactionState) => {
+      const { call, weight } = await getTransactionCallWeight({
+        action,
+        account,
+        targetApi,
+        transactionState: currentTransactionState
+      });
 
-    if (!call || !weight) {
-      return emptyData;
-    }
+      if (!call || !weight) {
+        return emptyData;
+      }
 
-    const payload = {
-      call: compactAddLength(call!),
-      origin: {
-        SourceAccount: account!.addressRaw
-      },
-      spec_version: targetApi.consts.system.version.specVersion.toNumber(),
-      weight
-    };
+      const payload = {
+        call: compactAddLength(call!),
+        origin: {
+          SourceAccount: account!.addressRaw
+        },
+        spec_version: targetApi.consts.system.version.specVersion.toNumber(),
+        weight
+      };
 
-    const payloadType = createType(sourceChain as keyof InterfaceTypes, 'OutboundPayload', payload);
-    logger.info(`OutboundPayload: ${JSON.stringify(payload)}`);
-    logger.info(`OutboundPayload.toHex(): ${payloadType.toHex()}`);
-    const messageFeeType = createType(sourceChain as keyof InterfaceTypes, 'MessageFeeData', {
-      lane_id: laneId,
-      payload: payloadType.toHex()
-    });
+      const payloadType = createType(sourceChain as keyof InterfaceTypes, 'OutboundPayload', payload);
+      logger.info(`OutboundPayload: ${JSON.stringify(payload)}`);
+      logger.info(`OutboundPayload.toHex(): ${payloadType.toHex()}`);
+      const messageFeeType = createType(sourceChain as keyof InterfaceTypes, 'MessageFeeData', {
+        lane_id: laneId,
+        payload: payloadType.toHex()
+      });
 
-    const estimatedFeeCall = await stateCall(sourceChain, estimatedFeeMethodName, messageFeeType.toHex());
+      const estimatedFeeCall = await stateCall(sourceChain, estimatedFeeMethodName, messageFeeType.toHex());
 
-    const estimatedFeeType = createType(sourceChain as keyof InterfaceTypes, 'Option<Balance>', estimatedFeeCall);
-    const estimatedFee = estimatedFeeType.toString();
-    return { estimatedFee, payload };
-  }, [
-    account,
-    action,
-    createType,
-    estimatedFeeMethodName,
-    laneId,
-    sourceChain,
-    stateCall,
-    targetApi,
-    transactionState
-  ]);
+      const estimatedFeeType = createType(sourceChain as keyof InterfaceTypes, 'Option<Balance>', estimatedFeeCall);
+      const estimatedFee = estimatedFeeType.toString();
+      return { estimatedFee, payload };
+    },
+    [account, action, createType, estimatedFeeMethodName, laneId, sourceChain, stateCall, targetApi]
+  );
 
   useEffect(() => {
-    if (transactionState.shouldEvaluatePayloadEstimatedFee) {
+    const { shouldEvaluatePayloadEstimatedFee, payloadEstimatedFeeLoading } = transactionState;
+
+    if (shouldEvaluatePayloadEstimatedFee && payloadEstimatedFeeLoading) {
+      logger.info(
+        'Transaction information changed while estimated fee is being calculating. Batching the new calculation.'
+      );
+      dispatchTransaction(TransactionActionCreators.setBatchedEvaluationPayloadEstimatedFee(transactionState));
+    }
+    if (shouldEvaluatePayloadEstimatedFee && !payloadEstimatedFeeLoading) {
       genericCall({
-        call: calculateFeeAndPayload,
+        call: () => calculateFeeAndPayload(transactionState),
         dispatch,
         emptyData
       });
     }
-  }, [account, calculateFeeAndPayload, dispatch, transactionState.shouldEvaluatePayloadEstimatedFee]);
+  }, [calculateFeeAndPayload, dispatch, dispatchTransaction, transactionState]);
+
+  useEffect(() => {
+    const { batchedTransactionState, payloadEstimatedFeeLoading } = transactionState;
+    if (previousPayloadEstimatedFeeLoading && !payloadEstimatedFeeLoading && batchedTransactionState) {
+      genericCall({
+        call: () => calculateFeeAndPayload(batchedTransactionState),
+        dispatch,
+        emptyData
+      });
+      dispatchTransaction(TransactionActionCreators.setBatchedEvaluationPayloadEstimatedFee(null));
+    }
+  }, [
+    account,
+    calculateFeeAndPayload,
+    dispatch,
+    dispatchTransaction,
+    previousPayloadEstimatedFeeLoading,
+    transactionState
+  ]);
 };
 
 export default useEstimatedFeePayload;

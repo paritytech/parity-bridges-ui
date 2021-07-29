@@ -82,6 +82,7 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     shouldEvaluatePayloadEstimatedFee: false,
     payloadEstimatedFeeError: null,
     payloadEstimatedFeeLoading: false,
+    batchedTransactionState: null,
     action: TransactionTypes.TRANSFER
   });
 

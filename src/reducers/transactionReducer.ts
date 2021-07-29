@@ -37,13 +37,26 @@ export default function transactionReducer(state: TransactionState, action: Tran
         payloadEstimatedFeeLoading
       } = action.payload;
 
+      const readyToExecute = payloadEstimatedFeeLoading ? false : transactionReadyToExecute;
+
       return {
         ...state,
         estimatedFee: !payloadEstimatedFeeError && transactionReadyToExecute ? estimatedFee : null,
         payloadEstimatedFeeError,
         payloadEstimatedFeeLoading,
         payload: payloadEstimatedFeeError ? null : payload,
-        transactionReadyToExecute: payloadEstimatedFeeLoading ? false : transactionReadyToExecute,
+        transactionReadyToExecute: readyToExecute,
+        shouldEvaluatePayloadEstimatedFee: false
+      };
+    }
+
+    case TransactionActionTypes.SET_BATCH_PAYLOAD_ESTIMATED_FEE: {
+      const { batchedTransactionState } = action.payload;
+
+      return {
+        ...state,
+        batchedTransactionState,
+        transactionReadyToExecute: Boolean(batchedTransactionState && state.estimatedFee),
         shouldEvaluatePayloadEstimatedFee: false
       };
     }
@@ -57,7 +70,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
         ...state,
         transferAmount: actualValue || null,
         transferAmountError: message,
-        transactionReadyToExecute: false,
+        transactionReadyToExecute,
         estimatedFee: null,
         shouldEvaluatePayloadEstimatedFee
       };
@@ -115,6 +128,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
         estimatedFee: null,
         payloadEstimatedFeeError: null,
         shouldEvaluatePayloadEstimatedFee: false,
+        batchedTransactionState: null,
         genericReceiverAccount: null,
         receiverAddress: null,
         transferAmount: null,

@@ -93,6 +93,7 @@ export interface TransactionState {
   shouldEvaluatePayloadEstimatedFee: boolean;
   payloadEstimatedFeeError: string | null;
   payloadEstimatedFeeLoading: boolean;
+  batchedTransactionState: TransactionState | null;
   action: TransactionTypes;
 }
 

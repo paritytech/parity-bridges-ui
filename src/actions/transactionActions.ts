@@ -21,7 +21,8 @@ import {
   TransactionTypes,
   UpdatedTransactionStatusType,
   ReceiverPayload,
-  PayloadEstimatedFee
+  PayloadEstimatedFee,
+  TransactionState
 } from '../types/transactionTypes';
 
 enum TransactionActionTypes {
@@ -39,6 +40,7 @@ enum TransactionActionTypes {
   SET_CUSTOM_CALL_INPUT = 'SET_CUSTOM_CALL_INPUT',
   SET_WEIGHT_INPUT = 'SET_WEIGHT_INPUT',
   UPDATE_TRANSACTIONS_STATUS = 'UPDATE_TRANSACTIONS_STATUS',
+  SET_BATCH_PAYLOAD_ESTIMATED_FEE = 'SET_BATCH_PAYLOAD_ESTIMATED_FEE',
   RESET = 'RESET'
 }
 
@@ -125,6 +127,11 @@ const setWeightInput = (weightInput: string | null) => ({
   type: TransactionActionTypes.SET_WEIGHT_INPUT
 });
 
+const setBatchedEvaluationPayloadEstimatedFee = (batchedTransactionState: TransactionState | null) => ({
+  payload: { batchedTransactionState },
+  type: TransactionActionTypes.SET_BATCH_PAYLOAD_ESTIMATED_FEE
+});
+
 const TransactionActionCreators = {
   setSenderAndAction,
   setReceiverAddress,
@@ -138,6 +145,7 @@ const TransactionActionCreators = {
   createTransactionStatus,
   updateTransactionStatus,
   updateTransactionsStatus,
+  setBatchedEvaluationPayloadEstimatedFee,
   reset
 };
 
