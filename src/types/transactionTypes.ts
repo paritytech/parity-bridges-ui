@@ -90,6 +90,7 @@ export interface TransactionState {
   formatFound: string | null;
   payload: TransactionPayload | null;
   payloadHex: string | null;
+  shouldEvaluatePayloadEstimatedFee: boolean;
   payloadEstimatedFeeError: string | null;
   payloadEstimatedFeeLoading: boolean;
   action: TransactionTypes;

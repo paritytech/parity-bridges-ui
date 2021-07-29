@@ -29,7 +29,7 @@ import { useTransactionContext, useUpdateTransactionContext } from '../../contex
 import useLaneId from './useLaneId';
 import { TransactionStatusEnum } from '../../types/transactionTypes';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
-import { createEmptySteps, getTransactionDisplayPayload } from '../../util/transactionUtils';
+import { createEmptySteps, getTransactionDisplayPayload } from '../../util/transactions/';
 import logger from '../../util/logger';
 import useApiCalls from '../api/useApiCalls';
 

@@ -79,6 +79,7 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
     formatFound: null,
     payload: null,
     payloadHex: null,
+    shouldEvaluatePayloadEstimatedFee: false,
     payloadEstimatedFeeError: null,
     payloadEstimatedFeeLoading: false,
     action: TransactionTypes.TRANSFER

@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { TextField } from '@material-ui/core';
 import React, { useCallback } from 'react';
 import { ButtonSubmit } from '../components';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
@@ -24,6 +22,7 @@ import { TransactionTypes } from '../types/transactionTypes';
 import { EstimatedFee } from './EstimatedFee';
 import { TransactionActionCreators } from '../actions/transactionActions';
 import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
+import { DebouncedTextField } from './DebouncedTextField';
 
 export default function Remark() {
   const { dispatchTransaction } = useUpdateTransactionContext();
@@ -36,24 +35,21 @@ export default function Remark() {
     type: TransactionTypes.REMARK
   });
 
-  const onChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const value = event.target.value;
-      dispatchTransaction(TransactionActionCreators.setRemarkInput(value));
-    },
+  const dispatchCallback = useCallback(
+    (value: string | null) => dispatchTransaction(TransactionActionCreators.setRemarkInput(value)),
     [dispatchTransaction]
   );
 
   return (
     <>
-      <TextField
+      <DebouncedTextField
         label="Remark"
-        value={remarkInput}
+        initialValue={remarkInput}
         variant="outlined"
         fullWidth
         multiline
         rows={4}
-        onChange={onChange}
+        dispatchCallback={dispatchCallback}
       />
       <ButtonSubmit disabled={!transactionReadyToExecute} onClick={sendLaneMessage}>
         Send bridge remark from {sourceChainDetails.chain} to {targetChainDetails.chain}

@@ -19,7 +19,7 @@ import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../../contexts/TransactionContext';
 
 import { TransactionDisplayPayload } from '../../types/transactionTypes';
-import { getTransactionDisplayPayload } from '../../util/transactionUtils';
+import { getTransactionDisplayPayload } from '../../util/transactions/';
 import useApiCalls from '../api/useApiCalls';
 import { useAccountContext } from '../../contexts/AccountContextProvider';
 

@@ -19,7 +19,6 @@ import { TransactionState, TransactionTypes } from '../../types/transactionTypes
 
 import { useGUIContext } from '../../contexts/GUIContextProvider';
 import usePrevious from '../react/usePrevious';
-import useDebounceState from '../react/useDebounceState';
 
 export default function useEvaluateCalculation(transactionState: TransactionState) {
   const [shouldEvaluate, setShouldEvaluate] = useState(false);
@@ -35,16 +34,11 @@ export default function useEvaluateCalculation(transactionState: TransactionStat
     payloadEstimatedFeeLoading
   } = transactionState;
 
-  const debouncedTransferAmount = useDebounceState(transferAmount);
-  const debouncedRemarkInput = useDebounceState(remarkInput);
-  const debouncedCustomCall = useDebounceState(customCallInput);
-  const debouncedWeightInput = useDebounceState(weightInput);
-
   const prevReceiverAddress = usePrevious(receiverAddress);
-  const prevTransferAmount = usePrevious(debouncedTransferAmount);
-  const prevRemarkInput = usePrevious(debouncedRemarkInput);
-  const prevCustomCallInput = usePrevious(debouncedCustomCall);
-  const prevWeightInput = usePrevious(debouncedWeightInput);
+  const prevTransferAmount = usePrevious(transferAmount);
+  const prevRemarkInput = usePrevious(remarkInput);
+  const prevCustomCallInput = usePrevious(customCallInput);
+  const prevWeightInput = usePrevious(weightInput);
   const prevSenderAccount = usePrevious(senderAccount);
 
   const { action } = useGUIContext();
@@ -54,19 +48,19 @@ export default function useEvaluateCalculation(transactionState: TransactionStat
       switch (action) {
         case TransactionTypes.TRANSFER: {
           return (
-            Boolean(debouncedTransferAmount && receiverAddress) &&
-            (prevTransferAmount !== debouncedTransferAmount || prevReceiverAddress !== receiverAddress)
+            Boolean(transferAmount && receiverAddress) &&
+            (prevTransferAmount !== transferAmount || prevReceiverAddress !== receiverAddress)
           );
         }
         case TransactionTypes.CUSTOM: {
           return (
-            Boolean(debouncedWeightInput && debouncedCustomCall) &&
+            Boolean(weightInput && customCallInput) &&
             !customCallError &&
-            (prevWeightInput !== debouncedWeightInput || prevCustomCallInput !== debouncedCustomCall)
+            (prevWeightInput !== weightInput || prevCustomCallInput !== customCallInput)
           );
         }
         case TransactionTypes.REMARK: {
-          return Boolean(debouncedRemarkInput) && prevRemarkInput !== debouncedRemarkInput;
+          return Boolean(remarkInput) && prevRemarkInput !== remarkInput;
         }
         default:
           return false;
@@ -79,10 +73,9 @@ export default function useEvaluateCalculation(transactionState: TransactionStat
     action,
     customCallError,
     customCallInput,
-    debouncedCustomCall,
-    debouncedRemarkInput,
-    debouncedTransferAmount,
-    debouncedWeightInput,
+    remarkInput,
+    transferAmount,
+    weightInput,
     payloadEstimatedFeeLoading,
     prevCustomCallInput,
     prevReceiverAddress,
@@ -91,10 +84,7 @@ export default function useEvaluateCalculation(transactionState: TransactionStat
     prevTransferAmount,
     prevWeightInput,
     receiverAddress,
-    remarkInput,
-    senderAccount,
-    transferAmount,
-    weightInput
+    senderAccount
   ]);
 
   return shouldEvaluate;

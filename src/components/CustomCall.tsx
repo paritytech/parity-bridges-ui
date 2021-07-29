@@ -15,7 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React, { useCallback } from 'react';
-import { Box, TextField } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { ButtonSubmit } from '../components';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useSendMessage from '../hooks/chain/useSendMessage';
@@ -24,6 +24,7 @@ import { TransactionTypes } from '../types/transactionTypes';
 import { EstimatedFee } from './EstimatedFee';
 import { TransactionActionCreators } from '../actions/transactionActions';
 import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
+import { DebouncedTextField } from './DebouncedTextField';
 
 const initialValue = '0x';
 
@@ -45,16 +46,15 @@ const CustomCall = () => {
   });
 
   const onChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const input = event.target.value;
-      dispatchTransaction(TransactionActionCreators.setCustomCallInput(input, createType, targetChain));
+    (value: string | null) => {
+      dispatchTransaction(TransactionActionCreators.setCustomCallInput(value, createType, targetChain));
     },
     [createType, dispatchTransaction, targetChain]
   );
 
   const onWeightChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      dispatchTransaction(TransactionActionCreators.setWeightInput(event.target.value));
+    (value: string | null) => {
+      dispatchTransaction(TransactionActionCreators.setWeightInput(value));
     },
     [dispatchTransaction]
   );
@@ -62,9 +62,9 @@ const CustomCall = () => {
   return (
     <>
       <Box mb={2}>
-        <TextField
-          onChange={onChange}
-          value={customCallInput}
+        <DebouncedTextField
+          dispatchCallback={onChange}
+          initialValue="0x"
           placeholder={initialValue}
           label="Call"
           variant="outlined"
@@ -72,7 +72,7 @@ const CustomCall = () => {
           helperText={customCallError && `${customCallError}`}
         />
       </Box>
-      <TextField onChange={onWeightChange} value={weightInput} label="Weight" variant="outlined" fullWidth />
+      <DebouncedTextField dispatchCallback={onWeightChange} label="Weight" variant="outlined" fullWidth />
       <ButtonSubmit disabled={!transactionReadyToExecute} onClick={sendLaneMessage}>
         Send custom call from {sourceChainDetails.chain} to {targetChainDetails.chain}
       </ButtonSubmit>

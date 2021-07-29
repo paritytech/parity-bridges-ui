@@ -15,7 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Box, makeStyles, TextField } from '@material-ui/core';
+import { Box, makeStyles } from '@material-ui/core';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import { useAccountContext } from '../contexts/AccountContextProvider';
@@ -29,6 +29,7 @@ import Receiver from './Receiver';
 import { Alert, ButtonSubmit } from '../components';
 import { EstimatedFee } from '../components/EstimatedFee';
 import BN from 'bn.js';
+import { DebouncedTextField } from './DebouncedTextField';
 
 const useStyles = makeStyles((theme) => ({
   inputAmount: {
@@ -50,7 +51,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Transfer() {
-  const [currentInput, setInput] = useState('0');
   const { dispatchTransaction } = useUpdateTransactionContext();
   const classes = useStyles();
   const [amountNotCorrect, setAmountNotCorrect] = useState<boolean>(false);
@@ -67,14 +67,13 @@ function Transfer() {
   const balance = useBalance(api, account?.address || '');
 
   const dispatchCallback = useCallback(
-    (value: string) => {
+    (value: string | null) => {
       dispatchTransaction(
         TransactionActionCreators.setTransferAmount(
           value !== null ? value?.toString() : '',
           api.registry.chainDecimals[0]
         )
       );
-      setInput(value);
     },
     [api.registry.chainDecimals, dispatchTransaction]
   );
@@ -83,11 +82,6 @@ function Transfer() {
     input: transferAmount?.toString() ?? '',
     type: TransactionTypes.TRANSFER
   });
-
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    dispatchCallback(value);
-  };
 
   useEffect((): void => {
     transactionRunning && transferAmount && dispatchCallback('');
@@ -102,15 +96,13 @@ function Transfer() {
   return (
     <>
       <Box mb={2}>
-        <TextField
+        <DebouncedTextField
           id="test-amount-send"
-          onChange={onChange}
-          value={currentInput}
+          dispatchCallback={dispatchCallback}
           placeholder={'0'}
-          className={classes.inputAmount}
+          classes={classes.inputAmount}
           fullWidth
           variant="outlined"
-          autoComplete="off"
           helperText={transferAmountError || ''}
           InputProps={{
             endAdornment: <TokenSymbol position="start" />

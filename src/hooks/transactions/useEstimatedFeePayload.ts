@@ -26,9 +26,8 @@ import useLaneId from '../chain/useLaneId';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
 import { genericCall } from '../../util/apiUtlis';
 import { PayloadEstimatedFee, TransactionsActionType, TransactionState } from '../../types/transactionTypes';
-import { getTransactionCallWeight } from '../../util/transactionUtils';
+import { getTransactionCallWeight } from '../../util/transactions/';
 import { useGUIContext } from '../../contexts/GUIContextProvider';
-import useEvaluateCalculation from './useEvaluateCalculation';
 
 const emptyData = { payload: null, estimatedFee: null } as PayloadEstimatedFee;
 
@@ -37,7 +36,6 @@ export const useEstimatedFeePayload = (
   dispatchTransaction: Dispatch<TransactionsActionType>
 ) => {
   const { createType, stateCall } = useApiCallsContext();
-  const shouldEvaluate = useEvaluateCalculation(transactionState);
 
   const laneId = useLaneId();
   const {
@@ -104,14 +102,14 @@ export const useEstimatedFeePayload = (
   ]);
 
   useEffect(() => {
-    if (shouldEvaluate) {
+    if (transactionState.shouldEvaluatePayloadEstimatedFee) {
       genericCall({
         call: calculateFeeAndPayload,
         dispatch,
         emptyData
       });
     }
-  }, [account, calculateFeeAndPayload, dispatch, shouldEvaluate]);
+  }, [account, calculateFeeAndPayload, dispatch, transactionState.shouldEvaluatePayloadEstimatedFee]);
 };
 
 export default useEstimatedFeePayload;

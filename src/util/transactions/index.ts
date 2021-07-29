@@ -24,17 +24,17 @@ import {
   TransactionDisplayPayload,
   TransactionTypes,
   TransactionState
-} from '../types/transactionTypes';
-import shortenItem from '../util/shortenItem';
-import { Subscriptions } from '../types/subscriptionsTypes';
+} from '../../types/transactionTypes';
+import shortenItem from '../shortenItem';
+import { Subscriptions } from '../../types/subscriptionsTypes';
 import { encodeAddress } from '@polkadot/util-crypto';
-import { SourceTargetState } from '../types/sourceTargetTypes';
-import { MessageActionsCreators } from '../actions/messageActions';
-import { getSubstrateDynamicNames } from './getSubstrateDynamicNames';
+import { SourceTargetState } from '../../types/sourceTargetTypes';
+import { MessageActionsCreators } from '../../actions/messageActions';
+import { getSubstrateDynamicNames } from '../getSubstrateDynamicNames';
 import isEmpty from 'lodash/isEmpty';
 import type { InterfaceTypes } from '@polkadot/types/types';
-import logger from './logger';
-import { Account } from '../types/accountTypes';
+import logger from '../logger';
+import { Account } from '../../types/accountTypes';
 
 export function isTransactionCompleted(transaction: TransactionStatusType): boolean {
   return transaction.status === TransactionStatusEnum.COMPLETED;

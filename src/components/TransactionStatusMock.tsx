@@ -21,7 +21,7 @@ import { Step, TransactionStatusEnum } from '../types/transactionTypes';
 import TransactionReceipt from './TransactionReceipt';
 import TransactionSwitchTab from './TransactionSwitchTab';
 import useTransactionPayloadDisplay from '../hooks/transactions/useTransactionPayloadDisplay';
-import { createEmptySteps } from '../util/transactionUtils';
+import { createEmptySteps } from '../util/transactions/';
 interface Props {
   type?: string;
 }
