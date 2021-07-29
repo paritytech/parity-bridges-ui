@@ -103,17 +103,17 @@ export async function getTransactionCallWeight({
     switch (action) {
       case TransactionTypes.REMARK:
         call = (await targetApi.tx.system.remark(remarkInput)).toU8a();
-        logger.info(`system::remark: ${u8aToHex(call)}`);
         // TODO [#121] Figure out what the extra bytes are about
         call = call.slice(2);
+        logger.info(`system::remark: ${u8aToHex(call)}`);
         weight = (await targetApi.tx.system.remark(remarkInput).paymentInfo(account)).weight.toNumber();
         break;
       case TransactionTypes.TRANSFER:
         if (receiverAddress) {
           call = (await targetApi.tx.balances.transfer(receiverAddress, transferAmount || 0)).toU8a();
-          logger.info(`balances::transfer: ${u8aToHex(call)}`);
           // TODO [#121] Figure out what the extra bytes are about
           call = call.slice(2);
+          logger.info(`balances::transfer: ${u8aToHex(call)}`);
           weight = (
             await targetApi.tx.balances.transfer(receiverAddress, transferAmount || 0).paymentInfo(account)
           ).weight.toNumber();

@@ -29,6 +29,7 @@ import { evalUnits } from '../util/evalUnits';
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
   const transactionReadyToExecute = isReadyToExecute({ ...state, ...action.payload });
+
   switch (action.type) {
     case TransactionActionTypes.SET_PAYLOAD_ESTIMATED_FEE: {
       const {
@@ -115,7 +116,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return {
         ...state,
         weightInput: weightInput,
-        transactionReadyToExecute,
+        transactionReadyToExecute: transactionReadyToExecute && !state.customCallError,
         shouldEvaluatePayloadEstimatedFee,
         estimatedFee: weightInput ? state.estimatedFee : null
       };

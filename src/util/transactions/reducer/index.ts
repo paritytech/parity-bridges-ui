@@ -58,7 +58,7 @@ const shouldCalculatePayloadFee = (state: TransactionState, payload: Payload) =>
       return Boolean(transferAmount && receiverAddress && senderAccount);
     }
     case TransactionTypes.CUSTOM: {
-      return Boolean(weightInput && customCallInput && senderAccount) && !customCallError;
+      return Boolean(weightInput && customCallInput && senderAccount && !customCallError);
     }
     case TransactionTypes.REMARK: {
       return Boolean(remarkInput && senderAccount);
@@ -124,7 +124,8 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
       transactionReadyToExecute: false,
       payloadEstimatedFeeLoading: false,
       shouldEvaluatePayloadEstimatedFee: false,
-      estimatedFee: null
+      estimatedFee: null,
+      payload: null
     };
   }
 
@@ -150,7 +151,8 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
       formatFound,
       transactionReadyToExecute: false,
       shouldEvaluatePayloadEstimatedFee: false,
-      estimatedFee: null
+      estimatedFee: null,
+      payload: null
     };
   }
 
@@ -165,7 +167,8 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
       formatFound,
       transactionReadyToExecute: false,
       shouldEvaluatePayloadEstimatedFee: false,
-      estimatedFee: null
+      estimatedFee: null,
+      payload: null
     };
   }
 
@@ -207,7 +210,9 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
     genericReceiverAccount: null,
     formatFound,
     transactionReadyToExecute: false,
-    shouldEvaluatePayloadEstimatedFee: false
+    shouldEvaluatePayloadEstimatedFee: false,
+    estimatedFee: null,
+    payload: null
   };
 };
 
