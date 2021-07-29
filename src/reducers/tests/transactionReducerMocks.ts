@@ -32,6 +32,7 @@ export const state = {
   transactionDisplayPayload: {} as TransactionDisplayPayload,
   transactionRunning: false,
   transactionReadyToExecute: false,
+  evaluateTransactionStatusError: null,
   addressValidationError: null,
   showBalance: false,
   formatFound: null,

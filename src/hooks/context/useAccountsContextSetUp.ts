@@ -14,16 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { useEffect, useReducer } from 'react';
+import { Dispatch, useEffect } from 'react';
+import { AccountActionCreators } from '../../actions/accountActions';
+import { useKeyringContext } from '../../contexts/KeyringContextProvider';
+import { AccountsActionType, AccountState } from '../../types/accountTypes';
+import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import useBalance from '../subscriptions/useBalance';
-import { AccountActionCreators } from '../../actions/accountActions';
-import accountReducer from '../../reducers/accountReducer';
-import { useKeyringContext } from '../../contexts/KeyringContextProvider';
-import { DisplayAccounts } from '../../types/accountTypes';
-import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
 
-const useAccountsContextSetUp = () => {
+const useAccountsContextSetUp = (accountState: AccountState, dispatchAccount: Dispatch<AccountsActionType>) => {
+  const { keyringPairs, keyringPairsReady } = useKeyringContext();
+  const { updateSenderAccountsInformation } = useApiCallsContext();
+
   const {
     targetChainDetails: {
       apiConnection: { api: targetApi }
@@ -32,17 +34,6 @@ const useAccountsContextSetUp = () => {
       apiConnection: { api: sourceApi }
     }
   } = useSourceTarget();
-
-  const { keyringPairs, keyringPairsReady } = useKeyringContext();
-  const { updateSenderAccountsInformation } = useApiCallsContext();
-  const [accountState, dispatchAccount] = useReducer(accountReducer, {
-    account: null,
-    accounts: [],
-    companionAccount: null,
-    senderAccountBalance: null,
-    senderCompanionAccountBalance: null,
-    displaySenderAccounts: {} as DisplayAccounts
-  });
 
   const accountBalance = useBalance(sourceApi, accountState.account?.address || '', true);
   const companionBalance = useBalance(targetApi, accountState.companionAccount || '', true);
@@ -54,12 +45,8 @@ const useAccountsContextSetUp = () => {
   useEffect(() => {
     if (keyringPairsReady && keyringPairs.length) {
       dispatchAccount(AccountActionCreators.setAccounts(keyringPairs));
-      // This initial load might be temporary or it might change based on what it was disscussed in issue #224
-      updateSenderAccountsInformation(dispatchAccount);
     }
   }, [keyringPairsReady, keyringPairs, dispatchAccount, updateSenderAccountsInformation]);
-
-  return { accountState, dispatchAccount };
 };
 
 export default useAccountsContextSetUp;

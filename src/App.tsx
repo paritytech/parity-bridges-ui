@@ -47,27 +47,27 @@ function App() {
   return (
     <SourceTargetContextProvider connections={connections}>
       <KeyringContextProvider>
-        <ApiCallsContextProvider>
-          <AccountContextProvider>
-            <SubscriptionsContextProvider>
-              <MessageContextProvider>
-                <SnackbarProvider>
-                  <TransactionContextProvider>
-                    <BrowserRouter>
-                      <Switch>
-                        <Route path={'/'}>
-                          <GUIContextProvider>
+        <SubscriptionsContextProvider>
+          <GUIContextProvider>
+            <ApiCallsContextProvider>
+              <AccountContextProvider>
+                <MessageContextProvider>
+                  <SnackbarProvider>
+                    <TransactionContextProvider>
+                      <BrowserRouter>
+                        <Switch>
+                          <Route path={'/'}>
                             <Main />
-                          </GUIContextProvider>
-                        </Route>
-                      </Switch>
-                    </BrowserRouter>
-                  </TransactionContextProvider>
-                </SnackbarProvider>
-              </MessageContextProvider>
-            </SubscriptionsContextProvider>
-          </AccountContextProvider>
-        </ApiCallsContextProvider>
+                          </Route>
+                        </Switch>
+                      </BrowserRouter>
+                    </TransactionContextProvider>
+                  </SnackbarProvider>
+                </MessageContextProvider>
+              </AccountContextProvider>
+            </ApiCallsContextProvider>
+          </GUIContextProvider>
+        </SubscriptionsContextProvider>
       </KeyringContextProvider>
     </SourceTargetContextProvider>
   );

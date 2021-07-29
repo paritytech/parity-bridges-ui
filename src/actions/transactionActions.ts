@@ -34,6 +34,7 @@ enum TransactionActionTypes {
   UPDATE_CURRENT_TRANSACTION_STATUS = 'UPDATE_CURRENT_TRANSACTION_STATUS',
   SET_TRANSACTION_COMPLETED = 'SET_TRANSACTION_COMPLETED',
   SET_TRANSACTION_RUNNING = 'SET_TRANSACTION_RUNNING',
+  UPDATE_TRANSACTIONS_STATUS = 'UPDATE_TRANSACTIONS_STATUS',
   RESET = 'RESET'
 }
 
@@ -54,6 +55,15 @@ const setEstimatedFee = (
     type: TransactionActionTypes.SET_ESTIMATED_FEE
   };
 };
+
+const updateTransactionsStatus = (
+  evaluateTransactionStatusError: string | null,
+  transactions: TransactionStatusType[] | null,
+  evaluatingTransactions: boolean
+) => ({
+  payload: { evaluateTransactionStatusError, transactions, evaluatingTransactions },
+  type: TransactionActionTypes.UPDATE_TRANSACTIONS_STATUS
+});
 
 const setPayload = (payloadError: string | null, payload: TransactionPayload | null) => ({
   payload: { payload, payloadError },
@@ -108,6 +118,7 @@ const TransactionActionCreators = {
   setTransactionRunning,
   createTransactionStatus,
   updateTransactionStatus,
+  updateTransactionsStatus,
   setPayload,
   reset
 };

@@ -30,7 +30,7 @@ import useLaneId from './useLaneId';
 import useTransactionPreparation from '../transactions/useTransactionPreparation';
 import { TransactionStatusEnum, TransactionTypes } from '../../types/transactionTypes';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
-import { getTransactionDisplayPayload } from '../../util/transactionUtils';
+import { createEmptySteps, getTransactionDisplayPayload } from '../../util/transactionUtils';
 import logger from '../../util/logger';
 import useApiCalls from '../api/useApiCalls';
 import useLoadingApi from '../connections/useLoadingApi';
@@ -105,7 +105,9 @@ function useSendMessage({ isValidCall, input, type, weightInput }: Props) {
                 targetChain,
                 type,
                 payloadHex,
-                transactionDisplayPayload
+                transactionDisplayPayload,
+                deliveryBlock: null,
+                steps: createEmptySteps(sourceChain, targetChain)
               })
             );
           }

@@ -14,17 +14,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import BN from 'bn.js';
+import React from 'react';
+import { useGUIContext } from '../contexts/GUIContextProvider';
 
-export const SOURCE = 'sourceChain';
-export const TARGET = 'targetChain';
+interface Props {
+  children: React.ReactElement | null;
+  blurred?: boolean;
+}
 
-export const CHAIN_1 = '1';
-export const CHAIN_2 = '2';
+export default function BridgedLocalWrapper({ children, blurred = false }: Props) {
+  const { isBridged } = useGUIContext();
 
-export const INCORRECT_FORMAT = 'INCORRECT_FORMAT';
-export const GENERIC = 'GENERIC';
-export const GENERIC_SUBSTRATE_PREFIX = 42;
+  if (!isBridged) {
+    if (blurred) return <div style={{ opacity: '20%' }}>{children}</div>;
+  }
 
-export const BLOCK_DURATION = new BN('4');
-export const TIMER_DURATION = 30000;
+  if (isBridged) {
+    return children;
+  }
+
+  return null;
+}

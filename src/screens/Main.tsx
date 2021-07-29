@@ -16,6 +16,8 @@
 
 import React from 'react';
 import { Box, Typography } from '@material-ui/core';
+import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import { makeStyles } from '@material-ui/core/styles';
 import { BoxSidebar, BoxUI, ButtonExt, StorageDrawer, MenuAction, NetworkSides, NetworkStats } from '../components';
 import CustomCall from '../components/CustomCall';
 import ExtensionAccountCheck from '../components/ExtensionAccountCheck';
@@ -29,6 +31,16 @@ import { useGUIContext } from '../contexts/GUIContextProvider';
 import { TransactionTypes } from '../types/transactionTypes';
 import { MenuActionItemsProps } from '../types/guiTypes';
 
+import BridgedLocalWrapper from '../components/BridgedLocalWrapper';
+import { useCallback } from 'react';
+
+const useStyles = makeStyles(() => ({
+  root: {
+    marginLeft: 'auto',
+    maxHeight: '25px'
+  }
+}));
+
 const ActionComponents = {
   [TransactionTypes.TRANSFER]: <Transfer />,
   [TransactionTypes.LOCAL_TRANSFER]: <Transfer />,
@@ -37,8 +49,21 @@ const ActionComponents = {
 };
 
 function Main() {
-  const { actions, action, setAction } = useGUIContext();
-  const searchItems = (choice: TransactionTypes) => actions.find((x: MenuActionItemsProps) => x.type === choice);
+  const classes = useStyles();
+  const { actions, action, setAction, isBridged, setBridged } = useGUIContext();
+  const searchItems = useCallback(
+    (choice: TransactionTypes) => actions.find((x: MenuActionItemsProps) => x.type === choice),
+    [actions]
+  );
+
+  const handleOnSwitch = useCallback(
+    (event: React.MouseEvent<HTMLElement>, newAlignment: string | null) => {
+      setBridged(Boolean(newAlignment));
+    },
+    [setBridged]
+  );
+
+  // TODO #242: ToggleButtonGroup needs to contain the colors designed by custom css.
 
   return (
     <>
@@ -48,13 +73,28 @@ function Main() {
             Bridges UI
           </Typography>
           <NetworkSides />
-          <NetworkStats />
+          <BridgedLocalWrapper blurred>
+            <NetworkStats />
+          </BridgedLocalWrapper>
           <StorageDrawer />
         </div>
         <ButtonExt> Help & Feedback </ButtonExt>
       </BoxSidebar>
       <BoxUI>
-        <MenuAction actions={actions} action={action} changeMenu={setAction} />
+        <Box component="div" display="flex" marginY={2} textAlign="left" width="100%">
+          <MenuAction actions={actions} action={action} changeMenu={setAction} />
+          <ToggleButtonGroup
+            size="small"
+            value={isBridged}
+            exclusive
+            onChange={handleOnSwitch}
+            classes={{ root: classes.root }}
+          >
+            <ToggleButton value={false}>Local</ToggleButton>
+            <ToggleButton value={true}>Bridge</ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
+
         <ExtensionAccountCheck component={<Sender />} />
         <Box marginY={2} textAlign="center" width="100%">
           <ArrowDownwardIcon fontSize="large" color="primary" />

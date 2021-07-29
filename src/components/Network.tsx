@@ -24,6 +24,7 @@ import { useSubscriptionsContext } from '../contexts/SubscriptionsContextProvide
 import useLoadingApi from '../hooks/connections/useLoadingApi';
 import { IconApiStatus } from './Icons';
 import { Web3Icon } from '.';
+import BridgedLocalWrapper from './BridgedLocalWrapper';
 
 // As this is placed as a child in the Material UI Select component, for some reason style components classes are not working.
 // This way to inject the styles works.
@@ -87,15 +88,17 @@ export const NetworkSides = () => {
       </Box>
       <Divider />
       <ArrowDownwardIcon className={classes.arrowIcon} />
-      <Box p={1} className={classes.statsEntry}>
-        <div>
-          <IconApiStatus className={classes.IconApiSvg} status={targetReady} />
-          <a target="_blank" rel="noreferrer" href={targetChainDetails.polkadotjsUrl}>
-            {targetChainDetails.chain}
-          </a>
-        </div>
-        <span style={{ opacity: 0.4 }}># {targetSubscriptions.bestBlock}</span>
-      </Box>
+      <BridgedLocalWrapper blurred>
+        <Box p={1} className={classes.statsEntry}>
+          <div>
+            <IconApiStatus className={classes.IconApiSvg} status={targetReady} />
+            <a target="_blank" rel="noreferrer" href={targetChainDetails.polkadotjsUrl}>
+              {targetChainDetails.chain}
+            </a>
+          </div>
+          <span style={{ opacity: 0.4 }}># {targetSubscriptions.bestBlock}</span>
+        </Box>
+      </BridgedLocalWrapper>
     </Box>
   );
 };
