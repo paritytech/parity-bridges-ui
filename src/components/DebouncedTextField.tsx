@@ -33,6 +33,7 @@ interface Props {
   rows?: number;
   dispatchCallback?: (value: ValueType) => void;
   initialValue?: ValueType;
+  reset?: boolean;
 }
 
 export function DebouncedTextField({
@@ -47,9 +48,10 @@ export function DebouncedTextField({
   multiline,
   rows,
   dispatchCallback,
-  initialValue = ''
+  initialValue = '',
+  reset = false
 }: Props) {
-  const [value, setValue] = useDebounceState({ initialValue, dispatchCallback });
+  const [value, setValue] = useDebounceState({ initialValue, dispatchCallback, reset });
 
   return (
     <TextField

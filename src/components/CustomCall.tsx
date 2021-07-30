@@ -30,7 +30,13 @@ const initialValue = '0x';
 
 const CustomCall = () => {
   const { dispatchTransaction } = useUpdateTransactionContext();
-  const { customCallInput, weightInput, transactionReadyToExecute, customCallError } = useTransactionContext();
+  const {
+    customCallInput,
+    weightInput,
+    transactionReadyToExecute,
+    customCallError,
+    transactionRunning
+  } = useTransactionContext();
 
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
@@ -64,15 +70,21 @@ const CustomCall = () => {
       <Box mb={2}>
         <DebouncedTextField
           dispatchCallback={onChange}
-          initialValue="0x"
           placeholder={initialValue}
           label="Call"
           variant="outlined"
           fullWidth
           helperText={customCallError && `${customCallError}`}
+          reset={transactionRunning}
         />
       </Box>
-      <DebouncedTextField dispatchCallback={onWeightChange} label="Weight" variant="outlined" fullWidth />
+      <DebouncedTextField
+        reset={transactionRunning}
+        dispatchCallback={onWeightChange}
+        label="Weight"
+        variant="outlined"
+        fullWidth
+      />
       <ButtonSubmit disabled={!transactionReadyToExecute} onClick={sendLaneMessage}>
         Send custom call from {sourceChainDetails.chain} to {targetChainDetails.chain}
       </ButtonSubmit>

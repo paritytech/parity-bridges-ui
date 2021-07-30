@@ -26,18 +26,29 @@ interface Input {
   wait?: number;
   transformCallback?: (value: ValueType) => void;
   dispatchCallback?: (value: ValueType) => void;
+  reset?: boolean;
 }
 
-export const useDebounceState = ({ initialValue, wait = 500, transformCallback, dispatchCallback }: Input): Output => {
+export const useDebounceState = ({
+  initialValue,
+  wait = 500,
+  transformCallback,
+  dispatchCallback,
+  reset
+}: Input): Output => {
   const [value, setValue] = useState(initialValue);
   const [debounced, setDebounced] = useState(initialValue);
+  const [toReset, setToReset] = useState(false);
+  const [shouldDispatch, setShouldDispatch] = useState(true);
+
   const previousDebounced = usePrevious(debounced);
+  const previousReset = usePrevious(reset);
   const setDebouncedCallback = useMemo(() => debounce((value) => setDebounced(value), wait), [wait]);
 
   const setValueCallback = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value;
-      setValue(value);
+      setValue(value || '');
       if (transformCallback) {
         const transformedValue = transformCallback(value);
         setDebouncedCallback(transformedValue);
@@ -49,8 +60,28 @@ export const useDebounceState = ({ initialValue, wait = 500, transformCallback, 
   );
 
   useEffect(() => {
-    previousDebounced !== debounced && dispatchCallback && dispatchCallback(debounced);
-  }, [debounced, dispatchCallback, previousDebounced]);
+    if (shouldDispatch && previousDebounced !== debounced && dispatchCallback) {
+      dispatchCallback(debounced);
+    }
+  }, [debounced, dispatchCallback, previousDebounced, shouldDispatch]);
+
+  // Mechanism to reset local state input when the transaction is executed.
+  // In case no reset parameter is set to the hook, this process will not execute.
+  useEffect(() => {
+    if (value && debounced && !toReset && reset && previousReset !== reset) {
+      setToReset(true);
+      setShouldDispatch(false);
+    }
+    if (toReset && reset) {
+      setValue('');
+      setDebounced(null);
+      setToReset(false);
+    }
+
+    if (!shouldDispatch && !reset && previousReset !== reset) {
+      setShouldDispatch(true);
+    }
+  }, [reset, previousReset, setValue, value, debounced, toReset, shouldDispatch]);
 
   return [value, setValueCallback, debounced];
 };
