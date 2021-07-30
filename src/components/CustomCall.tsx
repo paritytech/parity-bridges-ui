@@ -64,7 +64,6 @@ const CustomCall = () => {
       <Box mb={2}>
         <DebouncedTextField
           dispatchCallback={onChange}
-          initialValue="0x"
           placeholder={initialValue}
           label="Call"
           variant="outlined"

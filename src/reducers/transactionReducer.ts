@@ -29,7 +29,6 @@ import { evalUnits } from '../util/evalUnits';
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
   const transactionReadyToExecute = isReadyToExecute({ ...state, ...action.payload });
-
   switch (action.type) {
     case TransactionActionTypes.SET_PAYLOAD_ESTIMATED_FEE: {
       const {
@@ -64,6 +63,14 @@ export default function transactionReducer(state: TransactionState, action: Tran
 
     case TransactionActionTypes.SET_TRANSFER_AMOUNT: {
       const { transferAmount, chainDecimals } = action.payload;
+      if (!transferAmount) {
+        return {
+          ...state,
+          transferAmount,
+          transferAmountError: null,
+          transactionReadyToExecute: false
+        };
+      }
       const [actualValue, message] = evalUnits(transferAmount, chainDecimals);
       const shouldEvaluatePayloadEstimatedFee = shouldCalculatePayloadFee(state, { transferAmount: actualValue });
 
@@ -90,6 +97,15 @@ export default function transactionReducer(state: TransactionState, action: Tran
     }
     case TransactionActionTypes.SET_CUSTOM_CALL_INPUT: {
       const { customCallInput, createType, targetChain } = action.payload;
+      if (!customCallInput) {
+        return {
+          ...state,
+          customCallInput,
+          transactionReadyToExecute: false,
+          customCallError: null,
+          shouldEvaluatePayloadEstimatedFee: false
+        };
+      }
       let customCallError = null;
       let shouldEvaluatePayloadEstimatedFee = false;
       try {
@@ -136,13 +152,15 @@ export default function transactionReducer(state: TransactionState, action: Tran
         transferAmountError: null,
         remarkInput: '',
         customCallInput: '',
+        customCallError: null,
         weightInput: '',
         unformattedReceiverAddress: null,
         addressValidationError: null,
         payload: null,
         transactionDisplayPayload: {} as TransactionDisplayPayload,
         showBalance: false,
-        formatFound: null
+        formatFound: null,
+        transactionReadyToExecute: false
       };
     case TransactionActionTypes.SET_RECEIVER_ADDRESS: {
       const { receiverAddress } = action.payload;

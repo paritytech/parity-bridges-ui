@@ -58,8 +58,8 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
   const [transactionsState, dispatchTransaction] = useReducer(transactionReducer, {
     senderAccount: null,
     transferAmount: null,
-    remarkInput: '0x',
-    customCallInput: '0x',
+    remarkInput: '',
+    customCallInput: '',
     customCallError: null,
     weightInput: '',
     transferAmountError: null,

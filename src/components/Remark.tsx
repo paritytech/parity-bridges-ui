@@ -44,7 +44,6 @@ export default function Remark() {
     <>
       <DebouncedTextField
         label="Remark"
-        initialValue={remarkInput}
         variant="outlined"
         fullWidth
         multiline
