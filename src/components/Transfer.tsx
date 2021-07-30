@@ -104,7 +104,6 @@ function Transfer() {
           fullWidth
           variant="outlined"
           helperText={transferAmountError || ''}
-          reset={transactionRunning}
           InputProps={{
             endAdornment: <TokenSymbol position="start" />
           }}

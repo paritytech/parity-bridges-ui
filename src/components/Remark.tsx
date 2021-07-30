@@ -26,7 +26,7 @@ import { DebouncedTextField } from './DebouncedTextField';
 
 export default function Remark() {
   const { dispatchTransaction } = useUpdateTransactionContext();
-  const { remarkInput, transactionReadyToExecute, transactionRunning } = useTransactionContext();
+  const { remarkInput, transactionReadyToExecute } = useTransactionContext();
 
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
@@ -49,7 +49,6 @@ export default function Remark() {
         multiline
         rows={4}
         dispatchCallback={dispatchCallback}
-        reset={transactionRunning}
       />
       <ButtonSubmit disabled={!transactionReadyToExecute} onClick={sendLaneMessage}>
         Send bridge remark from {sourceChainDetails.chain} to {targetChainDetails.chain}
