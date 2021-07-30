@@ -59,7 +59,6 @@ export const useDebounceState = ({ initialValue, wait = 500, transformCallback, 
   }, [debounced, dispatchCallback, previousDebounced]);
 
   // Mechanism to reset local state input when the transaction is executed.
-  // In case no reset parameter is set to the hook, this process will not execute.
   useEffect(() => {
     if (transactions.length) {
       const latest = maxBy(transactions, 'id');
