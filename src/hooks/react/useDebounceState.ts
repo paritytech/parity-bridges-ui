@@ -65,7 +65,6 @@ export const useDebounceState = ({ initialValue, wait = 500, transformCallback, 
       if (latest!.id !== latestTransaction) {
         setLatestTransaction(latest!.id);
         setValue('');
-        setDebounced(null);
       }
     }
   }, [latestTransaction, transactions]);
