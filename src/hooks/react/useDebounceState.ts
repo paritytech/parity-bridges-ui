@@ -40,9 +40,7 @@ export const useDebounceState = ({
   const [debounced, setDebounced] = useState(initialValue);
   const [toReset, setToReset] = useState(false);
   const [shouldDispatch, setShouldDispatch] = useState(true);
-
   const previousDebounced = usePrevious(debounced);
-  const previousReset = usePrevious(reset);
   const setDebouncedCallback = useMemo(() => debounce((value) => setDebounced(value), wait), [wait]);
 
   const setValueCallback = useCallback(
@@ -68,20 +66,23 @@ export const useDebounceState = ({
   // Mechanism to reset local state input when the transaction is executed.
   // In case no reset parameter is set to the hook, this process will not execute.
   useEffect(() => {
-    if (value && debounced && !toReset && reset && previousReset !== reset) {
+    if (reset) {
       setToReset(true);
       setShouldDispatch(false);
     }
-    if (toReset && reset) {
+  }, [reset]);
+
+  useEffect(() => {
+    if (toReset) {
       setValue('');
       setDebounced(null);
       setToReset(false);
     }
+  }, [shouldDispatch, toReset]);
 
-    if (!shouldDispatch && !reset && previousReset !== reset) {
-      setShouldDispatch(true);
-    }
-  }, [reset, previousReset, setValue, value, debounced, toReset, shouldDispatch]);
+  useEffect(() => {
+    !shouldDispatch && !toReset && setShouldDispatch(true);
+  }, [shouldDispatch, toReset]);
 
   return [value, setValueCallback, debounced];
 };
