@@ -82,7 +82,7 @@ export interface TransactionState {
   genericReceiverAccount: string | null;
   transactions: Array<TransactionStatusType>;
   evaluatingTransactions: boolean;
-  transactionDisplayPayload: TransactionDisplayPayload;
+  transactionDisplayPayload: TransactionDisplayPayload | null;
   transactionRunning: boolean;
   transactionReadyToExecute: boolean;
   evaluateTransactionStatusError: string | null;

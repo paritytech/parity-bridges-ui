@@ -17,7 +17,6 @@
 import type { InterfaceTypes } from '@polkadot/types/types';
 import moment from 'moment';
 import { TransactionActionTypes } from '../actions/transactionActions';
-import { TransactionDisplayPayload } from '../types/transactionTypes';
 import {
   updateTransaction,
   isReadyToExecute,
@@ -30,7 +29,6 @@ import { evalUnits } from '../util/evalUnits';
 import { getTransactionDisplayPayload } from '../util/transactions';
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
-  console.log('action', action);
   const transactionReadyToExecute = isReadyToExecute({ ...state, ...action.payload });
   switch (action.type) {
     case TransactionActionTypes.SET_PAYLOAD_ESTIMATED_FEE: {
@@ -45,7 +43,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
       const readyToExecute = payloadEstimatedFeeLoading ? false : transactionReadyToExecute;
 
       let payloadHex = null;
-      let transactionDisplayPayload = {} as TransactionDisplayPayload;
+      let transactionDisplayPayload = null;
 
       if (state.senderAccount && payload) {
         const res = getTransactionDisplayPayload({
@@ -180,7 +178,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
         unformattedReceiverAddress: null,
         addressValidationError: null,
         payload: null,
-        transactionDisplayPayload: {} as TransactionDisplayPayload,
+        transactionDisplayPayload: null,
+        payloadHex: null,
         showBalance: false,
         formatFound: null,
         transactionReadyToExecute: false

@@ -24,7 +24,7 @@ import { TransactionActionCreators } from '../../actions/transactionActions';
 import { web3FromSource } from '@polkadot/extension-dapp';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { SignerOptions } from '@polkadot/api/types';
-import { TransactionDisplayPayload, TransactionStatusEnum, TransactionTypes } from '../../types/transactionTypes';
+import { TransactionStatusEnum, TransactionTypes } from '../../types/transactionTypes';
 import moment from 'moment';
 import { MessageActionsCreators } from '../../actions/messageActions';
 import logger from '../../util/logger';
@@ -106,7 +106,7 @@ const useApiCalls = (): ApiCallsContextType => {
                 targetChain: '',
                 type,
                 payloadHex: '',
-                transactionDisplayPayload: {} as TransactionDisplayPayload
+                transactionDisplayPayload: null
               })
             );
           }
