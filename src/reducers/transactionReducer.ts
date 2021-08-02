@@ -94,8 +94,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
             ...state,
             remarkInput: remarkInput as string,
             transactionReadyToExecute,
-            shouldEvaluatePayloadEstimatedFee,
-            estimatedFee: remarkInput ? state.estimatedFee : null
+            shouldEvaluatePayloadEstimatedFee
           };
         }
       }
