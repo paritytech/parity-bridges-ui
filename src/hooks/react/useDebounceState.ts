@@ -33,8 +33,7 @@ interface Input {
 export const useDebounceState = ({ initialValue, wait = 500, transformCallback, dispatchCallback }: Input): Output => {
   const [value, setValue] = useState(initialValue);
   const [debounced, setDebounced] = useState(initialValue);
-  const [latestTransaction, setLatestTransaction] = useState<string | null>(null);
-  const { transactions, resetedAt } = useTransactionContext();
+  const { resetedAt } = useTransactionContext();
   const previousDebounced = usePrevious(debounced);
   const setDebouncedCallback = useMemo(() => debounce((value) => setDebounced(value), wait), [wait]);
 
@@ -57,17 +56,6 @@ export const useDebounceState = ({ initialValue, wait = 500, transformCallback, 
       dispatchCallback(debounced);
     }
   }, [debounced, dispatchCallback, previousDebounced]);
-
-  // Mechanism to reset local state input when the transaction is executed.
-  useEffect(() => {
-    if (transactions.length) {
-      const latest = maxBy(transactions, 'id');
-      if (latest!.id !== latestTransaction) {
-        setLatestTransaction(latest!.id);
-        setValue('');
-      }
-    }
-  }, [latestTransaction, transactions]);
 
   useEffect(() => {
     setValue('');
