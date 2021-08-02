@@ -20,14 +20,10 @@ import transactionReducer from '../reducers/transactionReducer';
 import { TransactionActionCreators } from '../actions/transactionActions';
 import useEstimatedFeePayload from '../hooks/transactions/useEstimatedFeePayload';
 import useResetTransactionState from '../hooks/transactions/useResetTransactionState';
-import {
-  TransactionState,
-  TransactionsActionType,
-  TransactionDisplayPayload,
-  TransactionTypes
-} from '../types/transactionTypes';
+import { TransactionState, TransactionsActionType } from '../types/transactionTypes';
 import { useAccountContext } from './AccountContextProvider';
 import { useGUIContext } from './GUIContextProvider';
+import { initTransactionState } from '../reducers/initReducersStates/initTransactionState';
 
 interface TransactionContextProviderProps {
   children: React.ReactElement;
@@ -55,36 +51,7 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
   const { children = null } = props;
   const { account } = useAccountContext();
   const { action } = useGUIContext();
-  const [transactionsState, dispatchTransaction] = useReducer(transactionReducer, {
-    senderAccount: null,
-    transferAmount: null,
-    remarkInput: '',
-    customCallInput: '',
-    customCallError: null,
-    weightInput: '',
-    transferAmountError: null,
-    estimatedFee: null,
-    receiverAddress: null,
-    unformattedReceiverAddress: null,
-    derivedReceiverAccount: null,
-    genericReceiverAccount: null,
-    evaluatingTransactions: false,
-    transactions: [],
-    transactionDisplayPayload: {} as TransactionDisplayPayload,
-    transactionRunning: false,
-    transactionReadyToExecute: false,
-    evaluateTransactionStatusError: null,
-    addressValidationError: null,
-    showBalance: false,
-    formatFound: null,
-    payload: null,
-    payloadHex: null,
-    shouldEvaluatePayloadEstimatedFee: false,
-    payloadEstimatedFeeError: null,
-    payloadEstimatedFeeLoading: false,
-    batchedTransactionState: null,
-    action: TransactionTypes.TRANSFER
-  });
+  const [transactionsState, dispatchTransaction] = useReducer(transactionReducer, initTransactionState);
 
   useResetTransactionState(action, dispatchTransaction);
 
