@@ -147,13 +147,15 @@ const Sender = () => {
       return (
         <AccountDisplay
           friendlyName={text}
-          address={account.address}
+          address={encodeAddress(account.address, ss58Format)}
           balance={senderAccountBalance?.formattedBalance}
         />
       );
     }
     return <AccountDisplay friendlyName="Select sender account" hideAddress />;
   };
+
+  console.log('sender account', account);
 
   return (
     <>
