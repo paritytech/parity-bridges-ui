@@ -26,7 +26,7 @@ import {
 import { TransactionsActionType, TransactionState } from '../types/transactionTypes';
 import logger from '../util/logger';
 import { evalUnits } from '../util/evalUnits';
-import { hexToU8a } from '@polkadot/util';
+import { isHex } from '@polkadot/util';
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
   const transactionReadyToExecute = isReadyToExecute({ ...state, ...action.payload });
@@ -88,24 +88,21 @@ export default function transactionReducer(state: TransactionState, action: Tran
       const { remarkInput } = action.payload;
 
       if (remarkInput.startsWith('0x')) {
-        try {
-          hexToU8a(remarkInput);
+        if (isHex(remarkInput)) {
           const shouldEvaluatePayloadEstimatedFee = shouldCalculatePayloadFee(state, { remarkInput });
           return {
             ...state,
-            remarkInput: remarkInput,
+            remarkInput: remarkInput.toString(),
             transactionReadyToExecute,
             shouldEvaluatePayloadEstimatedFee,
             estimatedFee: remarkInput ? state.estimatedFee : null
           };
-        } catch (error) {
-          logger.warn(`invalid remark ${remarkInput}`);
         }
       }
 
       return {
         ...state,
-        remarkInput: remarkInput,
+        remarkInput,
         transactionReadyToExecute: false,
         shouldEvaluatePayloadEstimatedFee: false,
         estimatedFee: null
