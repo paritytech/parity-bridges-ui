@@ -26,6 +26,7 @@ import {
 import { TransactionsActionType, TransactionState } from '../types/transactionTypes';
 import logger from '../util/logger';
 import { evalUnits } from '../util/evalUnits';
+import { isHex } from '@polkadot/util';
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
   const transactionReadyToExecute = isReadyToExecute({ ...state, ...action.payload });
@@ -85,14 +86,27 @@ export default function transactionReducer(state: TransactionState, action: Tran
     }
     case TransactionActionTypes.SET_REMARK_INPUT: {
       const { remarkInput } = action.payload;
-      const shouldEvaluatePayloadEstimatedFee = shouldCalculatePayloadFee(state, { remarkInput });
+
+      if (remarkInput.startsWith('0x')) {
+        if (isHex(remarkInput)) {
+          const shouldEvaluatePayloadEstimatedFee = shouldCalculatePayloadFee(state, { remarkInput });
+          return {
+            ...state,
+            remarkInput: remarkInput as string,
+            transactionReadyToExecute,
+            shouldEvaluatePayloadEstimatedFee
+          };
+        }
+      }
 
       return {
         ...state,
-        remarkInput: remarkInput,
-        transactionReadyToExecute,
-        shouldEvaluatePayloadEstimatedFee,
-        estimatedFee: remarkInput ? state.estimatedFee : null
+        remarkInput,
+        transactionReadyToExecute: false,
+        shouldEvaluatePayloadEstimatedFee: false,
+        estimatedFee: null,
+        payload: null,
+        payloadEstimatedFeeError: 'Invalid remark input'
       };
     }
     case TransactionActionTypes.SET_CUSTOM_CALL_INPUT: {
