@@ -34,7 +34,7 @@ export const useDebounceState = ({ initialValue, wait = 500, transformCallback, 
   const [value, setValue] = useState(initialValue);
   const [debounced, setDebounced] = useState(initialValue);
   const [latestTransaction, setLatestTransaction] = useState<string | null>(null);
-  const { transactions } = useTransactionContext();
+  const { transactions, resetedAt } = useTransactionContext();
   const previousDebounced = usePrevious(debounced);
   const setDebouncedCallback = useMemo(() => debounce((value) => setDebounced(value), wait), [wait]);
 
@@ -68,6 +68,10 @@ export const useDebounceState = ({ initialValue, wait = 500, transformCallback, 
       }
     }
   }, [latestTransaction, transactions]);
+
+  useEffect(() => {
+    setValue('');
+  }, [resetedAt]);
 
   return [value, setValueCallback, debounced];
 };

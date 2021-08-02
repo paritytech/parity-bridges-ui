@@ -67,6 +67,7 @@ export interface TransactionStatusType extends UpdatedTransactionStatusType {
 }
 
 export interface TransactionState {
+  resetedAt: string | null;
   senderAccount: string | null;
   remarkInput: string;
   customCallInput: string;

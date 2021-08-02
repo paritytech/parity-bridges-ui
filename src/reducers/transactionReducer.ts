@@ -15,6 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import type { InterfaceTypes } from '@polkadot/types/types';
+import moment from 'moment';
 import { TransactionActionTypes } from '../actions/transactionActions';
 import { TransactionDisplayPayload } from '../types/transactionTypes';
 import {
@@ -162,6 +163,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
     case TransactionActionTypes.RESET:
       return {
         ...state,
+        resetedAt: moment().format('x'),
         derivedReceiverAccount: null,
         estimatedFee: null,
         payloadEstimatedFeeError: null,
