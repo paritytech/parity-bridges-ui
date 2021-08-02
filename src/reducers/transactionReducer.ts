@@ -92,7 +92,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
           const shouldEvaluatePayloadEstimatedFee = shouldCalculatePayloadFee(state, { remarkInput });
           return {
             ...state,
-            remarkInput: remarkInput.toString(),
+            remarkInput: remarkInput as string,
             transactionReadyToExecute,
             shouldEvaluatePayloadEstimatedFee,
             estimatedFee: remarkInput ? state.estimatedFee : null
@@ -105,7 +105,9 @@ export default function transactionReducer(state: TransactionState, action: Tran
         remarkInput,
         transactionReadyToExecute: false,
         shouldEvaluatePayloadEstimatedFee: false,
-        estimatedFee: null
+        estimatedFee: null,
+        payload: null,
+        payloadEstimatedFeeError: 'Invalid remark input'
       };
     }
     case TransactionActionTypes.SET_CUSTOM_CALL_INPUT: {
