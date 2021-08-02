@@ -48,7 +48,7 @@ interface PayloadInput {
 }
 
 interface Output {
-  transactionDisplayPayload: TransactionDisplayPayload | null;
+  transactionDisplayPayload: TransactionDisplayPayload;
   payloadHex: string | null;
 }
 

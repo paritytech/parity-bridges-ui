@@ -155,8 +155,6 @@ const Sender = () => {
     return <AccountDisplay friendlyName="Select sender account" hideAddress />;
   };
 
-  console.log('sender account', account);
-
   return (
     <>
       <Select

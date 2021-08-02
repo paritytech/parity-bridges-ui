@@ -26,18 +26,36 @@ import {
 import { TransactionsActionType, TransactionState } from '../types/transactionTypes';
 import logger from '../util/logger';
 import { evalUnits } from '../util/evalUnits';
+import { getTransactionDisplayPayload } from '../util/transactions';
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
+  console.log('action', action);
   const transactionReadyToExecute = isReadyToExecute({ ...state, ...action.payload });
   switch (action.type) {
     case TransactionActionTypes.SET_PAYLOAD_ESTIMATED_FEE: {
       const {
         payloadEstimatedFeeError,
         payloadEstimatedFee: { estimatedFee, payload },
-        payloadEstimatedFeeLoading
+        payloadEstimatedFeeLoading,
+        sourceTargetDetails,
+        createType
       } = action.payload;
 
       const readyToExecute = payloadEstimatedFeeLoading ? false : transactionReadyToExecute;
+
+      let payloadHex = null;
+      let transactionDisplayPayload = {} as TransactionDisplayPayload;
+
+      if (state.senderAccount && payload) {
+        const res = getTransactionDisplayPayload({
+          payload,
+          account: state.senderAccount,
+          createType,
+          sourceTargetDetails
+        });
+        payloadHex = res.payloadHex;
+        transactionDisplayPayload = res.transactionDisplayPayload;
+      }
 
       return {
         ...state,
@@ -45,8 +63,11 @@ export default function transactionReducer(state: TransactionState, action: Tran
         payloadEstimatedFeeError,
         payloadEstimatedFeeLoading,
         payload: payloadEstimatedFeeError ? null : payload,
+
         transactionReadyToExecute: readyToExecute,
-        shouldEvaluatePayloadEstimatedFee: false
+        shouldEvaluatePayloadEstimatedFee: false,
+        payloadHex,
+        transactionDisplayPayload
       };
     }
 
