@@ -46,14 +46,14 @@ export default function transactionReducer(state: TransactionState, action: Tran
       let transactionDisplayPayload = null;
 
       if (state.senderAccount && payload) {
-        const res = getTransactionDisplayPayload({
+        const updated = getTransactionDisplayPayload({
           payload,
           account: state.senderAccount,
           createType,
           sourceTargetDetails
         });
-        payloadHex = res.payloadHex;
-        transactionDisplayPayload = res.transactionDisplayPayload;
+        payloadHex = updated.payloadHex;
+        transactionDisplayPayload = updated.transactionDisplayPayload;
       }
 
       return {
