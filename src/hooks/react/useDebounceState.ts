@@ -18,7 +18,6 @@ import { useCallback, useMemo, useState, useEffect } from 'react';
 import { useTransactionContext } from '../../contexts/TransactionContext';
 import usePrevious from './usePrevious';
 import debounce from 'lodash/debounce';
-import maxBy from 'lodash/maxBy';
 
 type ValueType = string | null;
 type Output = [ValueType, (event: React.ChangeEvent<HTMLInputElement>) => void, ValueType];

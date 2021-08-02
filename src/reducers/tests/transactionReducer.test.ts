@@ -24,7 +24,6 @@ import BN from 'bn.js';
 import { SourceTargetState } from '../../types/sourceTargetTypes';
 
 jest.mock('../../util/transactions');
-const transactionsMockUtil = getTransactionDisplayPayload as jest.MockedFunction<any>;
 
 describe('transactionReducer', () => {
   describe('SET_RECEIVER', () => {
