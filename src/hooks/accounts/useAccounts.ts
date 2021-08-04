@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { useCallback } from 'react';
+import { ChangeEvent, useCallback } from 'react';
 import type { KeyringPair } from '@polkadot/keyring/types';
 
 import { AccountActionCreators } from '../../actions/accountActions';
@@ -23,10 +23,11 @@ import { useUpdateAccountContext } from '../../contexts/AccountContextProvider';
 import { useUpdateSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import { useAccountContext } from '../../contexts/AccountContextProvider';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
+import { DisplayAccount } from '../../types/accountTypes';
 
 interface Accounts {
   accounts: Array<KeyringPair> | [];
-  setCurrentAccount: (value: string, chain: string) => void;
+  setCurrentAccount: (evt: ChangeEvent<{}>, account: DisplayAccount | null) => void;
 }
 
 const useAccounts = (): Accounts => {
@@ -36,11 +37,12 @@ const useAccounts = (): Accounts => {
   const { accounts } = useAccountContext();
 
   const setCurrentAccount = useCallback(
-    (evt: any, newValue: any) => {
+    (evt, account) => {
       const {
         sourceChain,
         sourceAccount: { accountKeyring }
-      } = newValue;
+      } = account;
+
       dispatchChangeSourceTarget(SourceTargetActionsCreators.switchChains(sourceChain));
       dispatchAccount(AccountActionCreators.setAccount(accountKeyring, sourceTarget));
     },

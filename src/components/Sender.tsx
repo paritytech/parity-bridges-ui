@@ -14,27 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useEffect, useState } from 'react';
-import cx from 'classnames';
-import { MenuItem, Select } from '@material-ui/core';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { encodeAddress } from '@polkadot/util-crypto';
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import useAccounts from '../hooks/accounts/useAccounts';
-import useLoadingApi from '../hooks/connections/useLoadingApi';
-import { Account as AccountType } from '../types/accountTypes';
-import formatAccounts from '../util/formatAccounts';
-import Account from './Account';
-import AccountDisplay from './AccountDisplay';
-import { AddressKind } from '../types/accountTypes';
-import { SelectLabel, styleAccountCompanion } from '../components';
-import useChainGetters from '../hooks/chain/useChainGetters';
-import BridgedLocalWrapper from '../components/BridgedLocalWrapper';
-import { useGUIContext } from '../contexts/GUIContextProvider';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { styleAccountCompanion } from '.';
 import { useAccountContext } from '../contexts/AccountContextProvider';
+import AccountDisplay from './AccountDisplay';
+import BridgedLocalWrapper from './BridgedLocalWrapper';
+import { Account, AddressKind } from '../types/accountTypes';
 import isNull from 'lodash/isNull';
-
-// TODO replace MUI Select with MUI Popover it wraps around or Autocomplete to have more control over appearance
+import { TextField } from '@material-ui/core';
+import useAccounts from '../hooks/accounts/useAccounts';
 
 const useStyles = makeStyles((theme) => ({
   networkHeading: {
@@ -52,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'block',
     paddingTop: theme.spacing(),
     paddingBottom: theme.spacing(),
-    paddingLeft: theme.spacing(1.75)
+    paddingLeft: theme.spacing()
   },
   accountMain: {
     '& .MuiSelect-select': {
@@ -74,105 +64,51 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const Sender = () => {
-  const { isBridged } = useGUIContext();
-  const classes = useStyles();
-  const [chains, setChains] = useState<Array<string[]>>([]);
+const getName = (account: Account) => (account!.meta.name as string).toLocaleUpperCase();
+
+export default function Sender() {
   const { setCurrentAccount } = useAccounts();
   const {
+    displaySenderAccounts: options,
     account,
-    accounts,
     companionAccount,
     senderAccountBalance,
     senderCompanionAccountBalance
   } = useAccountContext();
-  const {
-    sourceChainDetails: {
-      chain: sourceChain,
-      configs: { ss58Format }
-    },
-    targetChainDetails: { chain: targetChain }
-  } = useSourceTarget();
-  const { getSS58PrefixByChain } = useChainGetters();
-
-  const { areApiReady } = useLoadingApi();
-
-  useEffect(() => {
-    if (!chains.length) {
-      setChains([
-        [sourceChain, targetChain],
-        [targetChain, sourceChain]
-      ]);
-    }
-  }, [chains.length, sourceChain, targetChain]);
-
-  const value = account ? encodeAddress(account.address, ss58Format) : 'init';
-
-  const onChange = (value: string, chain: string) => {
-    setCurrentAccount(value, chain);
-  };
-
-  const renderAccounts = (chains: string[]) => {
-    const [source, target] = chains;
-    const ss58Format = getSS58PrefixByChain(source);
-    const formatedAccounts = formatAccounts(accounts, ss58Format);
-    const items = formatedAccounts.map(({ text, value, key }: any) => (
-      <MenuItem
-        className={classes.selectAccountMainItem}
-        key={key}
-        value={value}
-        onClick={() => {
-          onChange(value, source);
-        }}
-      >
-        <Account friendlyName={text} value={value} chain={source} />
-        <BridgedLocalWrapper>
-          <Account friendlyName={text} value={value} chain={target} isDerived hideAddress />
-        </BridgedLocalWrapper>
-      </MenuItem>
-    ));
-    return [
-      <div className={classes.networkHeading} key={source}>
-        {source}
-      </div>,
-      items
-    ];
-  };
-
-  const getName = (account: AccountType) => (account!.meta.name as string).toLocaleUpperCase();
-
-  const AccountSelected = () => {
-    if (account) {
-      const text = getName(account);
-      return (
-        <AccountDisplay
-          friendlyName={text}
-          address={account.address}
-          balance={senderAccountBalance?.formattedBalance}
-        />
-      );
-    }
-    return <AccountDisplay friendlyName="Select sender account" hideAddress />;
-  };
+  const classes = useStyles();
 
   return (
     <>
-      <Select
-        id="test-sender-component"
-        disableUnderline
-        fullWidth
-        disabled={!areApiReady}
-        className={cx(classes.accountMain, isBridged ? classes.bridgedBottomBorders : '')}
-        value={value}
-        renderValue={(): React.ReactNode => (
-          <>
-            <SelectLabel>Sender</SelectLabel>
-            <AccountSelected />
-          </>
+      <Autocomplete
+        options={options}
+        groupBy={(option) => option.sourceChain}
+        getOptionLabel={(option) => option.sourceAccount.name || ''}
+        onChange={setCurrentAccount}
+        disableClearable
+        renderInput={(params) => (
+          <TextField
+            label="Sender"
+            placeholder="Please select account"
+            value={`${account?.address} ${senderAccountBalance?.formattedBalance}`}
+            {...params}
+            variant="outlined"
+          />
         )}
-      >
-        {chains.map((chain) => renderAccounts(chain))}
-      </Select>
+        renderOption={(option) => (
+          <div className={classes.selectAccountMainItem}>
+            <AccountDisplay
+              friendlyName={option.sourceAccount.name}
+              address={option.sourceAccount.address}
+              balance={option.sourceAccount.balance.formattedBalance}
+            />
+            <AccountDisplay
+              friendlyName={option.companionAccount.name}
+              address={option.companionAccount.address}
+              balance={option.companionAccount.balance.formattedBalance}
+            />
+          </div>
+        )}
+      />
       <BridgedLocalWrapper>
         <div className={classes.accountCompanion}>
           {companionAccount && !isNull(senderCompanionAccountBalance) ? (
@@ -191,6 +127,4 @@ const Sender = () => {
       </BridgedLocalWrapper>
     </>
   );
-};
-
-export default Sender;
+}
