@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { Account, BalanceState, DisplayAccounts } from '../types/accountTypes';
+import type { Account, BalanceState, DisplayAccount } from '../types/accountTypes';
 import type { SourceTargetState } from '../types/sourceTargetTypes';
 
 import { KeyringPair } from '@polkadot/keyring/types';
@@ -44,7 +44,7 @@ const setAccounts = (accounts: KeyringPair[]) => ({
   type: AccountActionsTypes.SET_ACCOUNTS
 });
 
-const setDisplaySenderAccounts = (displaySenderAccounts: DisplayAccounts) => ({
+const setDisplaySenderAccounts = (displaySenderAccounts: DisplayAccount[]) => ({
   payload: { displaySenderAccounts },
   type: AccountActionsTypes.SET_DISPLAY_SENDER_ACCOUNTS
 });
