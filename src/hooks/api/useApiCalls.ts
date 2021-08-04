@@ -73,7 +73,7 @@ const useApiCalls = (): ApiCallsContextType => {
       const { receiverAddress, transferAmount, account } = transfersData;
       const type = TransactionTypes.LOCAL_TRANSFER;
 
-      const id = Date.now();
+      const id = Date.now().toString();
       dispatchTransaction(TransactionActionCreators.setTransactionRunning(true));
 
       try {
