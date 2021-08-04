@@ -25,7 +25,6 @@ import { web3FromSource } from '@polkadot/extension-dapp';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { SignerOptions } from '@polkadot/api/types';
 import { TransactionStatusEnum, TransactionTypes } from '../../types/transactionTypes';
-import moment from 'moment';
 import { MessageActionsCreators } from '../../actions/messageActions';
 import logger from '../../util/logger';
 import { formatBalance } from '@polkadot/util';
@@ -74,7 +73,7 @@ const useApiCalls = (): ApiCallsContextType => {
       const { receiverAddress, transferAmount, account } = transfersData;
       const type = TransactionTypes.LOCAL_TRANSFER;
 
-      const id = moment().format('x');
+      const id = Date.now();
       dispatchTransaction(TransactionActionCreators.setTransactionRunning(true));
 
       try {
