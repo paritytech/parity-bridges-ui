@@ -24,6 +24,7 @@ import BridgedLocalWrapper from './BridgedLocalWrapper';
 import { Account, AddressKind } from '../types/accountTypes';
 import isNull from 'lodash/isNull';
 import { TextField } from '@material-ui/core';
+import useAccounts from '../hooks/accounts/useAccounts';
 
 const useStyles = makeStyles((theme) => ({
   networkHeading: {
@@ -66,6 +67,7 @@ const useStyles = makeStyles((theme) => ({
 const getName = (account: Account) => (account!.meta.name as string).toLocaleUpperCase();
 
 export default function NewSender() {
+  const { setCurrentAccount } = useAccounts();
   const {
     displaySenderAccounts: options,
     account,
@@ -76,18 +78,21 @@ export default function NewSender() {
   const classes = useStyles();
   console.log('displaySenderAccounts', options);
 
-  const onChange = (evt: any, newValue: any) => {
-    console.log('newValue', newValue);
-  };
-
   return (
     <>
       <Autocomplete
         options={options}
         groupBy={(option) => option.sourceChain}
         getOptionLabel={(option) => option.sourceAccount.name || ''}
-        onChange={onChange}
-        renderInput={(params) => <TextField {...params} variant="outlined" />}
+        onChange={setCurrentAccount}
+        renderInput={(params) => (
+          <TextField
+            label="Please select account"
+            value={`${account?.address} ${senderAccountBalance?.formattedBalance}`}
+            {...params}
+            variant="outlined"
+          />
+        )}
         /*         renderInput={(params) => {
           if (account) {
             const text = getName(account);
