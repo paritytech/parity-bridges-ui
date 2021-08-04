@@ -101,11 +101,13 @@ export default function Sender() {
               address={option.sourceAccount.address}
               balance={option.sourceAccount.balance.formattedBalance}
             />
-            <AccountDisplay
-              friendlyName={option.companionAccount.name}
-              address={option.companionAccount.address}
-              balance={option.companionAccount.balance.formattedBalance}
-            />
+            <BridgedLocalWrapper>
+              <AccountDisplay
+                friendlyName={option.companionAccount.name}
+                address={option.companionAccount.address}
+                balance={option.companionAccount.balance.formattedBalance}
+              />
+            </BridgedLocalWrapper>
           </div>
         )}
       />
