@@ -15,38 +15,10 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import { TransactionDisplayPayload, TransactionState, TransactionTypes } from '../../types/transactionTypes';
+import { TransactionState } from '../../types/transactionTypes';
+import { initTransactionState } from '../initReducersStates/initTransactionState';
 
-export const state: TransactionState = {
-  senderAccount: null,
-  transferAmount: null,
-  remarkInput: '0x',
-  customCallInput: '0x',
-  customCallError: null,
-  weightInput: '',
-  transferAmountError: null,
-  estimatedFee: null,
-  receiverAddress: null,
-  unformattedReceiverAddress: null,
-  derivedReceiverAccount: null,
-  genericReceiverAccount: null,
-  transactions: [],
-  transactionDisplayPayload: {} as TransactionDisplayPayload,
-  transactionRunning: false,
-  transactionReadyToExecute: false,
-  evaluateTransactionStatusError: null,
-  evaluatingTransactions: false,
-  addressValidationError: null,
-  showBalance: false,
-  formatFound: null,
-  payload: null,
-  payloadHex: null,
-  shouldEvaluatePayloadEstimatedFee: false,
-  payloadEstimatedFeeError: null,
-  payloadEstimatedFeeLoading: false,
-  batchedTransactionState: null,
-  action: TransactionTypes.TRANSFER
-};
+export const state: TransactionState = initTransactionState;
 
 export const apiConnection = {
   api: {} as ApiPromise,

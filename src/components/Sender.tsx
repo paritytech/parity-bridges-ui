@@ -147,7 +147,7 @@ const Sender = () => {
       return (
         <AccountDisplay
           friendlyName={text}
-          address={account.address}
+          address={encodeAddress(account.address, ss58Format)}
           balance={senderAccountBalance?.formattedBalance}
         />
       );

@@ -67,6 +67,7 @@ export interface TransactionStatusType extends UpdatedTransactionStatusType {
 }
 
 export interface TransactionState {
+  resetedAt: string | null;
   senderAccount: string | null;
   remarkInput: string;
   customCallInput: string;
@@ -81,7 +82,7 @@ export interface TransactionState {
   genericReceiverAccount: string | null;
   transactions: Array<TransactionStatusType>;
   evaluatingTransactions: boolean;
-  transactionDisplayPayload: TransactionDisplayPayload;
+  transactionDisplayPayload: TransactionDisplayPayload | null;
   transactionRunning: boolean;
   transactionReadyToExecute: boolean;
   evaluateTransactionStatusError: string | null;

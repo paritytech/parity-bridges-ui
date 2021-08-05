@@ -18,7 +18,6 @@ import { useCallback, useMemo, useState, useEffect } from 'react';
 import { useTransactionContext } from '../../contexts/TransactionContext';
 import usePrevious from './usePrevious';
 import debounce from 'lodash/debounce';
-import maxBy from 'lodash/maxBy';
 
 type ValueType = string | null;
 type Output = [ValueType, (event: React.ChangeEvent<HTMLInputElement>) => void, ValueType];
@@ -33,8 +32,7 @@ interface Input {
 export const useDebounceState = ({ initialValue, wait = 500, transformCallback, dispatchCallback }: Input): Output => {
   const [value, setValue] = useState(initialValue);
   const [debounced, setDebounced] = useState(initialValue);
-  const [latestTransaction, setLatestTransaction] = useState<string | null>(null);
-  const { transactions } = useTransactionContext();
+  const { resetedAt } = useTransactionContext();
   const previousDebounced = usePrevious(debounced);
   const setDebouncedCallback = useMemo(() => debounce((value) => setDebounced(value), wait), [wait]);
 
@@ -58,16 +56,9 @@ export const useDebounceState = ({ initialValue, wait = 500, transformCallback, 
     }
   }, [debounced, dispatchCallback, previousDebounced]);
 
-  // Mechanism to reset local state input when the transaction is executed.
   useEffect(() => {
-    if (transactions.length) {
-      const latest = maxBy(transactions, 'id');
-      if (latest!.id !== latestTransaction) {
-        setLatestTransaction(latest!.id);
-        setValue('');
-      }
-    }
-  }, [latestTransaction, transactions]);
+    setValue('');
+  }, [resetedAt]);
 
   return [value, setValueCallback, debounced];
 };

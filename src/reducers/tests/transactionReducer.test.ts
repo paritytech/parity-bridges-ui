@@ -19,7 +19,11 @@ import transactionReducer from '../transactionReducer';
 import { TransactionActionCreators } from '../../actions/transactionActions';
 import { TransactionPayload, TransactionTypes } from '../../types/transactionTypes';
 import { compactAddLength } from '@polkadot/util';
+import { getTransactionDisplayPayload } from '../../util/transactions';
 import BN from 'bn.js';
+import { SourceTargetState } from '../../types/sourceTargetTypes';
+
+jest.mock('../../util/transactions');
 
 describe('transactionReducer', () => {
   describe('SET_RECEIVER', () => {
@@ -120,13 +124,19 @@ describe('transactionReducer', () => {
       payloadEstimatedFeeError = null;
       payloadEstimatedFee = { estimatedFee: null, payload: null };
       payloadEstimatedFeeLoading = false;
+      (getTransactionDisplayPayload as jest.Mock).mockReturnValue({
+        payloadHex: null,
+        transactionDisplayPayload: null
+      });
     });
 
     it('should return initial state regarding estimated fee', () => {
       const action = TransactionActionCreators.setPayloadEstimatedFee(
         payloadEstimatedFeeError,
         payloadEstimatedFee,
-        payloadEstimatedFeeLoading
+        payloadEstimatedFeeLoading,
+        {} as SourceTargetState,
+        () => 'type'
       );
       const result = transactionReducer(state, action);
 
@@ -144,7 +154,9 @@ describe('transactionReducer', () => {
       const action = TransactionActionCreators.setPayloadEstimatedFee(
         payloadEstimatedFeeError,
         payloadEstimatedFee,
-        payloadEstimatedFeeLoading
+        payloadEstimatedFeeLoading,
+        {} as SourceTargetState,
+        () => 'type'
       );
       const result = transactionReducer(state, action);
 
@@ -154,7 +166,9 @@ describe('transactionReducer', () => {
         payloadEstimatedFeeError: null,
         payloadEstimatedFeeLoading: true,
         payload: null,
-        transactionReadyToExecute: false
+        transactionReadyToExecute: false,
+        payloadHex: null,
+        transactionDisplayPayload: null
       });
     });
 
@@ -163,7 +177,9 @@ describe('transactionReducer', () => {
       const action = TransactionActionCreators.setPayloadEstimatedFee(
         payloadEstimatedFeeError,
         payloadEstimatedFee,
-        payloadEstimatedFeeLoading
+        payloadEstimatedFeeLoading,
+        {} as SourceTargetState,
+        () => 'type'
       );
       const result = transactionReducer(state, action);
 
@@ -173,7 +189,9 @@ describe('transactionReducer', () => {
         payloadEstimatedFeeError,
         payloadEstimatedFeeLoading: false,
         payload: null,
-        transactionReadyToExecute: false
+        transactionReadyToExecute: false,
+        payloadHex: null,
+        transactionDisplayPayload: null
       });
     });
 
@@ -182,7 +200,9 @@ describe('transactionReducer', () => {
       const action = TransactionActionCreators.setPayloadEstimatedFee(
         payloadEstimatedFeeError,
         payloadEstimatedFee,
-        payloadEstimatedFeeLoading
+        payloadEstimatedFeeLoading,
+        {} as SourceTargetState,
+        () => 'type'
       );
       const result = transactionReducer(state, action);
 
@@ -192,25 +212,38 @@ describe('transactionReducer', () => {
         payloadEstimatedFeeError,
         payloadEstimatedFeeLoading: false,
         payload: null,
-        transactionReadyToExecute: false
+        transactionReadyToExecute: false,
+        payloadHex: null,
+        transactionDisplayPayload: null
       });
     });
 
     it('should return corresponding estimated fee, payload and all the necessary conditions to execute the transaction', () => {
+      const payloadHex = 'payloadHexMode';
+
+      const createType = jest.fn();
       const payload = {
         call: compactAddLength(new Uint8Array([0, 0, 0, 0])),
         origin: {
           SourceAccount: new Uint8Array([0, 0, 0, 0])
         },
         spec_version: 1,
-        weight: '1234'
+        weight: 1234
       };
+      const transactionDisplayPayload = { payload };
+      (getTransactionDisplayPayload as jest.Mock).mockReturnValue({
+        payloadHex,
+        transactionDisplayPayload
+      });
       const estimatedFee = '1234';
       payloadEstimatedFee = { estimatedFee, payload };
+      const sourceTargetDetails = {};
       const action = TransactionActionCreators.setPayloadEstimatedFee(
         payloadEstimatedFeeError,
         payloadEstimatedFee,
-        payloadEstimatedFeeLoading
+        payloadEstimatedFeeLoading,
+        sourceTargetDetails,
+        createType
       );
 
       const newState = { ...state };
@@ -226,7 +259,9 @@ describe('transactionReducer', () => {
         payloadEstimatedFeeError: null,
         payloadEstimatedFeeLoading: false,
         payload,
-        transactionReadyToExecute: true
+        transactionReadyToExecute: true,
+        payloadHex,
+        transactionDisplayPayload
       });
     });
   });

@@ -39,13 +39,14 @@ export const useEstimatedFeePayload = (
   const { createType, stateCall } = useApiCallsContext();
 
   const laneId = useLaneId();
+  const sourceTargetDetails = useSourceTarget();
   const {
     sourceChainDetails: { chain: sourceChain },
     targetChainDetails: {
       apiConnection: { api: targetApi },
       chain: targetChain
     }
-  } = useSourceTarget();
+  } = sourceTargetDetails;
   const { account } = useAccountContext();
   const { action } = useGUIContext();
   const { estimatedFeeMethodName } = getSubstrateDynamicNames(targetChain);
@@ -53,8 +54,10 @@ export const useEstimatedFeePayload = (
 
   const dispatch = useCallback(
     (error: string | null, data: PayloadEstimatedFee | null, loading: boolean) =>
-      dispatchTransaction(TransactionActionCreators.setPayloadEstimatedFee(error, data, loading)),
-    [dispatchTransaction]
+      dispatchTransaction(
+        TransactionActionCreators.setPayloadEstimatedFee(error, data, loading, sourceTargetDetails, createType)
+      ),
+    [createType, dispatchTransaction, sourceTargetDetails]
   );
 
   const calculateFeeAndPayload = useCallback(
