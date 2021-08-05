@@ -17,7 +17,7 @@
 module.exports = {
   preset: 'jest-puppeteer',
   globals: {
-    SERVER_URL: 'http://localhost:3001',
+    SERVER_URL: 'https://paritytech.github.io/parity-bridges-ui',
     JEST_TIMEOUT: 10000
   },
   testRegex: './*\\.test\\.js$',
