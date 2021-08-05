@@ -24,7 +24,6 @@ import useBalance from '../subscriptions/useBalance';
 
 const useAccountsContextSetUp = (accountState: AccountState, dispatchAccount: Dispatch<AccountsActionType>) => {
   const { keyringPairs, keyringPairsReady } = useKeyringContext();
-  const { updateSenderAccountsInformation } = useApiCallsContext();
 
   const {
     targetChainDetails: {
@@ -46,7 +45,7 @@ const useAccountsContextSetUp = (accountState: AccountState, dispatchAccount: Di
     if (keyringPairsReady && keyringPairs.length) {
       dispatchAccount(AccountActionCreators.setAccounts(keyringPairs));
     }
-  }, [keyringPairsReady, keyringPairs, dispatchAccount, updateSenderAccountsInformation]);
+  }, [keyringPairsReady, keyringPairs, dispatchAccount]);
 };
 
 export default useAccountsContextSetUp;

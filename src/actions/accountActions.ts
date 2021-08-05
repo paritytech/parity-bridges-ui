@@ -26,8 +26,8 @@ enum AccountActionsTypes {
   SET_SENDER_BALANCES = 'SET_SENDER_BALANCES'
 }
 
-const setAccount = (account: Account, sourceTarget: SourceTargetState) => ({
-  payload: { account, sourceTarget },
+const setAccount = (account: Account, sourceTarget: SourceTargetState, sourceChain: string) => ({
+  payload: { account, sourceTarget, sourceChain },
   type: AccountActionsTypes.SET_ACCOUNT
 });
 
