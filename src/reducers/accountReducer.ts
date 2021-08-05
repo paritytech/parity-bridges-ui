@@ -23,16 +23,16 @@ export default function accountReducer(state: AccountState, action: AccountsActi
     case AccountActionsTypes.SET_ACCOUNT: {
       const { account, sourceTarget } = action.payload;
       const {
-        targetChainDetails: { configs },
+        targetChainDetails: { configs, chain: targetChain },
         sourceChainDetails: {
-          configs: { chainName: sourceChainName }
+          apiConnection: { api: sourceApi }
         }
       } = sourceTarget;
 
       const toDerive = {
         ss58Format: configs.ss58Format,
         address: account?.address || '',
-        bridgeId: getBridgeId(configs, sourceChainName)
+        bridgeId: getBridgeId(sourceApi, targetChain)
       };
       const companionAccount = getDeriveAccount(toDerive);
 
