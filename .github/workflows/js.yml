@@ -57,12 +57,12 @@ jobs:
         node-version: '14'
     - run: yarn
     - run: yarn test
-    # - name: Run Puppeteer
-    #   uses: mujo-code/puppeteer-headful@master
-    #   env:
-    #     CI: 'true'
-    #   with:
-    #     args: yarn test:e2e-alone
+    - name: Run Puppeteer
+      uses: mujo-code/puppeteer-headful@master
+      env:
+        CI: 'true'
+      with:
+        args: yarn test:e2e-alone
 
   build:
     name: Build & Deploy
