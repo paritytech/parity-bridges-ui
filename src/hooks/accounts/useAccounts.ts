@@ -44,7 +44,7 @@ const useAccounts = (): Accounts => {
       } = account;
 
       dispatchChangeSourceTarget(SourceTargetActionsCreators.switchChains(sourceChain));
-      dispatchAccount(AccountActionCreators.setAccount(accountKeyring, sourceTarget));
+      dispatchAccount(AccountActionCreators.setAccount(accountKeyring, sourceTarget, sourceChain));
     },
     [dispatchAccount, dispatchChangeSourceTarget, sourceTarget]
   );
