@@ -30,13 +30,10 @@ export const useGenericAccount = (value: string) => {
 
   const { dispatchTransaction } = useUpdateTransactionContext();
   const {
-    sourceChainDetails: {
-      apiConnection: { api: sourceApi }
-    },
+    sourceChainDetails: { chain: sourceChain },
     targetChainDetails: {
       configs: targetConfigs,
-      apiConnection: { api: targetApi },
-      chain: targetChain
+      apiConnection: { api: targetApi }
     }
   } = useSourceTarget();
 
@@ -46,7 +43,7 @@ export const useGenericAccount = (value: string) => {
   const companionAddress = getDeriveAccount({
     ss58Format: targetConfigs.ss58Format,
     address: value,
-    bridgeId: getBridgeId(sourceApi, targetChain)
+    bridgeId: getBridgeId(targetApi, sourceChain)
   });
   const companionState = useBalance(targetApi, companionAddress, true);
 

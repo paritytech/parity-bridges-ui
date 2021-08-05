@@ -30,7 +30,7 @@ export const getConfigs = async (apiPromise: ApiPromise): Promise<Configs> => {
 export const getBridgeId = (sourceApi: ApiPromise, targetChain: string): Uint8Array => {
   const { bridgedMessages } = getSubstrateDynamicNames(targetChain);
   const bridgeId = sourceApi.consts[bridgedMessages].bridgedId.toU8a();
-  console.log('bridgedId', targetChain, bridgeId);
+
   if (!bridgeId) {
     throw new Error(`Missing bridgeId for ${targetChain} in ${bridgedMessages} pallet.`);
   }

@@ -22,7 +22,7 @@ export const state: TransactionState = initTransactionState;
 
 const api: jest.Mocked<ApiPromise> = {
   consts: {
-    bridgechain2Messages: {
+    bridgechain1Messages: {
       //@ts-ignore
       bridgedId: {
         toU8a: () => new Uint8Array([1, 2, 3])
@@ -43,10 +43,8 @@ export const targetConfigs = {
 
 export const sourceChainDetails = {
   configs: sourceConfigs,
-  apiConnection: {
-    api,
-    isApiReady: true
-  },
+  api: {} as ApiPromise,
+
   chain: 'chain1',
   polkadotjsUrl: 'url1'
 };
@@ -54,7 +52,7 @@ export const sourceChainDetails = {
 export const targetChainDetails = {
   configs: targetConfigs,
   apiConnection: {
-    api: {} as ApiPromise,
+    api,
     isApiReady: true
   },
   chain: 'chain2',

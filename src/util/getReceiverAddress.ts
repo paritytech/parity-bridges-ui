@@ -26,15 +26,15 @@ interface Props {
 }
 
 const getReceiverAddress = ({ targetChainDetails, sourceChainDetails, receiverAddress }: Props) => {
+  const { configs: sourceConfigs, chain: sourceChain } = sourceChainDetails;
   const {
-    apiConnection: { api: sourceApi },
-    configs: sourceConfigs,
-    chain: sourceChain
-  } = sourceChainDetails;
-  const { chain: targetChain, configs: targetConfigs } = targetChainDetails;
+    apiConnection: { api: targetApi },
+    chain: targetChain,
+    configs: targetConfigs
+  } = targetChainDetails;
 
   const targetSS58Format = targetConfigs.ss58Format;
-  const bridgeId = getBridgeId(sourceApi, targetChain);
+  const bridgeId = getBridgeId(targetApi, sourceChain);
 
   const getChainBySS58Prefix = (prefix: number) => {
     switch (prefix) {

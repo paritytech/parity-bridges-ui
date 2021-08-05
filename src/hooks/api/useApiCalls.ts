@@ -171,12 +171,12 @@ const useApiCalls = (): ApiCallsContextType => {
       const getAccountInformation = async (sourceRole: any, targetRole: any) => {
         const {
           apiConnection: { api: sourceApi },
+          chain: sourceChain,
           configs: sourceConfigs
         } = sourceRole;
         const {
           apiConnection: { api: targetApi },
-          configs: targetConfigs,
-          chain: targetChain
+          configs: targetConfigs
         } = targetRole;
 
         const accounts = await Promise.all(
@@ -185,7 +185,7 @@ const useApiCalls = (): ApiCallsContextType => {
             const toDerive = {
               ss58Format: targetConfigs.ss58Format,
               address: sourceAddress || '',
-              bridgeId: getBridgeId(sourceApi, targetChain)
+              bridgeId: getBridgeId(targetApi, sourceChain)
             };
             const { data } = await sourceApi.query.system.account(sourceAddress);
             const sourceBalance = formatBalanceAddress(data, sourceApi);

@@ -44,7 +44,7 @@ const useApiBalance = (address: string | null, chain: string | undefined | null,
 
   const ss58Format = chain === targetChain ? targetConfigs.ss58Format : sourceConfigs.ss58Format;
 
-  const bridgeId = chain === targetChain ? getBridgeId(sourceApi, targetChain) : getBridgeId(targetApi, sourceChain);
+  const bridgeId = chain === targetChain ? getBridgeId(targetApi, sourceChain) : getBridgeId(sourceApi, targetChain);
 
   const addressResult = !isDerived
     ? address
