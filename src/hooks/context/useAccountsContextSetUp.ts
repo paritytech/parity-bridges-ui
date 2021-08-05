@@ -18,7 +18,6 @@ import { Dispatch, useEffect } from 'react';
 import { AccountActionCreators } from '../../actions/accountActions';
 import { useKeyringContext } from '../../contexts/KeyringContextProvider';
 import { AccountsActionType, AccountState } from '../../types/accountTypes';
-import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import useBalance from '../subscriptions/useBalance';
 
