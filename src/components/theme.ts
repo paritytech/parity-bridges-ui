@@ -19,12 +19,14 @@ import red from '@material-ui/core/colors/red';
 import { ThemeOptions } from '@material-ui/core/styles';
 import { PaletteOptions } from '@material-ui/core/styles/createPalette';
 import { Shadows } from '@material-ui/core/styles/shadows';
+import Web3Regular from '../fonts/Web3-Regular.woff';
+import Web3Regular2 from '../fonts/Web3-Regular.woff2';
 
 export const bridgesBlue = {
   100: '#2E99E5',
   300: '#2E99E5',
   400: '#2E99E5',
-  500: '#2E99E5'
+  500: '#1a73b3'
 };
 export const substrateGray = {
   50: '#FCFCFC',
@@ -55,7 +57,7 @@ const paletteLight: PaletteOptions = {
   },
   background: {
     paper: '#FFFFFF',
-    default: '#FFFFFF'
+    default: substrateGray[50]
   },
   primary: {
     light: bridgesBlue[100],
@@ -117,7 +119,7 @@ const shadows: Shadows = [
   '0px 10px 13px -6px rgba(0,0,0,0.2),0px 20px 31px 3px rgba(0,0,0,0.14),0px 8px 38px 7px rgba(0,0,0,0.12)',
   '0px 10px 13px -6px rgba(0,0,0,0.2),0px 21px 33px 3px rgba(0,0,0,0.14),0px 8px 40px 7px rgba(0,0,0,0.12)',
   '0px 10px 14px -6px rgba(0,0,0,0.2),0px 22px 35px 3px rgba(0,0,0,0.14),0px 8px 42px 7px rgba(0,0,0,0.12)',
-  '0px 32px 24px rgb(0 0 0 / 5%), 0px 16px 20px rgb(0 0 0 / 4%), 0px 12px 12px rgb(0 0 0 / 4%), 0px 6px 6px rgb(0 0 0 / 3%), 0px 3px 2px rgb(0 0 0 / 2%)',
+  '0px 32px 24px rgb(0 0 0 / 5%), 0px 16px 20px rgb(0 0 0 / 4%), 0px 6px 6px rgb(0 0 0 / 3%), 0px 3px 2px rgb(0 0 0 / 2%)',
   '0px 100px 80px rgba(0, 0, 0, 0.07), 0px 40px 32px rgba(0, 0, 0, 0.05), 0px 20px 20px rgba(0, 0, 0, 0.04), 0px 12px 12px rgba(0, 0, 0, 0.04), 0px 6px 6px rgba(0, 0, 0, 0.03), 0px 3px 2px rgba(0, 0, 0, 0.02)'
 ];
 
@@ -187,6 +189,28 @@ export const light: ThemeOptions = {
       fontSize: 14,
       letterSpacing: 0.3,
       textTransform: 'uppercase'
+    }
+  },
+  overrides: {
+    MuiCssBaseline: {
+      '@global': {
+        '@font-face': {
+          fontFamily: 'Web3-Regular',
+          fontStyle: 'normal',
+          fontDisplay: 'swap',
+          fontWeight: 400,
+          src: `
+              local('Web3-Regular'),
+              url(${Web3Regular}) format('woff'),
+              url(${Web3Regular2}) format('woff2')
+            `
+        },
+        '.Web3Icon': {
+          fontFamily: 'Web3-Regular !important',
+          letterSpacing: 0,
+          textTransform: 'lowercase'
+        }
+      }
     }
   },
   palette: paletteLight,

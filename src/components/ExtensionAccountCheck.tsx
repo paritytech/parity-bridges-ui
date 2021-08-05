@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 import React from 'react';
-import { Alert } from '.';
 import { useKeyringContext } from '../contexts/KeyringContextProvider';
 import useLoadingApi from '../hooks/connections/useLoadingApi';
+import { ButtonInstallExtension } from './Buttons';
 
 interface Props {
   component: JSX.Element;
@@ -48,7 +48,7 @@ const ExtensionAccountCheck = ({ component }: Props): JSX.Element => {
     }`;
   }
 
-  return <>{msg ? <Alert severity="error">{msg}</Alert> : component}</>;
+  return <>{msg ? <ButtonInstallExtension>{msg}</ButtonInstallExtension> : component}</>;
 };
 
 export default ExtensionAccountCheck;

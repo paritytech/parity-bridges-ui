@@ -18,6 +18,7 @@ import { Box, Button, ButtonProps } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ForumIcon from '@material-ui/icons/Forum';
 import React from 'react';
+import { Web3Icon } from '.';
 
 const useStyles = makeStyles((theme) => ({
   submit: {
@@ -38,6 +39,12 @@ const useStyles = makeStyles((theme) => ({
     '&.MuiButton-textPrimary': {
       backgroundColor: theme.palette.secondary.light
     }
+  },
+  installExtension: {
+    padding: theme.spacing(2.5),
+    borderRadius: theme.spacing(1.5),
+    color: theme.palette.primary.dark,
+    fontWeight: 400
   }
 }));
 
@@ -73,6 +80,30 @@ export const ButtonDrawerMenu = ({ children, color = 'secondary', fullWidth = tr
   return (
     <Button className={classes.drawerMenu} color={color} fullWidth={fullWidth} {...props}>
       {children}
+    </Button>
+  );
+};
+
+export const ButtonInstallExtension = ({ children, color = 'secondary', fullWidth = true, ...props }: ButtonProps) => {
+  const classes = useStyles();
+  const openInNewTab = (): void => {
+    const newWindow = window.open('https://polkadot.js.org/extension/', '_blank', 'noopener,noreferrer');
+    if (newWindow) newWindow.opener = null;
+  };
+  return (
+    <Button
+      className={classes.installExtension}
+      color={color}
+      fullWidth={fullWidth}
+      onClick={() => openInNewTab()}
+      {...props}
+    >
+      <Box display="flex" justifyContent="space-between" width="100%">
+        <span>{children}</span>
+        <Web3Icon backgroundColor="#f29135" color="white">
+          polkadot
+        </Web3Icon>
+      </Box>
     </Button>
   );
 };

@@ -14,14 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { useEffect, useReducer } from 'react';
+import { Dispatch, useEffect } from 'react';
+import { AccountActionCreators } from '../../actions/accountActions';
+import { useKeyringContext } from '../../contexts/KeyringContextProvider';
+import { AccountsActionType, AccountState } from '../../types/accountTypes';
+import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import useBalance from '../subscriptions/useBalance';
-import { AccountActionCreators } from '../../actions/accountActions';
-import accountReducer from '../../reducers/accountReducer';
-import { useKeyringContext } from '../../contexts/KeyringContextProvider';
 
-const useAccountsContextSetUp = () => {
+const useAccountsContextSetUp = (accountState: AccountState, dispatchAccount: Dispatch<AccountsActionType>) => {
+  const { keyringPairs, keyringPairsReady } = useKeyringContext();
+  const { updateSenderAccountsInformation } = useApiCallsContext();
+
   const {
     targetChainDetails: {
       apiConnection: { api: targetApi }
@@ -30,16 +34,6 @@ const useAccountsContextSetUp = () => {
       apiConnection: { api: sourceApi }
     }
   } = useSourceTarget();
-
-  const { keyringPairs, keyringPairsReady } = useKeyringContext();
-
-  const [accountState, dispatchAccount] = useReducer(accountReducer, {
-    account: null,
-    accounts: [],
-    companionAccount: null,
-    senderAccountBalance: null,
-    senderCompanionAccountBalance: null
-  });
 
   const accountBalance = useBalance(sourceApi, accountState.account?.address || '', true);
   const companionBalance = useBalance(targetApi, accountState.companionAccount || '', true);
@@ -52,9 +46,7 @@ const useAccountsContextSetUp = () => {
     if (keyringPairsReady && keyringPairs.length) {
       dispatchAccount(AccountActionCreators.setAccounts(keyringPairs));
     }
-  }, [keyringPairsReady, keyringPairs, dispatchAccount]);
-
-  return { accountState, dispatchAccount };
+  }, [keyringPairsReady, keyringPairs, dispatchAccount, updateSenderAccountsInformation]);
 };
 
 export default useAccountsContextSetUp;

@@ -19,7 +19,6 @@ import { SignerOptions } from '@polkadot/api/types';
 import { web3FromSource } from '@polkadot/extension-dapp';
 import type { KeyringPair } from '@polkadot/keyring/types';
 import type { InterfaceTypes } from '@polkadot/types/types';
-import moment from 'moment';
 import { MessageActionsCreators } from '../../actions/messageActions';
 import { TransactionActionCreators } from '../../actions/transactionActions';
 import { useAccountContext } from '../../contexts/AccountContextProvider';
@@ -27,23 +26,20 @@ import { useUpdateMessageContext } from '../../contexts/MessageContext';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import { useTransactionContext, useUpdateTransactionContext } from '../../contexts/TransactionContext';
 import useLaneId from './useLaneId';
-import useTransactionPreparation from '../transactions/useTransactionPreparation';
-import { TransactionStatusEnum, TransactionTypes } from '../../types/transactionTypes';
+import { TransactionStatusEnum } from '../../types/transactionTypes';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
-import { getTransactionDisplayPayload } from '../../util/transactionUtils';
+import { createEmptySteps, getTransactionDisplayPayload } from '../../util/transactions/';
 import logger from '../../util/logger';
 import useApiCalls from '../api/useApiCalls';
-import useLoadingApi from '../connections/useLoadingApi';
 
 interface Props {
-  isValidCall?: boolean;
   input: string;
   type: string;
-  weightInput?: string;
+  weightInput?: string | null;
 }
 
-function useSendMessage({ isValidCall, input, type, weightInput }: Props) {
-  const { estimatedFee, receiverAddress, payload, transactionRunning } = useTransactionContext();
+function useSendMessage({ input, type }: Props) {
+  const { estimatedFee, receiverAddress, payload } = useTransactionContext();
   const { dispatchTransaction } = useUpdateTransactionContext();
   const laneId = useLaneId();
   const sourceTargetDetails = useSourceTarget();
@@ -55,7 +51,6 @@ function useSendMessage({ isValidCall, input, type, weightInput }: Props) {
     targetChainDetails: { chain: targetChain }
   } = sourceTargetDetails;
   const { account } = useAccountContext();
-  useTransactionPreparation({ input, isValidCall, type, weightInput });
   const { createType } = useApiCalls();
   const { dispatchMessage } = useUpdateMessageContext();
 
@@ -105,7 +100,9 @@ function useSendMessage({ isValidCall, input, type, weightInput }: Props) {
                 targetChain,
                 type,
                 payloadHex,
-                transactionDisplayPayload
+                transactionDisplayPayload,
+                deliveryBlock: null,
+                steps: createEmptySteps(sourceChain, targetChain)
               })
             );
           }
@@ -176,27 +173,12 @@ function useSendMessage({ isValidCall, input, type, weightInput }: Props) {
   );
 
   const sendLaneMessage = useCallback(() => {
-    const id = moment().format('x');
+    const id = Date.now().toString();
     dispatchTransaction(TransactionActionCreators.setTransactionRunning(true));
     return makeCall(id);
   }, [dispatchTransaction, makeCall]);
 
-  const { areApiReady } = useLoadingApi();
-
-  const isButtonDisabled = useCallback(() => {
-    switch (type) {
-      case TransactionTypes.REMARK:
-        return transactionRunning || !account || !areApiReady;
-        break;
-      case TransactionTypes.CUSTOM:
-        return transactionRunning || !account || !input || !weightInput || !isValidCall || !areApiReady;
-        break;
-      default:
-        throw new Error(`Unknown type: ${type}`);
-    }
-  }, [account, areApiReady, input, isValidCall, transactionRunning, type, weightInput]);
-
-  return { sendLaneMessage, isButtonDisabled };
+  return sendLaneMessage;
 }
 
 export default useSendMessage;

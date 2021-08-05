@@ -14,9 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import React from 'react';
 import { Box, Typography } from '@material-ui/core';
-import React, { useState } from 'react';
-
+import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import { makeStyles } from '@material-ui/core/styles';
 import { BoxSidebar, BoxUI, ButtonExt, StorageDrawer, MenuAction, NetworkSides, NetworkStats } from '../components';
 import CustomCall from '../components/CustomCall';
 import ExtensionAccountCheck from '../components/ExtensionAccountCheck';
@@ -26,60 +27,80 @@ import SnackBar from '../components/SnackBar';
 import Transfer from '../components/Transfer';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import Transactions from '../components/Transactions';
+import { useGUIContext } from '../contexts/GUIContextProvider';
+import { TransactionTypes } from '../types/transactionTypes';
+import { MenuActionItemsProps } from '../types/guiTypes';
 
-interface MenuActionItemsProps {
-  idx: number;
-  title: string;
-  isEnabled: boolean;
-  component: React.ReactElement;
-}
+import BridgedLocalWrapper from '../components/BridgedLocalWrapper';
+import { useCallback } from 'react';
 
-const MenuContents = [
-  {
-    idx: 0,
-    title: 'Transfer',
-    isEnabled: true,
-    component: <Transfer />
-  },
-  {
-    idx: 1,
-    title: 'Remark',
-    isEnabled: true,
-    component: <Remark />
-  },
-  {
-    idx: 2,
-    title: 'Custom Call',
-    isEnabled: true,
-    component: <CustomCall />
+const useStyles = makeStyles(() => ({
+  root: {
+    marginLeft: 'auto',
+    maxHeight: '25px'
   }
-];
+}));
+
+const ActionComponents = {
+  [TransactionTypes.TRANSFER]: <Transfer />,
+  [TransactionTypes.LOCAL_TRANSFER]: <Transfer />,
+  [TransactionTypes.REMARK]: <Remark />,
+  [TransactionTypes.CUSTOM]: <CustomCall />
+};
 
 function Main() {
-  const [items] = useState<MenuActionItemsProps[]>(MenuContents as MenuActionItemsProps[]);
-  const [index, setIndex] = useState<number>(0);
+  const classes = useStyles();
+  const { actions, action, setAction, isBridged, setBridged } = useGUIContext();
+  const searchItems = useCallback(
+    (choice: TransactionTypes) => actions.find((x: MenuActionItemsProps) => x.type === choice),
+    [actions]
+  );
 
-  const searchItems = (choice: number) => items.find((x) => x.idx === choice);
+  const handleOnSwitch = useCallback(
+    (event: React.MouseEvent<HTMLElement>, newAlignment: string | null) => {
+      setBridged(Boolean(newAlignment));
+    },
+    [setBridged]
+  );
+
+  // TODO #242: ToggleButtonGroup needs to contain the colors designed by custom css.
 
   return (
     <>
       <BoxSidebar>
         <div>
-          <Typography variant="button">Bridges UI</Typography>
+          <Typography variant="button" color="secondary">
+            Bridges UI
+          </Typography>
           <NetworkSides />
-          <NetworkStats />
+          <BridgedLocalWrapper blurred>
+            <NetworkStats />
+          </BridgedLocalWrapper>
           <StorageDrawer />
         </div>
         <ButtonExt> Help & Feedback </ButtonExt>
       </BoxSidebar>
       <BoxUI>
-        <MenuAction items={items} menuIdx={index} changeMenu={setIndex} />
+        <Box component="div" display="flex" marginY={2} textAlign="left" width="100%">
+          <MenuAction actions={actions} action={action} changeMenu={setAction} />
+          <ToggleButtonGroup
+            size="small"
+            value={isBridged}
+            exclusive
+            onChange={handleOnSwitch}
+            classes={{ root: classes.root }}
+          >
+            <ToggleButton value={false}>Local</ToggleButton>
+            <ToggleButton value={true}>Bridge</ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
+
         <ExtensionAccountCheck component={<Sender />} />
         <Box marginY={2} textAlign="center" width="100%">
           <ArrowDownwardIcon fontSize="large" color="primary" />
         </Box>
-        <>{searchItems(index)?.component}</>
-        <Transactions type={searchItems(index)?.title} />
+        <>{ActionComponents[action]}</>
+        <Transactions type={searchItems(action)?.title} />
         <SnackBar />
       </BoxUI>
     </>

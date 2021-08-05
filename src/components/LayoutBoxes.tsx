@@ -28,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(3),
     paddingLeft: 240 + theme.spacing(3),
     transition: 'padding-left .1s',
+    backgroundColor: theme.palette.background.paper,
     '&.open': {
       paddingLeft: 600 + theme.spacing(3),
       [theme.breakpoints.down('md')]: {

@@ -19,8 +19,30 @@ import { Text, Bytes } from '@polkadot/types';
 import { Codec } from '@polkadot/types/types';
 import { ApiCallsContextType } from '../../types/apiCallsTypes';
 import useChainGetters from '../chain/useChainGetters';
+import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
+import { TransactionActionCreators } from '../../actions/transactionActions';
+import { web3FromSource } from '@polkadot/extension-dapp';
+import { KeyringPair } from '@polkadot/keyring/types';
+import { SignerOptions } from '@polkadot/api/types';
+import { TransactionStatusEnum, TransactionTypes } from '../../types/transactionTypes';
+import { MessageActionsCreators } from '../../actions/messageActions';
+import logger from '../../util/logger';
+import { formatBalance } from '@polkadot/util';
+import { getBridgeId } from '../../util/getConfigs';
+import getDeriveAccount from '../../util/getDeriveAccount';
+import { useKeyringContext } from '../../contexts/KeyringContextProvider';
+import { ApiPromise } from '@polkadot/api';
+import { encodeAddress } from '@polkadot/util-crypto';
+import { AccountActionCreators } from '../../actions/accountActions';
+import { BalanceState } from '../../types/accountTypes';
 
 const useApiCalls = (): ApiCallsContextType => {
+  const { sourceChainDetails, targetChainDetails } = useSourceTarget();
+  const {
+    apiConnection: { api: sourceApi },
+    chain: sourceChain
+  } = sourceChainDetails;
+  const { keyringPairs, keyringPairsReady } = useKeyringContext();
   const { getValuesByChain } = useChainGetters();
 
   const createType = useCallback(
@@ -45,7 +67,159 @@ const useApiCalls = (): ApiCallsContextType => {
     [getValuesByChain]
   );
 
-  return { createType, stateCall };
+  const localTransfer = useCallback(
+    async (dispatchers, transfersData) => {
+      const { dispatchTransaction, dispatchMessage } = dispatchers;
+      const { receiverAddress, transferAmount, account } = transfersData;
+      const type = TransactionTypes.LOCAL_TRANSFER;
+
+      const id = Date.now().toString();
+      dispatchTransaction(TransactionActionCreators.setTransactionRunning(true));
+
+      try {
+        const transfer = sourceApi.tx.balances.transfer(receiverAddress, transferAmount);
+        const options: Partial<SignerOptions> = {
+          nonce: -1
+        };
+        let sourceAccount: string | KeyringPair = account;
+        if (account.meta.isInjected) {
+          const injector = await web3FromSource(account.meta.source as string);
+          options.signer = injector.signer;
+          sourceAccount = account.address;
+        }
+
+        const unsub = await transfer.signAndSend(sourceAccount, { ...options }, async ({ status }) => {
+          if (status.isReady) {
+            dispatchTransaction(
+              TransactionActionCreators.createTransactionStatus({
+                block: null,
+                blockHash: null,
+                deliveryBlock: null,
+                id,
+                input: transferAmount,
+                messageNonce: null,
+                receiverAddress,
+                sourceAccount: account.address,
+                sourceChain,
+                status: TransactionStatusEnum.IN_PROGRESS,
+                targetChain: '',
+                type,
+                payloadHex: '',
+                transactionDisplayPayload: null
+              })
+            );
+          }
+
+          if (status.isBroadcast) {
+            dispatchMessage(MessageActionsCreators.triggerInfoMessage({ message: 'Transaction was broadcasted' }));
+            dispatchTransaction(TransactionActionCreators.reset());
+          }
+
+          if (status.isInBlock) {
+            try {
+              const res = await sourceApi.rpc.chain.getBlock(status.asInBlock);
+              const block = res.block.header.number.toString();
+              dispatchTransaction(
+                TransactionActionCreators.updateTransactionStatus(
+                  {
+                    block,
+                    blockHash: status.asInBlock.toString(),
+                    status: TransactionStatusEnum.COMPLETED
+                  },
+                  id
+                )
+              );
+            } catch (e) {
+              logger.error(e.message);
+              throw new Error('Issue reading block information.');
+            }
+          }
+
+          if (status.isFinalized) {
+            logger.info(`Transaction finalized at blockHash ${status.asFinalized}`);
+            unsub();
+          }
+        });
+      } catch (e) {
+        dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e.message }));
+        logger.error(e.message);
+      } finally {
+        dispatchTransaction(TransactionActionCreators.setTransactionRunning(false));
+      }
+    },
+    [sourceApi.rpc.chain, sourceApi.tx.balances, sourceChain]
+  );
+
+  const updateSenderAccountsInformation = useCallback(
+    async (dispatchAccount) => {
+      const formatBalanceAddress = (data: any, api: ApiPromise): BalanceState => {
+        return {
+          chainTokens: data.registry.chainTokens[0],
+          formattedBalance: formatBalance(data.free, {
+            decimals: api.registry.chainDecimals[0],
+            withUnit: api.registry.chainTokens[0],
+            withSi: true
+          }),
+          free: data.free
+        };
+      };
+
+      if (!keyringPairsReady || !keyringPairs.length) {
+        return {};
+      }
+
+      const getAccountInformation = async (sourceRole: any, targetRole: any) => {
+        const {
+          apiConnection: { api: sourceApi },
+          chain: sourceChain,
+          configs: sourceConfigs
+        } = sourceRole;
+        const {
+          apiConnection: { api: targetApi },
+          configs: targetConfigs
+        } = targetRole;
+
+        const accounts = await Promise.all(
+          keyringPairs.map(async ({ address, meta }) => {
+            const sourceAddress = encodeAddress(address, sourceConfigs.ss58Format);
+            const toDerive = {
+              ss58Format: targetConfigs.ss58Format,
+              address: sourceAddress || '',
+              bridgeId: getBridgeId(targetConfigs, sourceChain)
+            };
+            const { data } = await sourceApi.query.system.account(sourceAddress);
+            const sourceBalance = formatBalanceAddress(data, sourceApi);
+
+            const companionAddress = getDeriveAccount(toDerive);
+            const { data: dataCompanion } = await targetApi.query.system.account(companionAddress);
+            const targetBalance = formatBalanceAddress(dataCompanion, targetApi);
+
+            const name = (meta.name as string).toLocaleUpperCase();
+
+            return {
+              account: { address: sourceAddress, balance: sourceBalance, name },
+              companionAccount: { address: companionAddress, balance: targetBalance, name }
+            };
+          })
+        );
+
+        return accounts;
+      };
+
+      const sourceAddresses = await getAccountInformation(sourceChainDetails, targetChainDetails);
+      const targetAddresses = await getAccountInformation(targetChainDetails, sourceChainDetails);
+
+      dispatchAccount(
+        AccountActionCreators.setDisplaySenderAccounts({
+          [sourceChainDetails.chain]: sourceAddresses,
+          [targetChainDetails.chain]: targetAddresses
+        })
+      );
+    },
+    [keyringPairs, keyringPairsReady, sourceChainDetails, targetChainDetails]
+  );
+
+  return { createType, stateCall, localTransfer, updateSenderAccountsInformation };
 };
 
 export default useApiCalls;

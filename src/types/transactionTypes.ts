@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import BN from 'bn.js';
 import { TransactionActionTypes } from '../actions/transactionActions';
 import { ChainState } from './sourceTargetTypes';
-import BN from 'bn.js';
 
 export interface Payload {
   [propName: string]: any;
@@ -42,7 +42,7 @@ export enum SwitchTabEnum {
 export interface TransactionPayload {
   call: Uint8Array;
   origin: {
-    SourceAccount: string;
+    SourceAccount: Uint8Array;
   };
   spec_version: number;
   weight: number;
@@ -63,29 +63,39 @@ export interface TransactionStatusType extends UpdatedTransactionStatusType {
   receiverAddress: null | string;
   type: string;
   status: TransactionStatusEnum;
+  deliveryBlock: string | null;
 }
 
 export interface TransactionState {
+  resetedAt: string | null;
   senderAccount: string | null;
+  remarkInput: string;
+  customCallInput: string;
+  customCallError: string | null;
+  weightInput: string | null;
   transferAmount: BN | null;
   transferAmountError: string | null;
   estimatedFee: string | null;
-  estimatedFeeError: string | null;
-  estimatedFeeLoading: boolean;
   receiverAddress: string | null;
   unformattedReceiverAddress: string | null;
   derivedReceiverAccount: string | null;
   genericReceiverAccount: string | null;
   transactions: Array<TransactionStatusType>;
-  transactionDisplayPayload: TransactionDisplayPayload;
+  evaluatingTransactions: boolean;
+  transactionDisplayPayload: TransactionDisplayPayload | null;
   transactionRunning: boolean;
   transactionReadyToExecute: boolean;
+  evaluateTransactionStatusError: string | null;
   addressValidationError: string | null;
   showBalance: boolean;
   formatFound: string | null;
   payload: TransactionPayload | null;
-  payloadError: string | null;
   payloadHex: string | null;
+  shouldEvaluatePayloadEstimatedFee: boolean;
+  payloadEstimatedFeeError: string | null;
+  payloadEstimatedFeeLoading: boolean;
+  batchedTransactionState: TransactionState | null;
+  action: TransactionTypes;
 }
 
 export type TransactionsActionType = { type: TransactionActionTypes; payload: Payload };
@@ -93,7 +103,8 @@ export type TransactionsActionType = { type: TransactionActionTypes; payload: Pa
 export enum TransactionTypes {
   CUSTOM = 'CUSTOM',
   TRANSFER = 'TRANSFER',
-  REMARK = 'REMARK'
+  REMARK = 'REMARK',
+  LOCAL_TRANSFER = 'LOCAL_TRANSFER'
 }
 
 export enum EvalMessages {
@@ -117,3 +128,8 @@ export interface ReceiverPayload {
   sourceChainDetails: ChainState;
   targetChainDetails: ChainState;
 }
+
+export type PayloadEstimatedFee = {
+  payload: TransactionPayload | null;
+  estimatedFee: string | null;
+};

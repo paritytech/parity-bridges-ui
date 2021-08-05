@@ -14,33 +14,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { useCallback } from 'react';
-interface DispatchGenericCallInput {
-  call: Function;
-  dispatch: (error: string | null, data: any, loading: boolean) => void;
+import React from 'react';
+import { useGUIContext } from '../contexts/GUIContextProvider';
+
+interface Props {
+  children: React.ReactElement | null;
+  blurred?: boolean;
 }
 
-export const useDispatchGenericCall = ({ call, dispatch }: DispatchGenericCallInput) => {
-  const execute = useCallback(
-    async (...params: any[]) => {
-      let data;
-      let error;
-      try {
-        dispatch(null, null, true);
-        data = await call(...params);
-        dispatch(null, data, false);
-      } catch (e) {
-        error = e;
-        dispatch(e, null, false);
-      }
-      return { data, error };
-    },
-    [call, dispatch]
-  );
+export default function BridgedLocalWrapper({ children, blurred = false }: Props) {
+  const { isBridged } = useGUIContext();
 
-  return {
-    execute
-  };
-};
+  if (!isBridged) {
+    if (blurred) return <div style={{ opacity: '20%' }}>{children}</div>;
+  }
 
-export default useDispatchGenericCall;
+  if (isBridged) {
+    return children;
+  }
+
+  return null;
+}

@@ -17,6 +17,13 @@
 import { state, sourceChainDetails, targetChainDetails } from './transactionReducerMocks';
 import transactionReducer from '../transactionReducer';
 import { TransactionActionCreators } from '../../actions/transactionActions';
+import { TransactionPayload, TransactionTypes } from '../../types/transactionTypes';
+import { compactAddLength } from '@polkadot/util';
+import { getTransactionDisplayPayload } from '../../util/transactions';
+import BN from 'bn.js';
+import { SourceTargetState } from '../../types/sourceTargetTypes';
+
+jest.mock('../../util/transactions');
 
 describe('transactionReducer', () => {
   describe('SET_RECEIVER', () => {
@@ -26,7 +33,7 @@ describe('transactionReducer', () => {
       targetChainDetails
     };
 
-    it('should return the according transaction state for a companion address and its corresponding derived account.', () => {
+    it('should return the according transaction state for a companion address and its corresponding companion account.', () => {
       payload.unformattedReceiverAddress = '5rERgaT1Z8nM3et2epA5i1VtEBfp5wkhwHtVE8HK7BRbjAH2';
       const action = TransactionActionCreators.setReceiver(payload);
       const result = transactionReducer(state, action);
@@ -36,7 +43,11 @@ describe('transactionReducer', () => {
         receiverAddress: '5rERgaT1Z8nM3et2epA5i1VtEBfp5wkhwHtVE8HK7BRbjAH2',
         unformattedReceiverAddress: '5rERgaT1Z8nM3et2epA5i1VtEBfp5wkhwHtVE8HK7BRbjAH2',
         showBalance: true,
-        formatFound: 'chain1'
+        formatFound: 'chain1',
+        transactionReadyToExecute: false,
+        payloadEstimatedFeeLoading: false,
+        shouldEvaluatePayloadEstimatedFee: false,
+        estimatedFee: null
       });
     });
 
@@ -49,7 +60,9 @@ describe('transactionReducer', () => {
         receiverAddress: '74GNQjmkcfstRftSQPJgMREchqHM56EvAUXRc266cZ1NYVW5',
         unformattedReceiverAddress: '74GNQjmkcfstRftSQPJgMREchqHM56EvAUXRc266cZ1NYVW5',
         showBalance: true,
-        formatFound: 'chain2'
+        formatFound: 'chain2',
+        transactionReadyToExecute: false,
+        shouldEvaluatePayloadEstimatedFee: false
       });
     });
 
@@ -61,7 +74,10 @@ describe('transactionReducer', () => {
         ...state,
         genericReceiverAccount: '5H3ZryLmpNwrochemdVFTq9WMJW39NCo5HWFEwRtjbVtrThD',
         unformattedReceiverAddress: '5H3ZryLmpNwrochemdVFTq9WMJW39NCo5HWFEwRtjbVtrThD',
-        formatFound: 'GENERIC'
+        formatFound: 'GENERIC',
+        transactionReadyToExecute: false,
+        shouldEvaluatePayloadEstimatedFee: false,
+        estimatedFee: null
       });
     });
 
@@ -73,7 +89,9 @@ describe('transactionReducer', () => {
         ...state,
         unformattedReceiverAddress: 'invalid',
         addressValidationError: 'Invalid address',
-        formatFound: 'INCORRECT_FORMAT'
+        formatFound: 'INCORRECT_FORMAT',
+        transactionReadyToExecute: false,
+        shouldEvaluatePayloadEstimatedFee: false
       });
     });
 
@@ -85,7 +103,165 @@ describe('transactionReducer', () => {
         ...state,
         unformattedReceiverAddress: 'tH95Ew4kVD9VcwsyXaSdC74Noe3H8o6fJfnKhZezXHKHEcs',
         addressValidationError: 'Unsupported address SS58 prefix: 8',
-        formatFound: '8'
+        formatFound: 8,
+        transactionReadyToExecute: false,
+        shouldEvaluatePayloadEstimatedFee: false
+      });
+    });
+  });
+
+  describe('SET_PAYLOAD_ESTIMATED_FEE', () => {
+    type PayloadEstimatedFee = {
+      payload: TransactionPayload | null;
+      estimatedFee: string | null;
+    };
+
+    let payloadEstimatedFeeError: string | null;
+    let payloadEstimatedFee: PayloadEstimatedFee;
+    let payloadEstimatedFeeLoading: boolean;
+
+    beforeEach(() => {
+      payloadEstimatedFeeError = null;
+      payloadEstimatedFee = { estimatedFee: null, payload: null };
+      payloadEstimatedFeeLoading = false;
+      (getTransactionDisplayPayload as jest.Mock).mockReturnValue({
+        payloadHex: null,
+        transactionDisplayPayload: null
+      });
+    });
+
+    it('should return initial state regarding estimated fee', () => {
+      const action = TransactionActionCreators.setPayloadEstimatedFee(
+        payloadEstimatedFeeError,
+        payloadEstimatedFee,
+        payloadEstimatedFeeLoading,
+        {} as SourceTargetState,
+        () => 'type'
+      );
+      const result = transactionReducer(state, action);
+
+      expect(result).toEqual({
+        ...state,
+        estimatedFee: null,
+        payloadEstimatedFeeError: null,
+        payloadEstimatedFeeLoading: false,
+        payload: null,
+        transactionReadyToExecute: false
+      });
+    });
+    it('should return loading estimated fee', () => {
+      const payloadEstimatedFeeLoading = true;
+      const action = TransactionActionCreators.setPayloadEstimatedFee(
+        payloadEstimatedFeeError,
+        payloadEstimatedFee,
+        payloadEstimatedFeeLoading,
+        {} as SourceTargetState,
+        () => 'type'
+      );
+      const result = transactionReducer(state, action);
+
+      expect(result).toEqual({
+        ...state,
+        estimatedFee: null,
+        payloadEstimatedFeeError: null,
+        payloadEstimatedFeeLoading: true,
+        payload: null,
+        transactionReadyToExecute: false,
+        payloadHex: null,
+        transactionDisplayPayload: null
+      });
+    });
+
+    it('should return corresponding error state for estimated fee', () => {
+      payloadEstimatedFeeError = 'Error';
+      const action = TransactionActionCreators.setPayloadEstimatedFee(
+        payloadEstimatedFeeError,
+        payloadEstimatedFee,
+        payloadEstimatedFeeLoading,
+        {} as SourceTargetState,
+        () => 'type'
+      );
+      const result = transactionReducer(state, action);
+
+      expect(result).toEqual({
+        ...state,
+        estimatedFee: null,
+        payloadEstimatedFeeError,
+        payloadEstimatedFeeLoading: false,
+        payload: null,
+        transactionReadyToExecute: false,
+        payloadHex: null,
+        transactionDisplayPayload: null
+      });
+    });
+
+    it('should return corresponding error state for estimated fee', () => {
+      payloadEstimatedFeeError = 'Error';
+      const action = TransactionActionCreators.setPayloadEstimatedFee(
+        payloadEstimatedFeeError,
+        payloadEstimatedFee,
+        payloadEstimatedFeeLoading,
+        {} as SourceTargetState,
+        () => 'type'
+      );
+      const result = transactionReducer(state, action);
+
+      expect(result).toEqual({
+        ...state,
+        estimatedFee: null,
+        payloadEstimatedFeeError,
+        payloadEstimatedFeeLoading: false,
+        payload: null,
+        transactionReadyToExecute: false,
+        payloadHex: null,
+        transactionDisplayPayload: null
+      });
+    });
+
+    it('should return corresponding estimated fee, payload and all the necessary conditions to execute the transaction', () => {
+      const payloadHex = 'payloadHexMode';
+
+      const createType = jest.fn();
+      const payload = {
+        call: compactAddLength(new Uint8Array([0, 0, 0, 0])),
+        origin: {
+          SourceAccount: new Uint8Array([0, 0, 0, 0])
+        },
+        spec_version: 1,
+        weight: 1234
+      };
+      const transactionDisplayPayload = { payload };
+      (getTransactionDisplayPayload as jest.Mock).mockReturnValue({
+        payloadHex,
+        transactionDisplayPayload
+      });
+      const estimatedFee = '1234';
+      payloadEstimatedFee = { estimatedFee, payload };
+      const sourceTargetDetails = {};
+      const action = TransactionActionCreators.setPayloadEstimatedFee(
+        payloadEstimatedFeeError,
+        payloadEstimatedFee,
+        payloadEstimatedFeeLoading,
+        sourceTargetDetails,
+        createType
+      );
+
+      const newState = { ...state };
+      newState.action = TransactionTypes.TRANSFER;
+      newState.transferAmount = new BN(1);
+      newState.receiverAddress = '74GNQjmkcfstRftSQPJgMREchqHM56EvAUXRc266cZ1NYVW5';
+      newState.senderAccount = '5rERgaT1Z8nM3et2epA5i1VtEBfp5wkhwHtVE8HK7BRbjAH2';
+      const result = transactionReducer(newState, action);
+
+      expect(result).toEqual({
+        ...newState,
+        estimatedFee,
+        payloadEstimatedFeeError: null,
+        payloadEstimatedFeeLoading: false,
+        payload,
+        transactionReadyToExecute: true,
+        payloadHex,
+        transactionDisplayPayload
       });
     });
   });

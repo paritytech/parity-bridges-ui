@@ -14,20 +14,27 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { useEffect } from 'react';
-import { useUpdateTransactionContext } from '../../contexts/TransactionContext';
+import { Dispatch, useEffect } from 'react';
 import { TransactionActionCreators } from '../../actions/transactionActions';
+import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
+import { TransactionsActionType } from '../../types/transactionTypes';
 import usePrevious from '../react/usePrevious';
 
-const useResetTransactionState = (type: string | number | undefined) => {
-  const { dispatchTransaction } = useUpdateTransactionContext();
-  const prevType = usePrevious(type);
+const useResetTransactionState = (
+  action: string | number | undefined,
+  dispatchTransaction: Dispatch<TransactionsActionType>
+) => {
+  const {
+    sourceChainDetails: { chain: sourceChain }
+  } = useSourceTarget();
+  const prevAction = usePrevious(action);
+  const prevSourceChain = usePrevious(sourceChain);
 
   useEffect(() => {
-    if (prevType === type) {
+    if (prevAction !== action || prevSourceChain !== sourceChain) {
       dispatchTransaction(TransactionActionCreators.reset());
     }
-  }, [dispatchTransaction, prevType, type]);
+  }, [dispatchTransaction, prevAction, action, prevSourceChain, sourceChain]);
 };
 
 export default useResetTransactionState;

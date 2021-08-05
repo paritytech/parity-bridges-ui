@@ -20,6 +20,7 @@ import { Box, Card, makeStyles, Typography } from '@material-ui/core';
 import { IconTxStatus } from './Icons';
 import { Step, TransactionStatusEnum } from '../types/transactionTypes';
 import TransactionHeader from './TransactionHeader';
+import { Web3Icon } from './Web3Icon';
 
 interface Props {
   steps: Step[];
@@ -52,11 +53,11 @@ const TransactionReceipt = ({ type, steps, status }: Props) => {
   const classes = useStyles();
 
   return (
-    <Card elevation={24} className={classes.card}>
+    <Card elevation={23} className={classes.card}>
       <TransactionHeader type={type} status={status} />
       {steps.map(({ chainType, label, labelOnChain, status, id }) => (
         <p key={id} id={id}>
-          <IconTxStatus status={status} /> {chainType}: {label}&nbsp;
+          <IconTxStatus status={status} /> <Web3Icon>{chainType}</Web3Icon> {chainType}: {label}&nbsp;
           {labelOnChain && (
             <Box pt={0.25} pb={0.25} pl={0.5} pr={0.5} component="span" border={1} borderRadius={6}>
               <Typography component="span" variant="subtitle2">

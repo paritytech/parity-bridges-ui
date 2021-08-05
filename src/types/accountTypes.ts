@@ -16,6 +16,7 @@
 
 import type { KeyringPair } from '@polkadot/keyring/types';
 import { Balance } from '@polkadot/types/interfaces';
+
 import { AccountActionsTypes } from '../actions/accountActions';
 
 export type Account = KeyringPair | null;
@@ -24,12 +25,34 @@ export interface Payload {
   [propName: string]: any;
 }
 
+export type BalanceState = {
+  chainTokens: string;
+  formattedBalance: string;
+  free: Balance;
+};
+
+type AccountInfo = {
+  address: string;
+  balance: BalanceState;
+  name: string;
+};
+
+interface DisplayAccount {
+  account: AccountInfo;
+  companionAccount: AccountInfo;
+}
+
+export interface DisplayAccounts {
+  [chain: string]: DisplayAccount[];
+}
+
 export interface AccountState {
   account: Account;
   accounts: Array<KeyringPair> | [];
   companionAccount: string | null;
   senderAccountBalance: BalanceState | null;
   senderCompanionAccountBalance: BalanceState | null;
+  displaySenderAccounts: DisplayAccounts;
 }
 
 export type AccountsActionType = { type: AccountActionsTypes; payload: Payload };
@@ -38,9 +61,3 @@ export enum AddressKind {
   NATIVE = 'native',
   COMPANION = 'companion'
 }
-
-export type BalanceState = {
-  chainTokens: string;
-  formattedBalance: string;
-  free: Balance;
-};
