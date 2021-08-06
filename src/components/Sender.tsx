@@ -27,15 +27,12 @@ import { TextField } from '@material-ui/core';
 import useAccounts from '../hooks/accounts/useAccounts';
 
 const useStyles = makeStyles((theme) => ({
-  networkHeading: {
-    padding: theme.spacing(2),
-    paddingBottom: 0,
-    borderTop: `1px solid ${theme.palette.divider}`,
-    ...theme.typography.overline,
-    color: theme.palette.text.hint,
-    '&:first-child': {
-      paddingTop: 0,
-      border: 'none'
+  autocomplete: {
+    '& .MuiOutlinedInput-notchedOutline': {
+      borderBottomLeftRadius: 0,
+      borderBottomRightRadius: 0,
+      borderWidth: '1px !important',
+      borderColor: theme.palette.divider
     }
   },
   selectAccountMainItem: {
@@ -51,12 +48,6 @@ const useStyles = makeStyles((theme) => ({
       paddingRight: theme.spacing(3),
       border: `1px solid ${theme.palette.divider}`,
       borderRadius: theme.spacing(1.5)
-    }
-  },
-  bridgedBottomBorders: {
-    '& .MuiSelect-select': {
-      borderBottomLeftRadius: 0,
-      borderBottomRightRadius: 0
     }
   },
   accountCompanion: {
@@ -80,6 +71,8 @@ export default function Sender() {
   return (
     <>
       <Autocomplete
+        open
+        className={classes.autocomplete}
         options={options}
         groupBy={(option) => option.sourceChain}
         getOptionLabel={(option) => option.sourceAccount.name || ''}
