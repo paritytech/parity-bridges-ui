@@ -77,6 +77,9 @@ const useApiCalls = (): ApiCallsContextType => {
       dispatchTransaction(TransactionActionCreators.setTransactionRunning(true));
 
       try {
+        console.log('receiverAddress local', receiverAddress);
+        console.log('transferAmount local', transferAmount);
+
         const transfer = sourceApi.tx.balances.transfer(receiverAddress, transferAmount);
         const options: Partial<SignerOptions> = {
           nonce: -1

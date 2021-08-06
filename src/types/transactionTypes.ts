@@ -127,6 +127,7 @@ export interface ReceiverPayload {
   unformattedReceiverAddress: string | null;
   sourceChainDetails: ChainState;
   targetChainDetails: ChainState;
+  isBridged: boolean;
 }
 
 export type PayloadEstimatedFee = {
