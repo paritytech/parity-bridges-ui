@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { TransactionStatusEnum, TransactionStatusType } from '../../types/transactionTypes';
+import { TransactionStatusEnum, TransactionStatusType, TransactionTypes } from '../../types/transactionTypes';
 import { useUpdateMessageContext } from '../../contexts/MessageContext';
 
 import useChainGetters from '../chain/useChainGetters';
@@ -29,7 +29,7 @@ import { TransactionActionCreators } from '../../actions/transactionActions';
 import isEqual from 'lodash/isEqual';
 import usePrevious from '../react/usePrevious';
 import { genericCall } from '../../util/apiUtlis';
-import { handleTransactionUpdates } from '../../util/transactions/';
+import { handleLocalTransactionUpdates, handleTransactionUpdates } from '../../util/transactions/';
 
 export default function useTransactionsStatus(
   transactions: TransactionStatusType[],
@@ -63,6 +63,11 @@ export default function useTransactionsStatus(
           }
 
           const { sourceChain, targetChain } = transaction;
+          if (transaction.type === TransactionTypes.LOCAL_TRANSFER) {
+            const updatedTransaction = handleLocalTransactionUpdates(transaction, sourceChain);
+            return updatedTransaction;
+          }
+
           const { api: targetApi } = getValuesByChain(targetChain);
           const { sourceRole, targetRole } = getChainSubscriptionsKey({
             currentSourceChain,
@@ -93,7 +98,9 @@ export default function useTransactionsStatus(
       }
       return transactions;
     };
-    const transactionsInProgress = transactions.find(({ status }) => status === TransactionStatusEnum.IN_PROGRESS);
+    const transactionsInProgress = transactions.find(
+      ({ status }) => status === TransactionStatusEnum.IN_PROGRESS || status === TransactionStatusEnum.FINALIZED
+    );
     const updatedSubscriptions = prevSubscriptions !== subscriptions;
 
     if (!evaluatingTransactions && transactionsInProgress && updatedSubscriptions) {

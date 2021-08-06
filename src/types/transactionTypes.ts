@@ -31,6 +31,7 @@ export enum TransactionStatusEnum {
   CREATED = 'CREATED',
   IN_PROGRESS = 'IN_PROGRESS',
   COMPLETED = 'COMPLETED',
+  FINALIZED = 'FINALIZED',
   FAILED = 'FAILED'
 }
 

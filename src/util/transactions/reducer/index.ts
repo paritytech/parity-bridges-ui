@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { encodeAddress } from '@polkadot/util-crypto';
+import { base58Decode, checkAddressChecksum, encodeAddress } from '@polkadot/util-crypto';
 import { INCORRECT_FORMAT, GENERIC } from '../../../constants';
 import { ChainState } from '../../../types/sourceTargetTypes';
 import { TransactionState, TransactionTypes, Payload, ReceiverPayload } from '../../../types/transactionTypes';
@@ -112,52 +112,58 @@ const isReadyToExecute = (state: TransactionState): boolean => {
 
 const setLocalReceiver = (state: TransactionState, payload: ReceiverPayload): TransactionState => {
   const { unformattedReceiverAddress, sourceChainDetails } = payload;
+  // Abstract this into a helper function
+  const decodedReceiverAddress = base58Decode(unformattedReceiverAddress!);
+  const [isValidDerivedAcccount, , , ss58Decoded] = checkAddressChecksum(decodedReceiverAddress);
 
-  try {
+  if (isValidDerivedAcccount) {
     const receiverAddress = encodeAddress(unformattedReceiverAddress!, sourceChainDetails.configs.ss58Format);
     const shouldEvaluatePayloadEstimatedFee = shouldCalculatePayloadFee(state, { receiverAddress });
     const transactionReadyToExecute = isReadyToExecute({ ...state, ...payload });
-
-    console.log('nextState', {
-      ...state,
-      unformattedReceiverAddress,
-      receiverAddress: unformattedReceiverAddress,
-      derivedReceiverAccount: receiverAddress,
-      genericReceiverAccount: null,
-      addressValidationError: null,
-      showBalance: true,
-      formatFound: sourceChainDetails.chain,
-      transactionReadyToExecute,
-      shouldEvaluatePayloadEstimatedFee
-    });
-
-    return {
-      ...state,
-      unformattedReceiverAddress,
-      receiverAddress: unformattedReceiverAddress,
-      derivedReceiverAccount: receiverAddress,
-      genericReceiverAccount: null,
-      addressValidationError: null,
-      showBalance: true,
-      formatFound: sourceChainDetails.chain,
-      transactionReadyToExecute,
-      shouldEvaluatePayloadEstimatedFee
-    };
-  } catch (e) {
-    return {
-      ...state,
-      addressValidationError: 'Invalid Address',
-      unformattedReceiverAddress,
-      receiverAddress: unformattedReceiverAddress,
-      genericReceiverAccount: null,
-      formatFound: null,
-      transactionReadyToExecute: false,
-      payloadEstimatedFeeLoading: false,
-      shouldEvaluatePayloadEstimatedFee: false,
-      estimatedFee: null,
-      payload: null
-    };
+    if (ss58Decoded === 42) {
+      return {
+        ...state,
+        unformattedReceiverAddress,
+        receiverAddress: receiverAddress,
+        genericReceiverAccount: null,
+        addressValidationError: null,
+        showBalance: false,
+        formatFound: GENERIC,
+        transactionReadyToExecute: false,
+        shouldEvaluatePayloadEstimatedFee: false,
+        estimatedFee: null,
+        payload: null
+      };
+    }
+    if (ss58Decoded === sourceChainDetails.configs.ss58Format) {
+      return {
+        ...state,
+        unformattedReceiverAddress,
+        receiverAddress: unformattedReceiverAddress,
+        derivedReceiverAccount: receiverAddress,
+        genericReceiverAccount: null,
+        addressValidationError: null,
+        showBalance: true,
+        formatFound: sourceChainDetails.chain,
+        transactionReadyToExecute,
+        shouldEvaluatePayloadEstimatedFee
+      };
+    }
   }
+
+  return {
+    ...state,
+    addressValidationError: 'Invalid Address',
+    unformattedReceiverAddress,
+    receiverAddress: unformattedReceiverAddress,
+    genericReceiverAccount: null,
+    formatFound: null,
+    transactionReadyToExecute: false,
+    payloadEstimatedFeeLoading: false,
+    shouldEvaluatePayloadEstimatedFee: false,
+    estimatedFee: null,
+    payload: null
+  };
 };
 
 const setReceiver = (state: TransactionState, payload: ReceiverPayload): TransactionState => {

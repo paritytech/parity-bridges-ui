@@ -30,6 +30,8 @@ import { Alert, ButtonSubmit } from '../components';
 import { EstimatedFee } from '../components/EstimatedFee';
 import BN from 'bn.js';
 import { DebouncedTextField } from './DebouncedTextField';
+import { useLocalTransfer } from '../hooks/chain/useLocalTransfer';
+import { useGUIContext } from '../contexts/GUIContextProvider';
 
 const useStyles = makeStyles((theme) => ({
   inputAmount: {
@@ -55,6 +57,7 @@ function Transfer() {
   const classes = useStyles();
   const [amountNotCorrect, setAmountNotCorrect] = useState<boolean>(false);
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
+  const { isBridged } = useGUIContext();
   const { account } = useAccountContext();
   const {
     estimatedFee,
@@ -65,6 +68,7 @@ function Transfer() {
   } = useTransactionContext();
   const { api } = sourceChainDetails.apiConnection;
   const balance = useBalance(api, account?.address || '');
+  const executeLocalTransfer = useLocalTransfer();
 
   const dispatchCallback = useCallback(
     (value: string | null) => {
@@ -82,6 +86,13 @@ function Transfer() {
     input: transferAmount?.toString() ?? '',
     type: TransactionTypes.TRANSFER
   });
+
+  const sendTransaction = useCallback(() => {
+    if (!isBridged) {
+      return executeLocalTransfer();
+    }
+    sendLaneMessage();
+  }, [executeLocalTransfer, isBridged, sendLaneMessage]);
 
   useEffect((): void => {
     transactionRunning && transferAmount && dispatchCallback('');
@@ -110,7 +121,7 @@ function Transfer() {
         />
       </Box>
       <Receiver />
-      <ButtonSubmit disabled={!transactionReadyToExecute || amountNotCorrect} onClick={sendLaneMessage}>
+      <ButtonSubmit disabled={!transactionReadyToExecute || amountNotCorrect} onClick={sendTransaction}>
         Send bridge transfer from {sourceChainDetails.chain} to {targetChainDetails.chain}
       </ButtonSubmit>
       {amountNotCorrect ? (

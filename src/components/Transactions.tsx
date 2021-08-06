@@ -29,7 +29,6 @@ interface Props extends TransactionDisplayProps {
 
 const Transactions = ({ type, ...transactionDisplayProps }: Props) => {
   const { transactions } = useTransactionContext();
-
   return (
     <>
       <TransactionStatusMock type={type} />
