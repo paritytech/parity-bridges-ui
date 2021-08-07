@@ -28,6 +28,7 @@ const useApiBalance = (address: string | null, chain: string | undefined | null,
   const {
     sourceChainDetails: {
       apiConnection: { api: sourceApi },
+      chain: sourceChain,
       configs: sourceConfigs
     },
     targetChainDetails: {
@@ -42,10 +43,8 @@ const useApiBalance = (address: string | null, chain: string | undefined | null,
   }
 
   const ss58Format = chain === targetChain ? targetConfigs.ss58Format : sourceConfigs.ss58Format;
-  const bridgeId =
-    chain === targetChain
-      ? getBridgeId(targetConfigs, sourceConfigs.chainName)
-      : getBridgeId(sourceConfigs, targetConfigs.chainName);
+
+  const bridgeId = chain === targetChain ? getBridgeId(targetApi, sourceChain) : getBridgeId(sourceApi, targetChain);
 
   const addressResult = !isDerived
     ? address

@@ -27,10 +27,14 @@ interface Props {
 
 const getReceiverAddress = ({ targetChainDetails, sourceChainDetails, receiverAddress }: Props) => {
   const { configs: sourceConfigs, chain: sourceChain } = sourceChainDetails;
-  const { chain: targetChain, configs: targetConfigs } = targetChainDetails;
+  const {
+    apiConnection: { api: targetApi },
+    chain: targetChain,
+    configs: targetConfigs
+  } = targetChainDetails;
 
   const targetSS58Format = targetConfigs.ss58Format;
-  const bridgeId = getBridgeId(targetConfigs, sourceConfigs.chainName);
+  const bridgeId = getBridgeId(targetApi, sourceChain);
 
   const getChainBySS58Prefix = (prefix: number) => {
     switch (prefix) {
