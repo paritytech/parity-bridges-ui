@@ -21,7 +21,7 @@ import { getSubstrateDynamicNames } from './getSubstrateDynamicNames';
 export const getConfigs = async (apiPromise: ApiPromise): Promise<Configs> => {
   const properties = apiPromise.registry.getChainProperties();
   const { ss58Format } = properties!;
-  const systemChain = await apiPromise.rpc.system.name();
+  const systemChain = await apiPromise.rpc.system.chain();
   const chainName = systemChain.split(' ')[0];
 
   return { chainName, ss58Format: parseInt(ss58Format.toString()) };
