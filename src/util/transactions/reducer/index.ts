@@ -15,10 +15,10 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { base58Decode, checkAddressChecksum, encodeAddress } from '@polkadot/util-crypto';
-import { INCORRECT_FORMAT, GENERIC } from '../../../constants';
 import { ChainState } from '../../../types/sourceTargetTypes';
 import { TransactionState, TransactionTypes, Payload, ReceiverPayload } from '../../../types/transactionTypes';
-
+import { INCORRECT_FORMAT, GENERIC } from '../../../constants';
+import { getValidAddressFormat } from '../../accounts';
 import getReceiverAddress from '../../getReceiverAddress';
 import logger from '../../logger';
 
@@ -113,29 +113,25 @@ const isReadyToExecute = (state: TransactionState): boolean => {
 const setLocalReceiver = (state: TransactionState, payload: ReceiverPayload): TransactionState => {
   const { unformattedReceiverAddress, sourceChainDetails } = payload;
   // Abstract this into a helper function
-  const decodedReceiverAddress = base58Decode(unformattedReceiverAddress!);
-  const [isValidDerivedAcccount, , , ss58Decoded] = checkAddressChecksum(decodedReceiverAddress);
-
-  if (isValidDerivedAcccount) {
+  const { isValid, formatFound } = getValidAddressFormat(unformattedReceiverAddress!);
+  if (isValid) {
     const receiverAddress = encodeAddress(unformattedReceiverAddress!, sourceChainDetails.configs.ss58Format);
     const shouldEvaluatePayloadEstimatedFee = shouldCalculatePayloadFee(state, { receiverAddress });
     const transactionReadyToExecute = isReadyToExecute({ ...state, ...payload });
-    if (ss58Decoded === 42) {
+    if (formatFound === GENERIC) {
       return {
         ...state,
         unformattedReceiverAddress,
         receiverAddress: receiverAddress,
         genericReceiverAccount: null,
         addressValidationError: null,
-        showBalance: false,
+        showBalance: true,
         formatFound: GENERIC,
-        transactionReadyToExecute: false,
-        shouldEvaluatePayloadEstimatedFee: false,
-        estimatedFee: null,
-        payload: null
+        transactionReadyToExecute,
+        shouldEvaluatePayloadEstimatedFee
       };
     }
-    if (ss58Decoded === sourceChainDetails.configs.ss58Format) {
+    if (formatFound === sourceChainDetails.configs.ss58Format) {
       return {
         ...state,
         unformattedReceiverAddress,

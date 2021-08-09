@@ -20,6 +20,7 @@ import { Box } from '@material-ui/core';
 import { IconTxStatus } from './Icons';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { TransactionStatusEnum } from '../types/transactionTypes';
+import { useGUIContext } from '../contexts/GUIContextProvider';
 
 interface Props {
   status: TransactionStatusEnum;
@@ -31,10 +32,16 @@ const TransactionHeader = ({ type, status }: Props) => {
     sourceChainDetails: { chain: sourceChain },
     targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
+  const { isBridged } = useGUIContext();
+
+  let header = ` ${sourceChain} -> ${targetChain}`;
+  if (!isBridged) {
+    header = sourceChain;
+  }
 
   return (
     <Box className="header" component="p" id="test-transaction-header">
-      <IconTxStatus status={status} /> {type} {sourceChain} {'->'} {targetChain}
+      <IconTxStatus status={status} /> {type} {header}
     </Box>
   );
 };

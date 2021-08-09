@@ -44,7 +44,7 @@ const Receiver = () => {
       </BridgedLocalWrapper>
       <BridgedLocalWrapper showLocal>
         <div className={classes.accountCompanion}>
-          {receiverAddress ? (
+          {receiverAddress && !addressValidationError ? (
             <AccountDisplay
               address={receiverAddress}
               addressKind={AddressKind.NATIVE}

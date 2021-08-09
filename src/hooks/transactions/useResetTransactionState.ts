@@ -17,6 +17,8 @@
 import { Dispatch, useEffect } from 'react';
 import { TransactionActionCreators } from '../../actions/transactionActions';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
+import { useGUIContext } from '../../contexts/GUIContextProvider';
+
 import { TransactionsActionType } from '../../types/transactionTypes';
 import usePrevious from '../react/usePrevious';
 
@@ -27,14 +29,16 @@ const useResetTransactionState = (
   const {
     sourceChainDetails: { chain: sourceChain }
   } = useSourceTarget();
+  const { isBridged } = useGUIContext();
+  const prevIsBridged = usePrevious(isBridged);
   const prevAction = usePrevious(action);
   const prevSourceChain = usePrevious(sourceChain);
 
   useEffect(() => {
-    if (prevAction !== action || prevSourceChain !== sourceChain) {
+    if (prevAction !== action || prevSourceChain !== sourceChain || prevIsBridged !== isBridged) {
       dispatchTransaction(TransactionActionCreators.reset());
     }
-  }, [dispatchTransaction, prevAction, action, prevSourceChain, sourceChain]);
+  }, [dispatchTransaction, prevAction, action, prevSourceChain, sourceChain, prevIsBridged, isBridged]);
 };
 
 export default useResetTransactionState;

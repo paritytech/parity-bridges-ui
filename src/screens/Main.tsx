@@ -52,8 +52,15 @@ function Main() {
   const classes = useStyles();
   const { actions, action, setAction, isBridged, setBridged } = useGUIContext();
   const searchItems = useCallback(
-    (choice: TransactionTypes) => actions.find((x: MenuActionItemsProps) => x.type === choice),
-    [actions]
+    (choice: TransactionTypes) => {
+      const action = actions.find((x: MenuActionItemsProps) => x.type === choice);
+
+      if (!isBridged && choice === TransactionTypes.TRANSFER) {
+        return actions.find((x: MenuActionItemsProps) => x.type === TransactionTypes.LOCAL_TRANSFER);
+      }
+      return action;
+    },
+    [actions, isBridged]
   );
 
   const handleOnSwitch = useCallback(
