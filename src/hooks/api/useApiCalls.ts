@@ -185,7 +185,7 @@ const useApiCalls = (): ApiCallsContextType => {
             const toDerive = {
               ss58Format: targetConfigs.ss58Format,
               address: sourceAddress || '',
-              bridgeId: getBridgeId(targetConfigs, sourceChain)
+              bridgeId: getBridgeId(targetApi, sourceChain)
             };
             const { data } = await sourceApi.query.system.account(sourceAddress);
             const sourceBalance = formatBalanceAddress(data, sourceApi);

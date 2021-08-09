@@ -30,15 +30,17 @@ export default function accountReducer(state: AccountState, action: AccountsActi
       }
 
       const {
-        configs: { chainName: sourceChainName }
-      } = sourceChainDetails;
-      const { configs } = targetChainDetails;
+        configs,
+        apiConnection: { api: targetApi }
+      } = targetChainDetails;
+      const { chain: sourceChainName } = sourceChainDetails;
 
       const toDerive = {
         ss58Format: configs.ss58Format,
         address: account?.address || '',
-        bridgeId: getBridgeId(configs, sourceChainName)
+        bridgeId: getBridgeId(targetApi, sourceChainName)
       };
+
       const companionAccount = getDeriveAccount(toDerive);
 
       return { ...state, account, companionAccount };

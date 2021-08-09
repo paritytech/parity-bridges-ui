@@ -20,33 +20,41 @@ import { initTransactionState } from '../initReducersStates/initTransactionState
 
 export const state: TransactionState = initTransactionState;
 
-export const apiConnection = {
-  api: {} as ApiPromise,
-  isApiReady: true
+const api: jest.Mocked<ApiPromise> = {
+  consts: {
+    bridgechain1Messages: {
+      //@ts-ignore
+      bridgedChainId: {
+        toU8a: () => new Uint8Array([1, 2, 3])
+      }
+    }
+  }
 };
 
 export const sourceConfigs = {
-  bridgeIds: { chain2: [1, 2, 3] },
   chainName: 'chain1',
   ss58Format: 48
 };
 
 export const targetConfigs = {
-  bridgeIds: { chain1: [1, 2, 3] },
   chainName: 'chain2',
   ss58Format: 60
 };
 
 export const sourceChainDetails = {
   configs: sourceConfigs,
-  apiConnection,
+  api: {} as ApiPromise,
+
   chain: 'chain1',
   polkadotjsUrl: 'url1'
 };
 
 export const targetChainDetails = {
   configs: targetConfigs,
-  apiConnection,
+  apiConnection: {
+    api,
+    isApiReady: true
+  },
   chain: 'chain2',
   polkadotjsUrl: 'url2'
 };
