@@ -38,13 +38,13 @@ const useAccounts = (): Accounts => {
   const { getSS58PrefixByChain } = useChainGetters();
 
   const setCurrentAccount = useCallback(
-    (value: string, chain: string) => {
-      const ss58Format = getSS58PrefixByChain(chain);
+    (value: string, sourceChain: string) => {
+      const ss58Format = getSS58PrefixByChain(sourceChain);
 
       const account = accounts.find(({ address }) => encodeAddress(address, ss58Format) === value);
       if (account) {
-        dispatchChangeSourceTarget(SourceTargetActionsCreators.switchChains(chain));
-        dispatchAccount(AccountActionCreators.setAccount(account, sourceTarget));
+        dispatchChangeSourceTarget(SourceTargetActionsCreators.switchChains(sourceChain));
+        dispatchAccount(AccountActionCreators.setAccount(account, sourceTarget, sourceChain));
       }
     },
     [accounts, dispatchAccount, dispatchChangeSourceTarget, getSS58PrefixByChain, sourceTarget]
