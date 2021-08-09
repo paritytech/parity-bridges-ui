@@ -24,7 +24,7 @@ const api: jest.Mocked<ApiPromise> = {
   consts: {
     bridgechain1Messages: {
       //@ts-ignore
-      bridgedId: {
+      bridgedChainId: {
         toU8a: () => new Uint8Array([1, 2, 3])
       }
     }
