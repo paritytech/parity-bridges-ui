@@ -16,25 +16,23 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { Configs } from '../types/sourceTargetTypes';
+import { getSubstrateDynamicNames } from './getSubstrateDynamicNames';
 
 export const getConfigs = async (apiPromise: ApiPromise): Promise<Configs> => {
   const properties = apiPromise.registry.getChainProperties();
   const { ss58Format } = properties!;
-  const systemChain = await apiPromise.rpc.system.name();
+  const systemChain = await apiPromise.rpc.system.chain();
   const chainName = systemChain.split(' ')[0];
-  const prop = await apiPromise.rpc.system.properties();
-  const bridgeIds = prop.get('bridgeIds');
 
-  return { bridgeIds, chainName, ss58Format: parseInt(ss58Format.toString()) };
+  return { chainName, ss58Format: parseInt(ss58Format.toString()) };
 };
 
-export const getBridgeId = (configs: Configs, chainName: string): number[] => {
-  const bridgeId = configs?.bridgeIds[chainName];
+export const getBridgeId = (sourceApi: ApiPromise, targetChain: string): Uint8Array => {
+  const { bridgedMessages } = getSubstrateDynamicNames(targetChain);
+  const bridgeId = sourceApi.consts[bridgedMessages].bridgedId.toU8a();
 
   if (!bridgeId) {
-    throw new Error(
-      `Missing bridgeId for ${chainName} in bridge configuration of ${configs.chainName}. Add 'bridgeIds' to the chain spec.`
-    );
+    throw new Error(`Missing bridgeId for ${targetChain} in ${bridgedMessages} pallet.`);
   }
 
   return bridgeId;
