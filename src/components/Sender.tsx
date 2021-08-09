@@ -16,7 +16,7 @@
 
 import React, { useEffect, useState } from 'react';
 import cx from 'classnames';
-import { MenuItem, Select } from '@material-ui/core';
+import { Box, MenuItem, Select } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { encodeAddress } from '@polkadot/util-crypto';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
@@ -71,6 +71,9 @@ const useStyles = makeStyles((theme) => ({
   },
   accountCompanion: {
     ...styleAccountCompanion(theme)
+  },
+  sender: {
+    minHeight: '100px'
   }
 }));
 
@@ -156,7 +159,7 @@ const Sender = () => {
   };
 
   return (
-    <>
+    <Box className={classes.sender}>
       <Select
         id="test-sender-component"
         disableUnderline
@@ -189,7 +192,7 @@ const Sender = () => {
           )}
         </div>
       </BridgedLocalWrapper>
-    </>
+    </Box>
   );
 };
 

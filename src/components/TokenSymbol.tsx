@@ -17,15 +17,20 @@
 import React from 'react';
 import { InputAdornment } from '@material-ui/core';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
+import { useGUIContext } from '../contexts/GUIContextProvider';
 
 interface Props {
   position?: 'start' | 'end';
 }
 
 export const TokenSymbol = ({ position = 'start' }: Props): React.ReactElement => {
-  const { targetChainDetails } = useSourceTarget();
+  const { targetChainDetails, sourceChainDetails } = useSourceTarget();
+  const { isBridged } = useGUIContext();
 
-  return (
-    <InputAdornment position={position}>{targetChainDetails.apiConnection.api.registry.chainTokens}</InputAdornment>
-  );
+  let chainTokens = targetChainDetails.apiConnection.api.registry.chainTokens;
+  if (!isBridged) {
+    chainTokens = sourceChainDetails.apiConnection.api.registry.chainTokens;
+  }
+
+  return <InputAdornment position={position}>{chainTokens}</InputAdornment>;
 };

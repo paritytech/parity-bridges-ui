@@ -30,7 +30,8 @@ describe('transactionReducer', () => {
     const payload = {
       unformattedReceiverAddress: '',
       sourceChainDetails,
-      targetChainDetails
+      targetChainDetails,
+      isBridged: true
     };
 
     it('should return the according transaction state for a companion address and its corresponding companion account.', () => {

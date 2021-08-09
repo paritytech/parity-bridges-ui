@@ -29,10 +29,10 @@ const useStyles = makeStyles(() => ({
 
 export const EstimatedFee = (): React.ReactElement => {
   const classes = useStyles();
-  const { sourceChainDetails, targetChainDetails } = useSourceTarget();
+  const { sourceChainDetails } = useSourceTarget();
   const { estimatedFee, payloadEstimatedFeeLoading, transactionRunning } = useTransactionContext();
   const srcChainDecimals = sourceChainDetails.apiConnection.api.registry.chainDecimals[0];
-  const { chainTokens } = targetChainDetails.apiConnection.api.registry;
+  const { chainTokens } = sourceChainDetails.apiConnection.api.registry;
 
   const [amount, setAmount] = useState<string | null>(null);
 

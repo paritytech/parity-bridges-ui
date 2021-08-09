@@ -17,45 +17,18 @@
 import React from 'react';
 import ReceiverInput from './ReceiverInput';
 import ReceiverDerivedAccount from './ReceiverDerivedAccount';
-import BridgedLocalWrapper from './BridgedLocalWrapper';
+import LocalReceiver from './LocalReceiver';
 import { useTransactionContext } from '../contexts/TransactionContext';
-import { makeStyles, Typography } from '@material-ui/core';
-import AccountDisplay from './AccountDisplay';
-import { AddressKind } from '../types/accountTypes';
-import { styleAccountCompanion } from '.';
-
-const useStyles = makeStyles((theme) => ({
-  accountCompanion: {
-    ...styleAccountCompanion(theme)
-  }
-}));
+import { Typography } from '@material-ui/core';
 
 const Receiver = () => {
-  const classes = useStyles();
-  const { addressValidationError, receiverAddress } = useTransactionContext();
+  const { addressValidationError } = useTransactionContext();
 
   return (
     <>
       <ReceiverInput />
-      <BridgedLocalWrapper>
-        <>
-          <ReceiverDerivedAccount />
-        </>
-      </BridgedLocalWrapper>
-      <BridgedLocalWrapper showLocal>
-        <div className={classes.accountCompanion}>
-          {receiverAddress && !addressValidationError ? (
-            <AccountDisplay
-              address={receiverAddress}
-              addressKind={AddressKind.NATIVE}
-              id={`test-${AddressKind.NATIVE}-input`.toLowerCase()}
-              withTooltip
-            />
-          ) : (
-            <AccountDisplay />
-          )}
-        </div>
-      </BridgedLocalWrapper>
+      <ReceiverDerivedAccount />
+      <LocalReceiver />
       <Typography variant="body2" color="error">
         {addressValidationError}
       </Typography>
