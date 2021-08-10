@@ -17,9 +17,7 @@
 import React from 'react';
 
 import { useTransactionContext } from '../contexts/TransactionContext';
-
 import TransactionStatusMock from './TransactionStatusMock';
-
 import { TransactionStatusType } from '../types/transactionTypes';
 import TransactionStatus, { TransactionDisplayProps } from './TransactionStatus';
 

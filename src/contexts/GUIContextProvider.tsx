@@ -14,12 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useContext, useState, Dispatch } from 'react';
+import React, { useContext, useState, Dispatch, useEffect } from 'react';
 import { createMuiTheme, CssBaseline, ThemeProvider } from '@material-ui/core';
 import useLocalStorage from '../hooks/transactions/useLocalStorage';
 import { TransactionTypes } from '../types/transactionTypes';
 import { light } from '../components';
 import { MenuActionItemsProps } from '../types/guiTypes';
+
 interface DrawerContextProps {
   drawer: string;
   setDrawer: Dispatch<React.SetStateAction<string>>;
@@ -64,6 +65,8 @@ export function GUIContextProvider({ children }: GUIContextProviderProps): React
   const [action, setAction] = useState<TransactionTypes>(TransactionTypes.TRANSFER);
 
   const value = { drawer, setDrawer, actions, action, setAction, isBridged, setBridged };
+
+  useEffect(() => setBridged(true), [action]);
 
   return (
     <ThemeProvider theme={createMuiTheme(light)}>

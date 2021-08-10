@@ -78,16 +78,18 @@ function Main() {
       <BoxUI>
         <Box component="div" display="flex" marginY={2} textAlign="left" width="100%">
           <MenuAction actions={actions} action={action} changeMenu={setAction} />
-          <ToggleButtonGroup
-            size="small"
-            value={isBridged}
-            exclusive
-            onChange={handleOnSwitch}
-            classes={{ root: classes.root }}
-          >
-            <ToggleButton value={false}>Internal</ToggleButton>
-            <ToggleButton value={true}>Bridge</ToggleButton>
-          </ToggleButtonGroup>
+          {action === TransactionTypes.TRANSFER && (
+            <ToggleButtonGroup
+              size="small"
+              value={isBridged}
+              exclusive
+              onChange={handleOnSwitch}
+              classes={{ root: classes.root }}
+            >
+              <ToggleButton value={false}>Internal</ToggleButton>
+              <ToggleButton value={true}>Bridge</ToggleButton>
+            </ToggleButtonGroup>
+          )}
         </Box>
 
         <ExtensionAccountCheck component={<Sender />} />
