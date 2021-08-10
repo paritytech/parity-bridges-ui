@@ -32,6 +32,8 @@ interface Props {
   transactionDisplayPayload: DisplayPayload | null;
   status: TransactionStatusEnum;
   type?: string;
+  sourceChain: string;
+  targetChain: string;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -61,7 +63,15 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const TransactionPayload = ({ tab, payloadHex, transactionDisplayPayload, type, status }: Props) => {
+const TransactionPayload = ({
+  tab,
+  payloadHex,
+  transactionDisplayPayload,
+  type,
+  status,
+  sourceChain,
+  targetChain
+}: Props) => {
   const classes = useStyles();
   const { payloadEstimatedFeeLoading } = useTransactionContext();
   if (tab === SwitchTabEnum.RECEIPT) {
@@ -70,7 +80,9 @@ const TransactionPayload = ({ tab, payloadHex, transactionDisplayPayload, type, 
 
   return (
     <Card elevation={23} className={classes.card}>
-      {payloadHex && <TransactionHeader type={type} status={status} />}
+      {payloadHex && (
+        <TransactionHeader type={type} status={status} sourceChain={sourceChain} targetChain={targetChain} />
+      )}
       {payloadEstimatedFeeLoading && (
         <div className={classes.loader}>
           <CircularProgress />

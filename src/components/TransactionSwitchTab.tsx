@@ -33,6 +33,8 @@ interface Props {
   transactionDisplayPayload: DisplayPayload | null;
   status: TransactionStatusEnum;
   type?: string;
+  sourceChain: string;
+  targetChain: string;
 }
 
 const TransactionSwitchTab = ({
@@ -41,7 +43,9 @@ const TransactionSwitchTab = ({
   payloadHex,
   transactionDisplayPayload,
   type,
-  status
+  status,
+  sourceChain,
+  targetChain
 }: Props) => {
   const [tab, setTab] = useState(SwitchTabEnum.RECEIPT);
 
@@ -79,6 +83,8 @@ const TransactionSwitchTab = ({
         transactionDisplayProps={transactionDisplayProps}
         payloadHex={payloadHex}
         transactionDisplayPayload={transactionDisplayPayload}
+        sourceChain={sourceChain}
+        targetChain={targetChain}
       />
     </>
   );

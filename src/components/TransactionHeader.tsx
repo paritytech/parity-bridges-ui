@@ -18,13 +18,14 @@ import React from 'react';
 
 import { Box } from '@material-ui/core';
 import { IconTxStatus } from './Icons';
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { TransactionStatusEnum } from '../types/transactionTypes';
 import { useGUIContext } from '../contexts/GUIContextProvider';
 
 interface Props {
   status: TransactionStatusEnum;
   type?: string;
+  sourceChain: string;
+  targetChain: string;
 }
 
 const getType = (type: string | undefined) => {
@@ -34,11 +35,7 @@ const getType = (type: string | undefined) => {
   return type.replace('_', ' ');
 };
 
-const TransactionHeader = ({ type, status }: Props) => {
-  const {
-    sourceChainDetails: { chain: sourceChain },
-    targetChainDetails: { chain: targetChain }
-  } = useSourceTarget();
+const TransactionHeader = ({ type, status, sourceChain, targetChain }: Props) => {
   const { isBridged } = useGUIContext();
 
   let header = ` ${sourceChain} -> ${targetChain}`;

@@ -28,7 +28,7 @@ interface Props {
 }
 
 const TransactionStatus = ({ transaction }: Props) => {
-  const { payloadHex, transactionDisplayPayload } = transaction;
+  const { payloadHex, transactionDisplayPayload, sourceChain, targetChain } = transaction;
 
   return (
     <TransactionSwitchTab
@@ -36,12 +36,16 @@ const TransactionStatus = ({ transaction }: Props) => {
       transactionDisplayPayload={transactionDisplayPayload}
       status={transaction.status}
       type={transaction.type}
+      sourceChain={sourceChain}
+      targetChain={targetChain}
     >
       <TransactionReceipt
         key={transaction.id}
         steps={transaction.steps}
         type={transaction.type}
         status={transaction.status}
+        sourceChain={sourceChain}
+        targetChain={targetChain}
       />
     </TransactionSwitchTab>
   );
