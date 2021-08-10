@@ -188,7 +188,8 @@ describe('transactionReducer', () => {
         payloadEstimatedFee,
         payloadEstimatedFeeLoading,
         {} as SourceTargetState,
-        () => 'type'
+        () => 'type',
+        true
       );
       const result = transactionReducer(state, action);
 
@@ -208,7 +209,8 @@ describe('transactionReducer', () => {
         payloadEstimatedFee,
         payloadEstimatedFeeLoading,
         {} as SourceTargetState,
-        () => 'type'
+        () => 'type',
+        true
       );
       const result = transactionReducer(state, action);
 
@@ -231,7 +233,8 @@ describe('transactionReducer', () => {
         payloadEstimatedFee,
         payloadEstimatedFeeLoading,
         {} as SourceTargetState,
-        () => 'type'
+        () => 'type',
+        true
       );
       const result = transactionReducer(state, action);
 
@@ -254,7 +257,8 @@ describe('transactionReducer', () => {
         payloadEstimatedFee,
         payloadEstimatedFeeLoading,
         {} as SourceTargetState,
-        () => 'type'
+        () => 'type',
+        true
       );
       const result = transactionReducer(state, action);
 
@@ -295,7 +299,8 @@ describe('transactionReducer', () => {
         payloadEstimatedFee,
         payloadEstimatedFeeLoading,
         sourceTargetDetails,
-        createType
+        createType,
+        true
       );
 
       const newState = { ...state };
