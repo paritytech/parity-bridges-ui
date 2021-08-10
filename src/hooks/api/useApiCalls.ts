@@ -89,6 +89,12 @@ const useApiCalls = (): ApiCallsContextType => {
           sourceAccount = account.address;
         }
 
+        const transactionDisplayPayload = {
+          sourceAccount: account?.address || sourceAccount,
+          transferAmount: transferAmount.toString(),
+          receiverAddress
+        };
+
         const unsub = await transfer.signAndSend(sourceAccount, { ...options }, async ({ status }) => {
           const steps = createEmptyLocalSteps(sourceChain);
           if (status.isReady) {
@@ -106,8 +112,8 @@ const useApiCalls = (): ApiCallsContextType => {
                 status: TransactionStatusEnum.IN_PROGRESS,
                 targetChain: '',
                 type,
-                transactionDisplayPayload: null,
-                payloadHex: '',
+                transactionDisplayPayload,
+                payloadHex: transfer.toHex(),
                 steps
               })
             );

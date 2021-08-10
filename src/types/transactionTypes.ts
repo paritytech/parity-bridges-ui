@@ -56,6 +56,14 @@ export interface TransactionDisplayPayload {
   weight: string;
 }
 
+export interface LocalTransactionDisplayPayload {
+  sourceAccount: string;
+  transferAmount: number;
+  receiverAddress: string;
+}
+
+export type DisplayPayload = TransactionDisplayPayload | LocalTransactionDisplayPayload;
+
 export interface TransactionStatusType extends UpdatedTransactionStatusType {
   input: string;
   sourceChain: string;
@@ -83,7 +91,7 @@ export interface TransactionState {
   genericReceiverAccount: string | null;
   transactions: Array<TransactionStatusType>;
   evaluatingTransactions: boolean;
-  transactionDisplayPayload: TransactionDisplayPayload | null;
+  transactionDisplayPayload: DisplayPayload | null;
   transactionRunning: boolean;
   transactionReadyToExecute: boolean;
   evaluateTransactionStatusError: string | null;

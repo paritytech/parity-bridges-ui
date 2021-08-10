@@ -29,7 +29,6 @@ import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import Transactions from '../components/Transactions';
 import { useGUIContext } from '../contexts/GUIContextProvider';
 import { TransactionTypes } from '../types/transactionTypes';
-import { MenuActionItemsProps } from '../types/guiTypes';
 
 import BridgedLocalWrapper from '../components/BridgedLocalWrapper';
 import { useCallback } from 'react';
@@ -51,17 +50,6 @@ const ActionComponents = {
 function Main() {
   const classes = useStyles();
   const { actions, action, setAction, isBridged, setBridged } = useGUIContext();
-  const searchItems = useCallback(
-    (choice: TransactionTypes) => {
-      const action = actions.find((x: MenuActionItemsProps) => x.type === choice);
-
-      if (!isBridged && choice === TransactionTypes.TRANSFER) {
-        return actions.find((x: MenuActionItemsProps) => x.type === TransactionTypes.LOCAL_TRANSFER);
-      }
-      return action;
-    },
-    [actions, isBridged]
-  );
 
   const handleOnSwitch = useCallback(
     (event: React.MouseEvent<HTMLElement>, newAlignment: string | null) => {
@@ -107,7 +95,7 @@ function Main() {
           <ArrowDownwardIcon fontSize="large" color="primary" />
         </Box>
         <>{ActionComponents[action]}</>
-        <Transactions type={searchItems(action)?.title} />
+        <Transactions type={action} />
         <SnackBar />
       </BoxUI>
     </>

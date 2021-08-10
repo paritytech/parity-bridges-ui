@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { base58Decode, checkAddressChecksum, encodeAddress } from '@polkadot/util-crypto';
+import { encodeAddress } from '@polkadot/util-crypto';
 import { ChainState } from '../../../types/sourceTargetTypes';
 import { TransactionState, TransactionTypes, Payload, ReceiverPayload } from '../../../types/transactionTypes';
 import { INCORRECT_FORMAT, GENERIC } from '../../../constants';

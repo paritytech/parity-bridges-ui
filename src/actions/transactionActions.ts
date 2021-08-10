@@ -57,14 +57,16 @@ const setPayloadEstimatedFee = (
   payloadEstimatedFee: PayloadEstimatedFee | null,
   payloadEstimatedFeeLoading: boolean,
   sourceTargetDetails: SourceTargetState,
-  createType: CreateType
+  createType: CreateType,
+  isBridged: boolean
 ) => ({
   payload: {
     payloadEstimatedFee,
     payloadEstimatedFeeError,
     payloadEstimatedFeeLoading,
     sourceTargetDetails,
-    createType
+    createType,
+    isBridged
   },
   type: TransactionActionTypes.SET_PAYLOAD_ESTIMATED_FEE
 });

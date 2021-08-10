@@ -27,6 +27,13 @@ interface Props {
   type?: string;
 }
 
+const getType = (type: string | undefined) => {
+  if (!type) {
+    return type;
+  }
+  return type.replace('_', ' ');
+};
+
 const TransactionHeader = ({ type, status }: Props) => {
   const {
     sourceChainDetails: { chain: sourceChain },
@@ -41,7 +48,7 @@ const TransactionHeader = ({ type, status }: Props) => {
 
   return (
     <Box className="header" component="p" id="test-transaction-header">
-      <IconTxStatus status={status} /> {type} {header}
+      <IconTxStatus status={status} /> {getType(type)} {header}
     </Box>
   );
 };

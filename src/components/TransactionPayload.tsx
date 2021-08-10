@@ -17,11 +17,9 @@
 import React from 'react';
 import { Card, makeStyles, CircularProgress, Typography } from '@material-ui/core';
 import ReactJson from 'react-json-view';
-import { SwitchTabEnum } from '../types/transactionTypes';
 import TransactionHeader from './TransactionHeader';
 import { useTransactionContext } from '../contexts/TransactionContext';
-import { TransactionDisplayPayload } from '../types/transactionTypes';
-import { TransactionStatusEnum } from '../types/transactionTypes';
+import { DisplayPayload, SwitchTabEnum, TransactionStatusEnum } from '../types/transactionTypes';
 
 export interface TransactionDisplayProps {
   size?: 'sm';
@@ -31,7 +29,7 @@ interface Props {
   transactionDisplayProps?: TransactionDisplayProps;
   tab: SwitchTabEnum;
   payloadHex: string | null;
-  transactionDisplayPayload: TransactionDisplayPayload | null;
+  transactionDisplayPayload: DisplayPayload | null;
   status: TransactionStatusEnum;
   type?: string;
 }
