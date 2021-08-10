@@ -17,7 +17,7 @@
 import React from 'react';
 import ReceiverInput from './ReceiverInput';
 import ReceiverDerivedAccount from './ReceiverDerivedAccount';
-import LocalReceiver from './LocalReceiver';
+import InternalTransfer from './InternalReceiver';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import { Typography } from '@material-ui/core';
 
@@ -28,7 +28,7 @@ const Receiver = () => {
     <>
       <ReceiverInput />
       <ReceiverDerivedAccount />
-      <LocalReceiver />
+      <InternalTransfer />
       <Typography variant="body2" color="error">
         {addressValidationError}
       </Typography>

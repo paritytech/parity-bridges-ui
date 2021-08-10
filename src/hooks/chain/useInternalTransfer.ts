@@ -20,22 +20,22 @@ import { useUpdateMessageContext } from '../../contexts/MessageContext';
 import { useTransactionContext, useUpdateTransactionContext } from '../../contexts/TransactionContext';
 import useApiCalls from '../api/useApiCalls';
 
-export function useLocalTransfer() {
+export function useInternalTransfer() {
   const { receiverAddress, transferAmount } = useTransactionContext();
   const { dispatchTransaction } = useUpdateTransactionContext();
   const { dispatchMessage } = useUpdateMessageContext();
   const { account } = useAccountContext();
-  const { localTransfer } = useApiCalls();
+  const { internalTransfer } = useApiCalls();
 
-  const executeLocalTransfer = useCallback(() => {
+  const executeInternalTransfer = useCallback(() => {
     const dispatchers = { dispatchTransaction, dispatchMessage };
     const transferData = {
       transferAmount,
       receiverAddress,
       account
     };
-    localTransfer(dispatchers, transferData);
-  }, [account, dispatchMessage, dispatchTransaction, localTransfer, receiverAddress, transferAmount]);
+    internalTransfer(dispatchers, transferData);
+  }, [account, dispatchMessage, dispatchTransaction, internalTransfer, receiverAddress, transferAmount]);
 
-  return executeLocalTransfer;
+  return executeInternalTransfer;
 }

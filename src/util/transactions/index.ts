@@ -203,7 +203,7 @@ export const handleTransactionUpdates = async ({
 
   const { sourceChain, targetChain, deliveryBlock, status, type } = transaction;
 
-  if (type === TransactionTypes.LOCAL_TRANSFER) {
+  if (type === TransactionTypes.INTERNAL_TRANSFER) {
     return transaction;
   }
 
@@ -280,13 +280,13 @@ const bridgedSteps = [
   ['confirm-delivery', 'Confirm delivery']
 ];
 
-const localSteps = [
+const internalSteps = [
   ['include-message-block', 'Include message in block'],
   ['finalized-block', 'Finalize block']
 ];
 
 const step = (step: number, chainType: string, status?: TransactionStatusEnum, labelOnChain?: any, type?: string) => {
-  const steps = type === 'local' ? localSteps : bridgedSteps;
+  const steps = type === 'local' ? internalSteps : bridgedSteps;
   const obj = {
     id: 'test-step-' + steps[step - 1][0],
     chainType,
@@ -308,12 +308,12 @@ export const createEmptySteps = (sourceChain: string, targetChain: string) => [
   step(6, sourceChain)
 ];
 
-export const createEmptyLocalSteps = (sourceChain: string) => [
+export const createEmptyInternalSteps = (sourceChain: string) => [
   step(1, sourceChain, undefined, null, LOCAL),
   step(2, sourceChain, undefined, null, LOCAL)
 ];
 
-export const handleLocalTransactionUpdates = (transaction: TransactionStatusType, sourceChain: string) => {
+export const handleInternalTransactionUpdates = (transaction: TransactionStatusType, sourceChain: string) => {
   const { steps, block, status } = transaction;
   const updatedSteps = [...steps];
   let nextStatus = status;

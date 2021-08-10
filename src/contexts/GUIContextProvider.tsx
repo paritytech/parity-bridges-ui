@@ -51,11 +51,6 @@ const actions = [
     title: 'Custom Call',
     isEnabled: true,
     type: TransactionTypes.CUSTOM
-  },
-  {
-    title: 'Local Transfer',
-    isEnabled: true,
-    type: TransactionTypes.LOCAL_TRANSFER
   }
 ];
 

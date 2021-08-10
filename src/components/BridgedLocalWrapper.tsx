@@ -20,13 +20,13 @@ import { useGUIContext } from '../contexts/GUIContextProvider';
 interface Props {
   children: React.ReactElement | null;
   blurred?: boolean;
-  showLocal?: boolean;
+  showInternal?: boolean;
 }
 
-export default function BridgedLocalWrapper({ children, blurred = false, showLocal = false }: Props) {
+export default function BridgedLocalWrapper({ children, blurred = false, showInternal = false }: Props) {
   const { isBridged } = useGUIContext();
 
-  if (!isBridged && showLocal) {
+  if (!isBridged && showInternal) {
     return children;
   }
 
@@ -34,7 +34,7 @@ export default function BridgedLocalWrapper({ children, blurred = false, showLoc
     if (blurred) return <div style={{ opacity: '20%' }}>{children}</div>;
   }
 
-  if (isBridged && !showLocal) {
+  if (isBridged && !showInternal) {
     return children;
   }
 

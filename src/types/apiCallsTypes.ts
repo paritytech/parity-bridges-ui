@@ -41,7 +41,7 @@ type TransferData = {
   account: Account;
 };
 
-export type LocalTransfer = (
+export type InternalTransfer = (
   dispatchers: {
     dispatchTransaction: Dispatch<TransactionsActionType>;
     dispatchMessage: Dispatch<MessagesActionType>;
@@ -52,6 +52,6 @@ export type LocalTransfer = (
 export interface ApiCallsContextType {
   createType: CreateType;
   stateCall: StateCall;
-  localTransfer: LocalTransfer;
+  internalTransfer: InternalTransfer;
   updateSenderAccountsInformation: (dispatchAccount: Dispatch<AccountsActionType>) => void;
 }

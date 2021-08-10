@@ -28,11 +28,11 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function LocalReceiver() {
+export default function InternalReceiver() {
   const { addressValidationError, receiverAddress } = useTransactionContext();
   const classes = useStyles();
   return (
-    <BridgedLocalWrapper showLocal>
+    <BridgedLocalWrapper showInternal>
       <div className={classes.accountCompanion}>
         {receiverAddress && !addressValidationError ? (
           <AccountDisplay

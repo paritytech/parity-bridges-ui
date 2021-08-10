@@ -113,7 +113,7 @@ export enum TransactionTypes {
   CUSTOM = 'CUSTOM',
   TRANSFER = 'TRANSFER',
   REMARK = 'REMARK',
-  LOCAL_TRANSFER = 'LOCAL_TRANSFER'
+  INTERNAL_TRANSFER = 'INTERNAL_TRANSFER'
 }
 
 export enum EvalMessages {

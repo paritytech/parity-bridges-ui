@@ -30,7 +30,7 @@ import { Alert, ButtonSubmit } from '../components';
 import { EstimatedFee } from '../components/EstimatedFee';
 import BN from 'bn.js';
 import { DebouncedTextField } from './DebouncedTextField';
-import { useLocalTransfer } from '../hooks/chain/useLocalTransfer';
+import { useInternalTransfer } from '../hooks/chain/useInternalTransfer';
 import { useGUIContext } from '../contexts/GUIContextProvider';
 
 const useStyles = makeStyles((theme) => ({
@@ -68,7 +68,7 @@ function Transfer() {
   } = useTransactionContext();
   const { api } = sourceChainDetails.apiConnection;
   const balance = useBalance(api, account?.address || '');
-  const executeLocalTransfer = useLocalTransfer();
+  const executeInternalTransfer = useInternalTransfer();
 
   const dispatchCallback = useCallback(
     (value: string | null) => {
@@ -89,10 +89,10 @@ function Transfer() {
 
   const sendTransaction = useCallback(() => {
     if (!isBridged) {
-      return executeLocalTransfer();
+      return executeInternalTransfer();
     }
     sendLaneMessage();
-  }, [executeLocalTransfer, isBridged, sendLaneMessage]);
+  }, [executeInternalTransfer, isBridged, sendLaneMessage]);
 
   useEffect((): void => {
     transactionRunning && transferAmount && dispatchCallback('');
@@ -103,6 +103,10 @@ function Transfer() {
       transferAmount &&
       setAmountNotCorrect(new BN(balance.free).sub(transferAmount).add(new BN(estimatedFee)).isNeg());
   }, [transferAmount, estimatedFee, balance]);
+
+  const buttonLabel = isBridged
+    ? `Send bridge transfer from ${sourceChainDetails.chain} to ${targetChainDetails.chain}`
+    : `Send internal transfer to ${sourceChainDetails.chain}`;
 
   return (
     <>
@@ -122,7 +126,7 @@ function Transfer() {
       </Box>
       <Receiver />
       <ButtonSubmit disabled={!transactionReadyToExecute || amountNotCorrect} onClick={sendTransaction}>
-        Send bridge transfer from {sourceChainDetails.chain} to {targetChainDetails.chain}
+        {buttonLabel}
       </ButtonSubmit>
       {amountNotCorrect ? (
         <Alert severity="error">

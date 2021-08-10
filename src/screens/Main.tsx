@@ -42,7 +42,7 @@ const useStyles = makeStyles(() => ({
 
 const ActionComponents = {
   [TransactionTypes.TRANSFER]: <Transfer />,
-  [TransactionTypes.LOCAL_TRANSFER]: <Transfer />,
+  [TransactionTypes.INTERNAL_TRANSFER]: <Transfer />,
   [TransactionTypes.REMARK]: <Remark />,
   [TransactionTypes.CUSTOM]: <CustomCall />
 };
@@ -85,7 +85,7 @@ function Main() {
             onChange={handleOnSwitch}
             classes={{ root: classes.root }}
           >
-            <ToggleButton value={false}>Local</ToggleButton>
+            <ToggleButton value={false}>Internal</ToggleButton>
             <ToggleButton value={true}>Bridge</ToggleButton>
           </ToggleButtonGroup>
         </Box>

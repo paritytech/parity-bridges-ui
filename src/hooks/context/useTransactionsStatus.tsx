@@ -29,7 +29,7 @@ import { TransactionActionCreators } from '../../actions/transactionActions';
 import isEqual from 'lodash/isEqual';
 import usePrevious from '../react/usePrevious';
 import { genericCall } from '../../util/apiUtlis';
-import { handleLocalTransactionUpdates, handleTransactionUpdates } from '../../util/transactions/';
+import { handleInternalTransactionUpdates, handleTransactionUpdates } from '../../util/transactions/';
 
 export default function useTransactionsStatus(
   transactions: TransactionStatusType[],
@@ -63,8 +63,8 @@ export default function useTransactionsStatus(
           }
 
           const { sourceChain, targetChain } = transaction;
-          if (transaction.type === TransactionTypes.LOCAL_TRANSFER) {
-            const updatedTransaction = handleLocalTransactionUpdates(transaction, sourceChain);
+          if (transaction.type === TransactionTypes.INTERNAL_TRANSFER) {
+            const updatedTransaction = handleInternalTransactionUpdates(transaction, sourceChain);
             return updatedTransaction;
           }
 

@@ -35,7 +35,7 @@ import { ApiPromise } from '@polkadot/api';
 import { encodeAddress } from '@polkadot/util-crypto';
 import { AccountActionCreators } from '../../actions/accountActions';
 import { BalanceState } from '../../types/accountTypes';
-import { createEmptyLocalSteps } from '../../util/transactions';
+import { createEmptyInternalSteps } from '../../util/transactions';
 
 const useApiCalls = (): ApiCallsContextType => {
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
@@ -68,11 +68,11 @@ const useApiCalls = (): ApiCallsContextType => {
     [getValuesByChain]
   );
 
-  const localTransfer = useCallback(
+  const internalTransfer = useCallback(
     async (dispatchers, transfersData) => {
       const { dispatchTransaction, dispatchMessage } = dispatchers;
       const { receiverAddress, transferAmount, account } = transfersData;
-      const type = TransactionTypes.LOCAL_TRANSFER;
+      const type = TransactionTypes.INTERNAL_TRANSFER;
 
       const id = Date.now().toString();
       dispatchTransaction(TransactionActionCreators.setTransactionRunning(true));
@@ -91,12 +91,12 @@ const useApiCalls = (): ApiCallsContextType => {
 
         const transactionDisplayPayload = {
           sourceAccount: account?.address || sourceAccount,
-          transferAmount: transferAmount.toString(),
+          transferAmount: transferAmount.toNumber(),
           receiverAddress
         };
 
         const unsub = await transfer.signAndSend(sourceAccount, { ...options }, async ({ status }) => {
-          const steps = createEmptyLocalSteps(sourceChain);
+          const steps = createEmptyInternalSteps(sourceChain);
           if (status.isReady) {
             dispatchTransaction(
               TransactionActionCreators.createTransactionStatus({
@@ -235,7 +235,7 @@ const useApiCalls = (): ApiCallsContextType => {
     [keyringPairs, keyringPairsReady, sourceChainDetails, targetChainDetails]
   );
 
-  return { createType, stateCall, localTransfer, updateSenderAccountsInformation };
+  return { createType, stateCall, internalTransfer, updateSenderAccountsInformation };
 };
 
 export default useApiCalls;
