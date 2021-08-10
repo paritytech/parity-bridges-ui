@@ -15,7 +15,6 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React from 'react';
-import cx from 'classnames';
 import { Box, InputBase } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTransactionContext } from '../contexts/TransactionContext';
