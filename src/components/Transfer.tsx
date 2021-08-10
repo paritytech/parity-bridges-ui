@@ -89,7 +89,8 @@ function Transfer() {
 
   const sendTransaction = useCallback(() => {
     if (!isBridged) {
-      return executeInternalTransfer();
+      executeInternalTransfer();
+      return;
     }
     sendLaneMessage();
   }, [executeInternalTransfer, isBridged, sendLaneMessage]);
