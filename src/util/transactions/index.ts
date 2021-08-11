@@ -36,6 +36,7 @@ import isEmpty from 'lodash/isEmpty';
 import type { InterfaceTypes } from '@polkadot/types/types';
 import logger from '../logger';
 import { Account } from '../../types/accountTypes';
+import { MESSAGE_DISPATCH_EVENT, MESSAGE_NONCE_TYPE, OK } from '../../constants';
 
 export function isTransactionCompleted(transaction: TransactionStatusType): boolean {
   return transaction.status === TransactionStatusEnum.COMPLETED;
@@ -165,10 +166,24 @@ interface InputTransactionUpdates {
   laneId: string;
 }
 
+function deepFind(data: any[], value: string) {
+  function iter(subData: any) {
+    if (value === OK ? subData.toJSON().ok : subData.toString() === value) {
+      result = subData;
+      return true;
+    }
+    return Array.isArray(subData) && subData.some(iter);
+  }
+
+  let result;
+  data.some(iter);
+  return result;
+}
+
 const checkMessageDispatchedEvent = async (
   targetApi: ApiPromise,
   blockNumber: string | null,
-  messageNonce: number | null
+  messageNonce: string | null
 ) => {
   if (!blockNumber || !messageNonce) {
     return TransactionStatusEnum.IN_PROGRESS;
@@ -179,14 +194,9 @@ const checkMessageDispatchedEvent = async (
 
   let status = TransactionStatusEnum.FAILED;
   signedBlock.block.extrinsics.forEach((ext, index) => {
-    // filter the specific events based on the phase and then the
-    // index of our extrinsic in the block
-
     const events = allRecords.filter(({ phase }) => phase.isApplyExtrinsic && phase.asApplyExtrinsic.eq(index));
-
     const found = events.find(({ event: { method, data } }) => {
-      // @ts-ignore
-      return method === 'MessageDispatched' && data[1][1].toString() === messageNonce && Boolean(data[2].toJSON()!.ok);
+      return method === MESSAGE_DISPATCH_EVENT && deepFind(data, messageNonce) && deepFind(data, OK);
     });
     if (found) {
       status = TransactionStatusEnum.COMPLETED;
@@ -213,7 +223,7 @@ const getLatestReceivedNonce = async (
   );
 
   // @ts-ignore
-  const latestReceivedNonceCallType = createType(targetChain, 'MessageNonce', latestReceivedNonceCall);
+  const latestReceivedNonceCallType = createType(targetChain, MESSAGE_NONCE_TYPE, latestReceivedNonceCall);
   const latestReceivedNonce = latestReceivedNonceCallType.toString();
   return parseInt(latestReceivedNonce);
 };
