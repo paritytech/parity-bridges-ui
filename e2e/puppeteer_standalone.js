@@ -23,10 +23,6 @@ const chromeOptions = {
   headless: false
 };
 
-globals.REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS = 'true';
-
-console.log('REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS', globals, process.env.REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS);
-
 (async function main() {
   try {
     const browser = await puppeteer.launch(chromeOptions);
