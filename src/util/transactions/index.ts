@@ -147,7 +147,6 @@ const completionStatus = (isCompleted: boolean): TransactionStatusEnum => {
 
 const evaluateAllSteps = (steps: Step[]) => {
   const notCompleted = steps.find(({ status }) => status !== TransactionStatusEnum.COMPLETED);
-  console.log('notCompleted', notCompleted);
   return !notCompleted;
 };
 
@@ -177,9 +176,6 @@ const checkMessageDispatchedEvent = async (
   const blockHash = await targetApi.rpc.chain.getBlockHash(blockNumber);
   const signedBlock = await targetApi.rpc.chain.getBlock(blockHash);
   const allRecords = await targetApi.query.system.events.at(signedBlock.block.header.hash);
-
-  console.log('messageNonce', messageNonce);
-  console.log('blockNumber', blockNumber);
 
   let status = TransactionStatusEnum.FAILED;
   signedBlock.block.extrinsics.forEach((ext, index) => {
