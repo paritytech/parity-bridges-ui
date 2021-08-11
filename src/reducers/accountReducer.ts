@@ -21,19 +21,26 @@ import getDeriveAccount from '../util/getDeriveAccount';
 export default function accountReducer(state: AccountState, action: AccountsActionType): AccountState {
   switch (action.type) {
     case AccountActionsTypes.SET_ACCOUNT: {
-      const { account, sourceTarget } = action.payload;
+      const { account, sourceTarget, sourceChain } = action.payload;
+      let { sourceChainDetails, targetChainDetails } = sourceTarget;
+
+      if (sourceChain !== sourceChainDetails.chain) {
+        sourceChainDetails = sourceTarget.targetChainDetails;
+        targetChainDetails = sourceTarget.sourceChainDetails;
+      }
+
       const {
-        targetChainDetails: { configs },
-        sourceChainDetails: {
-          configs: { chainName: sourceChainName }
-        }
-      } = sourceTarget;
+        configs,
+        apiConnection: { api: targetApi }
+      } = targetChainDetails;
+      const { chain: sourceChainName } = sourceChainDetails;
 
       const toDerive = {
         ss58Format: configs.ss58Format,
         address: account?.address || '',
-        bridgeId: getBridgeId(configs, sourceChainName)
+        bridgeId: getBridgeId(targetApi, sourceChainName)
       };
+
       const companionAccount = getDeriveAccount(toDerive);
 
       return { ...state, account, companionAccount };

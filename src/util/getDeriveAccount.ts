@@ -21,7 +21,7 @@ const accountDerivation = 'pallet-bridge/account-derivation/account';
 
 interface Data {
   ss58Format: number;
-  bridgeId: number[];
+  bridgeId: Uint8Array;
   address: string;
 }
 
