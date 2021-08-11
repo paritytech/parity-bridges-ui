@@ -17,6 +17,7 @@
 const puppeteer = require('puppeteer');
 const winston = require('winston');
 const { globals } = require('./jest.config');
+require('dotenv').config();
 
 winston.addColors({
   debug: 'grey',

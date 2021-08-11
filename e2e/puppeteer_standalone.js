@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 const puppeteer = require('puppeteer');
+require('dotenv').config();
 const { globals } = require('./jest.config');
 
 const chromeOptions = {
@@ -21,6 +22,10 @@ const chromeOptions = {
   executablePath: process.env.PUPPETEER_EXEC_PATH, // set by docker container
   headless: false
 };
+
+globals.REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS = 'true';
+
+console.log('REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS', globals, process.env.REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS);
 
 (async function main() {
   try {
@@ -34,7 +39,6 @@ const chromeOptions = {
       userAgent: ''
     });
     await page.goto(globals.SERVER_URL, { waitUntil: 'domcontentloaded' });
-
     // Run happy path test for submitting a transaction
     await page.waitForSelector('#test-sender-component');
     await page.waitForTimeout(1000);
