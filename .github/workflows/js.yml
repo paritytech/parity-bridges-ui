@@ -57,13 +57,12 @@ jobs:
         node-version: '14'
     - run: yarn
     - run: yarn test
-    - run: yarn start
     - name: Run Puppeteer
       uses: mujo-code/puppeteer-headful@master
       env:
         CI: 'true'
       with:
-        args: yarn test:e2e
+        args: yarn start && yarn test:e2e
 
   build:
     name: Build & Deploy
