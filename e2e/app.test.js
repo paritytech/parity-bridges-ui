@@ -252,9 +252,11 @@ describe('<App />', () => {
           .waitForSelector(`#test-step-finalized-message > ${ids.checkCircleComponent}`)
           .then(() => logger.info('     -- Step 5 "Finalize message" completed'));
         await page
+          .waitForSelector(`#test-step-message-dispatch-confirmation > ${ids.checkCircleComponent}`)
+          .then(() => logger.info('     -- Step 6 "Message dispatch confirmation" completed'));
+        await page
           .waitForSelector(`#test-step-confirm-delivery > ${ids.checkCircleComponent}`)
-          .then(() => logger.info('     -- Step 6 "Confirm delivery" completed'));
-
+          .then(() => logger.info('     -- Step 7 "Confirm delivery" completed'));
         await page
           .waitForSelector(`#test-transaction-header > ${ids.checkCircleComponent}`)
           .then(() => logger.info('     -- Transaction Completed'));
