@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
     ...styleAccountCompanion(theme)
   },
   sender: {
-    minHeight: '100px'
+    minHeight: theme.spacing(10)
   }
 }));
 

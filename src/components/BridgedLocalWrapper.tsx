@@ -26,17 +26,11 @@ interface Props {
 export default function BridgedLocalWrapper({ children, blurred = false, showInternal = false }: Props) {
   const { isBridged } = useGUIContext();
 
-  if (!isBridged && showInternal) {
-    return children;
-  }
-
   if (!isBridged) {
+    if (showInternal) return children;
     if (blurred) return <div style={{ opacity: '20%' }}>{children}</div>;
   }
-
-  if (isBridged && !showInternal) {
-    return children;
-  }
+  if (isBridged && !showInternal) return children;
 
   return null;
 }

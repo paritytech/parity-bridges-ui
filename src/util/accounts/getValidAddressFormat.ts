@@ -15,16 +15,12 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { base58Decode, checkAddressChecksum } from '@polkadot/util-crypto';
-import { INCORRECT_FORMAT, GENERIC } from '../../constants';
+import { INCORRECT_FORMAT, GENERIC, GENERIC_SUBSTRATE_PREFIX } from '../../constants';
 
 export default function getValidAddressFormat(address: string) {
   const decodedReceiverAddress = base58Decode(address);
   const [isValid, , , formatFound] = checkAddressChecksum(decodedReceiverAddress);
-  if (isValid) {
-    if (formatFound === 42) {
-      return { isValid: true, formatFound: GENERIC };
-    }
-    return { isValid: true, formatFound };
-  }
-  return { isValid: false, formatFound: INCORRECT_FORMAT };
+
+  const f = formatFound === GENERIC_SUBSTRATE_PREFIX ? GENERIC : formatFound;
+  return { isValid, formatFound: isValid ? f : INCORRECT_FORMAT };
 }
