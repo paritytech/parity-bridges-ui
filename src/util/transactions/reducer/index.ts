@@ -14,10 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { INCORRECT_FORMAT, GENERIC } from '../../../constants';
+import { encodeAddress } from '@polkadot/util-crypto';
 import { ChainState } from '../../../types/sourceTargetTypes';
 import { TransactionState, TransactionTypes, Payload, ReceiverPayload } from '../../../types/transactionTypes';
-
+import { INCORRECT_FORMAT, GENERIC } from '../../../constants';
+import { getValidAddressFormat } from '../../accounts';
 import getReceiverAddress from '../../getReceiverAddress';
 import logger from '../../logger';
 
@@ -109,9 +110,60 @@ const isReadyToExecute = (state: TransactionState): boolean => {
   return Boolean(!transactionRunning && inputReady && senderAccount);
 };
 
+const setLocalReceiver = (state: TransactionState, payload: ReceiverPayload): TransactionState => {
+  const { unformattedReceiverAddress, sourceChainDetails } = payload;
+  // Abstract this into a helper function
+  const { isValid, formatFound } = getValidAddressFormat(unformattedReceiverAddress!);
+  if (isValid) {
+    const receiverAddress = encodeAddress(unformattedReceiverAddress!, sourceChainDetails.configs.ss58Format);
+    const shouldEvaluatePayloadEstimatedFee = shouldCalculatePayloadFee(state, { receiverAddress });
+    const transactionReadyToExecute = isReadyToExecute({ ...state, ...payload });
+    if (formatFound === GENERIC) {
+      return {
+        ...state,
+        unformattedReceiverAddress,
+        receiverAddress,
+        genericReceiverAccount: null,
+        addressValidationError: null,
+        showBalance: true,
+        formatFound: GENERIC,
+        transactionReadyToExecute,
+        shouldEvaluatePayloadEstimatedFee
+      };
+    }
+    if (formatFound === sourceChainDetails.configs.ss58Format) {
+      return {
+        ...state,
+        unformattedReceiverAddress,
+        receiverAddress: unformattedReceiverAddress,
+        derivedReceiverAccount: null,
+        genericReceiverAccount: null,
+        addressValidationError: null,
+        showBalance: true,
+        formatFound: sourceChainDetails.chain,
+        transactionReadyToExecute,
+        shouldEvaluatePayloadEstimatedFee
+      };
+    }
+  }
+
+  return {
+    ...state,
+    addressValidationError: 'Invalid Address',
+    unformattedReceiverAddress,
+    receiverAddress: null,
+    genericReceiverAccount: null,
+    formatFound: null,
+    transactionReadyToExecute: false,
+    payloadEstimatedFeeLoading: false,
+    shouldEvaluatePayloadEstimatedFee: false,
+    estimatedFee: null,
+    payload: null
+  };
+};
+
 const setReceiver = (state: TransactionState, payload: ReceiverPayload): TransactionState => {
-  const { unformattedReceiverAddress, sourceChainDetails, targetChainDetails } = payload;
-  const transactionReadyToExecute = isReadyToExecute({ ...state, ...payload });
+  const { unformattedReceiverAddress, sourceChainDetails, targetChainDetails, isBridged } = payload;
   if (!unformattedReceiverAddress) {
     return {
       ...state,
@@ -128,6 +180,12 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
       payload: null
     };
   }
+
+  if (!isBridged) {
+    return setLocalReceiver(state, payload);
+  }
+
+  const transactionReadyToExecute = isReadyToExecute({ ...state, ...payload });
 
   const { receiverAddress, formatFound } = validateAccount(
     unformattedReceiverAddress,

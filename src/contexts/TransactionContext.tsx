@@ -24,6 +24,8 @@ import { TransactionState, TransactionsActionType } from '../types/transactionTy
 import { useAccountContext } from './AccountContextProvider';
 import { useGUIContext } from './GUIContextProvider';
 import { initTransactionState } from '../reducers/initReducersStates/initTransactionState';
+import { useSourceTarget } from './SourceTargetContextProvider';
+import { encodeAddress } from '@polkadot/util-crypto';
 
 interface TransactionContextProviderProps {
   children: React.ReactElement;
@@ -51,6 +53,11 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
   const { children = null } = props;
   const { account } = useAccountContext();
   const { action } = useGUIContext();
+  const {
+    sourceChainDetails: {
+      configs: { ss58Format }
+    }
+  } = useSourceTarget();
   const [transactionsState, dispatchTransaction] = useReducer(transactionReducer, initTransactionState);
 
   useResetTransactionState(action, dispatchTransaction);
@@ -60,9 +67,12 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
 
   useEffect((): void => {
     dispatchTransaction(
-      TransactionActionCreators.setSenderAndAction({ senderAccount: account ? account.address : null, action })
+      TransactionActionCreators.setSenderAndAction({
+        senderAccount: account ? encodeAddress(account.address, ss58Format) : null,
+        action
+      })
     );
-  }, [account, action]);
+  }, [account, action, ss58Format]);
 
   return (
     <TransactionContext.Provider value={transactionsState}>
