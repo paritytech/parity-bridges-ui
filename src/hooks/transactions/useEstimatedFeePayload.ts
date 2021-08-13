@@ -48,16 +48,23 @@ export const useEstimatedFeePayload = (
     }
   } = sourceTargetDetails;
   const { account } = useAccountContext();
-  const { action } = useGUIContext();
+  const { action, isBridged } = useGUIContext();
   const { estimatedFeeMethodName } = getSubstrateDynamicNames(targetChain);
   const previousPayloadEstimatedFeeLoading = usePrevious(transactionState.payloadEstimatedFeeLoading);
 
   const dispatch = useCallback(
     (error: string | null, data: PayloadEstimatedFee | null, loading: boolean) =>
       dispatchTransaction(
-        TransactionActionCreators.setPayloadEstimatedFee(error, data, loading, sourceTargetDetails, createType)
+        TransactionActionCreators.setPayloadEstimatedFee(
+          error,
+          data,
+          loading,
+          sourceTargetDetails,
+          createType,
+          isBridged
+        )
       ),
-    [createType, dispatchTransaction, sourceTargetDetails]
+    [createType, dispatchTransaction, isBridged, sourceTargetDetails]
   );
 
   const calculateFeeAndPayload = useCallback(

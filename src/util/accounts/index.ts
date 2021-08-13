@@ -14,23 +14,4 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React from 'react';
-import { InputAdornment } from '@material-ui/core';
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useGUIContext } from '../contexts/GUIContextProvider';
-
-interface Props {
-  position?: 'start' | 'end';
-}
-
-export const TokenSymbol = ({ position = 'start' }: Props): React.ReactElement => {
-  const { targetChainDetails, sourceChainDetails } = useSourceTarget();
-  const { isBridged } = useGUIContext();
-
-  let chainTokens = targetChainDetails.apiConnection.api.registry.chainTokens;
-  if (!isBridged) {
-    chainTokens = sourceChainDetails.apiConnection.api.registry.chainTokens;
-  }
-
-  return <InputAdornment position={position}>{chainTokens}</InputAdornment>;
-};
+export { default as getValidAddressFormat } from './getValidAddressFormat';

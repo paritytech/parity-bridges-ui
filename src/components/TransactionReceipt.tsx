@@ -26,6 +26,8 @@ interface Props {
   steps: Step[];
   status: TransactionStatusEnum;
   type?: string;
+  sourceChain: string;
+  targetChain: string;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -49,12 +51,12 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const TransactionReceipt = ({ type, steps, status }: Props) => {
+const TransactionReceipt = ({ type, steps, status, sourceChain, targetChain }: Props) => {
   const classes = useStyles();
 
   return (
     <Card elevation={23} className={classes.card}>
-      <TransactionHeader type={type} status={status} />
+      <TransactionHeader type={type} status={status} sourceChain={sourceChain} targetChain={targetChain} />
       {steps.map(({ chainType, label, labelOnChain, status, id }) => (
         <p key={id} id={id}>
           <IconTxStatus status={status} /> <Web3Icon>{chainType}</Web3Icon> {chainType}: {label}&nbsp;

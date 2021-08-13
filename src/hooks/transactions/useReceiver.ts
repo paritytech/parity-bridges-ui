@@ -16,6 +16,7 @@
 
 import React, { useCallback } from 'react';
 import { TransactionActionCreators } from '../../actions/transactionActions';
+import { useGUIContext } from '../../contexts/GUIContextProvider';
 
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 
@@ -24,6 +25,7 @@ import { useUpdateTransactionContext } from '../../contexts/TransactionContext';
 export default function useReceiver() {
   const { dispatchTransaction } = useUpdateTransactionContext();
   const { targetChainDetails, sourceChainDetails } = useSourceTarget();
+  const { isBridged } = useGUIContext();
 
   const onReceiverChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,11 +34,12 @@ export default function useReceiver() {
         TransactionActionCreators.setReceiver({
           unformattedReceiverAddress,
           sourceChainDetails,
-          targetChainDetails
+          targetChainDetails,
+          isBridged
         })
       );
     },
-    [dispatchTransaction, sourceChainDetails, targetChainDetails]
+    [dispatchTransaction, isBridged, sourceChainDetails, targetChainDetails]
   );
 
   return { onReceiverChange };

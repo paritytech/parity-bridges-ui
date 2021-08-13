@@ -54,6 +54,8 @@ interface Output {
   payloadHex: string | null;
 }
 
+const LOCAL = 'LOCAL';
+
 export function getTransactionDisplayPayload({
   payload,
   account,
@@ -245,7 +247,11 @@ export const handleTransactionUpdates = async ({
     bestBlock: bestBlockOnTarget
   } = targetSubscriptions;
 
-  const { sourceChain, targetChain, deliveryBlock, status, messageNonce, steps } = transaction;
+  const { sourceChain, targetChain, deliveryBlock, status, messageNonce, steps, type } = transaction;
+
+  if (type === TransactionTypes.INTERNAL_TRANSFER) {
+    return transaction;
+  }
 
   const nonceOfFinalTargetBlock = await getLatestReceivedNonce(
     bestBlockFinalized,
@@ -327,7 +333,7 @@ export const handleTransactionUpdates = async ({
   };
 };
 
-const steps = [
+const bridgedSteps = [
   ['include-message-block', 'Include message in block'],
   ['finalized-block', 'Finalize block'],
   ['relay-block', 'Relay block'],
@@ -337,7 +343,13 @@ const steps = [
   ['confirm-delivery', 'Confirm delivery']
 ];
 
-const step = (step: number, chainType: string, status?: TransactionStatusEnum, labelOnChain?: any) => {
+const internalSteps = [
+  ['include-message-block', 'Include message in block'],
+  ['finalized-block', 'Finalize block']
+];
+
+const step = (step: number, chainType: string, status?: TransactionStatusEnum, labelOnChain?: any, type?: string) => {
+  const steps = type === 'local' ? internalSteps : bridgedSteps;
   const obj = {
     id: 'test-step-' + steps[step - 1][0],
     chainType,
@@ -359,3 +371,24 @@ export const createEmptySteps = (sourceChain: string, targetChain: string) => [
   step(6, targetChain),
   step(7, sourceChain)
 ];
+
+export const createEmptyInternalSteps = (sourceChain: string) => [
+  step(1, sourceChain, undefined, null, LOCAL),
+  step(2, sourceChain, undefined, null, LOCAL)
+];
+
+export const handleInternalTransactionUpdates = (transaction: TransactionStatusType, sourceChain: string) => {
+  const { steps, block, status } = transaction;
+  const updatedSteps = [...steps];
+  let nextStatus = status;
+  if (block && status !== TransactionStatusEnum.FINALIZED) {
+    updatedSteps[0] = step(1, sourceChain, TransactionStatusEnum.COMPLETED, block, LOCAL);
+  }
+
+  if (status === TransactionStatusEnum.FINALIZED) {
+    updatedSteps[1] = step(2, sourceChain, TransactionStatusEnum.COMPLETED, null, LOCAL);
+    nextStatus = TransactionStatusEnum.COMPLETED;
+  }
+
+  return { ...transaction, steps: updatedSteps, status: nextStatus, evaluating: false };
+};

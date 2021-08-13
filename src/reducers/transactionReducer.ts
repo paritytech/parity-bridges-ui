@@ -37,23 +37,35 @@ export default function transactionReducer(state: TransactionState, action: Tran
         payloadEstimatedFee: { estimatedFee, payload },
         payloadEstimatedFeeLoading,
         sourceTargetDetails,
-        createType
+        createType,
+        isBridged
       } = action.payload;
+
+      const { senderAccount, transferAmount, receiverAddress } = state;
 
       const readyToExecute = payloadEstimatedFeeLoading ? false : transactionReadyToExecute;
 
       let payloadHex = null;
       let transactionDisplayPayload = null;
 
-      if (state.senderAccount && payload) {
-        const updated = getTransactionDisplayPayload({
-          payload,
-          account: state.senderAccount,
-          createType,
-          sourceTargetDetails
-        });
-        payloadHex = updated.payloadHex;
-        transactionDisplayPayload = updated.transactionDisplayPayload;
+      if (senderAccount) {
+        if (payload && isBridged) {
+          const updated = getTransactionDisplayPayload({
+            payload,
+            account: senderAccount,
+            createType,
+            sourceTargetDetails
+          });
+          payloadHex = updated.payloadHex;
+          transactionDisplayPayload = updated.transactionDisplayPayload;
+        }
+        if (!isBridged && receiverAddress && transferAmount) {
+          transactionDisplayPayload = {
+            sourceAccount: senderAccount,
+            transferAmount: transferAmount.toNumber(),
+            receiverAddress: receiverAddress
+          };
+        }
       }
 
       return {
