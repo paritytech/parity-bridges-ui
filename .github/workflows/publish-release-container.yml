@@ -22,7 +22,7 @@ jobs:
     - name:                       Build Image
       uses:                       redhat-actions/buildah-build@v2.2
       with:
-        image:                    substrate-api-sidecar
+        image:                    parity-bridges-ui
         tags:                     ${{ github.event.release.tag_name }} latest
         dockerfiles: |
           ./Dockerfile
@@ -35,7 +35,7 @@ jobs:
       uses:                       redhat-actions/push-to-registry@v2.1.1
       with:
         registry:                 docker.io/paritytech
-        image:                    substrate-api-sidecar
+        image:                    parity-bridges-ui
         tags:                     ${{ github.event.release.tag_name }} latest
         username:                 ${{ secrets.DOCKERHUB_USERNAME }}
         password:                 ${{ secrets.DOCKERHUB_TOKEN }}
