@@ -46,8 +46,16 @@ const TransactionStatusMock = ({ type }: Props) => {
       transactionDisplayPayload={transactionDisplayPayload}
       type={type}
       status={TransactionStatusEnum.NOT_STARTED}
+      sourceChain={sourceChain}
+      targetChain={targetChain}
     >
-      <TransactionReceipt steps={steps} type={type} status={TransactionStatusEnum.NOT_STARTED} />
+      <TransactionReceipt
+        steps={steps}
+        type={type}
+        status={TransactionStatusEnum.NOT_STARTED}
+        sourceChain={sourceChain}
+        targetChain={targetChain}
+      />
     </TransactionSwitchTab>
   );
 };

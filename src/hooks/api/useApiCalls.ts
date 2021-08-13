@@ -35,6 +35,7 @@ import { ApiPromise } from '@polkadot/api';
 import { encodeAddress } from '@polkadot/util-crypto';
 import { AccountActionCreators } from '../../actions/accountActions';
 import { BalanceState } from '../../types/accountTypes';
+import { createEmptyInternalSteps } from '../../util/transactions';
 
 const useApiCalls = (): ApiCallsContextType => {
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
@@ -67,11 +68,11 @@ const useApiCalls = (): ApiCallsContextType => {
     [getValuesByChain]
   );
 
-  const localTransfer = useCallback(
+  const internalTransfer = useCallback(
     async (dispatchers, transfersData) => {
       const { dispatchTransaction, dispatchMessage } = dispatchers;
       const { receiverAddress, transferAmount, account } = transfersData;
-      const type = TransactionTypes.LOCAL_TRANSFER;
+      const type = TransactionTypes.INTERNAL_TRANSFER;
 
       const id = Date.now().toString();
       dispatchTransaction(TransactionActionCreators.setTransactionRunning(true));
@@ -88,7 +89,14 @@ const useApiCalls = (): ApiCallsContextType => {
           sourceAccount = account.address;
         }
 
+        const transactionDisplayPayload = {
+          sourceAccount: account?.address || sourceAccount,
+          transferAmount: transferAmount.toNumber(),
+          receiverAddress
+        };
+
         const unsub = await transfer.signAndSend(sourceAccount, { ...options }, async ({ status }) => {
+          const steps = createEmptyInternalSteps(sourceChain);
           if (status.isReady) {
             dispatchTransaction(
               TransactionActionCreators.createTransactionStatus({
@@ -104,8 +112,9 @@ const useApiCalls = (): ApiCallsContextType => {
                 status: TransactionStatusEnum.IN_PROGRESS,
                 targetChain: '',
                 type,
-                payloadHex: '',
-                transactionDisplayPayload: null
+                transactionDisplayPayload,
+                payloadHex: transfer.toHex(),
+                steps
               })
             );
           }
@@ -123,8 +132,7 @@ const useApiCalls = (): ApiCallsContextType => {
                 TransactionActionCreators.updateTransactionStatus(
                   {
                     block,
-                    blockHash: status.asInBlock.toString(),
-                    status: TransactionStatusEnum.COMPLETED
+                    blockHash: status.asInBlock.toString()
                   },
                   id
                 )
@@ -136,6 +144,14 @@ const useApiCalls = (): ApiCallsContextType => {
           }
 
           if (status.isFinalized) {
+            dispatchTransaction(
+              TransactionActionCreators.updateTransactionStatus(
+                {
+                  status: TransactionStatusEnum.FINALIZED
+                },
+                id
+              )
+            );
             logger.info(`Transaction finalized at blockHash ${status.asFinalized}`);
             unsub();
           }
@@ -219,7 +235,7 @@ const useApiCalls = (): ApiCallsContextType => {
     [keyringPairs, keyringPairsReady, sourceChainDetails, targetChainDetails]
   );
 
-  return { createType, stateCall, localTransfer, updateSenderAccountsInformation };
+  return { createType, stateCall, internalTransfer, updateSenderAccountsInformation };
 };
 
 export default useApiCalls;

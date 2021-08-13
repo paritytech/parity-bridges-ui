@@ -14,23 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React from 'react';
-import { InputAdornment } from '@material-ui/core';
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useGUIContext } from '../contexts/GUIContextProvider';
+import { base58Decode, checkAddressChecksum } from '@polkadot/util-crypto';
+import { INCORRECT_FORMAT, GENERIC, GENERIC_SUBSTRATE_PREFIX } from '../../constants';
 
-interface Props {
-  position?: 'start' | 'end';
+export default function getValidAddressFormat(address: string) {
+  const decodedReceiverAddress = base58Decode(address);
+  const [isValid, , , formatFound] = checkAddressChecksum(decodedReceiverAddress);
+
+  const f = formatFound === GENERIC_SUBSTRATE_PREFIX ? GENERIC : formatFound;
+  return { isValid, formatFound: isValid ? f : INCORRECT_FORMAT };
 }
-
-export const TokenSymbol = ({ position = 'start' }: Props): React.ReactElement => {
-  const { targetChainDetails, sourceChainDetails } = useSourceTarget();
-  const { isBridged } = useGUIContext();
-
-  let chainTokens = targetChainDetails.apiConnection.api.registry.chainTokens;
-  if (!isBridged) {
-    chainTokens = sourceChainDetails.apiConnection.api.registry.chainTokens;
-  }
-
-  return <InputAdornment position={position}>{chainTokens}</InputAdornment>;
-};

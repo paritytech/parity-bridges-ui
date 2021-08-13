@@ -30,6 +30,8 @@ import { Alert, ButtonSubmit } from '../components';
 import { EstimatedFee } from '../components/EstimatedFee';
 import BN from 'bn.js';
 import { DebouncedTextField } from './DebouncedTextField';
+import { useInternalTransfer } from '../hooks/chain/useInternalTransfer';
+import { useGUIContext } from '../contexts/GUIContextProvider';
 
 const useStyles = makeStyles((theme) => ({
   inputAmount: {
@@ -55,6 +57,7 @@ function Transfer() {
   const classes = useStyles();
   const [amountNotCorrect, setAmountNotCorrect] = useState<boolean>(false);
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
+  const { isBridged } = useGUIContext();
   const { account } = useAccountContext();
   const {
     estimatedFee,
@@ -65,6 +68,7 @@ function Transfer() {
   } = useTransactionContext();
   const { api } = sourceChainDetails.apiConnection;
   const balance = useBalance(api, account?.address || '');
+  const executeInternalTransfer = useInternalTransfer();
 
   const dispatchCallback = useCallback(
     (value: string | null) => {
@@ -83,6 +87,14 @@ function Transfer() {
     type: TransactionTypes.TRANSFER
   });
 
+  const sendTransaction = useCallback(() => {
+    if (!isBridged) {
+      executeInternalTransfer();
+      return;
+    }
+    sendLaneMessage();
+  }, [executeInternalTransfer, isBridged, sendLaneMessage]);
+
   useEffect((): void => {
     transactionRunning && transferAmount && dispatchCallback('');
   }, [dispatchCallback, transactionRunning, transferAmount]);
@@ -92,6 +104,10 @@ function Transfer() {
       transferAmount &&
       setAmountNotCorrect(new BN(balance.free).sub(transferAmount).add(new BN(estimatedFee)).isNeg());
   }, [transferAmount, estimatedFee, balance]);
+
+  const buttonLabel = isBridged
+    ? `Send bridge transfer from ${sourceChainDetails.chain} to ${targetChainDetails.chain}`
+    : `Send internal transfer to ${sourceChainDetails.chain}`;
 
   return (
     <>
@@ -110,8 +126,8 @@ function Transfer() {
         />
       </Box>
       <Receiver />
-      <ButtonSubmit disabled={!transactionReadyToExecute || amountNotCorrect} onClick={sendLaneMessage}>
-        Send bridge transfer from {sourceChainDetails.chain} to {targetChainDetails.chain}
+      <ButtonSubmit disabled={!transactionReadyToExecute || amountNotCorrect} onClick={sendTransaction}>
+        {buttonLabel}
       </ButtonSubmit>
       {amountNotCorrect ? (
         <Alert severity="error">

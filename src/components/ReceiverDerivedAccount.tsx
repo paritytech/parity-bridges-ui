@@ -23,6 +23,7 @@ import AccountDisplay from './AccountDisplay';
 import { AddressKind } from '../types/accountTypes';
 import GenericAccount from './GenericAccount';
 import shortenItem from '../util/shortenItem';
+import BridgedLocalWrapper from './BridgedLocalWrapper';
 import { styleAccountCompanion } from './Inputs';
 
 const useStyles = makeStyles((theme) => ({
@@ -51,37 +52,43 @@ const ReceiverDerivedAccount = () => {
   if (derivedReceiverAccount) {
     const shortUnformattedReceiver = shortenItem(unformattedReceiverAddress || '');
     return (
-      <div className={classes.accountCompanion}>
-        <Account
-          friendlyName={shortUnformattedReceiver}
-          value={receiverAddress!}
-          chain={targetChain}
-          id={`test-${AddressKind.COMPANION}-input`.toLowerCase()}
-          isDerived
-          hideAddress
-          withTooltip
-        />
-      </div>
+      <BridgedLocalWrapper>
+        <div className={classes.accountCompanion}>
+          <Account
+            friendlyName={shortUnformattedReceiver}
+            value={receiverAddress!}
+            chain={targetChain}
+            id={`test-${AddressKind.COMPANION}-input`.toLowerCase()}
+            isDerived
+            hideAddress
+            withTooltip
+          />
+        </div>
+      </BridgedLocalWrapper>
     );
   }
 
   if (!receiverAddress) {
     return (
-      <div className={classes.accountCompanion}>
-        <AccountDisplay />
-      </div>
+      <BridgedLocalWrapper>
+        <div className={classes.accountCompanion}>
+          <AccountDisplay />
+        </div>
+      </BridgedLocalWrapper>
     );
   }
 
   return (
-    <div className={classes.accountCompanion}>
-      <AccountDisplay
-        address={receiverAddress!}
-        addressKind={AddressKind.NATIVE}
-        id={`test-${AddressKind.NATIVE}-input`.toLowerCase()}
-        withTooltip
-      />
-    </div>
+    <BridgedLocalWrapper>
+      <div className={classes.accountCompanion}>
+        <AccountDisplay
+          address={receiverAddress!}
+          addressKind={AddressKind.NATIVE}
+          id={`test-${AddressKind.NATIVE}-input`.toLowerCase()}
+          withTooltip
+        />
+      </div>
+    </BridgedLocalWrapper>
   );
 };
 
