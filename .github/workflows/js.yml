@@ -57,6 +57,7 @@ jobs:
         node-version: '14'
     - run: yarn
     - run: yarn test
+    - run: yarn serve
     - name: Run Puppeteer
       uses: mujo-code/puppeteer-headful@master
       env:
