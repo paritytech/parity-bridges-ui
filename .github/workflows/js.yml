@@ -31,12 +31,6 @@ jobs:
     - run: yarn
     - run: yarn downloadCustomTypes
     - run: yarn lint
-    # # run normal tests
-    # - run: yarn test
-    # # run ui puppeteer tests
-    # - run: yarn test:e2e
-    # # run end to end puppeteer test
-    # - run: yarn test:e2e-alone
 
   test:
     name: Jest & Puppeteer tests
@@ -56,8 +50,10 @@ jobs:
       with:
         node-version: '14'
     - run: yarn
+    - run: yarn downloadCustomTypes
     - run: yarn test
     - run: yarn serve
+      background: true
     - name: Run Puppeteer
       uses: mujo-code/puppeteer-headful@master
       env:
