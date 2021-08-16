@@ -61,7 +61,6 @@ const chooseSender = async (page) => {
   await page.click(ids.senderComponent).then(() => logger.info('     -- Open Sender dropdown'));
   await page.waitForTimeout(1000);
   const [aliceOption] = await page.$x("//div[contains(., '5sauUX')]");
-  console.log('aliceOption', aliceOption);
   await page.waitForTimeout(500);
   if (aliceOption) {
     await aliceOption.click().then(() => logger.info('     -- Click on an account from the dropdown'));
@@ -122,7 +121,6 @@ describe('<App />', () => {
 
   beforeAll(async () => {
     browser = await puppeteer.launch(chromeOptions);
-    console.log('browser', browser);
   });
 
   afterAll(async () => {
@@ -158,9 +156,7 @@ describe('<App />', () => {
           .then(() => logger.info('     -- Add a generic receiver address'));
         await page.waitForTimeout(1000);
         nativeText = await page.$eval(ids.native, (el) => el.innerText);
-        console.log('nativeText', nativeText);
         companionText = await page.$eval(ids.companion, (el) => el.innerText);
-        console.log('companionText', companionText);
         expect(nativeText).toEqual(nativeExpectedText);
         expect(companionText).toEqual(companionExpectedText);
         await page.waitForSelector(ids.native);

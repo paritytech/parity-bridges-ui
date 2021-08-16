@@ -58,8 +58,7 @@ jobs:
       env:
         CI: 'true'
       with:
-        args: yarn serve &
-              yarn test:e2e
+        args: test:e2e-s
   build:
     name: Build & Deploy
     runs-on: ubuntu-latest

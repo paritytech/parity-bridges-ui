@@ -51,13 +51,13 @@
     "start": "CHOKIDAR_USEPOLLING=1 react-app-rewired start",
     "build": "react-app-rewired build",
     "test:e2e": "jest -c e2e/jest.config.js",
+    "test:e2e-s": "serve -s build -l 4000 & jest -c e2e/jest.config.js",
     "test:e2e-w": "jest -c e2e/jest.config.js --watch",
     "test:e2e-alone": "node e2e/puppeteer_standalone.js",
     "test": "react-app-rewired test --transformIgnorePatterns 'node_modules/(?!@codemirror)/'",
     "eject": "react-app-rewired eject",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
-    "downloadCustomTypes": "node ./src/configs/chainsSetup/downloadCustomTypes.js",
-    "serve": "serve -s build -l 4000"
+    "downloadCustomTypes": "node ./src/configs/chainsSetup/downloadCustomTypes.js"
   },
   "eslintConfig": {
     "extends": [
