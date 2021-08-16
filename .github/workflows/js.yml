@@ -10,14 +10,12 @@ on:
   pull_request:
 
 jobs:
-  lint:
-    name: Lint & test
+  test:
+    name: Lint & Test
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [14.x, 15.x, 16.x]
-
     steps:
     - name: Cancel Previous Runs
       uses: styfle/cancel-workflow-action@0.4.1
@@ -30,44 +28,16 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: yarn
     - run: yarn downloadCustomTypes
-    - run: yarn lint
-
-  test:
-    name: Jest & Puppeteer tests
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Cancel Previous Runs
-      uses: styfle/cancel-workflow-action@0.4.1
-      with:
-        access_token: ${{ github.token }}
-    - uses: actions/checkout@v2
-    - name: Set-up node.js
-      uses: actions/setup-node@v2
-      env:
-        PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
-        REACT_APP_KEYRING_DEV_LOAD_ACCOUNTS: 'true'
-      with:
-        node-version: '14'
-    - run: yarn
-    - run: yarn downloadCustomTypes
     - run: yarn test
     - run: yarn build
-    #- name: Run Puppeteer
-    #  uses: mujo-code/puppeteer-headful@master
-    #  env:
-    #    CI: 'true'
-    #  with:
-    #    args: yarn && yarn build && yarn test:e2e
     - run: yarn test:e2e
+
   build:
     name: Build & Deploy
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [14.x, 15.x, 16.x]
-
     steps:
     - name: Cancel Previous Runs
       uses: styfle/cancel-workflow-action@0.4.1

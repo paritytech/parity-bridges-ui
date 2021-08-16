@@ -41,7 +41,6 @@ const logger = winston.createLogger({
 const chromeOptions = {
   args: ['--no-sandbox'],
   product: 'chrome',
-  //executablePath: process.env.PUPPETEER_EXEC_PATH, // set by docker container
   headless: true
 };
 
