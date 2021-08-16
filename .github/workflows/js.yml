@@ -53,13 +53,12 @@ jobs:
     - run: yarn downloadCustomTypes
     - run: yarn test
     - run: yarn serve &
-    - run: lsof -i:4000
     - name: Run Puppeteer
       uses: mujo-code/puppeteer-headful@master
       env:
         CI: 'true'
       with:
-        args: lsof -i:4000
+        args: yarn serve &; yarn test:e2e
 
   build:
     name: Build & Deploy
