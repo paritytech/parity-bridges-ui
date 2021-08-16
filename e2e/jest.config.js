@@ -31,4 +31,4 @@ module.exports = {
   testEnvironment: "./custom-environment.js"
 };
 
-console.log('Running E2E integration tests on port 3001');
+console.log('Running E2E integration tests on port 4000');
