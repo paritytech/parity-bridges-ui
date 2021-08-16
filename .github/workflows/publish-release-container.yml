@@ -1,0 +1,45 @@
+name: Build and Publish container for new releases
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  build:
+    name:                         Build and push image
+    runs-on:                      ubuntu-latest
+    steps:
+
+    - uses:                       actions/checkout@v2
+
+    - name: Workaround rootless build
+    # temporary workaround for https://github.com/redhat-actions/buildah-build/issues/45
+      run: |
+        sudo apt-get install fuse-overlayfs
+        mkdir -vp ~/.config/containers
+        printf "[storage.options]\nmount_program=\"/usr/bin/fuse-overlayfs\"" > ~/.config/containers/storage.conf
+    - name:                       Build Image
+      uses:                       redhat-actions/buildah-build@v2.2
+      with:
+        image:                    parity-bridges-ui
+        tags:                     ${{ github.event.release.tag_name }} latest
+        dockerfiles: |
+          ./Dockerfile
+        build-args: |
+          VERSION=${{ github.event.release.tag_name }}
+          VCS_REF=${{ github.ref }}
+          BUILD_DATE=${{ github.event.release.published_at }}
+    - name:                       Push image to docker.io
+      id:                         push-to-dockerhub
+      uses:                       redhat-actions/push-to-registry@v2.1.1
+      with:
+        registry:                 docker.io/paritytech
+        image:                    parity-bridges-ui
+        tags:                     ${{ github.event.release.tag_name }} latest
+        username:                 ${{ secrets.DOCKERHUB_USERNAME }}
+        password:                 ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name:                       Check the image
+      run: |
+        echo "New image has been pushed to ${{ steps.push-to-dockerhub.outputs.registry-path }}"
