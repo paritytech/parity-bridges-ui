@@ -15,8 +15,12 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 module.exports = {
-  setupFiles: ["dotenv/config"],
-  launch: {},
+  launch: {
+    dumpio: true,
+    headless: true
+  },
+  browser: 'chromium',
+  browserContext: 'default',
   server: {
     command: 'yarn serve',
     port: 4000,
