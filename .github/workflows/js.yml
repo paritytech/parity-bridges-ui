@@ -59,7 +59,7 @@ jobs:
       env:
         CI: 'true'
       with:
-        args: yarn test:e2e
+        args: lsof -i:4000
 
   build:
     name: Build & Deploy
