@@ -16,11 +16,10 @@
 
 module.exports = {
   launch: {
+    product: 'chrome',
     dumpio: true,
-    headless: true
+    headless: true,
   },
-  browser: 'chromium',
-  browserContext: 'default',
   server: {
     command: 'yarn serve',
     port: 4000,
