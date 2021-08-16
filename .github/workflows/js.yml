@@ -52,13 +52,12 @@ jobs:
     - run: yarn
     - run: yarn downloadCustomTypes
     - run: yarn test
-    - run: yarn serve &
     - name: Run Puppeteer
       uses: mujo-code/puppeteer-headful@master
       env:
         CI: 'true'
       with:
-        args: yarn test:e2e-s
+        args: yarn test:e2e
   build:
     name: Build & Deploy
     runs-on: ubuntu-latest

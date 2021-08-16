@@ -57,7 +57,8 @@
     "test": "react-app-rewired test --transformIgnorePatterns 'node_modules/(?!@codemirror)/'",
     "eject": "react-app-rewired eject",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
-    "downloadCustomTypes": "node ./src/configs/chainsSetup/downloadCustomTypes.js"
+    "downloadCustomTypes": "node ./src/configs/chainsSetup/downloadCustomTypes.js",
+    "serve": "serve -s build -l 4000"
   },
   "eslintConfig": {
     "extends": [

@@ -16,9 +16,10 @@
 
 module.exports = {
   setupFiles: ["dotenv/config"],
-  launch: {
-    command: 'yarn start',
-    port: 3000,
+  launch: {},
+  server: {
+    command: 'yarn serve',
+    port: 4000,
     launchTimeout: 20000,
     debug: true
   }
