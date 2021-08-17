@@ -29,6 +29,7 @@ jobs:
     - run: yarn
     - run: yarn downloadCustomTypes
     - run: yarn test
+    - run: yarn build
   integration:
     name: Integration test
     runs-on: ubuntu-latest
