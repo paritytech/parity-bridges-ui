@@ -30,6 +30,7 @@ jobs:
           VERSION=${{ github.event.release.tag_name }}
           VCS_REF=${{ github.ref }}
           BUILD_DATE=${{ github.event.release.published_at }}
+
     - name:                       Push image to docker.io
       id:                         push-to-dockerhub
       uses:                       redhat-actions/push-to-registry@v2.1.1
