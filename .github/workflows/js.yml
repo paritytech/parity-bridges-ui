@@ -42,6 +42,7 @@ jobs:
       uses: styfle/cancel-workflow-action@0.4.1
       with:
         access_token: ${{ github.token }}
+
     - uses: actions/checkout@v2
     - name: Set-up node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
