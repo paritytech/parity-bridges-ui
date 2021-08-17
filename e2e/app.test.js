@@ -44,7 +44,7 @@ const chromeOptions = {
   headless: true
 };
 
-const timeout = 500000;
+const timeout = 1000000;
 
 const ids = {
   native: '#test-native-input',
