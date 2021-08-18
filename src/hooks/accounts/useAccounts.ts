@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ChangeEvent, useCallback } from 'react';
+import { useCallback } from 'react';
 import type { KeyringPair } from '@polkadot/keyring/types';
 
 import { AccountActionCreators } from '../../actions/accountActions';
@@ -23,11 +23,12 @@ import { useUpdateAccountContext } from '../../contexts/AccountContextProvider';
 import { useUpdateSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import { useAccountContext } from '../../contexts/AccountContextProvider';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
-import { DisplayAccount } from '../../types/accountTypes';
+import { GENERIC_SUBSTRATE_PREFIX } from '../../constants';
+import { encodeAddress } from '@polkadot/util-crypto';
 
 interface Accounts {
   accounts: Array<KeyringPair> | [];
-  setCurrentAccount: (evt: ChangeEvent<{}>, account: DisplayAccount | null) => void;
+  setCurrentAccount: (account: string, sourceChain: string) => void;
 }
 
 const useAccounts = (): Accounts => {
@@ -37,18 +38,17 @@ const useAccounts = (): Accounts => {
   const { accounts } = useAccountContext();
 
   const setCurrentAccount = useCallback(
-    (evt, account) => {
-      const {
-        sourceChain,
-        sourceAccount: { accountKeyring }
-      } = account;
+    (account, sourceChain) => {
+      const accountKeyring = accounts.find(
+        ({ address }) => encodeAddress(account, GENERIC_SUBSTRATE_PREFIX) === address
+      );
 
+      console.log('accountKeyring', accountKeyring);
       dispatchChangeSourceTarget(SourceTargetActionsCreators.switchChains(sourceChain));
-      dispatchAccount(AccountActionCreators.setAccount(accountKeyring, sourceTarget, sourceChain));
+      dispatchAccount(AccountActionCreators.setAccount(accountKeyring!, sourceTarget, sourceChain));
     },
-    [dispatchAccount, dispatchChangeSourceTarget, sourceTarget]
+    [accounts, dispatchAccount, dispatchChangeSourceTarget, sourceTarget]
   );
-
   return {
     accounts,
     setCurrentAccount

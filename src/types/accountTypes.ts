@@ -37,14 +37,13 @@ type AccountInfo = {
   name: string;
 };
 
-interface SourceAccount extends AccountInfo {
-  accountKeyring: KeyringPair;
+export interface DisplayAccount {
+  account: AccountInfo;
+  companionAccount: AccountInfo;
 }
 
-export interface DisplayAccount {
-  sourceChain: string;
-  sourceAccount: SourceAccount;
-  companionAccount: AccountInfo;
+export interface DisplayAccounts {
+  [chain: string]: DisplayAccount[];
 }
 
 export interface AccountState {
@@ -53,7 +52,7 @@ export interface AccountState {
   companionAccount: string | null;
   senderAccountBalance: BalanceState | null;
   senderCompanionAccountBalance: BalanceState | null;
-  displaySenderAccounts: DisplayAccount[];
+  displaySenderAccounts: DisplayAccounts;
 }
 
 export type AccountsActionType = { type: AccountActionsTypes; payload: Payload };

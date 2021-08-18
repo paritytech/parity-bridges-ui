@@ -196,8 +196,7 @@ const useApiCalls = (): ApiCallsContextType => {
         } = targetRole;
 
         const accounts = await Promise.all(
-          keyringPairs.map(async (accountKeyring) => {
-            const { address, meta } = accountKeyring;
+          keyringPairs.map(async ({ address, meta }) => {
             const sourceAddress = encodeAddress(address, sourceConfigs.ss58Format);
             const toDerive = {
               ss58Format: targetConfigs.ss58Format,
@@ -214,8 +213,7 @@ const useApiCalls = (): ApiCallsContextType => {
             const name = (meta.name as string).toLocaleUpperCase();
 
             return {
-              sourceChain,
-              sourceAccount: { address: sourceAddress, accountKeyring, balance: sourceBalance, name },
+              account: { address: sourceAddress, balance: sourceBalance, name },
               companionAccount: { address: companionAddress, balance: targetBalance, name }
             };
           })
@@ -227,7 +225,12 @@ const useApiCalls = (): ApiCallsContextType => {
       const sourceAddresses = await getAccountInformation(sourceChainDetails, targetChainDetails);
       const targetAddresses = await getAccountInformation(targetChainDetails, sourceChainDetails);
 
-      dispatchAccount(AccountActionCreators.setDisplaySenderAccounts([...sourceAddresses, ...targetAddresses]));
+      dispatchAccount(
+        AccountActionCreators.setDisplaySenderAccounts({
+          [sourceChainDetails.chain]: sourceAddresses,
+          [targetChainDetails.chain]: targetAddresses
+        })
+      );
     },
     [keyringPairs, keyringPairsReady, sourceChainDetails, targetChainDetails]
   );

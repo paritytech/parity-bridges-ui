@@ -20,7 +20,7 @@ import useSendersBalancesContext from '../hooks/context/useSendersBalancesContex
 
 import accountReducer from '../reducers/accountReducer';
 
-import { AccountState, AccountsActionType } from '../types/accountTypes';
+import { AccountState, AccountsActionType, DisplayAccounts } from '../types/accountTypes';
 
 interface AccountContextProviderProps {
   children: React.ReactElement;
@@ -52,7 +52,7 @@ export function AccountContextProvider(props: AccountContextProviderProps): Reac
     companionAccount: null,
     senderAccountBalance: null,
     senderCompanionAccountBalance: null,
-    displaySenderAccounts: []
+    displaySenderAccounts: {} as DisplayAccounts
   });
 
   useAccountsContextSetUp(accountState, dispatchAccount);
