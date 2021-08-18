@@ -19,7 +19,6 @@ import { SignerOptions } from '@polkadot/api/types';
 import { web3FromSource } from '@polkadot/extension-dapp';
 import type { KeyringPair } from '@polkadot/keyring/types';
 import type { InterfaceTypes } from '@polkadot/types/types';
-import moment from 'moment';
 import { MessageActionsCreators } from '../../actions/messageActions';
 import { TransactionActionCreators } from '../../actions/transactionActions';
 import { useAccountContext } from '../../contexts/AccountContextProvider';
@@ -174,7 +173,7 @@ function useSendMessage({ input, type }: Props) {
   );
 
   const sendLaneMessage = useCallback(() => {
-    const id = moment().format('x');
+    const id = Date.now().toString();
     dispatchTransaction(TransactionActionCreators.setTransactionRunning(true));
     return makeCall(id);
   }, [dispatchTransaction, makeCall]);

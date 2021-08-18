@@ -10,14 +10,12 @@ on:
   pull_request:
 
 jobs:
-  lint:
+  test:
     name: Lint & Test
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
-        node-version: [14.x, 15.x]
-
+        node-version: [14.x,15.x,16.x]
     steps:
     - name: Cancel Previous Runs
       uses: styfle/cancel-workflow-action@0.4.1
@@ -30,17 +28,36 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: yarn
     - run: yarn downloadCustomTypes
-    - run: yarn lint
     - run: yarn test
+    - run: yarn build
+  integration:
+    name: Integration test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
 
+    - name: Cancel Previous Runs
+      uses: styfle/cancel-workflow-action@0.4.1
+      with:
+        access_token: ${{ github.token }}
+
+    - uses: actions/checkout@v2
+    - name: Set-up node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: yarn
+    - run: yarn downloadCustomTypes
+    - run: yarn build
+    - run: yarn test:e2e
   build:
     name: Build & Deploy
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
-        node-version: [14.x, 15.x]
-
+        node-version: [16.x]
     steps:
     - name: Cancel Previous Runs
       uses: styfle/cancel-workflow-action@0.4.1

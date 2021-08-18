@@ -17,6 +17,7 @@
 const puppeteer = require('puppeteer');
 const winston = require('winston');
 const { globals } = require('./jest.config');
+require('dotenv').config();
 
 winston.addColors({
   debug: 'grey',
@@ -38,11 +39,12 @@ const logger = winston.createLogger({
 });
 
 const chromeOptions = {
-  executablePath: process.env.chrome,
-  headless: false
+  args: ['--no-sandbox'],
+  product: 'chrome',
+  headless: true
 };
 
-const timeout = 500000;
+const timeout = 1000000;
 
 const ids = {
   native: '#test-native-input',
@@ -252,9 +254,11 @@ describe('<App />', () => {
           .waitForSelector(`#test-step-finalized-message > ${ids.checkCircleComponent}`)
           .then(() => logger.info('     -- Step 5 "Finalize message" completed'));
         await page
+          .waitForSelector(`#test-step-message-dispatch-confirmation > ${ids.checkCircleComponent}`)
+          .then(() => logger.info('     -- Step 6 "Message dispatch confirmation" completed'));
+        await page
           .waitForSelector(`#test-step-confirm-delivery > ${ids.checkCircleComponent}`)
-          .then(() => logger.info('     -- Step 6 "Confirm delivery" completed'));
-
+          .then(() => logger.info('     -- Step 7 "Confirm delivery" completed'));
         await page
           .waitForSelector(`#test-transaction-header > ${ids.checkCircleComponent}`)
           .then(() => logger.info('     -- Transaction Completed'));

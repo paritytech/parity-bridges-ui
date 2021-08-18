@@ -18,7 +18,7 @@ import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
 import { ButtonSwitchMode } from './Buttons';
 import TransactionPayload from './TransactionPayload';
-import { TransactionDisplayPayload } from '../types/transactionTypes';
+import { DisplayPayload } from '../types/transactionTypes';
 import { SwitchTabEnum } from '../types/transactionTypes';
 import { useCallback } from 'react';
 import { TransactionStatusEnum } from '../types/transactionTypes';
@@ -30,9 +30,11 @@ interface Props {
   transactionDisplayProps?: TransactionDisplayProps;
   children: JSX.Element | JSX.Element[];
   payloadHex: string | null;
-  transactionDisplayPayload: TransactionDisplayPayload | null;
+  transactionDisplayPayload: DisplayPayload | null;
   status: TransactionStatusEnum;
   type?: string;
+  sourceChain: string;
+  targetChain: string;
 }
 
 const TransactionSwitchTab = ({
@@ -41,7 +43,9 @@ const TransactionSwitchTab = ({
   payloadHex,
   transactionDisplayPayload,
   type,
-  status
+  status,
+  sourceChain,
+  targetChain
 }: Props) => {
   const [tab, setTab] = useState(SwitchTabEnum.RECEIPT);
 
@@ -79,6 +83,8 @@ const TransactionSwitchTab = ({
         transactionDisplayProps={transactionDisplayProps}
         payloadHex={payloadHex}
         transactionDisplayPayload={transactionDisplayPayload}
+        sourceChain={sourceChain}
+        targetChain={targetChain}
       />
     </>
   );

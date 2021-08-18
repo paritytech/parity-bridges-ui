@@ -28,3 +28,7 @@ export const GENERIC_SUBSTRATE_PREFIX = 42;
 
 export const BLOCK_DURATION = new BN('4');
 export const TIMER_DURATION = 30000;
+
+export const MESSAGE_DISPATCH_EVENT = 'MessageDispatched';
+export const MESSAGE_NONCE_TYPE = 'MessageNonce';
+export const OK = 'OK';

@@ -29,7 +29,6 @@ import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import Transactions from '../components/Transactions';
 import { useGUIContext } from '../contexts/GUIContextProvider';
 import { TransactionTypes } from '../types/transactionTypes';
-import { MenuActionItemsProps } from '../types/guiTypes';
 
 import BridgedLocalWrapper from '../components/BridgedLocalWrapper';
 import { useCallback } from 'react';
@@ -43,7 +42,7 @@ const useStyles = makeStyles(() => ({
 
 const ActionComponents = {
   [TransactionTypes.TRANSFER]: <Transfer />,
-  [TransactionTypes.LOCAL_TRANSFER]: <Transfer />,
+  [TransactionTypes.INTERNAL_TRANSFER]: <Transfer />,
   [TransactionTypes.REMARK]: <Remark />,
   [TransactionTypes.CUSTOM]: <CustomCall />
 };
@@ -51,10 +50,6 @@ const ActionComponents = {
 function Main() {
   const classes = useStyles();
   const { actions, action, setAction, isBridged, setBridged } = useGUIContext();
-  const searchItems = useCallback(
-    (choice: TransactionTypes) => actions.find((x: MenuActionItemsProps) => x.type === choice),
-    [actions]
-  );
 
   const handleOnSwitch = useCallback(
     (event: React.MouseEvent<HTMLElement>, newAlignment: string | null) => {
@@ -83,16 +78,18 @@ function Main() {
       <BoxUI>
         <Box component="div" display="flex" marginY={2} textAlign="left" width="100%">
           <MenuAction actions={actions} action={action} changeMenu={setAction} />
-          <ToggleButtonGroup
-            size="small"
-            value={isBridged}
-            exclusive
-            onChange={handleOnSwitch}
-            classes={{ root: classes.root }}
-          >
-            <ToggleButton value={false}>Local</ToggleButton>
-            <ToggleButton value={true}>Bridge</ToggleButton>
-          </ToggleButtonGroup>
+          {action === TransactionTypes.TRANSFER && (
+            <ToggleButtonGroup
+              size="small"
+              value={isBridged}
+              exclusive
+              onChange={handleOnSwitch}
+              classes={{ root: classes.root }}
+            >
+              <ToggleButton value={false}>Internal</ToggleButton>
+              <ToggleButton value={true}>Bridge</ToggleButton>
+            </ToggleButtonGroup>
+          )}
         </Box>
 
         <ExtensionAccountCheck component={<Sender />} />
@@ -101,7 +98,7 @@ function Main() {
           <ArrowDownwardIcon fontSize="large" color="primary" />
         </Box>
         <>{ActionComponents[action]}</>
-        <Transactions type={searchItems(action)?.title} />
+        <Transactions type={action} />
         <SnackBar />
       </BoxUI>
     </>

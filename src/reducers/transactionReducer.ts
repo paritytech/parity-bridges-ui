@@ -16,7 +16,6 @@
 
 import type { InterfaceTypes } from '@polkadot/types/types';
 import { TransactionActionTypes } from '../actions/transactionActions';
-import { TransactionDisplayPayload } from '../types/transactionTypes';
 import {
   updateTransaction,
   isReadyToExecute,
@@ -26,6 +25,7 @@ import {
 import { TransactionsActionType, TransactionState } from '../types/transactionTypes';
 import logger from '../util/logger';
 import { evalUnits } from '../util/evalUnits';
+import { getTransactionDisplayPayload } from '../util/transactions';
 import { isHex } from '@polkadot/util';
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
@@ -35,10 +35,38 @@ export default function transactionReducer(state: TransactionState, action: Tran
       const {
         payloadEstimatedFeeError,
         payloadEstimatedFee: { estimatedFee, payload },
-        payloadEstimatedFeeLoading
+        payloadEstimatedFeeLoading,
+        sourceTargetDetails,
+        createType,
+        isBridged
       } = action.payload;
 
+      const { senderAccount, transferAmount, receiverAddress } = state;
+
       const readyToExecute = payloadEstimatedFeeLoading ? false : transactionReadyToExecute;
+
+      let payloadHex = null;
+      let transactionDisplayPayload = null;
+
+      if (senderAccount) {
+        if (payload && isBridged) {
+          const updated = getTransactionDisplayPayload({
+            payload,
+            account: senderAccount,
+            createType,
+            sourceTargetDetails
+          });
+          payloadHex = updated.payloadHex;
+          transactionDisplayPayload = updated.transactionDisplayPayload;
+        }
+        if (!isBridged && receiverAddress && transferAmount) {
+          transactionDisplayPayload = {
+            sourceAccount: senderAccount,
+            transferAmount: transferAmount.toNumber(),
+            receiverAddress: receiverAddress
+          };
+        }
+      }
 
       return {
         ...state,
@@ -46,8 +74,11 @@ export default function transactionReducer(state: TransactionState, action: Tran
         payloadEstimatedFeeError,
         payloadEstimatedFeeLoading,
         payload: payloadEstimatedFeeError ? null : payload,
+
         transactionReadyToExecute: readyToExecute,
-        shouldEvaluatePayloadEstimatedFee: false
+        shouldEvaluatePayloadEstimatedFee: false,
+        payloadHex,
+        transactionDisplayPayload
       };
     }
 
@@ -155,6 +186,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
     case TransactionActionTypes.RESET:
       return {
         ...state,
+        resetedAt: Date.now().toString(),
         derivedReceiverAccount: null,
         estimatedFee: null,
         payloadEstimatedFeeError: null,
@@ -171,7 +203,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
         unformattedReceiverAddress: null,
         addressValidationError: null,
         payload: null,
-        transactionDisplayPayload: {} as TransactionDisplayPayload,
+        transactionDisplayPayload: null,
+        payloadHex: null,
         showBalance: false,
         formatFound: null,
         transactionReadyToExecute: false

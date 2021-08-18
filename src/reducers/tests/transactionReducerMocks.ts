@@ -15,66 +15,46 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ApiPromise } from '@polkadot/api';
-import { TransactionDisplayPayload, TransactionState, TransactionTypes } from '../../types/transactionTypes';
+import { TransactionState } from '../../types/transactionTypes';
+import { initTransactionState } from '../initReducersStates/initTransactionState';
 
-export const state: TransactionState = {
-  senderAccount: null,
-  transferAmount: null,
-  remarkInput: '0x',
-  customCallInput: '0x',
-  customCallError: null,
-  weightInput: '',
-  transferAmountError: null,
-  estimatedFee: null,
-  receiverAddress: null,
-  unformattedReceiverAddress: null,
-  derivedReceiverAccount: null,
-  genericReceiverAccount: null,
-  transactions: [],
-  transactionDisplayPayload: {} as TransactionDisplayPayload,
-  transactionRunning: false,
-  transactionReadyToExecute: false,
-  evaluateTransactionStatusError: null,
-  evaluatingTransactions: false,
-  addressValidationError: null,
-  showBalance: false,
-  formatFound: null,
-  payload: null,
-  payloadHex: null,
-  shouldEvaluatePayloadEstimatedFee: false,
-  payloadEstimatedFeeError: null,
-  payloadEstimatedFeeLoading: false,
-  batchedTransactionState: null,
-  action: TransactionTypes.TRANSFER
-};
+export const state: TransactionState = initTransactionState;
 
-export const apiConnection = {
-  api: {} as ApiPromise,
-  isApiReady: true
+const api: jest.Mocked<ApiPromise> = {
+  consts: {
+    bridgechain1Messages: {
+      //@ts-ignore
+      bridgedChainId: {
+        toU8a: () => new Uint8Array([1, 2, 3])
+      }
+    }
+  }
 };
 
 export const sourceConfigs = {
-  bridgeIds: { chain2: [1, 2, 3] },
   chainName: 'chain1',
   ss58Format: 48
 };
 
 export const targetConfigs = {
-  bridgeIds: { chain1: [1, 2, 3] },
   chainName: 'chain2',
   ss58Format: 60
 };
 
 export const sourceChainDetails = {
   configs: sourceConfigs,
-  apiConnection,
+  api: {} as ApiPromise,
+
   chain: 'chain1',
   polkadotjsUrl: 'url1'
 };
 
 export const targetChainDetails = {
   configs: targetConfigs,
-  apiConnection,
+  apiConnection: {
+    api,
+    isApiReady: true
+  },
   chain: 'chain2',
   polkadotjsUrl: 'url2'
 };

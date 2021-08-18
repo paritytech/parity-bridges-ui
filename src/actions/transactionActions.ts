@@ -15,6 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { CreateType } from '../types/apiCallsTypes';
+import { SourceTargetState } from '../types/sourceTargetTypes';
 
 import {
   TransactionStatusType,
@@ -54,9 +55,19 @@ const setTransferAmount = (transferAmount: string | null, chainDecimals?: number
 const setPayloadEstimatedFee = (
   payloadEstimatedFeeError: string | null,
   payloadEstimatedFee: PayloadEstimatedFee | null,
-  payloadEstimatedFeeLoading: boolean
+  payloadEstimatedFeeLoading: boolean,
+  sourceTargetDetails: SourceTargetState,
+  createType: CreateType,
+  isBridged: boolean
 ) => ({
-  payload: { payloadEstimatedFee, payloadEstimatedFeeError, payloadEstimatedFeeLoading },
+  payload: {
+    payloadEstimatedFee,
+    payloadEstimatedFeeError,
+    payloadEstimatedFeeLoading,
+    sourceTargetDetails,
+    createType,
+    isBridged
+  },
   type: TransactionActionTypes.SET_PAYLOAD_ESTIMATED_FEE
 });
 

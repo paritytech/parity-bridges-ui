@@ -14,16 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-module.exports = {
-  launch: {
-    product: 'chrome',
-    dumpio: true,
-    headless: true,
-  },
-  server: {
-    command: 'yarn serve',
-    port: 4000,
-    launchTimeout: 80000,
-    debug: true
-  }
-};
+import { base58Decode, checkAddressChecksum } from '@polkadot/util-crypto';
+import { INCORRECT_FORMAT, GENERIC, GENERIC_SUBSTRATE_PREFIX } from '../../constants';
+
+export default function getValidAddressFormat(address: string) {
+  const decodedReceiverAddress = base58Decode(address);
+  const [isValid, , , formatFound] = checkAddressChecksum(decodedReceiverAddress);
+
+  const f = formatFound === GENERIC_SUBSTRATE_PREFIX ? GENERIC : formatFound;
+  return { isValid, formatFound: isValid ? f : INCORRECT_FORMAT };
+}

@@ -24,6 +24,7 @@ import BridgedLocalWrapper from './BridgedLocalWrapper';
 import { Account, AddressKind } from '../types/accountTypes';
 import isNull from 'lodash/isNull';
 import { TextField } from '@material-ui/core';
+import isEqual from 'lodash/isEqual';
 import useAccounts from '../hooks/accounts/useAccounts';
 
 const useStyles = makeStyles((theme) => ({
@@ -52,6 +53,9 @@ const useStyles = makeStyles((theme) => ({
   },
   accountCompanion: {
     ...styleAccountCompanion(theme)
+  },
+  sender: {
+    minHeight: theme.spacing(10)
   }
 }));
 
@@ -71,11 +75,11 @@ export default function Sender() {
   return (
     <>
       <Autocomplete
-        open
         className={classes.autocomplete}
         options={options}
         groupBy={(option) => option.sourceChain}
         getOptionLabel={(option) => option.sourceAccount.name || ''}
+        getOptionSelected={(option, value) => isEqual(option, value)}
         onChange={setCurrentAccount}
         disableClearable
         renderInput={(params) => (

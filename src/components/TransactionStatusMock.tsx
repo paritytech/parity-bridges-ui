@@ -20,8 +20,8 @@ import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { Step, TransactionStatusEnum } from '../types/transactionTypes';
 import TransactionReceipt from './TransactionReceipt';
 import TransactionSwitchTab from './TransactionSwitchTab';
-import useTransactionPayloadDisplay from '../hooks/transactions/useTransactionPayloadDisplay';
 import { createEmptySteps } from '../util/transactions/';
+import { useTransactionContext } from '../contexts/TransactionContext';
 interface Props {
   type?: string;
 }
@@ -33,7 +33,8 @@ const TransactionStatusMock = ({ type }: Props) => {
     sourceChainDetails: { chain: sourceChain },
     targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
-  const { payloadHex, transactionDisplayPayload } = useTransactionPayloadDisplay();
+
+  const { payloadHex, transactionDisplayPayload } = useTransactionContext();
 
   useEffect(() => {
     setSteps(createEmptySteps(sourceChain, targetChain));
@@ -45,8 +46,16 @@ const TransactionStatusMock = ({ type }: Props) => {
       transactionDisplayPayload={transactionDisplayPayload}
       type={type}
       status={TransactionStatusEnum.NOT_STARTED}
+      sourceChain={sourceChain}
+      targetChain={targetChain}
     >
-      <TransactionReceipt steps={steps} type={type} status={TransactionStatusEnum.NOT_STARTED} />
+      <TransactionReceipt
+        steps={steps}
+        type={type}
+        status={TransactionStatusEnum.NOT_STARTED}
+        sourceChain={sourceChain}
+        targetChain={targetChain}
+      />
     </TransactionSwitchTab>
   );
 };

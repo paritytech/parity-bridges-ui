@@ -23,7 +23,8 @@ import {
   Payload,
   TransactionDisplayPayload,
   TransactionTypes,
-  TransactionState
+  TransactionState,
+  Step
 } from '../../types/transactionTypes';
 import shortenItem from '../shortenItem';
 import { Subscriptions } from '../../types/subscriptionsTypes';
@@ -35,6 +36,7 @@ import isEmpty from 'lodash/isEmpty';
 import type { InterfaceTypes } from '@polkadot/types/types';
 import logger from '../logger';
 import { Account } from '../../types/accountTypes';
+import { MESSAGE_DISPATCH_EVENT, MESSAGE_NONCE_TYPE, OK } from '../../constants';
 
 export function isTransactionCompleted(transaction: TransactionStatusType): boolean {
   return transaction.status === TransactionStatusEnum.COMPLETED;
@@ -51,6 +53,8 @@ interface Output {
   transactionDisplayPayload: TransactionDisplayPayload | null;
   payloadHex: string | null;
 }
+
+const LOCAL = 'LOCAL';
 
 export function getTransactionDisplayPayload({
   payload,
@@ -144,6 +148,11 @@ const completionStatus = (isCompleted: boolean): TransactionStatusEnum => {
   return isCompleted ? TransactionStatusEnum.COMPLETED : TransactionStatusEnum.IN_PROGRESS;
 };
 
+const evaluateAllSteps = (steps: Step[]) => {
+  const notCompleted = steps.find(({ status }) => status !== TransactionStatusEnum.COMPLETED);
+  return !notCompleted;
+};
+
 interface ApiCalls {
   targetApi: ApiPromise;
   stateCall: Function;
@@ -158,6 +167,45 @@ interface InputTransactionUpdates {
   dispatchMessage: Function; // To type correctly
   laneId: string;
 }
+
+function deepFind(data: any[], value: string) {
+  function iter(subData: any) {
+    if (value === OK ? subData.toJSON().ok : subData.toString() === value) {
+      result = subData;
+      return true;
+    }
+    return Array.isArray(subData) && subData.some(iter);
+  }
+
+  let result;
+  data.some(iter);
+  return result;
+}
+
+const checkMessageDispatchedEvent = async (
+  targetApi: ApiPromise,
+  blockNumber: string | null,
+  messageNonce: string | null
+) => {
+  if (!blockNumber || !messageNonce) {
+    return TransactionStatusEnum.IN_PROGRESS;
+  }
+  const blockHash = await targetApi.rpc.chain.getBlockHash(blockNumber);
+  const signedBlock = await targetApi.rpc.chain.getBlock(blockHash);
+  const allRecords = await targetApi.query.system.events.at(signedBlock.block.header.hash);
+
+  let status = TransactionStatusEnum.FAILED;
+  signedBlock.block.extrinsics.forEach((ext, index) => {
+    const events = allRecords.filter(({ phase }) => phase.isApplyExtrinsic && phase.asApplyExtrinsic.eq(index));
+    const found = events.find(({ event: { method, data } }) => {
+      return method === MESSAGE_DISPATCH_EVENT && deepFind(data, messageNonce) && deepFind(data, OK);
+    });
+    if (found) {
+      status = TransactionStatusEnum.COMPLETED;
+    }
+  });
+  return status;
+};
 
 const getLatestReceivedNonce = async (
   blockNumber: string,
@@ -177,7 +225,7 @@ const getLatestReceivedNonce = async (
   );
 
   // @ts-ignore
-  const latestReceivedNonceCallType = createType(targetChain, 'MessageNonce', latestReceivedNonceCall);
+  const latestReceivedNonceCallType = createType(targetChain, MESSAGE_NONCE_TYPE, latestReceivedNonceCall);
   const latestReceivedNonce = latestReceivedNonceCallType.toString();
   return parseInt(latestReceivedNonce);
 };
@@ -199,7 +247,11 @@ export const handleTransactionUpdates = async ({
     bestBlock: bestBlockOnTarget
   } = targetSubscriptions;
 
-  const { sourceChain, targetChain, deliveryBlock, status } = transaction;
+  const { sourceChain, targetChain, deliveryBlock, status, messageNonce, steps, type } = transaction;
+
+  if (type === TransactionTypes.INTERNAL_TRANSFER) {
+    return transaction;
+  }
 
   const nonceOfFinalTargetBlock = await getLatestReceivedNonce(
     bestBlockFinalized,
@@ -238,13 +290,10 @@ export const handleTransactionUpdates = async ({
   }
 
   let setTransactionComplete = false;
-  if (sourceConfirmationReceived) {
-    setTransactionComplete = true;
-    dispatchMessage(
-      MessageActionsCreators.triggerSuccessMessage({
-        message: `Transaction: ${shortenItem(transaction.blockHash)} is completed`
-      })
-    );
+
+  let messageDispatched = steps[4].status;
+  if (steps[4].status !== TransactionStatusEnum.COMPLETED) {
+    messageDispatched = await checkMessageDispatchedEvent(apiCalls.targetApi, deliveryBlock, messageNonce);
   }
 
   const updatedSteps = [
@@ -252,9 +301,28 @@ export const handleTransactionUpdates = async ({
     step(2, sourceChain, completionStatus(sourceTransactionFinalized)),
     step(3, targetChain, completionStatus(blockFinalityRelayed)),
     step(4, targetChain, completionStatus(messageDelivered), onChainCompleted(messageDelivered) && deliveryBlock),
-    step(5, targetChain, completionStatus(messageFinalizedOnTarget)),
-    step(6, sourceChain, completionStatus(sourceConfirmationReceived))
+    step(5, targetChain, messageDispatched),
+    step(6, targetChain, completionStatus(messageFinalizedOnTarget)),
+    step(7, sourceChain, completionStatus(sourceConfirmationReceived))
   ];
+
+  if (sourceConfirmationReceived) {
+    const successfulTransfer = evaluateAllSteps(updatedSteps);
+    if (successfulTransfer) {
+      dispatchMessage(
+        MessageActionsCreators.triggerSuccessMessage({
+          message: `Transaction: ${shortenItem(transaction.blockHash)} is completed`
+        })
+      );
+    } else {
+      dispatchMessage(
+        MessageActionsCreators.triggerErrorMessage({
+          message: `Transaction: ${shortenItem(transaction.blockHash)} was not successful.`
+        })
+      );
+    }
+    setTransactionComplete = true;
+  }
 
   return {
     ...transaction,
@@ -265,16 +333,23 @@ export const handleTransactionUpdates = async ({
   };
 };
 
-const steps = [
+const bridgedSteps = [
   ['include-message-block', 'Include message in block'],
   ['finalized-block', 'Finalize block'],
   ['relay-block', 'Relay block'],
   ['deliver-message-block', 'Deliver message in target block'],
+  ['message-dispatch-confirmation', 'Message dispatch confirmation'],
   ['finalized-message', 'Finalize message'],
   ['confirm-delivery', 'Confirm delivery']
 ];
 
-const step = (step: number, chainType: string, status?: TransactionStatusEnum, labelOnChain?: any) => {
+const internalSteps = [
+  ['include-message-block', 'Include message in block'],
+  ['finalized-block', 'Finalize block']
+];
+
+const step = (step: number, chainType: string, status?: TransactionStatusEnum, labelOnChain?: any, type?: string) => {
+  const steps = type === 'local' ? internalSteps : bridgedSteps;
   const obj = {
     id: 'test-step-' + steps[step - 1][0],
     chainType,
@@ -293,5 +368,27 @@ export const createEmptySteps = (sourceChain: string, targetChain: string) => [
   step(3, targetChain),
   step(4, targetChain),
   step(5, targetChain),
-  step(6, sourceChain)
+  step(6, targetChain),
+  step(7, sourceChain)
 ];
+
+export const createEmptyInternalSteps = (sourceChain: string) => [
+  step(1, sourceChain, undefined, null, LOCAL),
+  step(2, sourceChain, undefined, null, LOCAL)
+];
+
+export const handleInternalTransactionUpdates = (transaction: TransactionStatusType, sourceChain: string) => {
+  const { steps, block, status } = transaction;
+  const updatedSteps = [...steps];
+  let nextStatus = status;
+  if (block && status !== TransactionStatusEnum.FINALIZED) {
+    updatedSteps[0] = step(1, sourceChain, TransactionStatusEnum.COMPLETED, block, LOCAL);
+  }
+
+  if (status === TransactionStatusEnum.FINALIZED) {
+    updatedSteps[1] = step(2, sourceChain, TransactionStatusEnum.COMPLETED, null, LOCAL);
+    nextStatus = TransactionStatusEnum.COMPLETED;
+  }
+
+  return { ...transaction, steps: updatedSteps, status: nextStatus, evaluating: false };
+};

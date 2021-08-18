@@ -31,6 +31,7 @@ export enum TransactionStatusEnum {
   CREATED = 'CREATED',
   IN_PROGRESS = 'IN_PROGRESS',
   COMPLETED = 'COMPLETED',
+  FINALIZED = 'FINALIZED',
   FAILED = 'FAILED'
 }
 
@@ -55,6 +56,14 @@ export interface TransactionDisplayPayload {
   weight: string;
 }
 
+export interface LocalTransactionDisplayPayload {
+  sourceAccount: string;
+  transferAmount: number;
+  receiverAddress: string;
+}
+
+export type DisplayPayload = TransactionDisplayPayload | LocalTransactionDisplayPayload;
+
 export interface TransactionStatusType extends UpdatedTransactionStatusType {
   input: string;
   sourceChain: string;
@@ -67,6 +76,7 @@ export interface TransactionStatusType extends UpdatedTransactionStatusType {
 }
 
 export interface TransactionState {
+  resetedAt: string | null;
   senderAccount: string | null;
   remarkInput: string;
   customCallInput: string;
@@ -81,7 +91,7 @@ export interface TransactionState {
   genericReceiverAccount: string | null;
   transactions: Array<TransactionStatusType>;
   evaluatingTransactions: boolean;
-  transactionDisplayPayload: TransactionDisplayPayload;
+  transactionDisplayPayload: DisplayPayload | null;
   transactionRunning: boolean;
   transactionReadyToExecute: boolean;
   evaluateTransactionStatusError: string | null;
@@ -103,7 +113,7 @@ export enum TransactionTypes {
   CUSTOM = 'CUSTOM',
   TRANSFER = 'TRANSFER',
   REMARK = 'REMARK',
-  LOCAL_TRANSFER = 'LOCAL_TRANSFER'
+  INTERNAL_TRANSFER = 'INTERNAL_TRANSFER'
 }
 
 export enum EvalMessages {
@@ -126,6 +136,7 @@ export interface ReceiverPayload {
   unformattedReceiverAddress: string | null;
   sourceChainDetails: ChainState;
   targetChainDetails: ChainState;
+  isBridged: boolean;
 }
 
 export type PayloadEstimatedFee = {
