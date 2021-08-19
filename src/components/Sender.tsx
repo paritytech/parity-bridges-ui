@@ -36,6 +36,7 @@ import shorterItem from '../util/shortenItem';
 import AccountIdenticon from './AccountIdenticon';
 import { useAutocomplete } from '@material-ui/lab';
 import SenderDropdownItem from './SenderDropdownItem';
+import ChainHeader from './ChainHeader';
 
 const useStyles = makeStyles((theme) => ({
   autocomplete: {
@@ -133,7 +134,7 @@ export default function Sender() {
         <div className={classes.senderActions}>actions</div>
         {chains.length ? (
           <>
-            <label>{chains[0]}</label>
+            <ChainHeader chain={chains[0]} />
             {displaySenderAccounts[chains[0]].map((option) => (
               <div
                 className={classes.selectAccountMainItem}
@@ -166,7 +167,7 @@ export default function Sender() {
 
             <Divider />
 
-            <label>{chains[1]}</label>
+            <ChainHeader chain={chains[1]} />
             {displaySenderAccounts[chains[1]].map((option) => (
               <div
                 className={classes.selectAccountMainItem}

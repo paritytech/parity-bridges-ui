@@ -51,6 +51,7 @@ export default function useSendersBalancesContext(
   const { updateSenderAccountsInformation } = useApiCallsContext();
 
   const updateAccounts = useCallback(() => {
+    console.log('updateAccounts');
     updateSenderAccountsInformation(dispatchAccount);
     const nextSourceBlockNumber = convertToBNAndIncrease(currentSourceBlock);
     const nextTargetBlockNumber = convertToBNAndIncrease(currentTargetBlock);

@@ -51,6 +51,9 @@ const useStyles = makeStyles((theme) => ({
   main: {
     width: '100%',
     padding: 0
+  },
+  box: {
+    padding: theme.spacing(1.5)
   }
 }));
 
@@ -69,19 +72,12 @@ const SenderDropdownItem = ({ name, address, balance, companionBalance }: Props)
         setHoover(false);
       }}
     >
-      <Box display="flex" id="test-transaction-header" maxWidth>
+      <Box display="flex" className={classes.box} id="test-transaction-header" maxWidth>
         <AccountIdenticon address={address} />
         <Typography>
           {name} [{shorterItem(address)}]
         </Typography>
-        <Box
-          className="header"
-          marginLeft="auto"
-          display="flex"
-          flexDirection="column"
-          alignItems="flex-end"
-          id="test-transaction-header"
-        >
+        <Box marginLeft="auto" display="flex" flexDirection="column" alignItems="flex-end" id="test-transaction-header">
           <Box className={classes.topBalance} display="flex" justifyContent="flex-end">
             <Typography component="p" className={classes.balanceBody}>
               {balance}
