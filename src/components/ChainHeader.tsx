@@ -24,7 +24,12 @@ interface Props {
 
 const useStyles = makeStyles((theme) => ({
   box: {
-    padding: theme.spacing(1.5)
+    padding: theme.spacing(1.7)
+  },
+  name: {
+    marginLeft: theme.spacing(0.8),
+    color: theme.palette.grey[600],
+    fontWeight: 500
   }
 }));
 
@@ -33,7 +38,7 @@ export default function ChainHeader({ chain }: Props) {
   return (
     <Box display="flex" className={classes.box}>
       <ChainLogo chain={chain} />
-      <Typography>{chain.toUpperCase()}</Typography>
+      <Typography classes={{ root: classes.name }}>{chain.toUpperCase()}</Typography>
     </Box>
   );
 }

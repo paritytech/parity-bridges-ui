@@ -15,6 +15,8 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React, { useState } from 'react';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 import { makeStyles } from '@material-ui/core/styles';
 import { SelectLabel, styleAccountCompanion } from '.';
 import { useAccountContext } from '../contexts/AccountContextProvider';
@@ -22,29 +24,15 @@ import AccountDisplay from './AccountDisplay';
 import BridgedLocalWrapper from './BridgedLocalWrapper';
 import { Account, AddressKind } from '../types/accountTypes';
 import isNull from 'lodash/isNull';
-import { Box, Divider, FormControl, FormGroup, Popover } from '@material-ui/core';
-import useAccounts from '../hooks/accounts/useAccounts';
-import SenderDropdownItem from './SenderDropdownItem';
-import ChainHeader from './ChainHeader';
-import SenderActionSwitch from './SenderActionSwitch';
-import { useGUIContext } from '../contexts/GUIContextProvider';
+import { Box } from '@material-ui/core';
+
+import SenderDropdown from './SenderDropdown';
 
 const useStyles = makeStyles((theme) => ({
-  autocomplete: {
-    '& .MuiOutlinedInput-notchedOutline': {
-      borderBottomLeftRadius: 0,
-      borderBottomRightRadius: 0,
-      borderWidth: '1px !important',
-      borderColor: theme.palette.divider
-    }
-  },
-  selectAccountMainItem: {
-    display: 'block'
-  },
   accountMain: {
     padding: theme.spacing(1.25),
     paddingTop: theme.spacing(0.5),
-    paddingRight: theme.spacing(3),
+    paddingRight: theme.spacing(0),
     border: `1px solid ${theme.palette.divider}`,
     borderRadius: theme.spacing(1.5),
     borderBottomLeftRadius: 0,
@@ -62,24 +50,21 @@ const useStyles = makeStyles((theme) => ({
   },
   senderActions: {
     borderBottom: `1px solid ${theme.palette.divider}`
+  },
+  icon: {
+    marginLeft: 'auto'
+  },
+  account: {
+    width: '100%'
   }
 }));
 
 const getName = (account: Account) => (account!.meta.name as string).toLocaleUpperCase();
 
 export default function Sender() {
-  const { setCurrentAccount } = useAccounts();
-  const {
-    displaySenderAccounts,
-    account,
-    companionAccount,
-    senderAccountBalance,
-    senderCompanionAccountBalance
-  } = useAccountContext();
+  const { account, companionAccount, senderAccountBalance, senderCompanionAccountBalance } = useAccountContext();
   const classes = useStyles();
-  const [showEmpty, setShowEmpty] = useState(true);
-  const [showCompanion, setShowCompanion] = useState(true);
-  const { isBridged } = useGUIContext();
+
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -93,108 +78,23 @@ export default function Sender() {
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
 
-  const chains = Object.keys(displaySenderAccounts);
-
   return (
     <>
-      <Box p={1} className={classes.accountMain}>
+      <Box onClick={handleClick} p={1} className={classes.accountMain}>
         <SelectLabel>Sender</SelectLabel>
-        <AccountDisplay
-          aria-describedby={id}
-          onClick={handleClick}
-          friendlyName={account ? getName(account) : 'Select sender account'}
-          address={account?.address}
-          balance={senderAccountBalance?.formattedBalance}
-        />
+        <Box display="flex">
+          <div className={classes.account}>
+            <AccountDisplay
+              aria-describedby={id}
+              friendlyName={account ? getName(account) : 'Select sender account'}
+              address={account?.address}
+              balance={senderAccountBalance?.formattedBalance}
+            />
+          </div>
+          <div className={classes.icon}>{open ? <ArrowDropUp /> : <ArrowDropDownIcon />}</div>
+        </Box>
       </Box>
-      <Popover
-        id={id}
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center'
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center'
-        }}
-        classes={{
-          paper: classes.paper
-        }}
-      >
-        <div className={classes.senderActions}>
-          <FormControl component="fieldset">
-            <FormGroup aria-label="position" row>
-              <SenderActionSwitch name="show empty" label="show empty" callback={setShowEmpty} checked={showEmpty} />
-              {isBridged && (
-                <SenderActionSwitch
-                  name="show companion"
-                  label="show companion"
-                  callback={setShowCompanion}
-                  checked={showCompanion}
-                />
-              )}
-            </FormGroup>
-          </FormControl>
-        </div>
-        {chains.length ? (
-          <>
-            <ChainHeader chain={chains[0]} />
-            {displaySenderAccounts[chains[0]].map((option) => {
-              const component = (
-                <SenderDropdownItem
-                  name={option.account.name}
-                  address={option.account.address}
-                  balance={option.account.balance.formattedBalance}
-                  companionBalance={option.companionAccount.balance.formattedBalance}
-                  showCompanion={showCompanion}
-                />
-              );
-              return (
-                <div
-                  className={classes.selectAccountMainItem}
-                  key={option.account.address}
-                  onClick={() => {
-                    setCurrentAccount(option.account.address, chains[0]);
-                    handleClose();
-                  }}
-                >
-                  {showEmpty ? component : option.account.balance.formattedBalance !== '0' ? component : null}
-                </div>
-              );
-            })}
-
-            <Divider />
-
-            <ChainHeader chain={chains[1]} />
-            {displaySenderAccounts[chains[1]].map((option) => (
-              <div
-                className={classes.selectAccountMainItem}
-                key={option.account.address}
-                onClick={() => {
-                  setCurrentAccount(option.account.address, chains[1]);
-                  handleClose();
-                }}
-              >
-                <AccountDisplay
-                  friendlyName={option.account.name}
-                  address={option.account.address}
-                  balance={option.account.balance.formattedBalance}
-                />
-                <BridgedLocalWrapper>
-                  <AccountDisplay
-                    friendlyName={option.companionAccount.name}
-                    address={option.companionAccount.address}
-                    balance={option.companionAccount.balance.formattedBalance}
-                  />
-                </BridgedLocalWrapper>
-              </div>
-            ))}
-          </>
-        ) : null}
-      </Popover>
+      <SenderDropdown anchorEl={anchorEl} handleClose={handleClose} />
 
       <BridgedLocalWrapper>
         <div className={classes.accountCompanion}>

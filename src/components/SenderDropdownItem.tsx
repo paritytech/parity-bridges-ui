@@ -47,7 +47,8 @@ const useStyles = makeStyles((theme) => ({
     borderBottomRightRadius: 0
   },
   balanceBody: {
-    fontSize: theme.spacing(1.3)
+    fontSize: theme.spacing(1.4),
+    padding: theme.spacing(0.2)
   },
   hoover: {
     backgroundColor: theme.palette.secondary.light
@@ -58,7 +59,10 @@ const useStyles = makeStyles((theme) => ({
   },
   box: {
     padding: theme.spacing(1.5),
-    minHeight: theme.spacing(7)
+    minHeight: theme.spacing(8.5)
+  },
+  address: {
+    marginLeft: theme.spacing(0.5)
   }
 }));
 
@@ -76,11 +80,12 @@ const SenderDropdownItem = ({ name, address, balance, companionBalance, showComp
         setHoover(false);
       }}
     >
-      <Box display="flex" className={classes.box} id="test-transaction-header" maxWidth>
+      <Box display="flex" className={classes.box} id="test-transaction-header" alignItems="start" maxWidth>
         <AccountIdenticon address={address} />
-        <Typography>
+        <Typography classes={{ root: classes.address }}>
           {name} [{shorterItem(address)}]
         </Typography>
+
         <Box marginLeft="auto" display="flex" flexDirection="column" alignItems="flex-end" id="test-transaction-header">
           <Box
             className={cx(classes.topBalance, isBridged && showCompanion ? classes.border : '')}
