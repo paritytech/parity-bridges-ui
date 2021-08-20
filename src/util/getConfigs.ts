@@ -23,8 +23,9 @@ export const getConfigs = async (apiPromise: ApiPromise): Promise<Configs> => {
   const { ss58Format } = properties!;
   const systemChain = await apiPromise.rpc.system.chain();
   const chainName = systemChain.split(' ')[0];
+  const logoUrl = require(`../assets/chainsLogos/${chainName.toLowerCase()}.png`).default;
 
-  return { chainName, ss58Format: parseInt(ss58Format.toString()) };
+  return { chainName, ss58Format: parseInt(ss58Format.toString()), logoUrl };
 };
 
 export const getBridgeId = (sourceApi: ApiPromise, targetChain: string): Uint8Array => {

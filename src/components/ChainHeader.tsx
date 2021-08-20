@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Typography } from '@material-ui/core';
+import { Box, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
 import ChainLogo from './ChainLogo';
 
@@ -22,11 +22,18 @@ interface Props {
   chain: string;
 }
 
+const useStyles = makeStyles((theme) => ({
+  box: {
+    padding: theme.spacing(1.5)
+  }
+}));
+
 export default function ChainHeader({ chain }: Props) {
+  const classes = useStyles();
   return (
-    <>
+    <Box display="flex" className={classes.box}>
       <ChainLogo chain={chain} />
-      <Typography>{chain}</Typography>
-    </>
+      <Typography>{chain.toUpperCase()}</Typography>
+    </Box>
   );
 }

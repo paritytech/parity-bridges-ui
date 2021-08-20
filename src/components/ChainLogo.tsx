@@ -15,11 +15,13 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React from 'react';
-
+import useChainGetters from '../hooks/chain/useChainGetters';
 interface Props {
   chain: string;
 }
 
 export default function ChainLogo({ chain }: Props) {
-  return <img src={`../../public/${chain.toLowerCase()}.png`} alt="chain logo" width="50" height="50" />;
+  const { getValuesByChain } = useChainGetters();
+  const { logoUrl } = getValuesByChain(chain);
+  return <img src={logoUrl} alt="chain logo" width="20" height="20" />;
 }

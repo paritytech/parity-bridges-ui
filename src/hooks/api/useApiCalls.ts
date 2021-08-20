@@ -225,10 +225,6 @@ const useApiCalls = (): ApiCallsContextType => {
       const sourceAddresses = await getAccountInformation(sourceChainDetails, targetChainDetails);
       const targetAddresses = await getAccountInformation(targetChainDetails, sourceChainDetails);
 
-      console.log({
-        [sourceChainDetails.chain]: sourceAddresses,
-        [targetChainDetails.chain]: targetAddresses
-      });
       dispatchAccount(
         AccountActionCreators.setDisplaySenderAccounts({
           [sourceChainDetails.chain]: sourceAddresses,

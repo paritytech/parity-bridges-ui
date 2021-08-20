@@ -19,20 +19,18 @@ import cx from 'classnames';
 import { Box, makeStyles, Typography } from '@material-ui/core';
 import shorterItem from '../util/shortenItem';
 import AccountIdenticon from './AccountIdenticon';
+import { useGUIContext } from '../contexts/GUIContextProvider';
 
 interface Props {
   name: string;
   balance: string;
   companionBalance: string;
   address: string;
+  showCompanion: boolean;
 }
 
 const useStyles = makeStyles((theme) => ({
   topBalance: {
-    border: `1px solid ${theme.palette.primary.light}`,
-    borderRadius: theme.spacing(0.5),
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
     minWidth: theme.spacing(14)
   },
   bottomBalance: {
@@ -41,6 +39,12 @@ const useStyles = makeStyles((theme) => ({
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
     minWidth: theme.spacing(14)
+  },
+  border: {
+    border: `1px solid ${theme.palette.primary.light}`,
+    borderRadius: theme.spacing(0.5),
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0
   },
   balanceBody: {
     fontSize: theme.spacing(1.3)
@@ -53,22 +57,22 @@ const useStyles = makeStyles((theme) => ({
     padding: 0
   },
   box: {
-    padding: theme.spacing(1.5)
+    padding: theme.spacing(1.5),
+    minHeight: theme.spacing(7)
   }
 }));
 
-const SenderDropdownItem = ({ name, address, balance, companionBalance }: Props) => {
+const SenderDropdownItem = ({ name, address, balance, companionBalance, showCompanion }: Props) => {
   const classes = useStyles();
   const [hoover, setHoover] = useState(false);
+  const { isBridged } = useGUIContext();
   return (
     <div
       className={cx(classes.main, hoover ? classes.hoover : '')}
       onMouseEnter={() => {
-        console.log('on mouse enter ', name);
         setHoover(true);
       }}
       onMouseLeave={() => {
-        console.log('on mouse leave ', name);
         setHoover(false);
       }}
     >
@@ -78,16 +82,22 @@ const SenderDropdownItem = ({ name, address, balance, companionBalance }: Props)
           {name} [{shorterItem(address)}]
         </Typography>
         <Box marginLeft="auto" display="flex" flexDirection="column" alignItems="flex-end" id="test-transaction-header">
-          <Box className={classes.topBalance} display="flex" justifyContent="flex-end">
+          <Box
+            className={cx(classes.topBalance, isBridged && showCompanion ? classes.border : '')}
+            display="flex"
+            justifyContent="flex-end"
+          >
             <Typography component="p" className={classes.balanceBody}>
               {balance}
             </Typography>
           </Box>
-          <Box className={classes.bottomBalance} display="flex" justifyContent="flex-end">
-            <Typography component="p" className={classes.balanceBody}>
-              {companionBalance}
-            </Typography>
-          </Box>
+          {showCompanion && isBridged && (
+            <Box className={classes.bottomBalance} display="flex" justifyContent="flex-end">
+              <Typography component="p" className={classes.balanceBody}>
+                {companionBalance}
+              </Typography>
+            </Box>
+          )}
         </Box>
       </Box>
     </div>

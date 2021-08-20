@@ -16,27 +16,18 @@
 
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { SelectLabel, styleAccountCompanion } from '.';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import AccountDisplay from './AccountDisplay';
 import BridgedLocalWrapper from './BridgedLocalWrapper';
 import { Account, AddressKind } from '../types/accountTypes';
 import isNull from 'lodash/isNull';
-import groupBy from 'lodash/groupBy';
-import { Box, Divider, Menu, MenuItem, Popover, TextField } from '@material-ui/core';
-import isEqual from 'lodash/isEqual';
+import { Box, Divider, FormControl, FormGroup, Popover } from '@material-ui/core';
 import useAccounts from '../hooks/accounts/useAccounts';
-import shorterItem from '../util/shortenItem';
-import AccountIdenticon from './AccountIdenticon';
-import { useAutocomplete } from '@material-ui/lab';
 import SenderDropdownItem from './SenderDropdownItem';
 import ChainHeader from './ChainHeader';
+import SenderActionSwitch from './SenderActionSwitch';
+import { useGUIContext } from '../contexts/GUIContextProvider';
 
 const useStyles = makeStyles((theme) => ({
   autocomplete: {
@@ -86,7 +77,9 @@ export default function Sender() {
     senderCompanionAccountBalance
   } = useAccountContext();
   const classes = useStyles();
-
+  const [showEmpty, setShowEmpty] = useState(true);
+  const [showCompanion, setShowCompanion] = useState(true);
+  const { isBridged } = useGUIContext();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -131,39 +124,47 @@ export default function Sender() {
           paper: classes.paper
         }}
       >
-        <div className={classes.senderActions}>actions</div>
+        <div className={classes.senderActions}>
+          <FormControl component="fieldset">
+            <FormGroup aria-label="position" row>
+              <SenderActionSwitch name="show empty" label="show empty" callback={setShowEmpty} checked={showEmpty} />
+              {isBridged && (
+                <SenderActionSwitch
+                  name="show companion"
+                  label="show companion"
+                  callback={setShowCompanion}
+                  checked={showCompanion}
+                />
+              )}
+            </FormGroup>
+          </FormControl>
+        </div>
         {chains.length ? (
           <>
             <ChainHeader chain={chains[0]} />
-            {displaySenderAccounts[chains[0]].map((option) => (
-              <div
-                className={classes.selectAccountMainItem}
-                key={option.account.address}
-                onClick={() => {
-                  setCurrentAccount(option.account.address, chains[0]);
-                  handleClose();
-                }}
-              >
+            {displaySenderAccounts[chains[0]].map((option) => {
+              const component = (
                 <SenderDropdownItem
                   name={option.account.name}
                   address={option.account.address}
                   balance={option.account.balance.formattedBalance}
                   companionBalance={option.companionAccount.balance.formattedBalance}
+                  showCompanion={showCompanion}
                 />
-                {/*                 <AccountDisplay
-                  friendlyName={option.account.name}
-                  address={option.account.address}
-                  balance={option.account.balance.formattedBalance}
-                />
-                <BridgedLocalWrapper>
-                  <AccountDisplay
-                    friendlyName={option.companionAccount.name}
-                    address={option.companionAccount.address}
-                    balance={option.companionAccount.balance.formattedBalance}
-                  />
-                </BridgedLocalWrapper> */}
-              </div>
-            ))}
+              );
+              return (
+                <div
+                  className={classes.selectAccountMainItem}
+                  key={option.account.address}
+                  onClick={() => {
+                    setCurrentAccount(option.account.address, chains[0]);
+                    handleClose();
+                  }}
+                >
+                  {showEmpty ? component : option.account.balance.formattedBalance !== '0' ? component : null}
+                </div>
+              );
+            })}
 
             <Divider />
 
