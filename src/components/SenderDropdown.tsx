@@ -14,8 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Divider, FormControl, FormGroup, makeStyles, Popover } from '@material-ui/core';
+import { Divider, FormControl, FormGroup, makeStyles, Popover, TextField } from '@material-ui/core';
 import React, { useMemo, useState } from 'react';
+import { useCallback } from 'react';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { useGUIContext } from '../contexts/GUIContextProvider';
 import SenderAccountsList from './SenderAccountsList';
@@ -40,11 +41,16 @@ export default function SenderDropdown({ anchorEl, handleClose }: Props) {
   const classes = useStyles();
   const [showEmpty, setShowEmpty] = useState(true);
   const [showCompanion, setShowCompanion] = useState(true);
+  const [filter, setFilter] = useState<string | null>(null);
   const { isBridged } = useGUIContext();
   const { displaySenderAccounts } = useAccountContext();
   const chains = useMemo(() => Object.keys(displaySenderAccounts), [displaySenderAccounts]);
   const open = Boolean(anchorEl);
   const id = open ? 'test-sender-component' : undefined;
+
+  const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setFilter(event.target.value);
+  }, []);
 
   return (
     <Popover
@@ -65,6 +71,8 @@ export default function SenderDropdown({ anchorEl, handleClose }: Props) {
       }}
     >
       <div className={classes.senderActions}>
+        <TextField onChange={handleChange} />
+        <Divider />
         <FormControl component="fieldset">
           <FormGroup aria-label="position" row>
             <SenderActionSwitch name="show empty" label="show empty" callback={setShowEmpty} checked={showEmpty} />
@@ -86,6 +94,7 @@ export default function SenderDropdown({ anchorEl, handleClose }: Props) {
             showCompanion={showCompanion}
             showEmpty={showEmpty}
             handleClose={handleClose}
+            filter={filter}
           />
           <Divider />
           <SenderAccountsList
@@ -93,6 +102,7 @@ export default function SenderDropdown({ anchorEl, handleClose }: Props) {
             showCompanion={showCompanion}
             showEmpty={showEmpty}
             handleClose={handleClose}
+            filter={filter}
           />
         </>
       ) : null}

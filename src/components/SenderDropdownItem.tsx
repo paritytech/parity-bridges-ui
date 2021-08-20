@@ -80,7 +80,7 @@ const SenderDropdownItem = ({ name, address, balance, companionBalance, showComp
         setHoover(false);
       }}
     >
-      <Box display="flex" className={classes.box} id="test-transaction-header" alignItems="start" maxWidth>
+      <Box display="flex" className={classes.box} id="test-transaction-header" alignItems="start">
         <AccountIdenticon address={address} />
         <Typography classes={{ root: classes.address }}>
           {name} [{shorterItem(address)}]

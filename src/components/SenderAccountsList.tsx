@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import ChainHeader from './ChainHeader';
@@ -26,6 +26,7 @@ interface Props {
   showCompanion: boolean;
   showEmpty: boolean;
   handleClose: () => void;
+  filter: string | null;
 }
 
 const useStyles = makeStyles(() => ({
@@ -34,14 +35,32 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-export default function SenderAccountsList({ chain, showCompanion, showEmpty, handleClose }: Props) {
+export default function SenderAccountsList({ chain, showCompanion, showEmpty, handleClose, filter }: Props) {
   const { displaySenderAccounts } = useAccountContext();
   const { setCurrentAccount } = useAccounts();
   const classes = useStyles();
+
+  const accounts = useMemo(() => {
+    const items = displaySenderAccounts[chain];
+
+    if (filter) {
+      const match = (value: string) => {
+        const valueUpper = value.toUpperCase();
+        const filterUpper = filter.toUpperCase();
+        return valueUpper.includes(filterUpper);
+      };
+      return items.filter(
+        ({ account, companionAccount }) =>
+          match(account.name) || match(account.address) || match(companionAccount.address)
+      );
+    }
+    return items;
+  }, [chain, displaySenderAccounts, filter]);
+
   return (
     <>
       <ChainHeader chain={chain} />
-      {displaySenderAccounts[chain].map((option) => {
+      {accounts.map((option) => {
         const component = (
           <SenderDropdownItem
             name={option.account.name}
