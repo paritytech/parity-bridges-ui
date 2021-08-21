@@ -82,12 +82,6 @@ export default function SenderDropdown({ anchorEl, removeAnchor }: Props) {
             filter={filter}
             handleClose={handleClose}
           />
-          <SenderAccountsSection
-            showEmpty={showEmpty}
-            showCompanion={showCompanion}
-            filter={filter}
-            handleClose={handleClose}
-          />
         </>
       )}
     </Popover>
