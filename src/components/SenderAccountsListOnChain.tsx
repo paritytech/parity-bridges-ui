@@ -35,7 +35,7 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-export default function SenderAccountsList({ chain, showCompanion, showEmpty, handleClose, filter }: Props) {
+export default function SenderAccountsListOnChain({ chain, showCompanion, showEmpty, handleClose, filter }: Props) {
   const { displaySenderAccounts } = useAccountContext();
   const { setCurrentAccount } = useAccounts();
   const classes = useStyles();

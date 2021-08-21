@@ -14,60 +14,45 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Box, Divider, FormControl, FormGroup, makeStyles, Popover, TextField } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
-import React, { useMemo, useState } from 'react';
-import { useCallback } from 'react';
-import { useAccountContext } from '../contexts/AccountContextProvider';
-import { useGUIContext } from '../contexts/GUIContextProvider';
-import SenderAccountsList from './SenderAccountsList';
-import SenderActionSwitch from './SenderActionSwitch';
+import React, { useState, useCallback } from 'react';
 
+import { makeStyles, Popover } from '@material-ui/core';
+import SenderAccountsLoading from './SenderAccountsLoading';
+import SenderFilters from './SenderFilters';
+import { useAccountContext } from '../contexts/AccountContextProvider';
+import SenderAccountsSection from './SenderAccountsSection';
 interface Props {
   anchorEl: HTMLElement | null;
-  handleClose: () => void;
+  removeAnchor: () => void;
 }
 
 const useStyles = makeStyles((theme) => ({
   paper: {
     minWidth: theme.spacing(60),
     maxHeight: theme.spacing(50)
-  },
-  senderActions: {
-    borderBottom: `1px solid ${theme.palette.divider}`
-  },
-  skeleton: {
-    padding: theme.spacing(3),
-    width: '100%'
   }
 }));
 
-export default function SenderDropdown({ anchorEl, handleClose }: Props) {
+export default function SenderDropdown({ anchorEl, removeAnchor }: Props) {
   const classes = useStyles();
   const [showEmpty, setShowEmpty] = useState(true);
   const [showCompanion, setShowCompanion] = useState(true);
   const [filter, setFilter] = useState<string | null>(null);
-  const { isBridged } = useGUIContext();
-  const { displaySenderAccounts, initialLoadingAccounts } = useAccountContext();
-  const chains = useMemo(() => Object.keys(displaySenderAccounts), [displaySenderAccounts]);
+  const { initialLoadingAccounts } = useAccountContext();
   const open = Boolean(anchorEl);
   const id = open ? 'test-sender-component' : undefined;
 
-  const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setFilter(event.target.value);
-  }, []);
-
-  const onClose = useCallback(() => {
-    handleClose();
+  const handleClose = useCallback(() => {
+    removeAnchor();
     setFilter(null);
-  }, [handleClose]);
+  }, [removeAnchor]);
 
   return (
     <Popover
       id={id}
       open={open}
       anchorEl={anchorEl}
-      onClose={onClose}
+      onClose={handleClose}
       anchorOrigin={{
         vertical: 'bottom',
         horizontal: 'center'
@@ -81,49 +66,28 @@ export default function SenderDropdown({ anchorEl, handleClose }: Props) {
       }}
     >
       {initialLoadingAccounts ? (
-        <Box display="flex" flexDirection="column" alignItems="center" className={classes.skeleton}>
-          <Skeleton animation="wave" width="100%" height={50} />
-          <Skeleton animation="wave" width="100%" height={50} />
-          <Skeleton animation="wave" width="100%" height={300} />
-        </Box>
+        <SenderAccountsLoading />
       ) : (
         <>
-          <div className={classes.senderActions}>
-            <TextField placeholder="Filter..." variant="outlined" onChange={handleChange} fullWidth />
-            <Divider />
-            <FormControl component="fieldset">
-              <FormGroup aria-label="position" row>
-                <SenderActionSwitch name="show empty" label="show empty" callback={setShowEmpty} checked={showEmpty} />
-                {isBridged && (
-                  <SenderActionSwitch
-                    name="show companion"
-                    label="show companion"
-                    callback={setShowCompanion}
-                    checked={showCompanion}
-                  />
-                )}
-              </FormGroup>
-            </FormControl>
-          </div>
-          {chains.length ? (
-            <>
-              <SenderAccountsList
-                chain={chains[0]}
-                showCompanion={showCompanion}
-                showEmpty={showEmpty}
-                handleClose={handleClose}
-                filter={filter}
-              />
-              <Divider />
-              <SenderAccountsList
-                chain={chains[1]}
-                showCompanion={showCompanion}
-                showEmpty={showEmpty}
-                handleClose={handleClose}
-                filter={filter}
-              />
-            </>
-          ) : null}
+          <SenderFilters
+            setFilter={setFilter}
+            setShowEmpty={setShowEmpty}
+            setShowCompanion={setShowCompanion}
+            showEmpty={showEmpty}
+            showCompanion={showCompanion}
+          />
+          <SenderAccountsSection
+            showEmpty={showEmpty}
+            showCompanion={showCompanion}
+            filter={filter}
+            handleClose={handleClose}
+          />
+          <SenderAccountsSection
+            showEmpty={showEmpty}
+            showCompanion={showCompanion}
+            filter={filter}
+            handleClose={handleClose}
+          />
         </>
       )}
     </Popover>
