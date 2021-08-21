@@ -71,7 +71,7 @@ export default function SenderDropdown({ anchorEl, handleClose }: Props) {
       }}
     >
       <div className={classes.senderActions}>
-        <TextField onChange={handleChange} />
+        <TextField placeholder="Filter..." variant="outlined" onChange={handleChange} fullWidth />
         <Divider />
         <FormControl component="fieldset">
           <FormGroup aria-label="position" row>

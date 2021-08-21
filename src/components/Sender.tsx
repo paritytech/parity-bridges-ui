@@ -80,7 +80,7 @@ export default function Sender() {
 
   return (
     <>
-      <Box onClick={handleClick} p={1} className={classes.accountMain}>
+      <Box onClick={handleClick} p={1} className={classes.accountMain} id="test-sender-component">
         <SelectLabel>Sender</SelectLabel>
         <Box display="flex">
           <div className={classes.account}>
