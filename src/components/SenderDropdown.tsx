@@ -14,7 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Divider, FormControl, FormGroup, makeStyles, Popover, TextField } from '@material-ui/core';
+import { Box, Divider, FormControl, FormGroup, makeStyles, Popover, TextField } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
 import React, { useMemo, useState } from 'react';
 import { useCallback } from 'react';
 import { useAccountContext } from '../contexts/AccountContextProvider';
@@ -34,6 +35,10 @@ const useStyles = makeStyles((theme) => ({
   },
   senderActions: {
     borderBottom: `1px solid ${theme.palette.divider}`
+  },
+  skeleton: {
+    padding: theme.spacing(3),
+    width: '100%'
   }
 }));
 
@@ -43,7 +48,7 @@ export default function SenderDropdown({ anchorEl, handleClose }: Props) {
   const [showCompanion, setShowCompanion] = useState(true);
   const [filter, setFilter] = useState<string | null>(null);
   const { isBridged } = useGUIContext();
-  const { displaySenderAccounts } = useAccountContext();
+  const { displaySenderAccounts, initialLoadingAccounts } = useAccountContext();
   const chains = useMemo(() => Object.keys(displaySenderAccounts), [displaySenderAccounts]);
   const open = Boolean(anchorEl);
   const id = open ? 'test-sender-component' : undefined;
@@ -75,42 +80,52 @@ export default function SenderDropdown({ anchorEl, handleClose }: Props) {
         paper: classes.paper
       }}
     >
-      <div className={classes.senderActions}>
-        <TextField placeholder="Filter..." variant="outlined" onChange={handleChange} fullWidth />
-        <Divider />
-        <FormControl component="fieldset">
-          <FormGroup aria-label="position" row>
-            <SenderActionSwitch name="show empty" label="show empty" callback={setShowEmpty} checked={showEmpty} />
-            {isBridged && (
-              <SenderActionSwitch
-                name="show companion"
-                label="show companion"
-                callback={setShowCompanion}
-                checked={showCompanion}
-              />
-            )}
-          </FormGroup>
-        </FormControl>
-      </div>
-      {chains.length ? (
+      {initialLoadingAccounts ? (
+        <Box display="flex" flexDirection="column" alignItems="center" className={classes.skeleton}>
+          <Skeleton animation="wave" width="100%" height={50} />
+          <Skeleton animation="wave" width="100%" height={50} />
+          <Skeleton animation="wave" width="100%" height={300} />
+        </Box>
+      ) : (
         <>
-          <SenderAccountsList
-            chain={chains[0]}
-            showCompanion={showCompanion}
-            showEmpty={showEmpty}
-            handleClose={handleClose}
-            filter={filter}
-          />
-          <Divider />
-          <SenderAccountsList
-            chain={chains[1]}
-            showCompanion={showCompanion}
-            showEmpty={showEmpty}
-            handleClose={handleClose}
-            filter={filter}
-          />
+          <div className={classes.senderActions}>
+            <TextField placeholder="Filter..." variant="outlined" onChange={handleChange} fullWidth />
+            <Divider />
+            <FormControl component="fieldset">
+              <FormGroup aria-label="position" row>
+                <SenderActionSwitch name="show empty" label="show empty" callback={setShowEmpty} checked={showEmpty} />
+                {isBridged && (
+                  <SenderActionSwitch
+                    name="show companion"
+                    label="show companion"
+                    callback={setShowCompanion}
+                    checked={showCompanion}
+                  />
+                )}
+              </FormGroup>
+            </FormControl>
+          </div>
+          {chains.length ? (
+            <>
+              <SenderAccountsList
+                chain={chains[0]}
+                showCompanion={showCompanion}
+                showEmpty={showEmpty}
+                handleClose={handleClose}
+                filter={filter}
+              />
+              <Divider />
+              <SenderAccountsList
+                chain={chains[1]}
+                showCompanion={showCompanion}
+                showEmpty={showEmpty}
+                handleClose={handleClose}
+                filter={filter}
+              />
+            </>
+          ) : null}
         </>
-      ) : null}
+      )}
     </Popover>
   );
 }
