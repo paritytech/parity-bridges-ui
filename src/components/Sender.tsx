@@ -15,62 +15,11 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React, { useState } from 'react';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
-import { makeStyles } from '@material-ui/core/styles';
-import { SelectLabel, styleAccountCompanion } from '.';
-import { useAccountContext } from '../contexts/AccountContextProvider';
-import AccountDisplay from './AccountDisplay';
-import BridgedLocalWrapper from './BridgedLocalWrapper';
-import { Account, AddressKind } from '../types/accountTypes';
-import isNull from 'lodash/isNull';
-import { Box } from '@material-ui/core';
-
 import SenderDropdown from './SenderDropdown';
-import { encodeAddress } from '@polkadot/util-crypto';
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-
-const useStyles = makeStyles((theme) => ({
-  accountMain: {
-    padding: theme.spacing(1.25),
-    paddingTop: theme.spacing(0.5),
-    paddingRight: theme.spacing(0),
-    border: `1px solid ${theme.palette.divider}`,
-    borderRadius: theme.spacing(1.5),
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0
-  },
-  accountCompanion: {
-    ...styleAccountCompanion(theme)
-  },
-  sender: {
-    minHeight: theme.spacing(10)
-  },
-  paper: {
-    minWidth: theme.spacing(60),
-    maxHeight: theme.spacing(50)
-  },
-  senderActions: {
-    borderBottom: `1px solid ${theme.palette.divider}`
-  },
-  icon: {
-    marginLeft: 'auto'
-  },
-  account: {
-    width: '100%'
-  }
-}));
-
-const getName = (account: Account) => (account!.meta.name as string).toLocaleUpperCase();
+import SenderAccount from './SenderAccount';
+import SenderCompanionAccount from './SenderCompanionAccount';
 
 export default function Sender() {
-  const classes = useStyles();
-  const { account, companionAccount, senderAccountBalance, senderCompanionAccountBalance } = useAccountContext();
-  const {
-    sourceChainDetails: {
-      configs: { ss58Format }
-    }
-  } = useSourceTarget();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -81,43 +30,11 @@ export default function Sender() {
     setAnchorEl(null);
   };
 
-  const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
-
   return (
     <>
-      <Box onClick={handleClick} p={1} className={classes.accountMain} id="test-sender-component">
-        <SelectLabel>Sender</SelectLabel>
-        <Box display="flex">
-          <div className={classes.account}>
-            <AccountDisplay
-              aria-describedby={id}
-              friendlyName={account ? getName(account) : 'Select sender account'}
-              address={account ? encodeAddress(account.address, ss58Format) : ''}
-              balance={senderAccountBalance?.formattedBalance}
-            />
-          </div>
-          <div className={classes.icon}>{open ? <ArrowDropUp /> : <ArrowDropDownIcon />}</div>
-        </Box>
-      </Box>
+      <SenderAccount handleClick={handleClick} anchorEl={anchorEl} />
       <SenderDropdown anchorEl={anchorEl} handleClose={handleClose} />
-
-      <BridgedLocalWrapper>
-        <div className={classes.accountCompanion}>
-          {companionAccount && !isNull(senderCompanionAccountBalance) ? (
-            <AccountDisplay
-              friendlyName={getName(account)}
-              address={companionAccount}
-              addressKind={AddressKind.COMPANION}
-              balance={senderCompanionAccountBalance!.formattedBalance}
-              hideAddress
-              withTooltip
-            />
-          ) : (
-            <AccountDisplay friendlyName="Sender" addressKind={AddressKind.COMPANION} hideAddress />
-          )}
-        </div>
-      </BridgedLocalWrapper>
+      <SenderCompanionAccount />
     </>
   );
 }
