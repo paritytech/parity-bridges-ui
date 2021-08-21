@@ -52,12 +52,17 @@ export default function SenderDropdown({ anchorEl, handleClose }: Props) {
     setFilter(event.target.value);
   }, []);
 
+  const onClose = useCallback(() => {
+    handleClose();
+    setFilter(null);
+  }, [handleClose]);
+
   return (
     <Popover
       id={id}
       open={open}
       anchorEl={anchorEl}
-      onClose={handleClose}
+      onClose={onClose}
       anchorOrigin={{
         vertical: 'bottom',
         horizontal: 'center'

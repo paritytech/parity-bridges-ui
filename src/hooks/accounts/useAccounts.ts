@@ -43,7 +43,6 @@ const useAccounts = (): Accounts => {
         ({ address }) => encodeAddress(account, GENERIC_SUBSTRATE_PREFIX) === address
       );
 
-      console.log('accountKeyring', accountKeyring);
       dispatchChangeSourceTarget(SourceTargetActionsCreators.switchChains(sourceChain));
       dispatchAccount(AccountActionCreators.setAccount(accountKeyring!, sourceTarget, sourceChain));
     },

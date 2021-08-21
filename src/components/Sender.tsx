@@ -27,6 +27,8 @@ import isNull from 'lodash/isNull';
 import { Box } from '@material-ui/core';
 
 import SenderDropdown from './SenderDropdown';
+import { encodeAddress } from '@polkadot/util-crypto';
+import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 
 const useStyles = makeStyles((theme) => ({
   accountMain: {
@@ -62,9 +64,13 @@ const useStyles = makeStyles((theme) => ({
 const getName = (account: Account) => (account!.meta.name as string).toLocaleUpperCase();
 
 export default function Sender() {
-  const { account, companionAccount, senderAccountBalance, senderCompanionAccountBalance } = useAccountContext();
   const classes = useStyles();
-
+  const { account, companionAccount, senderAccountBalance, senderCompanionAccountBalance } = useAccountContext();
+  const {
+    sourceChainDetails: {
+      configs: { ss58Format }
+    }
+  } = useSourceTarget();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -87,7 +93,7 @@ export default function Sender() {
             <AccountDisplay
               aria-describedby={id}
               friendlyName={account ? getName(account) : 'Select sender account'}
-              address={account?.address}
+              address={account ? encodeAddress(account.address, ss58Format) : ''}
               balance={senderAccountBalance?.formattedBalance}
             />
           </div>
