@@ -16,8 +16,8 @@
 
 import React, { useCallback } from 'react';
 
-import { Divider, FormControl, FormGroup, makeStyles, TextField } from '@material-ui/core';
-
+import { Divider, FormControl, FormGroup, makeStyles } from '@material-ui/core';
+import SenderFilterInput from './SenderFilterInput';
 import SenderActionSwitch from './SenderActionSwitch';
 import { useGUIContext } from '../contexts/GUIContextProvider';
 
@@ -48,7 +48,7 @@ export default function SenderFilters({ setFilter, setShowEmpty, setShowCompanio
 
   return (
     <div className={classes.filters}>
-      <TextField placeholder="Filter..." variant="outlined" onChange={handleChange} fullWidth />
+      <SenderFilterInput handleChange={handleChange} />
       <Divider />
       <FormControl component="fieldset">
         <FormGroup aria-label="position" row>

@@ -28,8 +28,13 @@ interface Props {
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    minWidth: theme.spacing(60),
-    maxHeight: theme.spacing(50)
+    minWidth: theme.spacing(56),
+    maxHeight: theme.spacing(50),
+    border: `1px solid ${theme.palette.primary.light}`,
+    borderRadius: theme.spacing(1.5),
+    '&::-webkit-scrollbar': {
+      display: 'none'
+    }
   }
 }));
 
@@ -54,7 +59,7 @@ export default function SenderDropdown({ anchorEl, removeAnchor }: Props) {
       anchorEl={anchorEl}
       onClose={handleClose}
       anchorOrigin={{
-        vertical: 'bottom',
+        vertical: 'top',
         horizontal: 'center'
       }}
       transformOrigin={{

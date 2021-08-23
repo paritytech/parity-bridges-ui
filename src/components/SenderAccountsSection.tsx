@@ -17,7 +17,7 @@
 import React, { useMemo } from 'react';
 
 import { Divider } from '@material-ui/core';
-import SenderAccountsListOnChain from './SenderAccountsListOnChain';
+import SenderAccountsListByChain from './SenderAccountsListByChain';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 interface Props {
   showCompanion: boolean;
@@ -33,7 +33,7 @@ export default function SenderAccountsSection({ showEmpty, showCompanion, filter
   if (chains.length) {
     return (
       <>
-        <SenderAccountsListOnChain
+        <SenderAccountsListByChain
           chain={chains[0]}
           showCompanion={showCompanion}
           showEmpty={showEmpty}
@@ -41,7 +41,7 @@ export default function SenderAccountsSection({ showEmpty, showCompanion, filter
           filter={filter}
         />
         <Divider />
-        <SenderAccountsListOnChain
+        <SenderAccountsListByChain
           chain={chains[1]}
           showCompanion={showCompanion}
           showEmpty={showEmpty}

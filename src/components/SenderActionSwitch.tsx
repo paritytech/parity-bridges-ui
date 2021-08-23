@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 import React from 'react';
-import { withStyles, Theme, createStyles } from '@material-ui/core/styles';
+import { withStyles, Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch, { SwitchClassKey, SwitchProps } from '@material-ui/core/Switch';
@@ -89,7 +89,14 @@ const CustomSwitch = withStyles((theme: Theme) =>
   );
 });
 
+const useStyles = makeStyles((theme) => ({
+  label: {
+    color: theme.palette.grey[500]
+  }
+}));
+
 export default function CustomizedSwitches({ name, label, callback, checked }: Props) {
+  const classes = useStyles();
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     callback(event.target.checked);
   };
@@ -99,6 +106,7 @@ export default function CustomizedSwitches({ name, label, callback, checked }: P
       control={<CustomSwitch checked={checked} onChange={handleChange} name={name} />}
       label={label}
       labelPlacement="start"
+      classes={{ label: classes.label }}
     />
   );
 }
