@@ -15,7 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { fade, makeStyles } from '@material-ui/core/styles';
-import React from 'react';
+import React, { MouseEvent } from 'react';
 import Balance from './Balance';
 import shorterItem from '../util/shortenItem';
 import AccountIdenticon from './AccountIdenticon';
@@ -29,7 +29,7 @@ export interface Props {
   addressKind?: AddressKind | string;
   address?: string;
   hideAddress?: boolean;
-  onClick?: () => void;
+  onClick?: (event: MouseEvent<HTMLElement>) => void;
   balance?: string | null | undefined;
   className?: string;
   withTooltip?: boolean;
@@ -72,7 +72,8 @@ const AccountDisplay = ({
   const classes = useStyles();
   const displayText = () => {
     const shortAddress = shorterItem(address);
-    const name = friendlyName ? `${friendlyName} [${shortAddress}]` : shortAddress;
+
+    const name = friendlyName ? `${friendlyName} ${shortAddress ? `[${shortAddress}]` : ''}` : shortAddress;
     const justFriendlyName = friendlyName || shortAddress;
     const displayName = hideAddress ? justFriendlyName : name;
 

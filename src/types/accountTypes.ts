@@ -37,7 +37,7 @@ type AccountInfo = {
   name: string;
 };
 
-interface DisplayAccount {
+export interface DisplayAccount {
   account: AccountInfo;
   companionAccount: AccountInfo;
 }
@@ -53,6 +53,7 @@ export interface AccountState {
   senderAccountBalance: BalanceState | null;
   senderCompanionAccountBalance: BalanceState | null;
   displaySenderAccounts: DisplayAccounts;
+  initialLoadingAccounts: boolean;
 }
 
 export type AccountsActionType = { type: AccountActionsTypes; payload: Payload };

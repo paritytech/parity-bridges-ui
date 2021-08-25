@@ -16,18 +16,19 @@
 
 import { useCallback } from 'react';
 import type { KeyringPair } from '@polkadot/keyring/types';
-import { encodeAddress } from '@polkadot/util-crypto';
+
 import { AccountActionCreators } from '../../actions/accountActions';
 import { SourceTargetActionsCreators } from '../../actions/sourceTargetActions';
 import { useUpdateAccountContext } from '../../contexts/AccountContextProvider';
 import { useUpdateSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import { useAccountContext } from '../../contexts/AccountContextProvider';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
-import useChainGetters from '../chain/useChainGetters';
+import { GENERIC_SUBSTRATE_PREFIX } from '../../constants';
+import { encodeAddress } from '@polkadot/util-crypto';
 
 interface Accounts {
   accounts: Array<KeyringPair> | [];
-  setCurrentAccount: (value: string, chain: string) => void;
+  setCurrentAccount: (account: string, sourceChain: string) => void;
 }
 
 const useAccounts = (): Accounts => {
@@ -35,21 +36,18 @@ const useAccounts = (): Accounts => {
   const { dispatchChangeSourceTarget } = useUpdateSourceTarget();
   const sourceTarget = useSourceTarget();
   const { accounts } = useAccountContext();
-  const { getSS58PrefixByChain } = useChainGetters();
 
   const setCurrentAccount = useCallback(
-    (value: string, sourceChain: string) => {
-      const ss58Format = getSS58PrefixByChain(sourceChain);
+    (account, sourceChain) => {
+      const accountKeyring = accounts.find(
+        ({ address }) => encodeAddress(account, GENERIC_SUBSTRATE_PREFIX) === address
+      );
 
-      const account = accounts.find(({ address }) => encodeAddress(address, ss58Format) === value);
-      if (account) {
-        dispatchChangeSourceTarget(SourceTargetActionsCreators.switchChains(sourceChain));
-        dispatchAccount(AccountActionCreators.setAccount(account, sourceTarget, sourceChain));
-      }
+      dispatchChangeSourceTarget(SourceTargetActionsCreators.switchChains(sourceChain));
+      dispatchAccount(AccountActionCreators.setAccount(accountKeyring!, sourceTarget, sourceChain));
     },
-    [accounts, dispatchAccount, dispatchChangeSourceTarget, getSS58PrefixByChain, sourceTarget]
+    [accounts, dispatchAccount, dispatchChangeSourceTarget, sourceTarget]
   );
-
   return {
     accounts,
     setCurrentAccount

@@ -14,27 +14,31 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useState } from 'react';
-import SenderDropdown from './SenderDropdown';
-import SenderAccount from './SenderAccount';
-import SenderCompanionAccount from './SenderCompanionAccount';
+import { Box, makeStyles, Typography } from '@material-ui/core';
+import React from 'react';
+import ChainLogo from './ChainLogo';
 
-export default function Sender() {
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+interface Props {
+  chain: string;
+}
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
+const useStyles = makeStyles((theme) => ({
+  box: {
+    padding: theme.spacing(1.7)
+  },
+  name: {
+    marginLeft: theme.spacing(0.8),
+    color: theme.palette.grey[600],
+    fontWeight: 500
+  }
+}));
 
-  const removeAnchor = () => {
-    setAnchorEl(null);
-  };
-
+export default function ChainHeader({ chain }: Props) {
+  const classes = useStyles();
   return (
-    <>
-      <SenderAccount handleClick={handleClick} anchorEl={anchorEl} />
-      <SenderDropdown anchorEl={anchorEl} removeAnchor={removeAnchor} />
-      <SenderCompanionAccount />
-    </>
+    <Box display="flex" className={classes.box}>
+      <ChainLogo chain={chain} />
+      <Typography classes={{ root: classes.name }}>{chain.toUpperCase()}</Typography>
+    </Box>
   );
 }

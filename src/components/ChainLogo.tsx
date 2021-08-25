@@ -14,27 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useState } from 'react';
-import SenderDropdown from './SenderDropdown';
-import SenderAccount from './SenderAccount';
-import SenderCompanionAccount from './SenderCompanionAccount';
+import React from 'react';
+import useChainGetters from '../hooks/chain/useChainGetters';
+interface Props {
+  chain: string;
+}
 
-export default function Sender() {
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const removeAnchor = () => {
-    setAnchorEl(null);
-  };
-
-  return (
-    <>
-      <SenderAccount handleClick={handleClick} anchorEl={anchorEl} />
-      <SenderDropdown anchorEl={anchorEl} removeAnchor={removeAnchor} />
-      <SenderCompanionAccount />
-    </>
-  );
+export default function ChainLogo({ chain }: Props) {
+  const { getValuesByChain } = useChainGetters();
+  const { logoUrl } = getValuesByChain(chain);
+  return <img src={logoUrl} alt="chain logo" width="20" height="20" />;
 }

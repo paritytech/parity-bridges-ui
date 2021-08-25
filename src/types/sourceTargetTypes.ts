@@ -35,6 +35,7 @@ export interface ConnectionChainInformation {
 export interface Configs {
   chainName: string;
   ss58Format: number;
+  logoUrl: string;
 }
 
 export type Connection = {

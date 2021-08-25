@@ -60,7 +60,7 @@ const chooseSender = async (page) => {
   await page.waitForTimeout(2000);
   await page.click(ids.senderComponent).then(() => logger.info('     -- Open Sender dropdown'));
   await page.waitForTimeout(1000);
-  const [aliceOption] = await page.$x("//div[contains(., '5sauUX')]");
+  const [aliceOption] = await page.$x("//p[contains(., 'ALICE [5sauUX...')]");
   await page.waitForTimeout(500);
   if (aliceOption) {
     await aliceOption.click().then(() => logger.info('     -- Click on an account from the dropdown'));
@@ -251,11 +251,11 @@ describe('<App />', () => {
           .waitForSelector(`#test-step-deliver-message-block > ${ids.checkCircleComponent}`)
           .then(() => logger.info('     -- Step 4 "Deliver message in target block" completed'));
         await page
-          .waitForSelector(`#test-step-finalized-message > ${ids.checkCircleComponent}`)
-          .then(() => logger.info('     -- Step 5 "Finalize message" completed'));
-        await page
           .waitForSelector(`#test-step-message-dispatch-confirmation > ${ids.checkCircleComponent}`)
-          .then(() => logger.info('     -- Step 6 "Message dispatch confirmation" completed'));
+          .then(() => logger.info('     -- Step 5 "Message dispatch confirmation" completed'));
+        await page
+          .waitForSelector(`#test-step-finalized-message > ${ids.checkCircleComponent}`)
+          .then(() => logger.info('     -- Step 6 "Finalize message" completed'));
         await page
           .waitForSelector(`#test-step-confirm-delivery > ${ids.checkCircleComponent}`)
           .then(() => logger.info('     -- Step 7 "Confirm delivery" completed'));

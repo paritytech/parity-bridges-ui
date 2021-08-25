@@ -14,27 +14,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useState } from 'react';
-import SenderDropdown from './SenderDropdown';
-import SenderAccount from './SenderAccount';
-import SenderCompanionAccount from './SenderCompanionAccount';
+import React from 'react';
+import { Box, makeStyles } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
 
-export default function Sender() {
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+const useStyles = makeStyles((theme) => ({
+  skeleton: {
+    padding: theme.spacing(3),
+    width: '100%'
+  }
+}));
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const removeAnchor = () => {
-    setAnchorEl(null);
-  };
-
+export default function SenderAccountsLoading() {
+  const classes = useStyles();
   return (
-    <>
-      <SenderAccount handleClick={handleClick} anchorEl={anchorEl} />
-      <SenderDropdown anchorEl={anchorEl} removeAnchor={removeAnchor} />
-      <SenderCompanionAccount />
-    </>
+    <Box display="flex" flexDirection="column" alignItems="center" className={classes.skeleton}>
+      <Skeleton animation="wave" width="100%" height={50} />
+      <Skeleton animation="wave" width="100%" height={50} />
+      <Skeleton animation="wave" width="100%" height={300} />
+    </Box>
   );
 }

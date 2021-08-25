@@ -20,9 +20,9 @@ import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
 import { BoxSidebar, BoxUI, ButtonExt, StorageDrawer, MenuAction, NetworkSides, NetworkStats } from '../components';
 import CustomCall from '../components/CustomCall';
+import Sender from '../components/Sender';
 import ExtensionAccountCheck from '../components/ExtensionAccountCheck';
 import Remark from '../components/Remark';
-import Sender from '../components/Sender';
 import SnackBar from '../components/SnackBar';
 import Transfer from '../components/Transfer';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
@@ -93,6 +93,7 @@ function Main() {
         </Box>
 
         <ExtensionAccountCheck component={<Sender />} />
+
         <Box marginY={2} textAlign="center" width="100%">
           <ArrowDownwardIcon fontSize="large" color="primary" />
         </Box>
