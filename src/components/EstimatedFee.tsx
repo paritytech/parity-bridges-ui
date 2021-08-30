@@ -20,7 +20,7 @@ import React from 'react';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import { transformToBaseUnit } from '../util/evalUnits';
-import { TransactionTypes } from '../types/transactionTypes';
+import { Alert } from '.';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -31,7 +31,12 @@ const useStyles = makeStyles(() => ({
 export const EstimatedFee = (): React.ReactElement => {
   const classes = useStyles();
   const { sourceChainDetails } = useSourceTarget();
-  const { estimatedFee, payloadEstimatedFeeLoading, transactionRunning } = useTransactionContext();
+  const {
+    estimatedFee,
+    payloadEstimatedFeeLoading,
+    transactionRunning,
+    evaluateTransactionStatusError
+  } = useTransactionContext();
   const srcChainDecimals = sourceChainDetails.apiConnection.api.registry.chainDecimals[0];
   const { chainTokens } = sourceChainDetails.apiConnection.api.registry;
 
@@ -43,7 +48,9 @@ export const EstimatedFee = (): React.ReactElement => {
 
   const feeLabel = `Estimated ${sourceChainDetails.chain} fee`;
 
-  return (
+  return evaluateTransactionStatusError ? (
+    <Alert severity="error">{evaluateTransactionStatusError}</Alert>
+  ) : (
     <div className={classes.container}>
       <Typography variant="body1" color="secondary">
         {payloadEstimatedFeeLoading && !transactionRunning
@@ -55,19 +62,3 @@ export const EstimatedFee = (): React.ReactElement => {
     </div>
   );
 };
-
-/* export const EstimatedFee = (): React.ReactElement => {
-  const { action } = useTransactionContext();
-
-  useEffect((): void => {
-    estimatedFee && setEnoughForPayFee(new BN(balance.free).sub(new BN(estimatedFee)).isNeg());
-    senderCompanionAccountBalance &&
-      transferAmount &&
-      setEnoughForTransfer(new BN(senderCompanionAccountBalance.free).sub(transferAmount).isNeg());
-  }, [transferAmount, estimatedFee, balance, senderCompanionAccountBalance]);
-
-  if (action === TransactionTypes.TRANSFER) {
-
-  }
-};
- */

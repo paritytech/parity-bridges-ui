@@ -14,21 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { Box, makeStyles } from '@material-ui/core';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
-import { useAccountContext } from '../contexts/AccountContextProvider';
 import { TransactionActionCreators } from '../actions/transactionActions';
 import { useUpdateTransactionContext } from '../contexts/TransactionContext';
-import useBalance from '../hooks/subscriptions/useBalance';
 import useSendMessage from '../hooks/chain/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
 import { TokenSymbol } from './TokenSymbol';
 import Receiver from './Receiver';
-import { Alert, ButtonSubmit } from '../components';
+import { ButtonSubmit } from '../components';
 import { EstimatedFee } from '../components/EstimatedFee';
-import BN from 'bn.js';
 import { DebouncedTextField } from './DebouncedTextField';
 import { useInternalTransfer } from '../hooks/chain/useInternalTransfer';
 import { useGUIContext } from '../contexts/GUIContextProvider';
@@ -55,21 +52,15 @@ const useStyles = makeStyles((theme) => ({
 function Transfer() {
   const { dispatchTransaction } = useUpdateTransactionContext();
   const classes = useStyles();
-  const [enoughForTransfer, setEnoughForTransfer] = useState<boolean>(false);
-  const [enoughForPayFee, setEnoughForPayFee] = useState<boolean>(false);
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   const { isBridged } = useGUIContext();
-  const { account, senderCompanionAccountBalance } = useAccountContext();
   const {
-    estimatedFee,
     transferAmount,
     transferAmountError,
     transactionRunning,
-    transactionReadyToExecute,
-    evaluateTransactionStatusError
+    transactionReadyToExecute
   } = useTransactionContext();
   const { api } = sourceChainDetails.apiConnection;
-  const balance = useBalance(api, account?.address || '');
   const executeInternalTransfer = useInternalTransfer();
 
   const dispatchCallback = useCallback(
@@ -122,17 +113,10 @@ function Transfer() {
         />
       </Box>
       <Receiver />
-      <ButtonSubmit
-        disabled={!transactionReadyToExecute || enoughForTransfer || enoughForPayFee}
-        onClick={sendTransaction}
-      >
+      <ButtonSubmit disabled={!transactionReadyToExecute} onClick={sendTransaction}>
         {buttonLabel}
       </ButtonSubmit>
-      {evaluateTransactionStatusError ? (
-        <Alert severity="error">{evaluateTransactionStatusError}</Alert>
-      ) : (
-        <EstimatedFee />
-      )}
+      <EstimatedFee />
     </>
   );
 }

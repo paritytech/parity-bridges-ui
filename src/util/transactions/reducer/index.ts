@@ -49,26 +49,41 @@ interface EnoughFundsEvaluation {
   senderAccountBalance: BalanceState;
   senderCompanionAccountBalance: BalanceState;
   estimatedFee: string | null;
+  action: TransactionTypes;
 }
 
 const enoughFundsEvaluation = ({
   transferAmount,
   senderCompanionAccountBalance,
   senderAccountBalance,
-  estimatedFee
+  estimatedFee,
+  action
 }: EnoughFundsEvaluation) => {
   let evaluateTransactionStatusError = null;
   let notEnoughFundsToTransfer = false;
   let notEnoughToPayFee = false;
 
-  if (transferAmount && senderCompanionAccountBalance && senderAccountBalance && estimatedFee) {
-    notEnoughFundsToTransfer = new BN(senderCompanionAccountBalance.free).sub(transferAmount).isNeg();
+  if (senderAccountBalance && estimatedFee) {
     notEnoughToPayFee = new BN(senderAccountBalance.free).sub(new BN(estimatedFee)).isNeg();
-    if (notEnoughFundsToTransfer) {
-      evaluateTransactionStatusError = "Account's amount is not enough for this transaction.";
-    }
     if (notEnoughToPayFee) {
       evaluateTransactionStatusError = `Account's amount is not enough for pay fee transaction: ${estimatedFee}.`;
+    }
+
+    if (action === TransactionTypes.TRANSFER && transferAmount && senderCompanionAccountBalance) {
+      notEnoughFundsToTransfer = new BN(senderCompanionAccountBalance.free).sub(new BN(estimatedFee)).isNeg();
+      if (notEnoughFundsToTransfer) {
+        evaluateTransactionStatusError = "Companion account's amount is not enough for this transaction.";
+      }
+    }
+
+    if (action === TransactionTypes.INTERNAL_TRANSFER && transferAmount) {
+      notEnoughFundsToTransfer = new BN(senderAccountBalance.free)
+        .sub(transferAmount)
+        .sub(new BN(estimatedFee))
+        .isNeg();
+      if (notEnoughFundsToTransfer) {
+        evaluateTransactionStatusError = "Account's amount is not enough for this transaction.";
+      }
     }
   }
   return { evaluateTransactionStatusError, notEnoughFundsToTransfer, notEnoughToPayFee };
@@ -86,7 +101,9 @@ const shouldCalculatePayloadFee = (state: TransactionState, payload: Payload) =>
     senderAccount,
     action
   } = nextState;
+
   switch (action) {
+    case TransactionTypes.INTERNAL_TRANSFER:
     case TransactionTypes.TRANSFER: {
       return Boolean(transferAmount && receiverAddress && senderAccount);
     }
@@ -122,6 +139,7 @@ const updateTransaction = (state: TransactionState, payload: Payload): Transacti
 
 const isInputReady = (state: TransactionState): boolean => {
   switch (state.action) {
+    case TransactionTypes.INTERNAL_TRANSFER:
     case TransactionTypes.TRANSFER: {
       return Boolean(state.transferAmount) && Boolean(state.receiverAddress);
     }

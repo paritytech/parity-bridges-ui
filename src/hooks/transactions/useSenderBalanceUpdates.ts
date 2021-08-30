@@ -31,10 +31,6 @@ const useSenderBalanceUpdates = (
   const prevSenderCompanionAccountBalance = usePrevious(senderCompanionAccountBalance);
 
   useEffect((): void => {
-    console.log(
-      '!isEqual(prevSenderAccountBalance, senderAccountBalance)',
-      !isEqual(prevSenderAccountBalance, senderAccountBalance)
-    );
     if (
       (senderAccountBalance &&
         senderCompanionAccountBalance &&

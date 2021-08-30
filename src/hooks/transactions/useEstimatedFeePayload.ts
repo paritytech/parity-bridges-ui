@@ -41,7 +41,10 @@ export const useEstimatedFeePayload = (
   const laneId = useLaneId();
   const sourceTargetDetails = useSourceTarget();
   const {
-    sourceChainDetails: { chain: sourceChain },
+    sourceChainDetails: {
+      chain: sourceChain,
+      apiConnection: { api: sourceApi }
+    },
     targetChainDetails: {
       apiConnection: { api: targetApi },
       chain: targetChain
@@ -82,6 +85,7 @@ export const useEstimatedFeePayload = (
         action,
         account,
         targetApi,
+        sourceApi,
         transactionState: currentTransactionState
       });
 
@@ -112,7 +116,7 @@ export const useEstimatedFeePayload = (
       const estimatedFee = estimatedFeeType.toString();
       return { estimatedFee, payload };
     },
-    [account, action, createType, estimatedFeeMethodName, laneId, sourceChain, stateCall, targetApi]
+    [account, action, createType, estimatedFeeMethodName, laneId, sourceApi, sourceChain, stateCall, targetApi]
   );
 
   useEffect(() => {
@@ -143,7 +147,6 @@ export const useEstimatedFeePayload = (
       senderAccountBalance &&
       senderCompanionAccountBalance
     ) {
-      console.log('CALLING USEESTI', senderAccountBalance, senderCompanionAccountBalance);
       genericCall({
         call: () => calculateFeeAndPayload(batchedTransactionState),
         dispatch,

@@ -90,6 +90,7 @@ interface TransactionCallWeightInput {
   action: TransactionTypes;
   account: Account;
   targetApi: ApiPromise;
+  sourceApi: ApiPromise;
   transactionState: TransactionState;
 }
 
@@ -97,6 +98,7 @@ export async function getTransactionCallWeight({
   action,
   account,
   targetApi,
+  sourceApi,
   transactionState
 }: TransactionCallWeightInput) {
   let weight: number = 0;
@@ -115,6 +117,17 @@ export async function getTransactionCallWeight({
       case TransactionTypes.TRANSFER:
         if (receiverAddress) {
           call = (await targetApi.tx.balances.transfer(receiverAddress, transferAmount || 0)).toU8a();
+          // TODO [#121] Figure out what the extra bytes are about
+          call = call.slice(2);
+          logger.info(`balances::transfer: ${u8aToHex(call)}`);
+          weight = (
+            await targetApi.tx.balances.transfer(receiverAddress, transferAmount || 0).paymentInfo(account)
+          ).weight.toNumber();
+        }
+        break;
+      case TransactionTypes.INTERNAL_TRANSFER:
+        if (receiverAddress) {
+          call = (await sourceApi.tx.balances.transfer(receiverAddress, transferAmount || 0)).toU8a();
           // TODO [#121] Figure out what the extra bytes are about
           call = call.slice(2);
           logger.info(`balances::transfer: ${u8aToHex(call)}`);

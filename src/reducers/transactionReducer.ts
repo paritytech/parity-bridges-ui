@@ -30,7 +30,6 @@ import { getTransactionDisplayPayload } from '../util/transactions';
 import { isHex } from '@polkadot/util';
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
-  console.log(action);
   const transactionReadyToExecute = isReadyToExecute({ ...state, ...action.payload });
   switch (action.type) {
     case TransactionActionTypes.SET_PAYLOAD_ESTIMATED_FEE: {
@@ -51,7 +50,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
         transferAmount,
         senderCompanionAccountBalance,
         senderAccountBalance,
-        estimatedFee
+        estimatedFee,
+        action: state.action
       });
 
       const readyToExecute = payloadEstimatedFeeLoading
@@ -260,14 +260,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
       };
     }
     case TransactionActionTypes.UPDATE_SENDER_BALANCES: {
-      const { senderAccountBalance, senderCompanionAccountBalance } = action.payload;
-      const { transferAmount, estimatedFee, transactionReadyToExecute, action: transactionType, senderAccount } = state;
-      const { evaluateTransactionStatusError, notEnoughFundsToTransfer, notEnoughToPayFee } = enoughFundsEvaluation({
-        transferAmount,
-        senderCompanionAccountBalance,
-        senderAccountBalance,
-        estimatedFee
-      });
+      const { action: transactionType, senderAccount } = state;
 
       const shouldEvaluatePayloadEstimatedFee = shouldCalculatePayloadFee(state, {
         senderAccount,
@@ -280,7 +273,6 @@ export default function transactionReducer(state: TransactionState, action: Tran
         transactionReadyToExecute: false
       };
     }
-
     case TransactionActionTypes.UPDATE_TRANSACTIONS_STATUS: {
       const { evaluateTransactionStatusError, transactions, evaluatingTransactions } = action.payload;
       return {
@@ -290,6 +282,14 @@ export default function transactionReducer(state: TransactionState, action: Tran
         evaluateTransactionStatusError
       };
     }
+    case TransactionActionTypes.SET_TRANSFER_TYPE: {
+      const { transferType } = action.payload;
+      return {
+        ...state,
+        action: transferType
+      };
+    }
+
     default:
       throw new Error(`Unknown type: ${action.type}`);
   }

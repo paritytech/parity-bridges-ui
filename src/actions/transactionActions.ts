@@ -45,6 +45,7 @@ enum TransactionActionTypes {
   UPDATE_TRANSACTIONS_STATUS = 'UPDATE_TRANSACTIONS_STATUS',
   SET_BATCH_PAYLOAD_ESTIMATED_FEE = 'SET_BATCH_PAYLOAD_ESTIMATED_FEE',
   UPDATE_SENDER_BALANCES = 'UPDATE_SENDER_BALANCES',
+  SET_TRANSFER_TYPE = 'SET_TRANSFER_TYPE',
   RESET = 'RESET'
 }
 
@@ -161,6 +162,11 @@ const updateSenderBalances = ({ senderAccountBalance, senderCompanionAccountBala
   type: TransactionActionTypes.UPDATE_SENDER_BALANCES
 });
 
+const setTransferType = (transferType: TransactionTypes) => ({
+  payload: { transferType },
+  type: TransactionActionTypes.SET_TRANSFER_TYPE
+});
+
 const TransactionActionCreators = {
   setSender,
   setAction,
@@ -177,6 +183,7 @@ const TransactionActionCreators = {
   updateTransactionsStatus,
   setBatchedEvaluationPayloadEstimatedFee,
   updateSenderBalances,
+  setTransferType,
   reset
 };
 

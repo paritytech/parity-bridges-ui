@@ -29,9 +29,10 @@ import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import Transactions from '../components/Transactions';
 import { useGUIContext } from '../contexts/GUIContextProvider';
 import { TransactionTypes } from '../types/transactionTypes';
-
+import { TransactionActionCreators } from '../actions/transactionActions';
 import BridgedLocalWrapper from '../components/BridgedLocalWrapper';
 import { useCallback } from 'react';
+import { useUpdateTransactionContext } from '../contexts/TransactionContext';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -50,12 +51,18 @@ const ActionComponents = {
 function Main() {
   const classes = useStyles();
   const { actions, action, setAction, isBridged, setBridged } = useGUIContext();
+  const { dispatchTransaction } = useUpdateTransactionContext();
 
   const handleOnSwitch = useCallback(
-    (event: React.MouseEvent<HTMLElement>, newAlignment: string | null) => {
-      setBridged(Boolean(newAlignment));
+    (event: React.MouseEvent<HTMLElement>, isBridged: boolean) => {
+      setBridged(isBridged);
+      dispatchTransaction(
+        TransactionActionCreators.setTransferType(
+          isBridged ? TransactionTypes.TRANSFER : TransactionTypes.INTERNAL_TRANSFER
+        )
+      );
     },
-    [setBridged]
+    [dispatchTransaction, setBridged]
   );
 
   // TODO #242: ToggleButtonGroup needs to contain the colors designed by custom css.
