@@ -20,7 +20,8 @@ import {
   updateTransaction,
   isReadyToExecute,
   setReceiver,
-  shouldCalculatePayloadFee
+  shouldCalculatePayloadFee,
+  enoughFundsEvaluation
 } from '../util/transactions/reducer';
 import { TransactionsActionType, TransactionState } from '../types/transactionTypes';
 import logger from '../util/logger';
@@ -29,6 +30,7 @@ import { getTransactionDisplayPayload } from '../util/transactions';
 import { isHex } from '@polkadot/util';
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
+  console.log(action);
   const transactionReadyToExecute = isReadyToExecute({ ...state, ...action.payload });
   switch (action.type) {
     case TransactionActionTypes.SET_PAYLOAD_ESTIMATED_FEE: {
@@ -38,12 +40,23 @@ export default function transactionReducer(state: TransactionState, action: Tran
         payloadEstimatedFeeLoading,
         sourceTargetDetails,
         createType,
-        isBridged
+        isBridged,
+        senderAccountBalance,
+        senderCompanionAccountBalance
       } = action.payload;
 
-      const { senderAccount, transferAmount, receiverAddress } = state;
+      const { senderAccount, receiverAddress, transferAmount } = state;
 
-      const readyToExecute = payloadEstimatedFeeLoading ? false : transactionReadyToExecute;
+      const { evaluateTransactionStatusError, notEnoughFundsToTransfer, notEnoughToPayFee } = enoughFundsEvaluation({
+        transferAmount,
+        senderCompanionAccountBalance,
+        senderAccountBalance,
+        estimatedFee
+      });
+
+      const readyToExecute = payloadEstimatedFeeLoading
+        ? false
+        : transactionReadyToExecute && !notEnoughToPayFee && !notEnoughFundsToTransfer;
 
       let payloadHex = null;
       let transactionDisplayPayload = null;
@@ -78,7 +91,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
         transactionReadyToExecute: readyToExecute,
         shouldEvaluatePayloadEstimatedFee: false,
         payloadHex,
-        transactionDisplayPayload
+        transactionDisplayPayload,
+        evaluateTransactionStatusError
       };
     }
 
@@ -186,6 +200,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
     case TransactionActionTypes.RESET:
       return {
         ...state,
+        evaluateTransactionStatusError: null,
         resetedAt: Date.now().toString(),
         derivedReceiverAccount: null,
         estimatedFee: null,
@@ -228,17 +243,41 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return setReceiver(state, action.payload.receiverPayload);
     case TransactionActionTypes.SET_TRANSACTION_RUNNING:
       return { ...state, transactionRunning: action.payload.transactionRunning, transactionReadyToExecute: false };
-    case TransactionActionTypes.SET_SENDER_AND_ACTION: {
-      const { senderAccount, action: transactionType } = action.payload;
+    case TransactionActionTypes.SET_ACTION: {
+      const { action: transactionType } = action.payload;
+
+      return {
+        ...state,
+        action: transactionType
+      };
+    }
+    case TransactionActionTypes.SET_SENDER: {
+      const { senderAccount } = action.payload;
+
+      return {
+        ...state,
+        senderAccount: senderAccount
+      };
+    }
+    case TransactionActionTypes.UPDATE_SENDER_BALANCES: {
+      const { senderAccountBalance, senderCompanionAccountBalance } = action.payload;
+      const { transferAmount, estimatedFee, transactionReadyToExecute, action: transactionType, senderAccount } = state;
+      const { evaluateTransactionStatusError, notEnoughFundsToTransfer, notEnoughToPayFee } = enoughFundsEvaluation({
+        transferAmount,
+        senderCompanionAccountBalance,
+        senderAccountBalance,
+        estimatedFee
+      });
+
       const shouldEvaluatePayloadEstimatedFee = shouldCalculatePayloadFee(state, {
         senderAccount,
         action: transactionType
       });
+
       return {
         ...state,
-        senderAccount: senderAccount,
-        action: transactionType,
-        shouldEvaluatePayloadEstimatedFee
+        shouldEvaluatePayloadEstimatedFee,
+        transactionReadyToExecute: false
       };
     }
 

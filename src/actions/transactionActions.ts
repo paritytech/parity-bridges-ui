@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import { BalanceState } from '../types/accountTypes';
 import { CreateType } from '../types/apiCallsTypes';
 import { SourceTargetState } from '../types/sourceTargetTypes';
 
@@ -32,7 +33,8 @@ enum TransactionActionTypes {
   SET_RECEIVER = 'SET_RECEIVER',
   SET_RECEIVER_ADDRESS = 'SET_RECEIVER_ADDRESS',
   SET_RECEIVER_VALIDATION = 'SET_RECEIVER_VALIDATION',
-  SET_SENDER_AND_ACTION = 'SET_SENDER_AND_ACTION',
+  SET_SENDER = 'SET_SENDER',
+  SET_ACTION = 'SET_ACTION',
   SET_PAYLOAD_ESTIMATED_FEE = 'SET_PAYLOAD_ESTIMATED_FEE',
   CREATE_TRANSACTION_STATUS = 'CREATE_TRANSACTION_STATUS',
   UPDATE_CURRENT_TRANSACTION_STATUS = 'UPDATE_CURRENT_TRANSACTION_STATUS',
@@ -42,6 +44,7 @@ enum TransactionActionTypes {
   SET_WEIGHT_INPUT = 'SET_WEIGHT_INPUT',
   UPDATE_TRANSACTIONS_STATUS = 'UPDATE_TRANSACTIONS_STATUS',
   SET_BATCH_PAYLOAD_ESTIMATED_FEE = 'SET_BATCH_PAYLOAD_ESTIMATED_FEE',
+  UPDATE_SENDER_BALANCES = 'UPDATE_SENDER_BALANCES',
   RESET = 'RESET'
 }
 
@@ -58,7 +61,9 @@ const setPayloadEstimatedFee = (
   payloadEstimatedFeeLoading: boolean,
   sourceTargetDetails: SourceTargetState,
   createType: CreateType,
-  isBridged: boolean
+  isBridged: boolean,
+  senderAccountBalance: BalanceState | null,
+  senderCompanionAccountBalance: BalanceState | null
 ) => ({
   payload: {
     payloadEstimatedFee,
@@ -66,7 +71,9 @@ const setPayloadEstimatedFee = (
     payloadEstimatedFeeLoading,
     sourceTargetDetails,
     createType,
-    isBridged
+    isBridged,
+    senderAccountBalance,
+    senderCompanionAccountBalance
   },
   type: TransactionActionTypes.SET_PAYLOAD_ESTIMATED_FEE
 });
@@ -114,13 +121,14 @@ const setTransactionRunning = (transactionRunning: boolean) => ({
   type: TransactionActionTypes.SET_TRANSACTION_RUNNING
 });
 
-type SenderAndActionInput = {
-  senderAccount: string | null;
-  action: TransactionTypes;
-};
-const setSenderAndAction = ({ senderAccount, action }: SenderAndActionInput) => ({
-  payload: { senderAccount, action },
-  type: TransactionActionTypes.SET_SENDER_AND_ACTION
+const setAction = (action: TransactionTypes) => ({
+  payload: { action },
+  type: TransactionActionTypes.SET_ACTION
+});
+
+const setSender = (senderAccount: string | null) => ({
+  payload: { senderAccount },
+  type: TransactionActionTypes.SET_SENDER
 });
 
 const setRemarkInput = (remarkInput: string | null) => ({
@@ -143,8 +151,19 @@ const setBatchedEvaluationPayloadEstimatedFee = (batchedTransactionState: Transa
   type: TransactionActionTypes.SET_BATCH_PAYLOAD_ESTIMATED_FEE
 });
 
+type UpdateSenderBalances = {
+  senderAccountBalance: BalanceState | null;
+  senderCompanionAccountBalance: BalanceState | null;
+};
+
+const updateSenderBalances = ({ senderAccountBalance, senderCompanionAccountBalance }: UpdateSenderBalances) => ({
+  payload: { senderAccountBalance, senderCompanionAccountBalance },
+  type: TransactionActionTypes.UPDATE_SENDER_BALANCES
+});
+
 const TransactionActionCreators = {
-  setSenderAndAction,
+  setSender,
+  setAction,
   setReceiverAddress,
   setReceiver,
   setTransferAmount,
@@ -157,6 +176,7 @@ const TransactionActionCreators = {
   updateTransactionStatus,
   updateTransactionsStatus,
   setBatchedEvaluationPayloadEstimatedFee,
+  updateSenderBalances,
   reset
 };
 

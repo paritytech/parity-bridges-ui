@@ -55,16 +55,18 @@ const useStyles = makeStyles((theme) => ({
 function Transfer() {
   const { dispatchTransaction } = useUpdateTransactionContext();
   const classes = useStyles();
-  const [amountNotCorrect, setAmountNotCorrect] = useState<boolean>(false);
+  const [enoughForTransfer, setEnoughForTransfer] = useState<boolean>(false);
+  const [enoughForPayFee, setEnoughForPayFee] = useState<boolean>(false);
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   const { isBridged } = useGUIContext();
-  const { account } = useAccountContext();
+  const { account, senderCompanionAccountBalance } = useAccountContext();
   const {
     estimatedFee,
     transferAmount,
     transferAmountError,
     transactionRunning,
-    transactionReadyToExecute
+    transactionReadyToExecute,
+    evaluateTransactionStatusError
   } = useTransactionContext();
   const { api } = sourceChainDetails.apiConnection;
   const balance = useBalance(api, account?.address || '');
@@ -99,12 +101,6 @@ function Transfer() {
     transactionRunning && transferAmount && dispatchCallback('');
   }, [dispatchCallback, transactionRunning, transferAmount]);
 
-  useEffect((): void => {
-    estimatedFee &&
-      transferAmount &&
-      setAmountNotCorrect(new BN(balance.free).sub(transferAmount).add(new BN(estimatedFee)).isNeg());
-  }, [transferAmount, estimatedFee, balance]);
-
   const buttonLabel = isBridged
     ? `Send bridge transfer from ${sourceChainDetails.chain} to ${targetChainDetails.chain}`
     : `Send internal transfer to ${sourceChainDetails.chain}`;
@@ -126,13 +122,14 @@ function Transfer() {
         />
       </Box>
       <Receiver />
-      <ButtonSubmit disabled={!transactionReadyToExecute || amountNotCorrect} onClick={sendTransaction}>
+      <ButtonSubmit
+        disabled={!transactionReadyToExecute || enoughForTransfer || enoughForPayFee}
+        onClick={sendTransaction}
+      >
         {buttonLabel}
       </ButtonSubmit>
-      {amountNotCorrect ? (
-        <Alert severity="error">
-          Account&apos;s amount (including fees: {estimatedFee}) is not enough for this transaction.
-        </Alert>
+      {evaluateTransactionStatusError ? (
+        <Alert severity="error">{evaluateTransactionStatusError}</Alert>
       ) : (
         <EstimatedFee />
       )}

@@ -47,7 +47,7 @@ export const useEstimatedFeePayload = (
       chain: targetChain
     }
   } = sourceTargetDetails;
-  const { account } = useAccountContext();
+  const { account, senderAccountBalance, senderCompanionAccountBalance } = useAccountContext();
   const { action, isBridged } = useGUIContext();
   const { estimatedFeeMethodName } = getSubstrateDynamicNames(targetChain);
   const previousPayloadEstimatedFeeLoading = usePrevious(transactionState.payloadEstimatedFeeLoading);
@@ -61,10 +61,19 @@ export const useEstimatedFeePayload = (
           loading,
           sourceTargetDetails,
           createType,
-          isBridged
+          isBridged,
+          senderAccountBalance,
+          senderCompanionAccountBalance
         )
       ),
-    [createType, dispatchTransaction, isBridged, sourceTargetDetails]
+    [
+      createType,
+      dispatchTransaction,
+      isBridged,
+      senderAccountBalance,
+      senderCompanionAccountBalance,
+      sourceTargetDetails
+    ]
   );
 
   const calculateFeeAndPayload = useCallback(
@@ -126,7 +135,15 @@ export const useEstimatedFeePayload = (
 
   useEffect(() => {
     const { batchedTransactionState, payloadEstimatedFeeLoading } = transactionState;
-    if (previousPayloadEstimatedFeeLoading && !payloadEstimatedFeeLoading && batchedTransactionState) {
+
+    if (
+      previousPayloadEstimatedFeeLoading &&
+      !payloadEstimatedFeeLoading &&
+      batchedTransactionState &&
+      senderAccountBalance &&
+      senderCompanionAccountBalance
+    ) {
+      console.log('CALLING USEESTI', senderAccountBalance, senderCompanionAccountBalance);
       genericCall({
         call: () => calculateFeeAndPayload(batchedTransactionState),
         dispatch,
@@ -140,6 +157,8 @@ export const useEstimatedFeePayload = (
     dispatch,
     dispatchTransaction,
     previousPayloadEstimatedFeeLoading,
+    senderAccountBalance,
+    senderCompanionAccountBalance,
     transactionState
   ]);
 };

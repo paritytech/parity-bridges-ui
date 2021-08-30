@@ -26,6 +26,7 @@ import { useGUIContext } from './GUIContextProvider';
 import { initTransactionState } from '../reducers/initReducersStates/initTransactionState';
 import { useSourceTarget } from './SourceTargetContextProvider';
 import { encodeAddress } from '@polkadot/util-crypto';
+import useSenderBalanceUpdates from '../hooks/transactions/useSenderBalanceUpdates';
 
 interface TransactionContextProviderProps {
   children: React.ReactElement;
@@ -51,7 +52,7 @@ export function useUpdateTransactionContext() {
 
 export function TransactionContextProvider(props: TransactionContextProviderProps): React.ReactElement {
   const { children = null } = props;
-  const { account } = useAccountContext();
+  const { account, senderAccountBalance, senderCompanionAccountBalance } = useAccountContext();
   const { action } = useGUIContext();
   const {
     sourceChainDetails: {
@@ -61,18 +62,17 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
   const [transactionsState, dispatchTransaction] = useReducer(transactionReducer, initTransactionState);
 
   useResetTransactionState(action, dispatchTransaction);
-
   useEstimatedFeePayload(transactionsState, dispatchTransaction);
   useTransactionsStatus(transactionsState.transactions, transactionsState.evaluatingTransactions, dispatchTransaction);
+  useSenderBalanceUpdates(senderAccountBalance, senderCompanionAccountBalance, dispatchTransaction);
 
   useEffect((): void => {
-    dispatchTransaction(
-      TransactionActionCreators.setSenderAndAction({
-        senderAccount: account ? encodeAddress(account.address, ss58Format) : null,
-        action
-      })
-    );
-  }, [account, action, ss58Format]);
+    account && dispatchTransaction(TransactionActionCreators.setSender(encodeAddress(account.address, ss58Format)));
+  }, [account, ss58Format]);
+
+  useEffect((): void => {
+    action && dispatchTransaction(TransactionActionCreators.setAction(action));
+  }, [action]);
 
   return (
     <TransactionContext.Provider value={transactionsState}>

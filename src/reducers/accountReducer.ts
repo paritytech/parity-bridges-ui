@@ -43,7 +43,7 @@ export default function accountReducer(state: AccountState, action: AccountsActi
 
       const companionAccount = getDeriveAccount(toDerive);
 
-      return { ...state, account, companionAccount };
+      return { ...state, account, companionAccount, senderAccountBalance: null, senderCompanionAccountBalance: null };
     }
     case AccountActionsTypes.SET_SENDER_BALANCES:
       return {

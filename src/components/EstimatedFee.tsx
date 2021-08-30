@@ -20,6 +20,7 @@ import React from 'react';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import { transformToBaseUnit } from '../util/evalUnits';
+import { TransactionTypes } from '../types/transactionTypes';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -54,3 +55,19 @@ export const EstimatedFee = (): React.ReactElement => {
     </div>
   );
 };
+
+/* export const EstimatedFee = (): React.ReactElement => {
+  const { action } = useTransactionContext();
+
+  useEffect((): void => {
+    estimatedFee && setEnoughForPayFee(new BN(balance.free).sub(new BN(estimatedFee)).isNeg());
+    senderCompanionAccountBalance &&
+      transferAmount &&
+      setEnoughForTransfer(new BN(senderCompanionAccountBalance.free).sub(transferAmount).isNeg());
+  }, [transferAmount, estimatedFee, balance, senderCompanionAccountBalance]);
+
+  if (action === TransactionTypes.TRANSFER) {
+
+  }
+};
+ */

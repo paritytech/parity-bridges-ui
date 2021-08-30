@@ -21,6 +21,8 @@ import { INCORRECT_FORMAT, GENERIC } from '../../../constants';
 import { getValidAddressFormat } from '../../accounts';
 import getReceiverAddress from '../../getReceiverAddress';
 import logger from '../../logger';
+import BN from 'bn.js';
+import { BalanceState } from '../../../types/accountTypes';
 
 const validateAccount = (receiver: string, sourceChainDetails: ChainState, targetChainDetails: ChainState) => {
   try {
@@ -40,6 +42,36 @@ const validateAccount = (receiver: string, sourceChainDetails: ChainState, targe
       return { formatFound: e.message, receiverAddress: receiver };
     }
   }
+};
+
+interface EnoughFundsEvaluation {
+  transferAmount: BN | null;
+  senderAccountBalance: BalanceState;
+  senderCompanionAccountBalance: BalanceState;
+  estimatedFee: string | null;
+}
+
+const enoughFundsEvaluation = ({
+  transferAmount,
+  senderCompanionAccountBalance,
+  senderAccountBalance,
+  estimatedFee
+}: EnoughFundsEvaluation) => {
+  let evaluateTransactionStatusError = null;
+  let notEnoughFundsToTransfer = false;
+  let notEnoughToPayFee = false;
+
+  if (transferAmount && senderCompanionAccountBalance && senderAccountBalance && estimatedFee) {
+    notEnoughFundsToTransfer = new BN(senderCompanionAccountBalance.free).sub(transferAmount).isNeg();
+    notEnoughToPayFee = new BN(senderAccountBalance.free).sub(new BN(estimatedFee)).isNeg();
+    if (notEnoughFundsToTransfer) {
+      evaluateTransactionStatusError = "Account's amount is not enough for this transaction.";
+    }
+    if (notEnoughToPayFee) {
+      evaluateTransactionStatusError = `Account's amount is not enough for pay fee transaction: ${estimatedFee}.`;
+    }
+  }
+  return { evaluateTransactionStatusError, notEnoughFundsToTransfer, notEnoughToPayFee };
 };
 
 const shouldCalculatePayloadFee = (state: TransactionState, payload: Payload) => {
@@ -274,4 +306,4 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
   };
 };
 
-export { updateTransaction, isReadyToExecute, setReceiver, shouldCalculatePayloadFee };
+export { updateTransaction, isReadyToExecute, setReceiver, shouldCalculatePayloadFee, enoughFundsEvaluation };
