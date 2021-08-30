@@ -84,5 +84,5 @@ export default function useSendersBalancesContext(
     if (blocksReached) {
       updateAccounts();
     }
-  }, [blocksReached, updateAccounts, timerId, accountState.account]);
+  }, [blocksReached, updateAccounts, timerId]);
 }

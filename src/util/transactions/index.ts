@@ -128,11 +128,10 @@ export async function getTransactionCallWeight({
       case TransactionTypes.INTERNAL_TRANSFER:
         if (receiverAddress) {
           call = (await sourceApi.tx.balances.transfer(receiverAddress, transferAmount || 0)).toU8a();
-          // TODO [#121] Figure out what the extra bytes are about
           call = call.slice(2);
           logger.info(`balances::transfer: ${u8aToHex(call)}`);
           weight = (
-            await targetApi.tx.balances.transfer(receiverAddress, transferAmount || 0).paymentInfo(account)
+            await sourceApi.tx.balances.transfer(receiverAddress, transferAmount || 0).paymentInfo(account)
           ).weight.toNumber();
         }
         break;
