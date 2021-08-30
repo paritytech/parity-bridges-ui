@@ -25,8 +25,13 @@ import type { InterfaceTypes } from '@polkadot/types/types';
 import useLaneId from '../chain/useLaneId';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
 import { genericCall } from '../../util/apiUtlis';
-import { PayloadEstimatedFee, TransactionsActionType, TransactionState } from '../../types/transactionTypes';
-import { getTransactionCallWeight } from '../../util/transactions/';
+import {
+  PayloadEstimatedFee,
+  TransactionsActionType,
+  TransactionState,
+  TransactionTypes
+} from '../../types/transactionTypes';
+import { getFeeAndWeightForInternals, getTransactionCallWeight } from '../../util/transactions/';
 import { useGUIContext } from '../../contexts/GUIContextProvider';
 import usePrevious from '../react/usePrevious';
 
@@ -81,11 +86,23 @@ export const useEstimatedFeePayload = (
 
   const calculateFeeAndPayload = useCallback(
     async (currentTransactionState: TransactionState) => {
+      if (currentTransactionState.action === TransactionTypes.INTERNAL_TRANSFER) {
+        const { estimatedFee, weight } = await getFeeAndWeightForInternals({
+          api: sourceApi,
+          transactionState: currentTransactionState
+        });
+        const payload = {
+          sourceAccount: currentTransactionState.senderAccount,
+          transferAmount: currentTransactionState.transferAmount!.toNumber(),
+          receiverAddress: currentTransactionState.receiverAddress,
+          weight
+        };
+        return { estimatedFee, payload };
+      }
       const { call, weight } = await getTransactionCallWeight({
         action,
         account,
         targetApi,
-        sourceApi,
         transactionState: currentTransactionState
       });
 

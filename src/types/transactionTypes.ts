@@ -40,7 +40,8 @@ export enum SwitchTabEnum {
   PAYLOAD = 'PAYLOAD',
   DECODED = 'DECODED'
 }
-export interface TransactionPayload {
+
+export interface BridgedTransactionPayload {
   call: Uint8Array;
   origin: {
     SourceAccount: Uint8Array;
@@ -49,20 +50,28 @@ export interface TransactionPayload {
   weight: number;
 }
 
+export interface InternalTransferPayload {
+  sourceAccount: string | null;
+  transferAmount: number;
+  receiverAddress: string | null;
+  weight: number;
+}
+
+export type TransactionPayload = BridgedTransactionPayload | InternalTransferPayload;
+
 export interface TransactionDisplayPayload {
   call: Object;
   origin: Object;
   spec_version: string;
-  weight: string;
+  weight: number;
 }
 
-export interface LocalTransactionDisplayPayload {
-  sourceAccount: string;
-  transferAmount: number;
-  receiverAddress: string;
-}
+export type PayloadEstimatedFee = {
+  payload: TransactionPayload | null;
+  estimatedFee: string | null;
+};
 
-export type DisplayPayload = TransactionDisplayPayload | LocalTransactionDisplayPayload;
+export type DisplayPayload = TransactionDisplayPayload | InternalTransferPayload;
 
 export interface TransactionStatusType extends UpdatedTransactionStatusType {
   input: string;
@@ -138,8 +147,3 @@ export interface ReceiverPayload {
   targetChainDetails: ChainState;
   isBridged: boolean;
 }
-
-export type PayloadEstimatedFee = {
-  payload: TransactionPayload | null;
-  estimatedFee: string | null;
-};

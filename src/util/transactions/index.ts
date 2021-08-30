@@ -90,7 +90,6 @@ interface TransactionCallWeightInput {
   action: TransactionTypes;
   account: Account;
   targetApi: ApiPromise;
-  sourceApi: ApiPromise;
   transactionState: TransactionState;
 }
 
@@ -98,7 +97,6 @@ export async function getTransactionCallWeight({
   action,
   account,
   targetApi,
-  sourceApi,
   transactionState
 }: TransactionCallWeightInput) {
   let weight: number = 0;
@@ -125,16 +123,6 @@ export async function getTransactionCallWeight({
           ).weight.toNumber();
         }
         break;
-      case TransactionTypes.INTERNAL_TRANSFER:
-        if (receiverAddress) {
-          call = (await sourceApi.tx.balances.transfer(receiverAddress, transferAmount || 0)).toU8a();
-          call = call.slice(2);
-          logger.info(`balances::transfer: ${u8aToHex(call)}`);
-          weight = (
-            await sourceApi.tx.balances.transfer(receiverAddress, transferAmount || 0).paymentInfo(account)
-          ).weight.toNumber();
-        }
-        break;
       case TransactionTypes.CUSTOM:
         if (customCallInput) {
           call = isHex(customCallInput) ? hexToU8a(customCallInput.toString()) : null;
@@ -147,6 +135,20 @@ export async function getTransactionCallWeight({
   }
   return { call, weight };
 }
+
+interface FeeWeightInternal {
+  api: ApiPromise;
+  transactionState: TransactionState;
+}
+
+export async function getFeeAndWeightForInternals({ api, transactionState }: FeeWeightInternal) {
+  const { receiverAddress, transferAmount, senderAccount } = transactionState;
+  const transfer = api.tx.balances.transfer(receiverAddress!, transferAmount || 0);
+
+  const { partialFee, weight } = await transfer.paymentInfo(senderAccount!);
+  return { estimatedFee: partialFee.toString(), weight: weight.toNumber() };
+}
+
 const stepEvaluator = (transactionValue: string | number | null, chainValue: string | number | null): boolean => {
   if (!transactionValue || !chainValue) return false;
 

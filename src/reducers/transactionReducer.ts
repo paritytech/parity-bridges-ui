@@ -61,8 +61,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
       let payloadHex = null;
       let transactionDisplayPayload = null;
 
-      if (senderAccount) {
-        if (payload && isBridged) {
+      if (senderAccount && payload) {
+        if (isBridged) {
           const updated = getTransactionDisplayPayload({
             payload,
             account: senderAccount,
@@ -76,7 +76,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
           transactionDisplayPayload = {
             sourceAccount: senderAccount,
             transferAmount: transferAmount.toNumber(),
-            receiverAddress: receiverAddress
+            receiverAddress: receiverAddress,
+            weight: payload.weight
           };
         }
       }
@@ -87,7 +88,6 @@ export default function transactionReducer(state: TransactionState, action: Tran
         payloadEstimatedFeeError,
         payloadEstimatedFeeLoading,
         payload: payloadEstimatedFeeError ? null : payload,
-
         transactionReadyToExecute: readyToExecute,
         shouldEvaluatePayloadEstimatedFee: false,
         payloadHex,
