@@ -17,6 +17,8 @@ COPY package.json .
 COPY yarn.lock .
 RUN yarn
 COPY . .
+COPY .env.local .env
+RUN cat .env
 RUN yarn build
 
 # nginx state for serving content
