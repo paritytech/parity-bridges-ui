@@ -8,7 +8,6 @@ RUN apk update
 RUN apk add git
 
 COPY . .
-RUN ls
 RUN yarn
 RUN yarn downloadCustomTypes
 RUN yarn build
