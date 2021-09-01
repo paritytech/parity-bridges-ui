@@ -12,9 +12,13 @@ ENV PYTHONUNBUFFERED=1
 RUN python3 -m ensurepip
 RUN pip3 install --no-cache --upgrade pip setuptools
 
-COPY . .
+# install app dependencies
+COPY package.json .
+COPY yarn.lock .
 RUN yarn
+COPY . .
 RUN yarn build
+
 
 # nginx state for serving content
 FROM nginx:alpine
