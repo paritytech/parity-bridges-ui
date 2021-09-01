@@ -19,7 +19,6 @@ RUN yarn
 COPY . .
 RUN yarn build
 
-
 # nginx state for serving content
 FROM nginx:alpine
 # Set working directory to nginx asset directory
