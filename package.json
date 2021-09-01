@@ -49,6 +49,7 @@
   "scripts": {
     "prestart": "yarn downloadCustomTypes",
     "start": "PORT=3001 react-app-rewired start",
+    "prebuild": "yarn downloadCustomTypes",
     "build": "react-app-rewired build",
     "test:e2e": "jest -c e2e/jest.config.js",
     "test:e2e-s": "serve -s build -l 4000 & jest -c e2e/jest.config.js",
