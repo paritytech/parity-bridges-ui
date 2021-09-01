@@ -7,11 +7,10 @@ WORKDIR /parity-bridges-ui
 RUN apk update
 RUN apk add git
 
-# install app dependencies
-COPY package.json .
-COPY yarn.lock .
-RUN yarn
 COPY . .
+RUN ls
+RUN yarn
+RUN yarn downloadCustomTypes
 RUN yarn build
 
 # nginx state for serving content
