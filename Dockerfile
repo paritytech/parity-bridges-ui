@@ -14,7 +14,6 @@ RUN pip3 install --no-cache --upgrade pip setuptools
 
 COPY . .
 RUN yarn
-RUN yarn downloadCustomTypes
 RUN yarn build
 
 # nginx state for serving content
