@@ -5,7 +5,12 @@ FROM node:14.17-alpine AS builder
 WORKDIR /parity-bridges-ui
 
 RUN apk update
-RUN apk add git
+# Install git & python/pip
+RUN apk add git python3
+RUN ln -sf python3 /usr/bin/python
+ENV PYTHONUNBUFFERED=1
+RUN python3 -m ensurepip
+RUN pip3 install --no-cache --upgrade pip setuptools
 
 # install app dependencies
 COPY package.json .
