@@ -20,7 +20,8 @@ import {
   updateTransaction,
   isReadyToExecute,
   setReceiver,
-  shouldCalculatePayloadFee
+  shouldCalculatePayloadFee,
+  enoughFundsEvaluation
 } from '../util/transactions/reducer';
 import { TransactionsActionType, TransactionState } from '../types/transactionTypes';
 import logger from '../util/logger';
@@ -38,18 +39,30 @@ export default function transactionReducer(state: TransactionState, action: Tran
         payloadEstimatedFeeLoading,
         sourceTargetDetails,
         createType,
-        isBridged
+        isBridged,
+        senderAccountBalance,
+        senderCompanionAccountBalance
       } = action.payload;
 
-      const { senderAccount, transferAmount, receiverAddress } = state;
+      const { senderAccount, receiverAddress, transferAmount } = state;
 
-      const readyToExecute = payloadEstimatedFeeLoading ? false : transactionReadyToExecute;
+      const { evaluateTransactionStatusError, notEnoughFundsToTransfer, notEnoughToPayFee } = enoughFundsEvaluation({
+        transferAmount,
+        senderCompanionAccountBalance,
+        senderAccountBalance,
+        estimatedFee,
+        action: state.action
+      });
+
+      const readyToExecute = payloadEstimatedFeeLoading
+        ? false
+        : transactionReadyToExecute && !notEnoughToPayFee && !notEnoughFundsToTransfer;
 
       let payloadHex = null;
       let transactionDisplayPayload = null;
 
-      if (senderAccount) {
-        if (payload && isBridged) {
+      if (senderAccount && payload) {
+        if (isBridged) {
           const updated = getTransactionDisplayPayload({
             payload,
             account: senderAccount,
@@ -63,7 +76,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
           transactionDisplayPayload = {
             sourceAccount: senderAccount,
             transferAmount: transferAmount.toNumber(),
-            receiverAddress: receiverAddress
+            receiverAddress: receiverAddress,
+            weight: payload.weight
           };
         }
       }
@@ -74,11 +88,11 @@ export default function transactionReducer(state: TransactionState, action: Tran
         payloadEstimatedFeeError,
         payloadEstimatedFeeLoading,
         payload: payloadEstimatedFeeError ? null : payload,
-
         transactionReadyToExecute: readyToExecute,
         shouldEvaluatePayloadEstimatedFee: false,
         payloadHex,
-        transactionDisplayPayload
+        transactionDisplayPayload,
+        evaluateTransactionStatusError
       };
     }
 
@@ -186,6 +200,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
     case TransactionActionTypes.RESET:
       return {
         ...state,
+        evaluateTransactionStatusError: null,
         resetedAt: Date.now().toString(),
         derivedReceiverAccount: null,
         estimatedFee: null,
@@ -228,20 +243,36 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return setReceiver(state, action.payload.receiverPayload);
     case TransactionActionTypes.SET_TRANSACTION_RUNNING:
       return { ...state, transactionRunning: action.payload.transactionRunning, transactionReadyToExecute: false };
-    case TransactionActionTypes.SET_SENDER_AND_ACTION: {
-      const { senderAccount, action: transactionType } = action.payload;
+    case TransactionActionTypes.SET_ACTION: {
+      const { action: transactionType } = action.payload;
+
+      return {
+        ...state,
+        action: transactionType
+      };
+    }
+    case TransactionActionTypes.SET_SENDER: {
+      const { senderAccount } = action.payload;
+
+      return {
+        ...state,
+        senderAccount: senderAccount
+      };
+    }
+    case TransactionActionTypes.UPDATE_SENDER_BALANCES: {
+      const { action: transactionType, senderAccount } = state;
+
       const shouldEvaluatePayloadEstimatedFee = shouldCalculatePayloadFee(state, {
         senderAccount,
         action: transactionType
       });
+
       return {
         ...state,
-        senderAccount: senderAccount,
-        action: transactionType,
-        shouldEvaluatePayloadEstimatedFee
+        shouldEvaluatePayloadEstimatedFee,
+        transactionReadyToExecute: false
       };
     }
-
     case TransactionActionTypes.UPDATE_TRANSACTIONS_STATUS: {
       const { evaluateTransactionStatusError, transactions, evaluatingTransactions } = action.payload;
       return {
@@ -251,6 +282,14 @@ export default function transactionReducer(state: TransactionState, action: Tran
         evaluateTransactionStatusError
       };
     }
+    case TransactionActionTypes.SET_TRANSFER_TYPE: {
+      const { transferType } = action.payload;
+      return {
+        ...state,
+        action: transferType
+      };
+    }
+
     default:
       throw new Error(`Unknown type: ${action.type}`);
   }

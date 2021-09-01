@@ -25,8 +25,13 @@ import type { InterfaceTypes } from '@polkadot/types/types';
 import useLaneId from '../chain/useLaneId';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
 import { genericCall } from '../../util/apiUtlis';
-import { PayloadEstimatedFee, TransactionsActionType, TransactionState } from '../../types/transactionTypes';
-import { getTransactionCallWeight } from '../../util/transactions/';
+import {
+  PayloadEstimatedFee,
+  TransactionsActionType,
+  TransactionState,
+  TransactionTypes
+} from '../../types/transactionTypes';
+import { getFeeAndWeightForInternals, getTransactionCallWeight } from '../../util/transactions/';
 import { useGUIContext } from '../../contexts/GUIContextProvider';
 import usePrevious from '../react/usePrevious';
 
@@ -41,13 +46,16 @@ export const useEstimatedFeePayload = (
   const laneId = useLaneId();
   const sourceTargetDetails = useSourceTarget();
   const {
-    sourceChainDetails: { chain: sourceChain },
+    sourceChainDetails: {
+      chain: sourceChain,
+      apiConnection: { api: sourceApi }
+    },
     targetChainDetails: {
       apiConnection: { api: targetApi },
       chain: targetChain
     }
   } = sourceTargetDetails;
-  const { account } = useAccountContext();
+  const { account, senderAccountBalance, senderCompanionAccountBalance } = useAccountContext();
   const { action, isBridged } = useGUIContext();
   const { estimatedFeeMethodName } = getSubstrateDynamicNames(targetChain);
   const previousPayloadEstimatedFeeLoading = usePrevious(transactionState.payloadEstimatedFeeLoading);
@@ -61,14 +69,36 @@ export const useEstimatedFeePayload = (
           loading,
           sourceTargetDetails,
           createType,
-          isBridged
+          isBridged,
+          senderAccountBalance,
+          senderCompanionAccountBalance
         )
       ),
-    [createType, dispatchTransaction, isBridged, sourceTargetDetails]
+    [
+      createType,
+      dispatchTransaction,
+      isBridged,
+      senderAccountBalance,
+      senderCompanionAccountBalance,
+      sourceTargetDetails
+    ]
   );
 
   const calculateFeeAndPayload = useCallback(
     async (currentTransactionState: TransactionState) => {
+      if (currentTransactionState.action === TransactionTypes.INTERNAL_TRANSFER) {
+        const { estimatedFee, weight } = await getFeeAndWeightForInternals({
+          api: sourceApi,
+          transactionState: currentTransactionState
+        });
+        const payload = {
+          sourceAccount: currentTransactionState.senderAccount,
+          transferAmount: currentTransactionState.transferAmount!.toNumber(),
+          receiverAddress: currentTransactionState.receiverAddress,
+          weight
+        };
+        return { estimatedFee, payload };
+      }
       const { call, weight } = await getTransactionCallWeight({
         action,
         account,
@@ -103,7 +133,7 @@ export const useEstimatedFeePayload = (
       const estimatedFee = estimatedFeeType.toString();
       return { estimatedFee, payload };
     },
-    [account, action, createType, estimatedFeeMethodName, laneId, sourceChain, stateCall, targetApi]
+    [account, action, createType, estimatedFeeMethodName, laneId, sourceApi, sourceChain, stateCall, targetApi]
   );
 
   useEffect(() => {
@@ -126,7 +156,14 @@ export const useEstimatedFeePayload = (
 
   useEffect(() => {
     const { batchedTransactionState, payloadEstimatedFeeLoading } = transactionState;
-    if (previousPayloadEstimatedFeeLoading && !payloadEstimatedFeeLoading && batchedTransactionState) {
+
+    if (
+      previousPayloadEstimatedFeeLoading &&
+      !payloadEstimatedFeeLoading &&
+      batchedTransactionState &&
+      senderAccountBalance &&
+      senderCompanionAccountBalance
+    ) {
       genericCall({
         call: () => calculateFeeAndPayload(batchedTransactionState),
         dispatch,
@@ -140,6 +177,8 @@ export const useEstimatedFeePayload = (
     dispatch,
     dispatchTransaction,
     previousPayloadEstimatedFeeLoading,
+    senderAccountBalance,
+    senderCompanionAccountBalance,
     transactionState
   ]);
 };
