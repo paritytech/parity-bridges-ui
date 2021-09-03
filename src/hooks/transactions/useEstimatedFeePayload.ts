@@ -26,6 +26,7 @@ import useLaneId from '../chain/useLaneId';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
 import { genericCall } from '../../util/apiUtlis';
 import {
+  // PayFee,
   PayloadEstimatedFee,
   TransactionsActionType,
   TransactionState,
@@ -115,6 +116,9 @@ export const useEstimatedFeePayload = (
         origin: {
           SourceAccount: account!.addressRaw
         },
+        dispatch_fee_payment: {
+          ['test']: '()'
+        },
         spec_version: targetApi.consts.system.version.specVersion.toNumber(),
         weight
       };
@@ -147,6 +151,7 @@ export const useEstimatedFeePayload = (
     }
     if (shouldEvaluatePayloadEstimatedFee && !payloadEstimatedFeeLoading) {
       genericCall({
+        //@ts-ignore
         call: () => calculateFeeAndPayload(transactionState),
         dispatch,
         emptyData
@@ -165,6 +170,7 @@ export const useEstimatedFeePayload = (
       senderCompanionAccountBalance
     ) {
       genericCall({
+        //@ts-ignore
         call: () => calculateFeeAndPayload(batchedTransactionState),
         dispatch,
         emptyData

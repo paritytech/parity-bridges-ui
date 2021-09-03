@@ -46,6 +46,7 @@ export interface BridgedTransactionPayload {
   origin: {
     SourceAccount: Uint8Array;
   };
+  dispatch_fee_payment: { _enum: [PayFee] };
   spec_version: number;
   weight: number;
 }
@@ -84,6 +85,11 @@ export interface TransactionStatusType extends UpdatedTransactionStatusType {
   deliveryBlock: string | null;
 }
 
+export enum PayFee {
+  AtTargetChain = 'AtTargetChain',
+  AtSourceChain = 'AtSourceChain'
+}
+
 export interface TransactionState {
   resetedAt: string | null;
   senderAccount: string | null;
@@ -114,6 +120,7 @@ export interface TransactionState {
   payloadEstimatedFeeLoading: boolean;
   batchedTransactionState: TransactionState | null;
   action: TransactionTypes;
+  payFee: PayFee;
 }
 
 export type TransactionsActionType = { type: TransactionActionTypes; payload: Payload };
