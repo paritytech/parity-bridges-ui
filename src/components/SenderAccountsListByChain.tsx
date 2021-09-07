@@ -59,7 +59,7 @@ export default function SenderAccountsListByChain({ chain, showCompanion, showEm
 
   return (
     <>
-      <ChainHeader chain={chain} />
+      {Boolean(accounts.length) && <ChainHeader chain={chain} />}
       {accounts.map((option) => {
         const component = (
           <SenderDropdownItem

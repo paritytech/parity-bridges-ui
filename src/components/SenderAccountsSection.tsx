@@ -16,7 +16,7 @@
 
 import React, { useMemo } from 'react';
 
-import { Divider } from '@material-ui/core';
+import { Divider, makeStyles } from '@material-ui/core';
 import SenderAccountsListByChain from './SenderAccountsListByChain';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 interface Props {
@@ -26,13 +26,21 @@ interface Props {
   handleClose: () => void;
 }
 
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    height: theme.spacing(39),
+    overflow: 'scroll'
+  }
+}));
+
 export default function SenderAccountsSection({ showEmpty, showCompanion, filter, handleClose }: Props) {
+  const classes = useStyles();
   const { displaySenderAccounts } = useAccountContext();
   const chains = useMemo(() => Object.keys(displaySenderAccounts), [displaySenderAccounts]);
 
   if (chains.length) {
     return (
-      <>
+      <div className={classes.paper}>
         <SenderAccountsListByChain
           chain={chains[0]}
           showCompanion={showCompanion}
@@ -48,7 +56,7 @@ export default function SenderAccountsSection({ showEmpty, showCompanion, filter
           handleClose={handleClose}
           filter={filter}
         />
-      </>
+      </div>
     );
   }
   return null;
