@@ -26,7 +26,7 @@ import useLaneId from '../chain/useLaneId';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
 import { genericCall } from '../../util/apiUtlis';
 import {
-  // PayFee,
+  PayFee,
   PayloadEstimatedFee,
   TransactionsActionType,
   TransactionState,
@@ -117,7 +117,7 @@ export const useEstimatedFeePayload = (
           SourceAccount: account!.addressRaw
         },
         dispatch_fee_payment: {
-          ['test']: '()'
+          [PayFee.AtSourceChain]: '()'
         },
         spec_version: targetApi.consts.system.version.specVersion.toNumber(),
         weight
