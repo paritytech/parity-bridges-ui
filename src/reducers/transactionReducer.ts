@@ -242,7 +242,11 @@ export default function transactionReducer(state: TransactionState, action: Tran
     case TransactionActionTypes.SET_RECEIVER:
       return setReceiver(state, action.payload.receiverPayload);
     case TransactionActionTypes.SET_TRANSACTION_RUNNING:
-      return { ...state, transactionRunning: action.payload.transactionRunning, transactionReadyToExecute: false };
+      return {
+        ...state,
+        transactionRunning: action.payload.transactionRunning,
+        transactionReadyToExecute: action.payload.transactionRunning ? false : state.transactionReadyToExecute
+      };
     case TransactionActionTypes.SET_ACTION: {
       const { action: transactionType } = action.payload;
 
@@ -289,7 +293,12 @@ export default function transactionReducer(state: TransactionState, action: Tran
         action: transferType
       };
     }
-
+    case TransactionActionTypes.ENABLE_TX_BUTTON: {
+      return {
+        ...state,
+        transactionReadyToExecute: true
+      };
+    }
     default:
       throw new Error(`Unknown type: ${action.type}`);
   }

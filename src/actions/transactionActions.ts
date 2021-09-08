@@ -46,6 +46,7 @@ enum TransactionActionTypes {
   SET_BATCH_PAYLOAD_ESTIMATED_FEE = 'SET_BATCH_PAYLOAD_ESTIMATED_FEE',
   UPDATE_SENDER_BALANCES = 'UPDATE_SENDER_BALANCES',
   SET_TRANSFER_TYPE = 'SET_TRANSFER_TYPE',
+  ENABLE_TX_BUTTON = 'ENABLE_TX_BUTTON',
   RESET = 'RESET'
 }
 
@@ -167,6 +168,11 @@ const setTransferType = (transferType: TransactionTypes) => ({
   type: TransactionActionTypes.SET_TRANSFER_TYPE
 });
 
+const enableTxButton = () => ({
+  payload: {},
+  type: TransactionActionTypes.ENABLE_TX_BUTTON
+});
+
 const TransactionActionCreators = {
   setSender,
   setAction,
@@ -184,6 +190,7 @@ const TransactionActionCreators = {
   setBatchedEvaluationPayloadEstimatedFee,
   updateSenderBalances,
   setTransferType,
+  enableTxButton,
   reset
 };
 

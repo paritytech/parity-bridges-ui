@@ -31,6 +31,7 @@ import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
 import { createEmptySteps, getTransactionDisplayPayload } from '../../util/transactions/';
 import logger from '../../util/logger';
 import useApiCalls from '../api/useApiCalls';
+import { TX_CANCELLED } from '../../constants';
 
 interface Props {
   input: string;
@@ -147,8 +148,14 @@ function useSendMessage({ input, type }: Props) {
           }
         });
       } catch (e) {
-        dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e.message }));
         logger.error(e.message);
+        if (e.message === TX_CANCELLED) {
+          dispatchTransaction(TransactionActionCreators.enableTxButton());
+          return dispatchMessage(
+            MessageActionsCreators.triggerErrorMessage({ message: 'Transaction was cancelled from the extension.' })
+          );
+        }
+        dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e.message }));
       } finally {
         dispatchTransaction(TransactionActionCreators.setTransactionRunning(false));
       }
