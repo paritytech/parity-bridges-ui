@@ -18,9 +18,13 @@ import { base58Decode, checkAddressChecksum } from '@polkadot/util-crypto';
 import { INCORRECT_FORMAT, GENERIC, GENERIC_SUBSTRATE_PREFIX } from '../../constants';
 
 export default function getValidAddressFormat(address: string) {
-  const decodedReceiverAddress = base58Decode(address);
-  const [isValid, , , formatFound] = checkAddressChecksum(decodedReceiverAddress);
+  try {
+    const decodedReceiverAddress = base58Decode(address);
+    const [isValid, , , formatFound] = checkAddressChecksum(decodedReceiverAddress);
 
-  const f = formatFound === GENERIC_SUBSTRATE_PREFIX ? GENERIC : formatFound;
-  return { isValid, formatFound: isValid ? f : INCORRECT_FORMAT };
+    const f = formatFound === GENERIC_SUBSTRATE_PREFIX ? GENERIC : formatFound;
+    return { isValid, formatFound: isValid ? f : INCORRECT_FORMAT };
+  } catch (e) {
+    return { isValid: false, formatFound: INCORRECT_FORMAT };
+  }
 }
