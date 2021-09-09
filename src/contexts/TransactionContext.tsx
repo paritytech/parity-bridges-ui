@@ -14,10 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useContext, useReducer } from 'react';
-
+import React, { useContext, useReducer, useEffect } from 'react';
+import useTransactionsStatus from '../hooks/context/useTransactionsStatus';
 import transactionReducer from '../reducers/transactionReducer';
-import { TransactionState, TransactionsActionType, TransactionDisplayPayload } from '../types/transactionTypes';
+import { TransactionActionCreators } from '../actions/transactionActions';
+import useEstimatedFeePayload from '../hooks/transactions/useEstimatedFeePayload';
+import useResetTransactionState from '../hooks/transactions/useResetTransactionState';
+import { TransactionState, TransactionsActionType } from '../types/transactionTypes';
+import { useAccountContext } from './AccountContextProvider';
+import { useGUIContext } from './GUIContextProvider';
+import { initTransactionState } from '../reducers/initReducersStates/initTransactionState';
+import { useSourceTarget } from './SourceTargetContextProvider';
+import { encodeAddress } from '@polkadot/util-crypto';
+import useSenderBalanceUpdates from '../hooks/transactions/useSenderBalanceUpdates';
 
 interface TransactionContextProviderProps {
   children: React.ReactElement;
@@ -43,30 +52,30 @@ export function useUpdateTransactionContext() {
 
 export function TransactionContextProvider(props: TransactionContextProviderProps): React.ReactElement {
   const { children = null } = props;
+  const { account, senderAccountBalance, senderCompanionAccountBalance } = useAccountContext();
+  const { action } = useGUIContext();
+  const {
+    sourceChainDetails: {
+      configs: { ss58Format }
+    }
+  } = useSourceTarget();
+  const [transactionsState, dispatchTransaction] = useReducer(transactionReducer, initTransactionState);
 
-  const [transaction, dispatchTransaction] = useReducer(transactionReducer, {
-    transferAmount: null,
-    transferAmountError: null,
-    estimatedFee: null,
-    estimatedFeeError: null,
-    estimatedFeeLoading: false,
-    receiverAddress: null,
-    unformattedReceiverAddress: null,
-    derivedReceiverAccount: null,
-    genericReceiverAccount: null,
-    transactions: [],
-    transactionDisplayPayload: {} as TransactionDisplayPayload,
-    transactionRunning: false,
-    addressValidationError: null,
-    showBalance: false,
-    formatFound: null,
-    payload: null,
-    payloadError: null,
-    payloadHex: null
-  });
+  useResetTransactionState(action, dispatchTransaction);
+  useEstimatedFeePayload(transactionsState, dispatchTransaction);
+  useTransactionsStatus(transactionsState.transactions, transactionsState.evaluatingTransactions, dispatchTransaction);
+  useSenderBalanceUpdates(senderAccountBalance, senderCompanionAccountBalance, dispatchTransaction);
+
+  useEffect((): void => {
+    account && dispatchTransaction(TransactionActionCreators.setSender(encodeAddress(account.address, ss58Format)));
+  }, [account, ss58Format]);
+
+  useEffect((): void => {
+    action && dispatchTransaction(TransactionActionCreators.setAction(action));
+  }, [action]);
 
   return (
-    <TransactionContext.Provider value={transaction}>
+    <TransactionContext.Provider value={transactionsState}>
       <UpdateTransactionContext.Provider value={{ dispatchTransaction }}>{children}</UpdateTransactionContext.Provider>
     </TransactionContext.Provider>
   );

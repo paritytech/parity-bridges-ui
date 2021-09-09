@@ -14,30 +14,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { useAccountContext } from '../../contexts/AccountContextProvider';
-import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
-import { getBridgeId } from '../../util/getConfigs';
-import getDeriveAccount from '../../util/getDeriveAccount';
+import React from 'react';
+import { Box, makeStyles } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
 
-const useDerivedAccount = () => {
-  const {
-    targetChainDetails: { configs },
-    sourceChainDetails: {
-      configs: { chainName }
-    }
-  } = useSourceTarget();
-  const { account } = useAccountContext();
-
-  if (!account) {
-    return null;
+const useStyles = makeStyles((theme) => ({
+  skeleton: {
+    padding: theme.spacing(3),
+    width: '100%'
   }
+}));
 
-  const toDerive = {
-    ss58Format: configs.ss58Format,
-    address: account.address,
-    bridgeId: getBridgeId(configs, chainName)
-  };
-  return getDeriveAccount(toDerive);
-};
-
-export default useDerivedAccount;
+export default function SenderAccountsLoading() {
+  const classes = useStyles();
+  return (
+    <Box display="flex" flexDirection="column" alignItems="center" className={classes.skeleton}>
+      <Skeleton animation="wave" width="100%" height={50} />
+      <Skeleton animation="wave" width="100%" height={50} />
+      <Skeleton animation="wave" width="100%" height={300} />
+    </Box>
+  );
+}

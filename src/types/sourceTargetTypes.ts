@@ -33,9 +33,9 @@ export interface ConnectionChainInformation {
 }
 
 export interface Configs {
-  bridgeIds: { [propName: string]: Array<number> };
   chainName: string;
   ss58Format: number;
+  logoUrl: string;
 }
 
 export type Connection = {

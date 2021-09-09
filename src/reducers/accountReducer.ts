@@ -15,11 +15,46 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 import { AccountActionsTypes } from '../actions/accountActions';
 import type { AccountsActionType, AccountState } from '../types/accountTypes';
+import { getBridgeId } from '../util/getConfigs';
+import getDeriveAccount from '../util/getDeriveAccount';
 
 export default function accountReducer(state: AccountState, action: AccountsActionType): AccountState {
   switch (action.type) {
-    case AccountActionsTypes.SET_ACCOUNT:
-      return { ...state, account: action.payload.account };
+    case AccountActionsTypes.SET_ACCOUNT: {
+      const { account, sourceTarget, sourceChain } = action.payload;
+      let { sourceChainDetails, targetChainDetails } = sourceTarget;
+
+      if (sourceChain !== sourceChainDetails.chain) {
+        sourceChainDetails = sourceTarget.targetChainDetails;
+        targetChainDetails = sourceTarget.sourceChainDetails;
+      }
+
+      const {
+        configs,
+        apiConnection: { api: targetApi }
+      } = targetChainDetails;
+      const { chain: sourceChainName } = sourceChainDetails;
+
+      const toDerive = {
+        ss58Format: configs.ss58Format,
+        address: account?.address || '',
+        bridgeId: getBridgeId(targetApi, sourceChainName)
+      };
+
+      const companionAccount = getDeriveAccount(toDerive);
+
+      return { ...state, account, companionAccount, senderAccountBalance: null, senderCompanionAccountBalance: null };
+    }
+    case AccountActionsTypes.SET_SENDER_BALANCES:
+      return {
+        ...state,
+        senderAccountBalance: action.payload.senderAccountBalance,
+        senderCompanionAccountBalance: action.payload.senderCompanionAccountBalance
+      };
+    case AccountActionsTypes.SET_ACCOUNTS:
+      return { ...state, accounts: action.payload.accounts };
+    case AccountActionsTypes.SET_DISPLAY_SENDER_ACCOUNTS:
+      return { ...state, displaySenderAccounts: action.payload.displaySenderAccounts, initialLoadingAccounts: false };
     default:
       throw new Error(`Unknown type: ${action.type}`);
   }

@@ -14,33 +14,31 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { useCallback } from 'react';
-interface DispatchGenericCallInput {
-  call: Function;
-  dispatch: (error: string | null, data: any, loading: boolean) => void;
+import { Box, makeStyles, Typography } from '@material-ui/core';
+import React from 'react';
+import ChainLogo from './ChainLogo';
+
+interface Props {
+  chain: string;
 }
 
-export const useDispatchGenericCall = ({ call, dispatch }: DispatchGenericCallInput) => {
-  const execute = useCallback(
-    async (...params: any[]) => {
-      let data;
-      let error;
-      try {
-        dispatch(null, null, true);
-        data = await call(...params);
-        dispatch(null, data, false);
-      } catch (e) {
-        error = e;
-        dispatch(e, null, false);
-      }
-      return { data, error };
-    },
-    [call, dispatch]
+const useStyles = makeStyles((theme) => ({
+  box: {
+    padding: theme.spacing(1.7)
+  },
+  name: {
+    marginLeft: theme.spacing(0.8),
+    color: theme.palette.grey[600],
+    fontWeight: 500
+  }
+}));
+
+export default function ChainHeader({ chain }: Props) {
+  const classes = useStyles();
+  return (
+    <Box display="flex" className={classes.box}>
+      <ChainLogo chain={chain} />
+      <Typography classes={{ root: classes.name }}>{chain.toUpperCase()}</Typography>
+    </Box>
   );
-
-  return {
-    execute
-  };
-};
-
-export default useDispatchGenericCall;
+}

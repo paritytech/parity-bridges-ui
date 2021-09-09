@@ -14,156 +14,37 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useEffect, useState } from 'react';
-import { MenuItem, Select } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { encodeAddress } from '@polkadot/util-crypto';
-import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import useAccounts from '../hooks/accounts/useAccounts';
-import useLoadingApi from '../hooks/connections/useLoadingApi';
-import { Account as AccountType } from '../types/accountTypes';
-import formatAccounts from '../util/formatAccounts';
-import Account from './Account';
-import AccountDisplay from './AccountDisplay';
-import { AddressKind } from '../types/accountTypes';
-import { SelectLabel, styleAccountCompanion } from '../components';
-import useChainGetters from '../hooks/chain/useChainGetters';
-
-// TODO replace MUI Select with MUI Popover it wraps around or Autocomplete to have more control over appearance
+import React, { useState } from 'react';
+import SenderDropdown from './SenderDropdown';
+import SenderAccount from './SenderAccount';
+import SenderCompanionAccount from './SenderCompanionAccount';
+import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
-  networkHeading: {
-    padding: theme.spacing(2),
-    paddingBottom: 0,
-    borderTop: `1px solid ${theme.palette.divider}`,
-    ...theme.typography.overline,
-    color: theme.palette.text.hint,
-    '&:first-child': {
-      paddingTop: 0,
-      border: 'none'
-    }
-  },
-  selectAccountMainItem: {
-    display: 'block',
-    paddingTop: theme.spacing(),
-    paddingBottom: theme.spacing(),
-    paddingLeft: theme.spacing(1.75)
-  },
-  accountMain: {
-    '& .MuiSelect-select': {
-      padding: theme.spacing(1.25),
-      paddingTop: theme.spacing(0.5),
-      paddingRight: theme.spacing(3),
-      border: `1px solid ${theme.palette.divider}`,
-      borderRadius: theme.spacing(1.5),
-      borderBottomLeftRadius: 0,
-      borderBottomRightRadius: 0
-    }
-  },
-  accountCompanion: {
-    ...styleAccountCompanion(theme)
+  sender: {
+    minHeight: theme.spacing(13)
   }
 }));
 
-const Sender = () => {
+export default function Sender() {
   const classes = useStyles();
-  const [chains, setChains] = useState<Array<string[]>>([]);
-  const { account, accounts, derivedAccount, setCurrentAccount } = useAccounts();
-  const {
-    sourceChainDetails: {
-      chain: sourceChain,
-      configs: { ss58Format }
-    },
-    targetChainDetails: { chain: targetChain }
-  } = useSourceTarget();
-  const { getSS58PrefixByChain } = useChainGetters();
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-  const { areApiReady } = useLoadingApi();
-
-  useEffect(() => {
-    if (!chains.length) {
-      setChains([
-        [sourceChain, targetChain],
-        [targetChain, sourceChain]
-      ]);
-    }
-  }, [chains.length, sourceChain, targetChain]);
-
-  const value = account ? encodeAddress(account.address, ss58Format) : 'init';
-
-  const onChange = (value: string, chain: string) => {
-    setCurrentAccount(value, chain);
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
   };
 
-  const renderAccounts = (chains: string[]) => {
-    const [source, target] = chains;
-    const ss58Format = getSS58PrefixByChain(source);
-    const formatedAccounts = formatAccounts(accounts, ss58Format);
-    const items = formatedAccounts.map(({ text, value, key }: any) => (
-      <MenuItem
-        className={classes.selectAccountMainItem}
-        key={key}
-        value={value}
-        onClick={() => {
-          onChange(value, source);
-        }}
-      >
-        <Account friendlyName={text} value={value} chain={source} />
-        <Account friendlyName={text} value={value} chain={target} isDerived hideAddress />
-      </MenuItem>
-    ));
-    return [
-      <div className={classes.networkHeading} key={source}>
-        {source}
-      </div>,
-      items
-    ];
-  };
-
-  const getName = (account: AccountType) => (account!.meta.name as string).toLocaleUpperCase();
-
-  const AccountSelected = () => {
-    if (account) {
-      const text = getName(account);
-      return <Account friendlyName={text} value={value} chain={sourceChain} />;
-    }
-    return <AccountDisplay friendlyName="Select sender account" hideAddress />;
+  const removeAnchor = () => {
+    setAnchorEl(null);
   };
 
   return (
     <>
-      <Select
-        id="test-sender-component"
-        disableUnderline
-        fullWidth
-        disabled={!areApiReady}
-        className={classes.accountMain}
-        value={value}
-        renderValue={(): React.ReactNode => (
-          <>
-            <SelectLabel>Sender</SelectLabel>
-            <AccountSelected />
-          </>
-        )}
-      >
-        {chains.map((chain) => renderAccounts(chain))}
-      </Select>
-      <div className={classes.accountCompanion}>
-        {derivedAccount ? (
-          <Account
-            friendlyName={getName(account)}
-            value={value}
-            chain={targetChain}
-            isDerived
-            hideAddress
-            withTooltip
-          />
-        ) : (
-          <AccountDisplay friendlyName="Sender" addressKind={AddressKind.COMPANION} hideAddress />
-        )}
+      <div className={classes.sender}>
+        <SenderAccount handleClick={handleClick} anchorEl={anchorEl} />
+        <SenderDropdown anchorEl={anchorEl} removeAnchor={removeAnchor} />
+        <SenderCompanionAccount />
       </div>
     </>
   );
-};
-
-export default Sender;
+}

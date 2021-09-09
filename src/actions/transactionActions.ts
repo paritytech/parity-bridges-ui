@@ -14,25 +14,39 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+import { BalanceState } from '../types/accountTypes';
+import { CreateType } from '../types/apiCallsTypes';
+import { SourceTargetState } from '../types/sourceTargetTypes';
+
 import {
   TransactionStatusType,
+  TransactionTypes,
   UpdatedTransactionStatusType,
   ReceiverPayload,
-  TransactionPayload
+  PayloadEstimatedFee,
+  TransactionState
 } from '../types/transactionTypes';
 
 enum TransactionActionTypes {
   SET_TRANSFER_AMOUNT = 'SET_TRANSFER_AMOUNT',
-  SET_ESTIMATED_FEE = 'SET_ESTIMATED_FEE',
-  SET_PAYLOAD = 'SET_PAYLOAD',
-  SET_PAYLOAD_ERROR = 'SET_PAYLOAD_ERROR',
+  SET_REMARK_INPUT = 'SET_REMARK_INPUT',
   SET_RECEIVER = 'SET_RECEIVER',
   SET_RECEIVER_ADDRESS = 'SET_RECEIVER_ADDRESS',
   SET_RECEIVER_VALIDATION = 'SET_RECEIVER_VALIDATION',
+  SET_SENDER = 'SET_SENDER',
+  SET_ACTION = 'SET_ACTION',
+  SET_PAYLOAD_ESTIMATED_FEE = 'SET_PAYLOAD_ESTIMATED_FEE',
   CREATE_TRANSACTION_STATUS = 'CREATE_TRANSACTION_STATUS',
   UPDATE_CURRENT_TRANSACTION_STATUS = 'UPDATE_CURRENT_TRANSACTION_STATUS',
   SET_TRANSACTION_COMPLETED = 'SET_TRANSACTION_COMPLETED',
   SET_TRANSACTION_RUNNING = 'SET_TRANSACTION_RUNNING',
+  SET_CUSTOM_CALL_INPUT = 'SET_CUSTOM_CALL_INPUT',
+  SET_WEIGHT_INPUT = 'SET_WEIGHT_INPUT',
+  UPDATE_TRANSACTIONS_STATUS = 'UPDATE_TRANSACTIONS_STATUS',
+  SET_BATCH_PAYLOAD_ESTIMATED_FEE = 'SET_BATCH_PAYLOAD_ESTIMATED_FEE',
+  UPDATE_SENDER_BALANCES = 'UPDATE_SENDER_BALANCES',
+  SET_TRANSFER_TYPE = 'SET_TRANSFER_TYPE',
+  ENABLE_TX_BUTTON = 'ENABLE_TX_BUTTON',
   RESET = 'RESET'
 }
 
@@ -43,20 +57,36 @@ const setTransferAmount = (transferAmount: string | null, chainDecimals?: number
   };
 };
 
-const setEstimatedFee = (
-  estimatedFeeError: string | null,
-  estimatedFee: string | null,
-  estimatedFeeLoading: boolean
-) => {
-  return {
-    payload: { estimatedFee, estimatedFeeError, estimatedFeeLoading },
-    type: TransactionActionTypes.SET_ESTIMATED_FEE
-  };
-};
+const setPayloadEstimatedFee = (
+  payloadEstimatedFeeError: string | null,
+  payloadEstimatedFee: PayloadEstimatedFee | null,
+  payloadEstimatedFeeLoading: boolean,
+  sourceTargetDetails: SourceTargetState,
+  createType: CreateType,
+  isBridged: boolean,
+  senderAccountBalance: BalanceState | null,
+  senderCompanionAccountBalance: BalanceState | null
+) => ({
+  payload: {
+    payloadEstimatedFee,
+    payloadEstimatedFeeError,
+    payloadEstimatedFeeLoading,
+    sourceTargetDetails,
+    createType,
+    isBridged,
+    senderAccountBalance,
+    senderCompanionAccountBalance
+  },
+  type: TransactionActionTypes.SET_PAYLOAD_ESTIMATED_FEE
+});
 
-const setPayload = (payloadError: string | null, payload: TransactionPayload | null) => ({
-  payload: { payload, payloadError },
-  type: TransactionActionTypes.SET_PAYLOAD
+const updateTransactionsStatus = (
+  evaluateTransactionStatusError: string | null,
+  transactions: TransactionStatusType[] | null,
+  evaluatingTransactions: boolean
+) => ({
+  payload: { evaluateTransactionStatusError, transactions, evaluatingTransactions },
+  type: TransactionActionTypes.UPDATE_TRANSACTIONS_STATUS
 });
 
 const setReceiverAddress = (receiverAddress: string | null) => ({
@@ -93,16 +123,75 @@ const setTransactionRunning = (transactionRunning: boolean) => ({
   type: TransactionActionTypes.SET_TRANSACTION_RUNNING
 });
 
+const setAction = (action: TransactionTypes) => ({
+  payload: { action },
+  type: TransactionActionTypes.SET_ACTION
+});
+
+const setSender = (senderAccount: string | null) => ({
+  payload: { senderAccount },
+  type: TransactionActionTypes.SET_SENDER
+});
+
+const setRemarkInput = (remarkInput: string | null) => ({
+  payload: { remarkInput },
+  type: TransactionActionTypes.SET_REMARK_INPUT
+});
+
+const setCustomCallInput = (customCallInput: string | null, createType: CreateType, targetChain: string) => ({
+  payload: { customCallInput, createType, targetChain },
+  type: TransactionActionTypes.SET_CUSTOM_CALL_INPUT
+});
+
+const setWeightInput = (weightInput: string | null) => ({
+  payload: { weightInput },
+  type: TransactionActionTypes.SET_WEIGHT_INPUT
+});
+
+const setBatchedEvaluationPayloadEstimatedFee = (batchedTransactionState: TransactionState | null) => ({
+  payload: { batchedTransactionState },
+  type: TransactionActionTypes.SET_BATCH_PAYLOAD_ESTIMATED_FEE
+});
+
+type UpdateSenderBalances = {
+  senderAccountBalance: BalanceState | null;
+  senderCompanionAccountBalance: BalanceState | null;
+};
+
+const updateSenderBalances = ({ senderAccountBalance, senderCompanionAccountBalance }: UpdateSenderBalances) => ({
+  payload: { senderAccountBalance, senderCompanionAccountBalance },
+  type: TransactionActionTypes.UPDATE_SENDER_BALANCES
+});
+
+const setTransferType = (transferType: TransactionTypes) => ({
+  payload: { transferType },
+  type: TransactionActionTypes.SET_TRANSFER_TYPE
+});
+
+const enableTxButton = () => ({
+  payload: {},
+  type: TransactionActionTypes.ENABLE_TX_BUTTON
+});
+
 const TransactionActionCreators = {
-  setTransferAmount,
-  setEstimatedFee,
-  createTransactionStatus,
+  setSender,
+  setAction,
   setReceiverAddress,
   setReceiver,
+  setTransferAmount,
+  setPayloadEstimatedFee,
+  setCustomCallInput,
+  setWeightInput,
+  setRemarkInput,
+  setTransactionRunning,
+  createTransactionStatus,
   updateTransactionStatus,
-  setPayload,
-  reset,
-  setTransactionRunning
+  updateTransactionsStatus,
+  setBatchedEvaluationPayloadEstimatedFee,
+  updateSenderBalances,
+  setTransferType,
+  enableTxButton,
+  reset
 };
 
 export { TransactionActionCreators, TransactionActionTypes };

@@ -14,10 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 const puppeteer = require('puppeteer');
+require('dotenv').config();
 const { globals } = require('./jest.config');
 
 const chromeOptions = {
-  executablePath:process.env.chrome,
+  args: ['--no-sandbox'],
+  executablePath: process.env.PUPPETEER_EXEC_PATH, // set by docker container
   headless: false
 };
 
@@ -33,11 +35,10 @@ const chromeOptions = {
       userAgent: ''
     });
     await page.goto(globals.SERVER_URL, { waitUntil: 'domcontentloaded' });
-
     // Run happy path test for submitting a transaction
-    await page.waitForSelector('#test_sender_component');
+    await page.waitForSelector('#test-sender-component');
     await page.waitForTimeout(1000);
-    await page.click('#test_sender_component').then(() => console.log('-- Open Sender dropdown'));
+    await page.click('#test-sender-component').then(() => console.log('-- Open Sender dropdown'));
     await page.waitForTimeout(1000);
     const [aliceOption] = await page.$x("//div[contains(., '5sauUX')]");
     await page.waitForTimeout(500);

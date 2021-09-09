@@ -24,12 +24,12 @@ const useChainGetters = () => {
     sourceChainDetails: {
       apiConnection: { api: sourceApi, isApiReady: sourceIsApiReady },
       chain: sourceChain,
-      configs: { ss58Format: sourceSS58Format }
+      configs: { ss58Format: sourceSS58Format, logoUrl: sourceLogoUrl }
     },
     targetChainDetails: {
       apiConnection: { api: targetApi, isApiReady: targetIsApiReady },
       chain: targetChain,
-      configs: { ss58Format: targetSS58Format }
+      configs: { ss58Format: targetSS58Format, logoUrl: targetLogoUrl }
     }
   } = useSourceTarget();
 
@@ -41,14 +41,16 @@ const useChainGetters = () => {
             ss58Format: sourceSS58Format,
             api: sourceApi,
             isApiReady: sourceIsApiReady,
-            substrateValues: getSubstrateDynamicNames(targetChain)
+            substrateValues: getSubstrateDynamicNames(targetChain),
+            logoUrl: sourceLogoUrl
           };
         case targetChain:
           return {
             ss58Format: targetSS58Format,
             api: targetApi,
             isApiReady: targetIsApiReady,
-            substrateValues: getSubstrateDynamicNames(sourceChain)
+            substrateValues: getSubstrateDynamicNames(sourceChain),
+            logoUrl: targetLogoUrl
           };
         default:
           throw new Error(`Unknown type: ${chain}`);
@@ -58,10 +60,12 @@ const useChainGetters = () => {
       sourceApi,
       sourceChain,
       sourceIsApiReady,
+      sourceLogoUrl,
       sourceSS58Format,
       targetApi,
       targetChain,
       targetIsApiReady,
+      targetLogoUrl,
       targetSS58Format
     ]
   );

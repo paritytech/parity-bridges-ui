@@ -17,17 +17,18 @@
 module.exports = {
   preset: 'jest-puppeteer',
   globals: {
-    SERVER_URL: 'http://localhost:3001',
-    JEST_TIMEOUT: 10000
+    SERVER_URL: 'http://localhost:4000',
+    JEST_TIMEOUT: 50000
   },
   testRegex: './*\\.test\\.js$',
   transform: {
     '\\.js$': 'react-scripts/config/jest/babelTransform'
   },
+  setupFiles: ["dotenv/config"],
   globalSetup: "./global-setup.js",
   globalTeardown: "./global-teardown.js",
   verbose: true,
   testEnvironment: "./custom-environment.js"
 };
 
-console.log('Running E2E integration tests on port 3001');
+console.log('Running E2E integration tests on port 4000');

@@ -14,57 +14,42 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import type { KeyringPair } from '@polkadot/keyring/types';
-import { encodeAddress } from '@polkadot/util-crypto';
+
 import { AccountActionCreators } from '../../actions/accountActions';
 import { SourceTargetActionsCreators } from '../../actions/sourceTargetActions';
 import { useUpdateAccountContext } from '../../contexts/AccountContextProvider';
-import { useAccountContext } from '../../contexts/AccountContextProvider';
-import { useKeyringContext } from '../../contexts/KeyringContextProvider';
 import { useUpdateSourceTarget } from '../../contexts/SourceTargetContextProvider';
-import useDerivedAccount from './useDerivedAccount';
-import useChainGetters from '../chain/useChainGetters';
+import { useAccountContext } from '../../contexts/AccountContextProvider';
+import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
+import { GENERIC_SUBSTRATE_PREFIX } from '../../constants';
+import { encodeAddress } from '@polkadot/util-crypto';
 
 interface Accounts {
-  account: KeyringPair | null;
   accounts: Array<KeyringPair> | [];
-  derivedAccount: string | null;
-  setCurrentAccount: (value: string, chain: string) => void;
+  setCurrentAccount: (account: string, sourceChain: string) => void;
 }
 
 const useAccounts = (): Accounts => {
-  const { keyringPairs, keyringPairsReady } = useKeyringContext();
-  const [accounts, setAccounts] = useState<Array<KeyringPair> | []>([]);
   const { dispatchAccount } = useUpdateAccountContext();
   const { dispatchChangeSourceTarget } = useUpdateSourceTarget();
-  const derivedAccount = useDerivedAccount();
-  const { account } = useAccountContext();
-  const { getSS58PrefixByChain } = useChainGetters();
-
-  useEffect(() => {
-    if (keyringPairsReady && keyringPairs.length) {
-      setAccounts(keyringPairs);
-    }
-  }, [keyringPairsReady, keyringPairs, setAccounts]);
+  const sourceTarget = useSourceTarget();
+  const { accounts } = useAccountContext();
 
   const setCurrentAccount = useCallback(
-    (value: string, chain: string) => {
-      const ss58Format = getSS58PrefixByChain(chain);
+    (account, sourceChain) => {
+      const accountKeyring = accounts.find(
+        ({ address }) => encodeAddress(account, GENERIC_SUBSTRATE_PREFIX) === address
+      );
 
-      const account = accounts.find(({ address }) => encodeAddress(address, ss58Format) === value);
-      if (account) {
-        dispatchChangeSourceTarget(SourceTargetActionsCreators.switchChains(chain));
-        dispatchAccount(AccountActionCreators.setAccount(account));
-      }
+      dispatchChangeSourceTarget(SourceTargetActionsCreators.switchChains(sourceChain));
+      dispatchAccount(AccountActionCreators.setAccount(accountKeyring!, sourceTarget, sourceChain));
     },
-    [accounts, dispatchAccount, dispatchChangeSourceTarget, getSS58PrefixByChain]
+    [accounts, dispatchAccount, dispatchChangeSourceTarget, sourceTarget]
   );
-
   return {
-    account,
     accounts,
-    derivedAccount,
     setCurrentAccount
   };
 };

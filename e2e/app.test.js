@@ -14,11 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-// @ts-ignore due to isolatedModules flag - no import so this needed
-
 const puppeteer = require('puppeteer');
 const winston = require('winston');
 const { globals } = require('./jest.config');
+require('dotenv').config();
 
 winston.addColors({
   debug: 'grey',
@@ -40,11 +39,12 @@ const logger = winston.createLogger({
 });
 
 const chromeOptions = {
-  executablePath: process.env.chrome,
-  headless: false
+  args: ['--no-sandbox'],
+  product: 'chrome',
+  headless: true
 };
 
-const timeout = 500000;
+const timeout = 1000000;
 
 const ids = {
   native: '#test-native-input',
@@ -57,10 +57,10 @@ const ids = {
 const chooseSender = async (page) => {
   logger.info('  >>> Choosing Sender');
   await page.waitForSelector(ids.senderComponent);
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(2000);
   await page.click(ids.senderComponent).then(() => logger.info('     -- Open Sender dropdown'));
   await page.waitForTimeout(1000);
-  const [aliceOption] = await page.$x("//div[contains(., '5sauUX')]");
+  const [aliceOption] = await page.$x("//p[contains(., 'ALICE [5sauUX...')]");
   await page.waitForTimeout(500);
   if (aliceOption) {
     await aliceOption.click().then(() => logger.info('     -- Click on an account from the dropdown'));
@@ -78,7 +78,7 @@ const enterAmount = async (page) => {
 
 const checkEnabledButton = async (page) => {
   logger.info('  >>> Checking if execution button is enabled');
-
+  await page.waitForTimeout(4000);
   await page.waitForSelector(ids.transferButton);
   await page.waitForTimeout(500);
   await page
@@ -232,7 +232,7 @@ describe('<App />', () => {
         await page
           .click('#test-button-submit')
           .then(() => logger.info('     -- Click send button to initiate the transaction'));
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(2000);
         await page
           .waitForXPath('//div[contains(text(), "Transaction was broadcasted")]')
           .then(() => logger.info('     -- Transaction was broadcasted.'));
@@ -251,12 +251,14 @@ describe('<App />', () => {
           .waitForSelector(`#test-step-deliver-message-block > ${ids.checkCircleComponent}`)
           .then(() => logger.info('     -- Step 4 "Deliver message in target block" completed'));
         await page
+          .waitForSelector(`#test-step-message-dispatch-confirmation > ${ids.checkCircleComponent}`)
+          .then(() => logger.info('     -- Step 5 "Message dispatch confirmation" completed'));
+        await page
           .waitForSelector(`#test-step-finalized-message > ${ids.checkCircleComponent}`)
-          .then(() => logger.info('     -- Step 5 "Finalize message" completed'));
+          .then(() => logger.info('     -- Step 6 "Finalize message" completed'));
         await page
           .waitForSelector(`#test-step-confirm-delivery > ${ids.checkCircleComponent}`)
-          .then(() => logger.info('     -- Step 6 "Confirm delivery" completed'));
-
+          .then(() => logger.info('     -- Step 7 "Confirm delivery" completed'));
         await page
           .waitForSelector(`#test-transaction-header > ${ids.checkCircleComponent}`)
           .then(() => logger.info('     -- Transaction Completed'));

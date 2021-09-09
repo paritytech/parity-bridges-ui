@@ -17,11 +17,9 @@
 import React from 'react';
 import { Card, makeStyles, CircularProgress, Typography } from '@material-ui/core';
 import ReactJson from 'react-json-view';
-import { SwitchTabEnum } from '../types/transactionTypes';
 import TransactionHeader from './TransactionHeader';
 import { useTransactionContext } from '../contexts/TransactionContext';
-import { TransactionDisplayPayload } from '../types/transactionTypes';
-import { TransactionStatusEnum } from '../types/transactionTypes';
+import { DisplayPayload, SwitchTabEnum, TransactionStatusEnum } from '../types/transactionTypes';
 
 export interface TransactionDisplayProps {
   size?: 'sm';
@@ -31,9 +29,11 @@ interface Props {
   transactionDisplayProps?: TransactionDisplayProps;
   tab: SwitchTabEnum;
   payloadHex: string | null;
-  transactionDisplayPayload: TransactionDisplayPayload | null;
+  transactionDisplayPayload: DisplayPayload | null;
   status: TransactionStatusEnum;
   type?: string;
+  sourceChain: string;
+  targetChain: string;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -65,30 +65,33 @@ const useStyles = makeStyles((theme) => ({
 
 const TransactionPayload = ({
   tab,
-  transactionDisplayProps,
   payloadHex,
   transactionDisplayPayload,
   type,
-  status
+  status,
+  sourceChain,
+  targetChain
 }: Props) => {
   const classes = useStyles();
-  const { estimatedFeeLoading } = useTransactionContext();
+  const { payloadEstimatedFeeLoading } = useTransactionContext();
   if (tab === SwitchTabEnum.RECEIPT) {
     return null;
   }
 
   return (
-    <Card elevation={transactionDisplayProps?.size === 'sm' ? 23 : 24} className={classes.card}>
-      {payloadHex && <TransactionHeader type={type} status={status} />}
-      {estimatedFeeLoading && (
+    <Card elevation={23} className={classes.card}>
+      {payloadHex && (
+        <TransactionHeader type={type} status={status} sourceChain={sourceChain} targetChain={targetChain} />
+      )}
+      {payloadEstimatedFeeLoading && (
         <div className={classes.loader}>
           <CircularProgress />
         </div>
       )}
-      {!estimatedFeeLoading && tab === SwitchTabEnum.PAYLOAD && (
+      {!payloadEstimatedFeeLoading && tab === SwitchTabEnum.PAYLOAD && (
         <Typography variant="subtitle2">{payloadHex}</Typography>
       )}
-      {!estimatedFeeLoading && tab === SwitchTabEnum.DECODED && transactionDisplayPayload && (
+      {!payloadEstimatedFeeLoading && tab === SwitchTabEnum.DECODED && transactionDisplayPayload && (
         <Typography variant="subtitle2">
           <ReactJson src={transactionDisplayPayload} enableClipboard name={false} />
         </Typography>

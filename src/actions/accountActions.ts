@@ -14,19 +14,46 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { Account } from '../types/accountTypes';
+import type { Account, BalanceState, DisplayAccounts } from '../types/accountTypes';
+import type { SourceTargetState } from '../types/sourceTargetTypes';
+
+import { KeyringPair } from '@polkadot/keyring/types';
 
 enum AccountActionsTypes {
-  SET_ACCOUNT = 'SET_ACCOUNT'
+  SET_ACCOUNT = 'SET_ACCOUNT',
+  SET_ACCOUNTS = 'SET_ACCOUNTS',
+  SET_DISPLAY_SENDER_ACCOUNTS = 'SET_DISPLAY_SENDER_ACCOUNTS',
+  SET_SENDER_BALANCES = 'SET_SENDER_BALANCES'
 }
 
-const setAccount = (account: Account) => ({
-  payload: { account },
+const setAccount = (account: Account, sourceTarget: SourceTargetState, sourceChain: string) => ({
+  payload: { account, sourceTarget, sourceChain },
   type: AccountActionsTypes.SET_ACCOUNT
 });
 
+const setSenderBalances = (
+  senderAccountBalance: BalanceState | null,
+  senderCompanionAccountBalance: BalanceState | null
+) => ({
+  payload: { senderAccountBalance, senderCompanionAccountBalance },
+  type: AccountActionsTypes.SET_SENDER_BALANCES
+});
+
+const setAccounts = (accounts: KeyringPair[]) => ({
+  payload: { accounts },
+  type: AccountActionsTypes.SET_ACCOUNTS
+});
+
+const setDisplaySenderAccounts = (displaySenderAccounts: DisplayAccounts) => ({
+  payload: { displaySenderAccounts },
+  type: AccountActionsTypes.SET_DISPLAY_SENDER_ACCOUNTS
+});
+
 const AccountActionCreators = {
-  setAccount
+  setAccount,
+  setAccounts,
+  setDisplaySenderAccounts,
+  setSenderBalances
 };
 
 export { AccountActionsTypes, AccountActionCreators };

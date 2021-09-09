@@ -16,16 +16,10 @@
 
 import React from 'react';
 
-import { MessageActionsCreators } from '../actions/messageActions';
-import { TransactionActionCreators } from '../actions/transactionActions';
-import { useUpdateMessageContext } from '../contexts/MessageContext';
 import { useTransactionContext } from '../contexts/TransactionContext';
-import { useUpdateTransactionContext } from '../contexts/TransactionContext';
-import { TransactionStatusEnum, TransactionStatusType } from '../types/transactionTypes';
-import shortenItem from '../util/shortenItem';
-import TransactionStatus, { TransactionDisplayProps } from './TransactionStatus';
 import TransactionStatusMock from './TransactionStatusMock';
-import useResetTransactionState from '../hooks/transactions/useResetTransactionState';
+import { TransactionStatusType } from '../types/transactionTypes';
+import TransactionStatus, { TransactionDisplayProps } from './TransactionStatus';
 
 interface Props extends TransactionDisplayProps {
   type?: string;
@@ -33,33 +27,15 @@ interface Props extends TransactionDisplayProps {
 
 const Transactions = ({ type, ...transactionDisplayProps }: Props) => {
   const { transactions } = useTransactionContext();
-  const { dispatchTransaction } = useUpdateTransactionContext();
-  const { dispatchMessage } = useUpdateMessageContext();
-  useResetTransactionState(type);
-
   return (
     <>
       <TransactionStatusMock type={type} />
       {Boolean(transactions.length) &&
         transactions.map((transaction: TransactionStatusType) => {
-          const onComplete = () => {
-            dispatchTransaction(
-              TransactionActionCreators.updateTransactionStatus(
-                { status: TransactionStatusEnum.COMPLETED },
-                transaction.id
-              )
-            );
-            dispatchMessage(
-              MessageActionsCreators.triggerSuccessMessage({
-                message: `Transaction: ${shortenItem(transaction.blockHash)} is completed`
-              })
-            );
-          };
           return (
             <TransactionStatus
               key={transaction.id}
               transaction={transaction}
-              onComplete={onComplete}
               transactionDisplayProps={{ ...transactionDisplayProps }}
             />
           );

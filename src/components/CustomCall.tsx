@@ -14,83 +14,68 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Box, TextField, Typography } from '@material-ui/core';
-import React, { useState } from 'react';
+import React, { useCallback } from 'react';
+import { Box } from '@material-ui/core';
 import { ButtonSubmit } from '../components';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useTransactionContext } from '../contexts/TransactionContext';
 import useSendMessage from '../hooks/chain/useSendMessage';
 import useApiCalls from '../hooks/api/useApiCalls';
 import { TransactionTypes } from '../types/transactionTypes';
+import { EstimatedFee } from './EstimatedFee';
+import { TransactionActionCreators } from '../actions/transactionActions';
+import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
+import { DebouncedTextField } from './DebouncedTextField';
+
+const initialValue = '0x';
 
 const CustomCall = () => {
-  const [decoded, setDecoded] = useState<string | null>();
+  const { dispatchTransaction } = useUpdateTransactionContext();
+  const { customCallInput, weightInput, transactionReadyToExecute, customCallError } = useTransactionContext();
 
-  const [customCallInput, setCustomCallInput] = useState('0x');
-  const [weightInput, setWeightInput] = useState<string>();
-  const [error, setError] = useState<string | null>();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
-  const { estimatedFee, estimatedFeeLoading } = useTransactionContext();
   const {
     targetChainDetails: { chain: targetChain }
   } = useSourceTarget();
   const { createType } = useApiCalls();
 
-  const { isButtonDisabled, sendLaneMessage } = useSendMessage({
+  const sendLaneMessage = useSendMessage({
     input: customCallInput,
-    isValidCall: Boolean(decoded),
     type: TransactionTypes.CUSTOM,
     weightInput
   });
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    decodePayload(event.target.value);
-    setCustomCallInput(event.target.value);
-  };
 
-  const onWeightChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setWeightInput(event.target.value);
-  };
+  const onChange = useCallback(
+    (value: string | null) => {
+      dispatchTransaction(TransactionActionCreators.setCustomCallInput(value, createType, targetChain));
+    },
+    [createType, dispatchTransaction, targetChain]
+  );
 
-  function decodePayload(input: string) {
-    try {
-      setError(null);
+  const onWeightChange = useCallback(
+    (value: string | null) => {
+      dispatchTransaction(TransactionActionCreators.setWeightInput(value));
+    },
+    [dispatchTransaction]
+  );
 
-      //@ts-ignore
-      const call = createType(targetChain, 'Call', input);
-      setDecoded(JSON.stringify(call, null, 4));
-    } catch (e) {
-      setError('Wrong call provided');
-      setDecoded(null);
-    }
-  }
-
-  // To extract estimated fee logic to specific component. Issue #171
   return (
     <>
       <Box mb={2}>
-        <TextField
-          onChange={onChange}
-          value={customCallInput}
+        <DebouncedTextField
+          dispatchCallback={onChange}
+          placeholder={initialValue}
           label="Call"
           variant="outlined"
           fullWidth
-          helperText={error && `${error}`}
+          helperText={customCallError && `${customCallError}`}
         />
       </Box>
-      <TextField onChange={onWeightChange} value={weightInput} label="Weight" variant="outlined" fullWidth />
-      <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
+      <DebouncedTextField dispatchCallback={onWeightChange} label="Weight" variant="outlined" fullWidth />
+      <ButtonSubmit disabled={!transactionReadyToExecute} onClick={sendLaneMessage}>
         Send custom call from {sourceChainDetails.chain} to {targetChainDetails.chain}
       </ButtonSubmit>
-      {estimatedFeeLoading ? (
-        <Typography variant="body1" color="secondary">
-          Estimated source Fee loading...
-        </Typography>
-      ) : (
-        <Typography variant="body1" color="secondary">
-          {estimatedFee && `Estimated source Fee: ${estimatedFee}`}
-        </Typography>
-      )}
+      <EstimatedFee />
     </>
   );
 };

@@ -15,9 +15,12 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React, { useContext, useReducer } from 'react';
+import useAccountsContextSetUp from '../hooks/context/useAccountsContextSetUp';
+import useSendersBalancesContext from '../hooks/context/useSendersBalancesContext';
 
 import accountReducer from '../reducers/accountReducer';
-import { AccountContextType, AccountsActionType } from '../types/accountTypes';
+
+import { AccountState, AccountsActionType, DisplayAccounts } from '../types/accountTypes';
 
 interface AccountContextProviderProps {
   children: React.ReactElement;
@@ -27,7 +30,7 @@ export interface UpdateAccountContext {
   dispatchAccount: React.Dispatch<AccountsActionType>;
 }
 
-export const AccountContext: React.Context<AccountContextType> = React.createContext({} as AccountContextType);
+export const AccountContext: React.Context<AccountState> = React.createContext({} as AccountState);
 
 export const UpdateAccountContext: React.Context<UpdateAccountContext> = React.createContext(
   {} as UpdateAccountContext
@@ -43,13 +46,21 @@ export function useUpdateAccountContext() {
 
 export function AccountContextProvider(props: AccountContextProviderProps): React.ReactElement {
   const { children = null } = props;
-
-  const [account, dispatchAccount] = useReducer(accountReducer, {
-    account: null
+  const [accountState, dispatchAccount] = useReducer(accountReducer, {
+    account: null,
+    accounts: [],
+    companionAccount: null,
+    senderAccountBalance: null,
+    senderCompanionAccountBalance: null,
+    displaySenderAccounts: {} as DisplayAccounts,
+    initialLoadingAccounts: true
   });
 
+  useAccountsContextSetUp(accountState, dispatchAccount);
+  useSendersBalancesContext(accountState, dispatchAccount);
+
   return (
-    <AccountContext.Provider value={account}>
+    <AccountContext.Provider value={accountState}>
       <UpdateAccountContext.Provider value={{ dispatchAccount }}>{children}</UpdateAccountContext.Provider>
     </AccountContext.Provider>
   );

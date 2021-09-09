@@ -15,7 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { EvalMessages } from '../../types/transactionTypes';
-import { evalUnits } from '../evalUnits';
+import { evalUnits, transformToBaseUnit } from '../evalUnits';
 
 const defaultChainDecimals = 9;
 
@@ -92,5 +92,47 @@ describe('Tests suite - evalUnits', () => {
     const [actualValue, msg] = evalUnits('1,23.445k', defaultChainDecimals);
     expect(actualValue).toBeFalsy;
     expect(msg).toBe(EvalMessages.GIBBERISH);
+  });
+});
+
+describe('Tests suite - transformToBaseUnit', () => {
+  it('Should accept a fee (275002583), chain has 9 decimals', () => {
+    const result = transformToBaseUnit('275002583', 9);
+    expect(result).toBe('0.275002583');
+  });
+
+  it('Should accept a fee (275002583), chain has 20 decimals', () => {
+    const result = transformToBaseUnit('275002583', 20);
+    expect(result).toBe('0.0000000000275002583');
+  });
+
+  it('Should accept a very small fee (23), chain has 9 decimals', () => {
+    const result = transformToBaseUnit('23', 9);
+    expect(result).toBe('0.00000023');
+  });
+
+  it('Should accept a very small fee (23), chain has 18 decimals', () => {
+    const result = transformToBaseUnit('23', 18);
+    expect(result).toBe('0.00000000000000023');
+  });
+
+  it('Should accept a fee (20000000000), chain has 18 decimals (aka ETH example)', () => {
+    const result = transformToBaseUnit((20 * 10 ** 7).toString(), 18);
+    expect(result).toBe('0.000000002');
+  });
+
+  it('Should accept a huge fee (2350000000), chain has 9 decimals', () => {
+    const result = transformToBaseUnit((235 * 10 ** 7).toString(), 9);
+    expect(result).toBe('2.35');
+  });
+
+  it('Should has 0 fee and return 0', () => {
+    const result = transformToBaseUnit('0', 9);
+    expect(result).toBe('0');
+  });
+
+  it('Should has 0.0000 fee and return 0', () => {
+    const result = transformToBaseUnit('0.0000', 20);
+    expect(result).toBe('0');
   });
 });

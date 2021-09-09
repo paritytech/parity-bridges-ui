@@ -22,4 +22,5 @@ export { BoxUI, BoxSidebar } from './LayoutBoxes';
 export { MenuAction } from './MenuAction';
 export { NetworkSides, NetworkStats } from './Network';
 export { Alert } from './Alert';
+export { Web3Icon } from './Web3Icon';
 export { light } from './theme';

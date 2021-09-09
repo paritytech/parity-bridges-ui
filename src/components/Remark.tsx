@@ -14,55 +14,46 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { TextField, Typography } from '@material-ui/core';
-import React, { useState } from 'react';
+import React, { useCallback } from 'react';
 import { ButtonSubmit } from '../components';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { useTransactionContext } from '../contexts/TransactionContext';
 import useSendMessage from '../hooks/chain/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
+import { EstimatedFee } from './EstimatedFee';
+import { TransactionActionCreators } from '../actions/transactionActions';
+import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
+import { DebouncedTextField } from './DebouncedTextField';
 
-const Remark = () => {
-  const [remarkInput, setRemarkInput] = useState('0x');
+export default function Remark() {
+  const { dispatchTransaction } = useUpdateTransactionContext();
+  const { remarkInput, transactionReadyToExecute } = useTransactionContext();
+
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
-  const { estimatedFee, estimatedFeeLoading } = useTransactionContext();
-
-  const { isButtonDisabled, sendLaneMessage } = useSendMessage({
+  const sendLaneMessage = useSendMessage({
     input: remarkInput,
     type: TransactionTypes.REMARK
   });
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRemarkInput(event.target.value);
-  };
 
-  // To extract estimated fee logic to specific component. Issue #171
+  const dispatchCallback = useCallback(
+    (value: string | null) => dispatchTransaction(TransactionActionCreators.setRemarkInput(value)),
+    [dispatchTransaction]
+  );
+
   return (
     <>
-      <TextField
+      <DebouncedTextField
         label="Remark"
-        value={remarkInput}
         variant="outlined"
         fullWidth
         multiline
         rows={4}
-        onChange={onChange}
+        dispatchCallback={dispatchCallback}
       />
-      <ButtonSubmit disabled={isButtonDisabled()} onClick={sendLaneMessage}>
+      <ButtonSubmit disabled={!transactionReadyToExecute} onClick={sendLaneMessage}>
         Send bridge remark from {sourceChainDetails.chain} to {targetChainDetails.chain}
       </ButtonSubmit>
-
-      {estimatedFeeLoading ? (
-        <Typography variant="body1" color="secondary">
-          Estimated source Fee loading...
-        </Typography>
-      ) : (
-        <Typography variant="body1" color="secondary">
-          {estimatedFee && `Estimated source Fee: ${estimatedFee}`}
-        </Typography>
-      )}
+      <EstimatedFee />
     </>
   );
-};
-
-export default Remark;
+}
