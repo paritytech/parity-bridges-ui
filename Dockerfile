@@ -27,5 +27,10 @@ WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
 # Copy static assets from builder stage
 COPY --from=builder /parity-bridges-ui/build .
+COPY --from=builder /parity-bridges-ui/.env .
+
+# Fix network entrypoints and start nginx.
+COPY run-nginx.sh .
+
 # Containers run nginx with global directives and daemon off
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
+ENTRYPOINT ["/usr/share/nginx/html/run-nginx.sh"]
