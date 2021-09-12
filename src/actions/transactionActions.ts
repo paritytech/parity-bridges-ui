@@ -47,6 +47,7 @@ enum TransactionActionTypes {
   UPDATE_SENDER_BALANCES = 'UPDATE_SENDER_BALANCES',
   SET_TRANSFER_TYPE = 'SET_TRANSFER_TYPE',
   ENABLE_TX_BUTTON = 'ENABLE_TX_BUTTON',
+  DISABLE_TX_BUTTON = 'DISABLE_TX_BUTTON',
   RESET = 'RESET'
 }
 
@@ -65,7 +66,8 @@ const setPayloadEstimatedFee = (
   createType: CreateType,
   isBridged: boolean,
   senderAccountBalance: BalanceState | null,
-  senderCompanionAccountBalance: BalanceState | null
+  senderCompanionAccountBalance: BalanceState | null,
+  chainDecimals: number
 ) => ({
   payload: {
     payloadEstimatedFee,
@@ -75,7 +77,8 @@ const setPayloadEstimatedFee = (
     createType,
     isBridged,
     senderAccountBalance,
-    senderCompanionAccountBalance
+    senderCompanionAccountBalance,
+    chainDecimals
   },
   type: TransactionActionTypes.SET_PAYLOAD_ESTIMATED_FEE
 });
@@ -173,6 +176,11 @@ const enableTxButton = () => ({
   type: TransactionActionTypes.ENABLE_TX_BUTTON
 });
 
+const disableTXButton = () => ({
+  payload: {},
+  type: TransactionActionTypes.DISABLE_TX_BUTTON
+});
+
 const TransactionActionCreators = {
   setSender,
   setAction,
@@ -191,6 +199,7 @@ const TransactionActionCreators = {
   updateSenderBalances,
   setTransferType,
   enableTxButton,
+  disableTXButton,
   reset
 };
 
