@@ -17,7 +17,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { Step, TransactionStatusEnum } from '../types/transactionTypes';
+import { Step, TransactionStatusEnum, TransactionTypes } from '../types/transactionTypes';
 import TransactionReceipt from './TransactionReceipt';
 import TransactionSwitchTab from './TransactionSwitchTab';
 import { createEmptyInternalSteps, createEmptySteps } from '../util/transactions/';
@@ -56,7 +56,7 @@ const TransactionStatusMock = ({ type }: Props) => {
     >
       <TransactionReceipt
         steps={steps}
-        type={type}
+        type={isBridged ? type : TransactionTypes.INTERNAL_TRANSFER}
         status={TransactionStatusEnum.NOT_STARTED}
         sourceChain={sourceChain}
         targetChain={targetChain}
