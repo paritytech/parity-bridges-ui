@@ -23,6 +23,7 @@ import getReceiverAddress from '../../getReceiverAddress';
 import logger from '../../logger';
 import BN from 'bn.js';
 import { BalanceState } from '../../../types/accountTypes';
+import { evalUnits } from '../../evalUnits';
 
 const validateAccount = (receiver: string, sourceChainDetails: ChainState, targetChainDetails: ChainState) => {
   try {
@@ -105,7 +106,13 @@ const shouldCalculatePayloadFee = (state: TransactionState, payload: Payload) =>
   switch (action) {
     case TransactionTypes.INTERNAL_TRANSFER:
     case TransactionTypes.TRANSFER: {
-      return Boolean(transferAmount && receiverAddress && senderAccount);
+      if (transferAmount) {
+        const [, message] = evalUnits(transferAmount.toString(), payload.chainDecimals);
+        const validTransferAmount = !message;
+
+        return Boolean(validTransferAmount && receiverAddress && senderAccount);
+      }
+      return false;
     }
     case TransactionTypes.CUSTOM: {
       return Boolean(weightInput && customCallInput && senderAccount && !customCallError);

@@ -109,22 +109,26 @@ export default function transactionReducer(state: TransactionState, action: Tran
 
     case TransactionActionTypes.SET_TRANSFER_AMOUNT: {
       const { transferAmount, chainDecimals } = action.payload;
+
+      const [actualValue, message] = evalUnits(transferAmount, chainDecimals);
       if (!transferAmount) {
         return {
           ...state,
           transferAmount,
           transferAmountError: null,
-          transactionReadyToExecute: false
+          transactionReadyToExecute: false,
+          estimatedFee: null,
+          payload: null
         };
       }
-      const [actualValue, message] = evalUnits(transferAmount, chainDecimals);
+
       const shouldEvaluatePayloadEstimatedFee = shouldCalculatePayloadFee(state, { transferAmount: actualValue });
 
       return {
         ...state,
         transferAmount: actualValue || null,
         transferAmountError: message,
-        transactionReadyToExecute,
+        transactionReadyToExecute: transactionReadyToExecute && !message,
         estimatedFee: null,
         shouldEvaluatePayloadEstimatedFee
       };
@@ -297,6 +301,12 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return {
         ...state,
         transactionReadyToExecute: true
+      };
+    }
+    case TransactionActionTypes.DISABLE_TX_BUTTON: {
+      return {
+        ...state,
+        transactionReadyToExecute: false
       };
     }
     default:
