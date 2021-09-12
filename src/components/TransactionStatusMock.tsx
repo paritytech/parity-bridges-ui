@@ -20,15 +20,16 @@ import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { Step, TransactionStatusEnum } from '../types/transactionTypes';
 import TransactionReceipt from './TransactionReceipt';
 import TransactionSwitchTab from './TransactionSwitchTab';
-import { createEmptySteps } from '../util/transactions/';
+import { createEmptyInternalSteps, createEmptySteps } from '../util/transactions/';
 import { useTransactionContext } from '../contexts/TransactionContext';
+import { useGUIContext } from '../contexts/GUIContextProvider';
 interface Props {
   type?: string;
 }
 
 const TransactionStatusMock = ({ type }: Props) => {
   const [steps, setSteps] = useState<Array<Step>>([]);
-
+  const { isBridged } = useGUIContext();
   const {
     sourceChainDetails: { chain: sourceChain },
     targetChainDetails: { chain: targetChain }
@@ -37,8 +38,12 @@ const TransactionStatusMock = ({ type }: Props) => {
   const { payloadHex, transactionDisplayPayload } = useTransactionContext();
 
   useEffect(() => {
-    setSteps(createEmptySteps(sourceChain, targetChain));
-  }, [sourceChain, targetChain]);
+    if (isBridged) {
+      setSteps(createEmptySteps(sourceChain, targetChain));
+    } else {
+      setSteps(createEmptyInternalSteps(sourceChain));
+    }
+  }, [isBridged, sourceChain, targetChain]);
 
   return (
     <TransactionSwitchTab
