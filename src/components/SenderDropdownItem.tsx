@@ -16,7 +16,7 @@
 
 import React, { useState } from 'react';
 import cx from 'classnames';
-import { Box, makeStyles, Typography } from '@material-ui/core';
+import { Box, makeStyles, Typography, Tooltip } from '@material-ui/core';
 import shorterItem from '../util/shortenItem';
 import AccountIdenticon from './AccountIdenticon';
 import { useGUIContext } from '../contexts/GUIContextProvider';
@@ -27,12 +27,15 @@ interface Props {
   companionBalance: string;
   address: string;
   showCompanion: boolean;
+  companionAddress: string;
 }
 
 const useStyles = makeStyles((theme) => ({
   topBalance: {
-    minWidth: theme.spacing(14)
+    minWidth: theme.spacing(14),
+    marginLeft: theme.spacing(5)
   },
+
   bottomBalance: {
     border: `1px solid ${theme.palette.divider}`,
     borderRadius: theme.spacing(0.5),
@@ -63,13 +66,27 @@ const useStyles = makeStyles((theme) => ({
   },
   address: {
     marginLeft: theme.spacing(0.5)
+  },
+  addressContainer: {
+    maxWidth: theme.spacing(30)
+  },
+  tooltip: {
+    maxWidth: 350
   }
 }));
 
-const SenderDropdownItem = ({ name, address, balance, companionBalance, showCompanion }: Props) => {
+const SenderDropdownItem = ({ name, address, balance, companionBalance, showCompanion, companionAddress }: Props) => {
   const classes = useStyles();
   const [hoover, setHoover] = useState(false);
   const { isBridged } = useGUIContext();
+
+  const companionTitle = ` Companion: ${companionAddress}`;
+  let title = `Native: ${address}`;
+
+  if (isBridged) {
+    title = title.concat(companionTitle);
+  }
+
   return (
     <div
       className={cx(classes.main, hoover ? classes.hoover : '')}
@@ -80,31 +97,41 @@ const SenderDropdownItem = ({ name, address, balance, companionBalance, showComp
         setHoover(false);
       }}
     >
-      <Box display="flex" className={classes.box} id="test-transaction-header" alignItems="start">
-        <AccountIdenticon address={address} />
-        <Typography classes={{ root: classes.address }}>
-          {name} [{shorterItem(address)}]
-        </Typography>
-
-        <Box marginLeft="auto" display="flex" flexDirection="column" alignItems="flex-end" id="test-transaction-header">
-          <Box
-            className={cx(classes.topBalance, isBridged && showCompanion ? classes.border : '')}
-            display="flex"
-            justifyContent="flex-end"
-          >
-            <Typography component="p" className={classes.balanceBody}>
-              {balance}
+      <Tooltip placement="top" title={title} aria-label="add" classes={{ tooltip: classes.tooltip }} arrow>
+        <Box display="flex" className={classes.box} id="test-transaction-header" alignItems="start">
+          <AccountIdenticon address={address} />
+          <div className={classes.addressContainer}>
+            <Typography noWrap classes={{ root: classes.address }}>
+              {name} [{shorterItem(address)}]
             </Typography>
-          </Box>
-          {showCompanion && isBridged && (
-            <Box className={classes.bottomBalance} display="flex" justifyContent="flex-end">
+          </div>
+
+          <Box
+            marginLeft="auto"
+            display="flex"
+            flexDirection="column"
+            alignItems="flex-end"
+            id="test-transaction-header"
+          >
+            <Box
+              className={cx(classes.topBalance, isBridged && showCompanion ? classes.border : '')}
+              display="flex"
+              justifyContent="flex-end"
+            >
               <Typography component="p" className={classes.balanceBody}>
-                {companionBalance}
+                {balance}
               </Typography>
             </Box>
-          )}
+            {showCompanion && isBridged && (
+              <Box className={classes.bottomBalance} display="flex" justifyContent="flex-end">
+                <Typography component="p" className={classes.balanceBody}>
+                  {companionBalance}
+                </Typography>
+              </Box>
+            )}
+          </Box>
         </Box>
-      </Box>
+      </Tooltip>
     </div>
   );
 };
