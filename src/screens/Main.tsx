@@ -18,6 +18,7 @@ import React from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
+import isNull from 'lodash/isNull';
 import { BoxSidebar, BoxUI, ButtonExt, StorageDrawer, MenuAction, NetworkSides, NetworkStats } from '../components';
 import CustomCall from '../components/CustomCall';
 import Sender from '../components/Sender';
@@ -55,12 +56,14 @@ function Main() {
 
   const handleOnSwitch = useCallback(
     (event: React.MouseEvent<HTMLElement>, isBridged: boolean) => {
-      setBridged(isBridged);
-      dispatchTransaction(
-        TransactionActionCreators.setTransferType(
-          isBridged ? TransactionTypes.TRANSFER : TransactionTypes.INTERNAL_TRANSFER
-        )
-      );
+      if (!isNull(isBridged)) {
+        setBridged(isBridged);
+        dispatchTransaction(
+          TransactionActionCreators.setTransferType(
+            isBridged ? TransactionTypes.TRANSFER : TransactionTypes.INTERNAL_TRANSFER
+          )
+        );
+      }
     },
     [dispatchTransaction, setBridged]
   );

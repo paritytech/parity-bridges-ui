@@ -67,6 +67,7 @@ export default function SenderAccountsListByChain({ chain, showCompanion, showEm
             address={option.account.address}
             balance={option.account.balance.formattedBalance}
             companionBalance={option.companionAccount.balance.formattedBalance}
+            companionAddress={option.companionAccount.address}
             showCompanion={showCompanion}
           />
         );
