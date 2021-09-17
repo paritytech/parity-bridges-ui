@@ -93,7 +93,7 @@ const TransactionPayload = ({
       )}
       {!payloadEstimatedFeeLoading && tab === SwitchTabEnum.DECODED && transactionDisplayPayload && (
         <Typography variant="subtitle2">
-          <ReactJson src={transactionDisplayPayload} enableClipboard name={false} />
+          <ReactJson src={transactionDisplayPayload} enableClipboard={false} name={false} />
         </Typography>
       )}
     </Card>
