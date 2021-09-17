@@ -27,6 +27,7 @@ interface Props {
   companionBalance: string;
   address: string;
   showCompanion: boolean;
+  companionAddress: string;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -66,13 +67,26 @@ const useStyles = makeStyles((theme) => ({
   address: {
     marginLeft: theme.spacing(0.5)
   },
-  addressContainer: { maxWidth: theme.spacing(30) }
+  addressContainer: {
+    maxWidth: theme.spacing(30)
+  },
+  tooltip: {
+    maxWidth: 350
+  }
 }));
 
-const SenderDropdownItem = ({ name, address, balance, companionBalance, showCompanion }: Props) => {
+const SenderDropdownItem = ({ name, address, balance, companionBalance, showCompanion, companionAddress }: Props) => {
   const classes = useStyles();
   const [hoover, setHoover] = useState(false);
   const { isBridged } = useGUIContext();
+
+  const companionTitle = ` Companion: ${companionAddress}`;
+  let title = `Native: ${address}`;
+
+  if (isBridged) {
+    title = title.concat(companionTitle);
+  }
+
   return (
     <div
       className={cx(classes.main, hoover ? classes.hoover : '')}
@@ -83,7 +97,7 @@ const SenderDropdownItem = ({ name, address, balance, companionBalance, showComp
         setHoover(false);
       }}
     >
-      <Tooltip placement="top" title={address} aria-label="add">
+      <Tooltip placement="top" title={title} aria-label="add" classes={{ tooltip: classes.tooltip }} arrow>
         <Box display="flex" className={classes.box} id="test-transaction-header" alignItems="start">
           <AccountIdenticon address={address} />
           <div className={classes.addressContainer}>
