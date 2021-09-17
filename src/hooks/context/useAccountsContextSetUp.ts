@@ -33,12 +33,23 @@ const useAccountsContextSetUp = (accountState: AccountState, dispatchAccount: Di
     }
   } = useSourceTarget();
 
+  /*   console.log('accountState.account?.address', accountState.account?.address);
+  console.log('accountState.companionAccount', accountState.companionAccount); */
+
   const accountBalance = useBalance(sourceApi, accountState.account?.address || '', true);
   const companionBalance = useBalance(targetApi, accountState.companionAccount || '', true);
 
+  /*  console.log('accountBalance', accountBalance);
+  console.log('companionBalance', companionBalance); */
+
   useEffect(() => {
+    console.log('-------');
+    console.log('accountState.account?.address', accountState.account?.address);
+    console.log('accountState.companionAccount', accountState.companionAccount);
+    console.log('accountBalance', accountBalance);
+    console.log('companionBalance', companionBalance);
     dispatchAccount(AccountActionCreators.setSenderBalances(accountBalance, companionBalance));
-  }, [accountBalance, companionBalance, dispatchAccount]);
+  }, [accountBalance, companionBalance, dispatchAccount, accountState.account?.address, accountState.companionAccount]);
 
   useEffect(() => {
     if (keyringPairsReady && keyringPairs.length) {

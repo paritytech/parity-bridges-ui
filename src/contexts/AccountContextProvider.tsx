@@ -53,7 +53,8 @@ export function AccountContextProvider(props: AccountContextProviderProps): Reac
     senderAccountBalance: null,
     senderCompanionAccountBalance: null,
     displaySenderAccounts: {} as DisplayAccounts,
-    initialLoadingAccounts: true
+    initialLoadingAccounts: true,
+    senderBalanceAccountLoading: false
   });
 
   useAccountsContextSetUp(accountState, dispatchAccount);

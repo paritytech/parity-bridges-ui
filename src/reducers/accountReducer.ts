@@ -29,6 +29,10 @@ export default function accountReducer(state: AccountState, action: AccountsActi
         targetChainDetails = sourceTarget.sourceChainDetails;
       }
 
+      if (state.account?.address === account?.address && sourceChain === sourceChainDetails.chain) {
+        return state;
+      }
+
       const {
         configs,
         apiConnection: { api: targetApi }
@@ -43,13 +47,19 @@ export default function accountReducer(state: AccountState, action: AccountsActi
 
       const companionAccount = getDeriveAccount(toDerive);
 
-      return { ...state, account, companionAccount, senderAccountBalance: null, senderCompanionAccountBalance: null };
+      return {
+        ...state,
+        account,
+        companionAccount,
+        senderBalanceAccountLoading: true
+      };
     }
     case AccountActionsTypes.SET_SENDER_BALANCES:
       return {
         ...state,
         senderAccountBalance: action.payload.senderAccountBalance,
-        senderCompanionAccountBalance: action.payload.senderCompanionAccountBalance
+        senderCompanionAccountBalance: action.payload.senderCompanionAccountBalance,
+        senderBalanceAccountLoading: false
       };
     case AccountActionsTypes.SET_ACCOUNTS:
       return { ...state, accounts: action.payload.accounts };

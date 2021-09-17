@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SenderAccount({ handleClick, anchorEl }: Props) {
   const classes = useStyles();
-  const { account, senderAccountBalance } = useAccountContext();
+  const { account, senderAccountBalance, senderBalanceAccountLoading } = useAccountContext();
   const { isBridged } = useGUIContext();
   const {
     sourceChainDetails: {
@@ -87,6 +87,7 @@ export default function SenderAccount({ handleClick, anchorEl }: Props) {
       <Box display="flex">
         <div className={classes.account}>
           <AccountDisplay
+            senderBalanceAccountLoading={senderBalanceAccountLoading}
             aria-describedby={id}
             friendlyName={account ? getName(account) : 'Select sender account'}
             address={account ? encodeAddress(account.address, ss58Format) : ''}
