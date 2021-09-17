@@ -38,7 +38,7 @@ const useAccountsContextSetUp = (accountState: AccountState, dispatchAccount: Di
 
   useEffect(() => {
     dispatchAccount(AccountActionCreators.setSenderBalances(accountBalance, companionBalance));
-  }, [accountBalance, companionBalance, dispatchAccount]);
+  }, [accountBalance, companionBalance, dispatchAccount, accountState.account?.address, accountState.companionAccount]);
 
   useEffect(() => {
     if (keyringPairsReady && keyringPairs.length) {

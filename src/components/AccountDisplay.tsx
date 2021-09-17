@@ -34,6 +34,7 @@ export interface Props {
   className?: string;
   withTooltip?: boolean;
   id?: string | undefined;
+  senderBalanceAccountLoading?: boolean;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -67,7 +68,8 @@ const AccountDisplay = ({
   onClick,
   className,
   withTooltip,
-  id
+  id,
+  senderBalanceAccountLoading = false
 }: Props) => {
   const classes = useStyles();
   const displayText = () => {
@@ -95,7 +97,7 @@ const AccountDisplay = ({
           </Tooltip>
         )}
       </div>
-      <Balance balance={balance} />
+      <Balance balance={balance} senderBalanceAccountLoading={senderBalanceAccountLoading} />
     </Box>
   );
 };

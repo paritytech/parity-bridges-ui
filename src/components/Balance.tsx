@@ -22,6 +22,7 @@ interface Props {
   balance?: string | null | undefined;
   onClick?: () => void;
   id?: string | undefined;
+  senderBalanceAccountLoading?: boolean;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -31,11 +32,11 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const Balance = ({ balance, onClick, id }: Props) => {
+const Balance = ({ balance, onClick, id, senderBalanceAccountLoading = false }: Props) => {
   const classes = useStyles();
   return (
     <div onClick={onClick} className={classes.balances} id={id}>
-      {balance || ''}
+      {senderBalanceAccountLoading ? '-' : balance || ''}
     </div>
   );
 };

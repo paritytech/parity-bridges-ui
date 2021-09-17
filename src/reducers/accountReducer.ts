@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
+
 import { AccountActionsTypes } from '../actions/accountActions';
 import type { AccountsActionType, AccountState } from '../types/accountTypes';
 import { getBridgeId } from '../util/getConfigs';
@@ -23,6 +24,10 @@ export default function accountReducer(state: AccountState, action: AccountsActi
     case AccountActionsTypes.SET_ACCOUNT: {
       const { account, sourceTarget, sourceChain } = action.payload;
       let { sourceChainDetails, targetChainDetails } = sourceTarget;
+
+      if (state.account?.address === account?.address && sourceChain === sourceChainDetails.chain) {
+        return state;
+      }
 
       if (sourceChain !== sourceChainDetails.chain) {
         sourceChainDetails = sourceTarget.targetChainDetails;
@@ -43,13 +48,19 @@ export default function accountReducer(state: AccountState, action: AccountsActi
 
       const companionAccount = getDeriveAccount(toDerive);
 
-      return { ...state, account, companionAccount, senderAccountBalance: null, senderCompanionAccountBalance: null };
+      return {
+        ...state,
+        account,
+        companionAccount,
+        senderBalanceAccountLoading: true
+      };
     }
     case AccountActionsTypes.SET_SENDER_BALANCES:
       return {
         ...state,
         senderAccountBalance: action.payload.senderAccountBalance,
-        senderCompanionAccountBalance: action.payload.senderCompanionAccountBalance
+        senderCompanionAccountBalance: action.payload.senderCompanionAccountBalance,
+        senderBalanceAccountLoading: false
       };
     case AccountActionsTypes.SET_ACCOUNTS:
       return { ...state, accounts: action.payload.accounts };
