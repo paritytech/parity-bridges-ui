@@ -16,13 +16,14 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { Configs } from '../types/sourceTargetTypes';
+import type { Text } from '@polkadot/types';
 import { getSubstrateDynamicNames } from './getSubstrateDynamicNames';
 
 export const getConfigs = async (apiPromise: ApiPromise): Promise<Configs> => {
   const properties = apiPromise.registry.getChainProperties();
   const { ss58Format } = properties!;
   const systemChain = await apiPromise.rpc.system.chain();
-  const chainName = systemChain.split(' ')[0];
+  const chainName = (systemChain as Text).split(' ')[0];
 
   let logoUrl;
   try {

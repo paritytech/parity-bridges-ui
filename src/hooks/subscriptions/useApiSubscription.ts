@@ -14,18 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { UnsubscribePromise } from '@polkadot/api/types';
+import type { UnsubscribePromise } from '@polkadot/api/types';
 import { useEffect } from 'react';
 import logger from '../../util/logger';
 
-export function useApiSubscription(fn: () => UnsubscribePromise, isReady: boolean): void {
+export function useApiSubscription(fn: () => Promise<unknown>, isReady: boolean): void {
   useEffect(() => {
     if (!isReady) {
       return;
     }
 
     try {
-      const unsub = fn();
+      const unsub = fn() as UnsubscribePromise;
       return () => {
         isReady &&
           unsub &&

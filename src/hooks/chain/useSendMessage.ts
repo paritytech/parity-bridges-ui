@@ -16,6 +16,7 @@
 
 import { useCallback } from 'react';
 import { SignerOptions } from '@polkadot/api/types';
+import type { SignedBlock } from '@polkadot/types/interfaces';
 import { web3FromSource } from '@polkadot/extension-dapp';
 import type { KeyringPair } from '@polkadot/keyring/types';
 import type { InterfaceTypes } from '@polkadot/types/types';
@@ -117,8 +118,7 @@ function useSendMessage({ input, type }: Props) {
             events.forEach(({ event: { data, method } }) => {
               if (method.toString() === 'MessageAccepted') {
                 const messageNonce = data.toArray()[1].toString();
-                sourceApi.rpc.chain
-                  .getBlock(status.asInBlock)
+                (sourceApi.rpc.chain.getBlock(status.asInBlock) as Promise<SignedBlock>)
                   .then((res) => {
                     const block = res.block.header.number.toString();
                     dispatchTransaction(
@@ -148,14 +148,16 @@ function useSendMessage({ input, type }: Props) {
           }
         });
       } catch (e) {
-        logger.error(e.message);
-        if (e.message === TX_CANCELLED) {
-          dispatchTransaction(TransactionActionCreators.enableTxButton());
-          return dispatchMessage(
-            MessageActionsCreators.triggerErrorMessage({ message: 'Transaction was cancelled from the extension.' })
-          );
+        if (e instanceof Error) {
+          logger.error(e.message);
+          if (e.message === TX_CANCELLED) {
+            dispatchTransaction(TransactionActionCreators.enableTxButton());
+            return dispatchMessage(
+              MessageActionsCreators.triggerErrorMessage({ message: 'Transaction was cancelled from the extension.' })
+            );
+          }
+          dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e.message }));
         }
-        dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e.message }));
       } finally {
         dispatchTransaction(TransactionActionCreators.setTransactionRunning(false));
       }
