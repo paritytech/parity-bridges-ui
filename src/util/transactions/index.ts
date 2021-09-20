@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { hexToU8a, isHex, u8aToHex } from '@polkadot/util';
 import type { SignedBlock, BlockHash } from '@polkadot/types/interfaces';
 import type { Vec } from '@polkadot/types';
