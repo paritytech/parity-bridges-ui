@@ -14,12 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Card, makeStyles, CircularProgress, Typography } from '@material-ui/core';
 import ReactJson from 'react-json-view';
 import TransactionHeader from './TransactionHeader';
+import { MessageActionsCreators } from '../actions/messageActions';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import { DisplayPayload, SwitchTabEnum, TransactionStatusEnum } from '../types/transactionTypes';
+import { useUpdateMessageContext } from '../contexts/MessageContext';
 
 export interface TransactionDisplayProps {
   size?: 'sm';
@@ -74,6 +76,17 @@ const TransactionPayload = ({
 }: Props) => {
   const classes = useStyles();
   const { payloadEstimatedFeeLoading } = useTransactionContext();
+  const { dispatchMessage } = useUpdateMessageContext();
+
+  const onCopy = useCallback(() => {
+    navigator.clipboard.writeText(JSON.stringify(transactionDisplayPayload));
+    dispatchMessage(
+      MessageActionsCreators.triggerSuccessMessage({
+        message: 'Payload copied'
+      })
+    );
+  }, [dispatchMessage, transactionDisplayPayload]);
+
   if (tab === SwitchTabEnum.RECEIPT) {
     return null;
   }
@@ -92,9 +105,16 @@ const TransactionPayload = ({
         <Typography variant="subtitle2">{payloadHex}</Typography>
       )}
       {!payloadEstimatedFeeLoading && tab === SwitchTabEnum.DECODED && transactionDisplayPayload && (
-        <Typography variant="subtitle2">
-          <ReactJson src={transactionDisplayPayload} enableClipboard={false} name={false} />
-        </Typography>
+        <div onClick={onCopy}>
+          <Typography variant="subtitle2">
+            <ReactJson
+              src={transactionDisplayPayload}
+              enableClipboard={false}
+              name={false}
+              style={{ cursor: 'copy' }}
+            />
+          </Typography>
+        </div>
       )}
     </Card>
   );
