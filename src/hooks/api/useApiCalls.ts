@@ -17,6 +17,7 @@
 import { useCallback } from 'react';
 import { Text, Bytes } from '@polkadot/types';
 import { Codec } from '@polkadot/types/types';
+import type { SignedBlock } from '@polkadot/types/interfaces';
 import { ApiCallsContextType } from '../../types/apiCallsTypes';
 import useChainGetters from '../chain/useChainGetters';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
@@ -126,7 +127,7 @@ const useApiCalls = (): ApiCallsContextType => {
 
           if (status.isInBlock) {
             try {
-              const res = await sourceApi.rpc.chain.getBlock(status.asInBlock);
+              const res = (await sourceApi.rpc.chain.getBlock(status.asInBlock)) as SignedBlock;
               const block = res.block.header.number.toString();
               dispatchTransaction(
                 TransactionActionCreators.updateTransactionStatus(
@@ -138,8 +139,10 @@ const useApiCalls = (): ApiCallsContextType => {
                 )
               );
             } catch (e) {
-              logger.error(e.message);
-              throw new Error('Issue reading block information.');
+              if (e instanceof Error) {
+                logger.error(e.message);
+                throw new Error('Issue reading block information.');
+              }
             }
           }
 
@@ -157,8 +160,10 @@ const useApiCalls = (): ApiCallsContextType => {
           }
         });
       } catch (e) {
-        dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e.message }));
-        logger.error(e.message);
+        if (e instanceof Error) {
+          dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e.message }));
+          logger.error(e.message);
+        }
       } finally {
         dispatchTransaction(TransactionActionCreators.setTransactionRunning(false));
       }

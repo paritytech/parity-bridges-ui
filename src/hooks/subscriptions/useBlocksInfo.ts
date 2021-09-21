@@ -15,6 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { SubscriptionInput } from '../../types/subscriptionsTypes';
+import type { BlockNumber } from '@polkadot/types/interfaces';
 import { useMountedState } from '../react/useMountedState';
 import { useApiSubscription } from './useApiSubscription';
 import { useCallback } from 'react';
@@ -27,7 +28,7 @@ const useBlocksInfo = ({ isApiReady, api, chain }: SubscriptionInput) => {
   const getBestNumber = useCallback(
     () =>
       api.derive.chain.bestNumber((res) => {
-        setBestBlock(res.toString());
+        setBestBlock((res as BlockNumber).toString());
       }),
     [api.derive.chain, setBestBlock]
   );
@@ -35,7 +36,7 @@ const useBlocksInfo = ({ isApiReady, api, chain }: SubscriptionInput) => {
   const getBestBlockFinalized = useCallback(
     () =>
       api.derive.chain.bestNumberFinalized((res) => {
-        setBestBlockFinalized(res.toString());
+        setBestBlockFinalized((res as BlockNumber).toString());
       }),
     [api.derive.chain, setBestBlockFinalized]
   );
