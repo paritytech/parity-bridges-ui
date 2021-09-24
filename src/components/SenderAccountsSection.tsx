@@ -19,11 +19,12 @@ import React, { useMemo } from 'react';
 import { Divider, makeStyles } from '@material-ui/core';
 import SenderAccountsListByChain from './SenderAccountsListByChain';
 import { useAccountContext } from '../contexts/AccountContextProvider';
+import { getChainMatches } from '../util/sender/filters';
 
 interface Props {
   showCompanion: boolean;
   showEmpty: boolean;
-  filter: string | null;
+  filterInput: string | null;
   handleClose: () => void;
 }
 
@@ -34,41 +35,14 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function SenderAccountsSection({ showEmpty, showCompanion, filter, handleClose }: Props) {
+export default function SenderAccountsSection({ showEmpty, showCompanion, filterInput, handleClose }: Props) {
   const classes = useStyles();
   const { displaySenderAccounts } = useAccountContext();
 
-  const [chains, filters, chainMatch] = useMemo((): [string[], string[], string | undefined] => {
-    const chains = Object.keys(displaySenderAccounts);
-    const splitFilter = filter ? filter.split(' ').filter((n) => n !== '') : [];
-
-    let chainMatch: string | undefined;
-    let fullChainNameMatched = '';
-    if (splitFilter.length) {
-      splitFilter.forEach((f) =>
-        chains.forEach((c) => {
-          const upperC = c.toUpperCase();
-          if (upperC.includes(f.toUpperCase())) {
-            chainMatch = f.toUpperCase();
-            if (upperC === f.toUpperCase()) {
-              fullChainNameMatched = upperC;
-            }
-          }
-        })
-      );
-    }
-
-    if (chainMatch) {
-      if (fullChainNameMatched) {
-        const filters = splitFilter.filter((sf) => sf.toUpperCase() !== fullChainNameMatched);
-        return [chains, filters, fullChainNameMatched];
-      }
-      const filters = splitFilter.filter((sf) => sf.toUpperCase() !== chainMatch);
-      return [chains, filters, chainMatch];
-    }
-
-    return [chains, splitFilter, undefined];
-  }, [displaySenderAccounts, filter]);
+  const [chains, filters, chainMatch] = useMemo(() => getChainMatches(displaySenderAccounts, filterInput), [
+    displaySenderAccounts,
+    filterInput
+  ]);
 
   if (chains.length) {
     return (

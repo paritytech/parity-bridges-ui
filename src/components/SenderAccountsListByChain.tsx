@@ -17,6 +17,7 @@
 import React, { useMemo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useAccountContext } from '../contexts/AccountContextProvider';
+import { getFilteredAccounts } from '../util/sender/filters';
 import ChainHeader from './ChainHeader';
 import SenderDropdownItem from './SenderDropdownItem';
 import useAccounts from '../hooks/accounts/useAccounts';
@@ -48,64 +49,12 @@ export default function SenderAccountsListByChain({
   const { setCurrentAccount } = useAccounts();
   const classes = useStyles();
 
-  const accounts = useMemo(() => {
-    const items = displaySenderAccounts[chain];
-    const upperChain = chain.toLocaleUpperCase();
-
-    const getItemsFiltered = () => {
-      if (filters.length) {
-        const match = (input: string, caseSensitive = false) => {
-          let field = input;
-          let show = false;
-          if (!caseSensitive) {
-            field = input.toUpperCase();
-            filters.forEach((f) => {
-              if (field.includes(f.toUpperCase())) {
-                show = true;
-              }
-            });
-            return show;
-          }
-
-          filters.forEach((f) => {
-            console.log('----');
-            console.log('f', f);
-            console.log('field', field);
-            console.log('field.includes(f)', field.includes(f));
-
-            if (field.includes(f)) {
-              show = true;
-            }
-          });
-          return show;
-        };
-
-        return items.filter(({ account, companionAccount }) => {
-          const matchAddress = match(account.address, true);
-          const matchCompanionAddress = match(companionAccount.address, true);
-          const matchName = match(account.name);
-          return matchAddress || matchCompanionAddress || matchName;
-        });
-      }
-      return [];
-    };
-
-    if (chainMatch && !upperChain.includes(chainMatch)) {
-      return [];
-    }
-
-    const filteredItems = getItemsFiltered();
-    console.log('filteredItems', filteredItems);
-    if (filteredItems.length) {
-      return filteredItems;
-    }
-
-    if (!chainMatch) {
-      return items;
-    }
-
-    return [];
-  }, [chain, displaySenderAccounts, filters, chainMatch]);
+  const accounts = useMemo(() => getFilteredAccounts({ displaySenderAccounts, chain, filters, chainMatch }), [
+    chain,
+    displaySenderAccounts,
+    filters,
+    chainMatch
+  ]);
 
   return (
     <>
