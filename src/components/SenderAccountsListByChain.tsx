@@ -22,11 +22,12 @@ import SenderDropdownItem from './SenderDropdownItem';
 import useAccounts from '../hooks/accounts/useAccounts';
 
 interface Props {
+  chainMatch: string | undefined;
   chain: string;
   showCompanion: boolean;
   showEmpty: boolean;
   handleClose: () => void;
-  filter: string | null;
+  filters: string[];
 }
 
 const useStyles = makeStyles(() => ({
@@ -35,27 +36,76 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-export default function SenderAccountsListByChain({ chain, showCompanion, showEmpty, handleClose, filter }: Props) {
+export default function SenderAccountsListByChain({
+  chainMatch,
+  chain,
+  showCompanion,
+  showEmpty,
+  handleClose,
+  filters
+}: Props) {
   const { displaySenderAccounts } = useAccountContext();
   const { setCurrentAccount } = useAccounts();
   const classes = useStyles();
 
   const accounts = useMemo(() => {
     const items = displaySenderAccounts[chain];
+    const upperChain = chain.toLocaleUpperCase();
 
-    if (filter) {
-      const match = (value: string) => {
-        const valueUpper = value.toUpperCase();
-        const filterUpper = filter.toUpperCase();
-        return valueUpper.includes(filterUpper);
-      };
-      return items.filter(
-        ({ account, companionAccount }) =>
-          match(account.name) || match(account.address) || match(companionAccount.address)
-      );
+    const getItemsFiltered = () => {
+      if (filters.length) {
+        const match = (input: string, caseSensitive = false) => {
+          let field = input;
+          let show = false;
+          if (!caseSensitive) {
+            field = input.toUpperCase();
+            filters.forEach((f) => {
+              if (field.includes(f.toUpperCase())) {
+                show = true;
+              }
+            });
+            return show;
+          }
+
+          filters.forEach((f) => {
+            console.log('----');
+            console.log('f', f);
+            console.log('field', field);
+            console.log('field.includes(f)', field.includes(f));
+
+            if (field.includes(f)) {
+              show = true;
+            }
+          });
+          return show;
+        };
+
+        return items.filter(({ account, companionAccount }) => {
+          const matchAddress = match(account.address, true);
+          const matchCompanionAddress = match(companionAccount.address, true);
+          const matchName = match(account.name);
+          return matchAddress || matchCompanionAddress || matchName;
+        });
+      }
+      return [];
+    };
+
+    if (chainMatch && !upperChain.includes(chainMatch)) {
+      return [];
     }
-    return items;
-  }, [chain, displaySenderAccounts, filter]);
+
+    const filteredItems = getItemsFiltered();
+    console.log('filteredItems', filteredItems);
+    if (filteredItems.length) {
+      return filteredItems;
+    }
+
+    if (!chainMatch) {
+      return items;
+    }
+
+    return [];
+  }, [chain, displaySenderAccounts, filters, chainMatch]);
 
   return (
     <>

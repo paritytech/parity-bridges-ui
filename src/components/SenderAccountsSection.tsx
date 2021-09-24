@@ -19,6 +19,7 @@ import React, { useMemo } from 'react';
 import { Divider, makeStyles } from '@material-ui/core';
 import SenderAccountsListByChain from './SenderAccountsListByChain';
 import { useAccountContext } from '../contexts/AccountContextProvider';
+
 interface Props {
   showCompanion: boolean;
   showEmpty: boolean;
@@ -36,25 +37,58 @@ const useStyles = makeStyles((theme) => ({
 export default function SenderAccountsSection({ showEmpty, showCompanion, filter, handleClose }: Props) {
   const classes = useStyles();
   const { displaySenderAccounts } = useAccountContext();
-  const chains = useMemo(() => Object.keys(displaySenderAccounts), [displaySenderAccounts]);
+
+  const [chains, filters, chainMatch] = useMemo((): [string[], string[], string | undefined] => {
+    const chains = Object.keys(displaySenderAccounts);
+    const splitFilter = filter ? filter.split(' ').filter((n) => n !== '') : [];
+
+    let chainMatch: string | undefined;
+    let fullChainNameMatched = '';
+    if (splitFilter.length) {
+      splitFilter.forEach((f) =>
+        chains.forEach((c) => {
+          const upperC = c.toUpperCase();
+          if (upperC.includes(f.toUpperCase())) {
+            chainMatch = f.toUpperCase();
+            if (upperC === f.toUpperCase()) {
+              fullChainNameMatched = upperC;
+            }
+          }
+        })
+      );
+    }
+
+    if (chainMatch) {
+      if (fullChainNameMatched) {
+        const filters = splitFilter.filter((sf) => sf.toUpperCase() !== fullChainNameMatched);
+        return [chains, filters, fullChainNameMatched];
+      }
+      const filters = splitFilter.filter((sf) => sf.toUpperCase() !== chainMatch);
+      return [chains, filters, chainMatch];
+    }
+
+    return [chains, splitFilter, undefined];
+  }, [displaySenderAccounts, filter]);
 
   if (chains.length) {
     return (
       <div className={classes.paper}>
         <SenderAccountsListByChain
+          chainMatch={chainMatch}
           chain={chains[0]}
           showCompanion={showCompanion}
           showEmpty={showEmpty}
           handleClose={handleClose}
-          filter={filter}
+          filters={filters}
         />
         <Divider />
         <SenderAccountsListByChain
+          chainMatch={chainMatch}
           chain={chains[1]}
           showCompanion={showCompanion}
           showEmpty={showEmpty}
           handleClose={handleClose}
-          filter={filter}
+          filters={filters}
         />
       </div>
     );
