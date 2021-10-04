@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { SubscriptionInput } from '../../types/subscriptionsTypes';
 import { Hash } from '@polkadot/types/interfaces';
 import { Codec } from '@polkadot/types/types';
@@ -22,6 +22,10 @@ import BN from 'bn.js';
 import { useMountedState } from '../react/useMountedState';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
 import { useApiSubscription } from './useApiSubscription';
+import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
+import noop from 'lodash/noop';
+import usePrevious from '../react/usePrevious';
+
 interface HeaderId {
   number: BN;
   hash: Hash;
@@ -30,10 +34,18 @@ interface HeaderId {
 type CodecHeaderId = Codec & HeaderId;
 
 const useBridgedBlocks = ({ isApiReady, api, chain }: SubscriptionInput) => {
+  const { sourceChainDetails } = useSourceTarget();
+  const sourceChain = sourceChainDetails.chain;
+  const prevSourceChain = usePrevious(sourceChain);
   const [bestBridgedFinalizedBlock, setBestBridgedFinalizedBlock] = useMountedState('');
   const [bestFinalizedBlock, setBestFinalizedBlock] = useMountedState('');
   const { bridgedGrandpaChain } = getSubstrateDynamicNames(chain);
   const isReady: boolean = !!(isApiReady && chain);
+
+  useEffect(() => {
+    setBestBridgedFinalizedBlock('');
+    setBestFinalizedBlock('');
+  }, [setBestBridgedFinalizedBlock, setBestFinalizedBlock, sourceChain]);
 
   const getBestFinalizedBlock = useCallback(
     () =>
@@ -44,14 +56,15 @@ const useBridgedBlocks = ({ isApiReady, api, chain }: SubscriptionInput) => {
     [api.query, bridgedGrandpaChain, setBestFinalizedBlock]
   );
 
-  const getBestBridgedFinalizedBlock = useCallback(
-    () =>
-      api.query[bridgedGrandpaChain].importedHeaders(bestFinalizedBlock, (res: any) => {
+  const getBestBridgedFinalizedBlock = useCallback(() => {
+    if (prevSourceChain === sourceChain && bestFinalizedBlock) {
+      return api.query[bridgedGrandpaChain].importedHeaders(bestFinalizedBlock, (res: any) => {
         const importedHeader = res?.toJSON()?.number;
         importedHeader && setBestBridgedFinalizedBlock(importedHeader);
-      }),
-    [api.query, bestFinalizedBlock, bridgedGrandpaChain, setBestBridgedFinalizedBlock]
-  );
+      });
+    }
+    return Promise.resolve(noop);
+  }, [api.query, bestFinalizedBlock, bridgedGrandpaChain, setBestBridgedFinalizedBlock, sourceChain, prevSourceChain]);
 
   useApiSubscription(getBestFinalizedBlock, isReady);
   useApiSubscription(getBestBridgedFinalizedBlock, isReady && Boolean(bestFinalizedBlock));

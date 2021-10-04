@@ -17,6 +17,9 @@
 import React from 'react';
 import { TextField } from '@material-ui/core';
 import useDebounceState from '../hooks/react/useDebounceState';
+import { useCallback } from 'react';
+import { useUpdateTransactionContext } from '../contexts/TransactionContext';
+import { TransactionActionCreators } from '../actions/transactionActions';
 
 type ValueType = string | null;
 
@@ -49,7 +52,17 @@ export function DebouncedTextField({
   dispatchCallback,
   initialValue = ''
 }: Props) {
+  const { dispatchTransaction } = useUpdateTransactionContext();
   const [value, setValue] = useDebounceState({ initialValue, dispatchCallback });
+
+  // set the transaction button to false on every change.
+  const onChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      dispatchTransaction(TransactionActionCreators.disableTXButton());
+      setValue(event);
+    },
+    [dispatchTransaction, setValue]
+  );
 
   return (
     <TextField
@@ -65,7 +78,7 @@ export function DebouncedTextField({
       helperText={helperText}
       InputProps={InputProps}
       rows={rows}
-      onChange={setValue}
+      onChange={onChange}
     />
   );
 }

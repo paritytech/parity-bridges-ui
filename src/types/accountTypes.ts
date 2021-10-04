@@ -54,6 +54,7 @@ export interface AccountState {
   senderCompanionAccountBalance: BalanceState | null;
   displaySenderAccounts: DisplayAccounts;
   initialLoadingAccounts: boolean;
+  senderBalanceAccountLoading: boolean;
 }
 
 export type AccountsActionType = { type: AccountActionsTypes; payload: Payload };

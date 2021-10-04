@@ -14,31 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { makeStyles } from '@material-ui/core/styles';
+import * as filters from './filters';
 
-import React from 'react';
-
-interface Props {
-  balance?: string | null | undefined;
-  onClick?: () => void;
-  id?: string | undefined;
-  senderBalanceAccountLoading?: boolean;
-}
-
-const useStyles = makeStyles((theme) => ({
-  balances: {
-    whiteSpace: 'nowrap',
-    ...theme.typography.subtitle2
-  }
-}));
-
-const Balance = ({ balance, onClick, id, senderBalanceAccountLoading = false }: Props) => {
-  const classes = useStyles();
-  return (
-    <div onClick={onClick} className={classes.balances} id={id}>
-      {senderBalanceAccountLoading ? '-' : balance || ''}
-    </div>
-  );
-};
-
-export default Balance;
+export { filters };

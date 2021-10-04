@@ -15,6 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React from 'react';
+import cx from 'classnames';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 import AccountDisplay from './AccountDisplay';
@@ -26,6 +27,7 @@ import { Box } from '@material-ui/core';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 
 import { encodeAddress } from '@polkadot/util-crypto';
+import { useGUIContext } from '../contexts/GUIContextProvider';
 
 interface Props {
   handleClick: (event: React.MouseEvent<HTMLElement>) => void;
@@ -40,12 +42,11 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(0.5),
     paddingRight: theme.spacing(0),
     border: `1px solid ${theme.palette.divider}`,
-    borderRadius: theme.spacing(1.5),
+    borderRadius: theme.spacing(1.5)
+  },
+  withoutBottomBorderRadius: {
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0
-  },
-  sender: {
-    minHeight: theme.spacing(10)
   },
   paper: {
     minWidth: theme.spacing(60),
@@ -64,7 +65,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SenderAccount({ handleClick, anchorEl }: Props) {
   const classes = useStyles();
-  const { account, senderAccountBalance } = useAccountContext();
+  const { account, senderAccountBalance, senderBalanceAccountLoading } = useAccountContext();
+  const { isBridged } = useGUIContext();
   const {
     sourceChainDetails: {
       configs: { ss58Format }
@@ -75,11 +77,17 @@ export default function SenderAccount({ handleClick, anchorEl }: Props) {
   const id = open ? 'simple-popover' : undefined;
 
   return (
-    <Box onClick={handleClick} p={1} className={classes.accountMain} id="test-sender-component">
+    <Box
+      onClick={handleClick}
+      p={1}
+      className={cx(classes.accountMain, isBridged ? classes.withoutBottomBorderRadius : '')}
+      id="test-sender-component"
+    >
       <SelectLabel>Sender</SelectLabel>
       <Box display="flex">
         <div className={classes.account}>
           <AccountDisplay
+            senderBalanceAccountLoading={senderBalanceAccountLoading}
             aria-describedby={id}
             friendlyName={account ? getName(account) : 'Select sender account'}
             address={account ? encodeAddress(account.address, ss58Format) : ''}

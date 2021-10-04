@@ -18,8 +18,7 @@ import React from 'react';
 
 import { Box } from '@material-ui/core';
 import { IconTxStatus } from './Icons';
-import { TransactionStatusEnum } from '../types/transactionTypes';
-import { useGUIContext } from '../contexts/GUIContextProvider';
+import { TransactionStatusEnum, TransactionTypes } from '../types/transactionTypes';
 
 interface Props {
   status: TransactionStatusEnum;
@@ -36,10 +35,8 @@ const getType = (type: string | undefined) => {
 };
 
 const TransactionHeader = ({ type, status, sourceChain, targetChain }: Props) => {
-  const { isBridged } = useGUIContext();
-
   let header = ` ${sourceChain} -> ${targetChain}`;
-  if (!isBridged) {
+  if (type === TransactionTypes.INTERNAL_TRANSFER) {
     header = sourceChain;
   }
 

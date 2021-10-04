@@ -32,3 +32,4 @@ export const TIMER_DURATION = 30000;
 export const MESSAGE_DISPATCH_EVENT = 'MessageDispatched';
 export const MESSAGE_NONCE_TYPE = 'MessageNonce';
 export const OK = 'OK';
+export const TX_CANCELLED = 'Cancelled';

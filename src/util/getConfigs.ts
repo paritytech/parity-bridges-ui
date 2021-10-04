@@ -16,14 +16,21 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { Configs } from '../types/sourceTargetTypes';
+import type { Text } from '@polkadot/types';
 import { getSubstrateDynamicNames } from './getSubstrateDynamicNames';
 
 export const getConfigs = async (apiPromise: ApiPromise): Promise<Configs> => {
   const properties = apiPromise.registry.getChainProperties();
   const { ss58Format } = properties!;
   const systemChain = await apiPromise.rpc.system.chain();
-  const chainName = systemChain.split(' ')[0];
-  const logoUrl = require(`../assets/chainsLogos/${chainName.toLowerCase()}.png`).default;
+  const chainName = (systemChain as Text).split(' ')[0];
+
+  let logoUrl;
+  try {
+    logoUrl = require(`../assets/chainsLogos/${chainName.toLowerCase()}.png`).default;
+  } catch (e) {
+    logoUrl = require('../assets/chainsLogos/local.png').default;
+  }
 
   return { chainName, ss58Format: parseInt(ss58Format.toString()), logoUrl };
 };

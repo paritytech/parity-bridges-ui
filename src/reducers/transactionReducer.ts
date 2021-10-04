@@ -109,22 +109,26 @@ export default function transactionReducer(state: TransactionState, action: Tran
 
     case TransactionActionTypes.SET_TRANSFER_AMOUNT: {
       const { transferAmount, chainDecimals } = action.payload;
+
+      const [actualValue, message] = evalUnits(transferAmount, chainDecimals);
       if (!transferAmount) {
         return {
           ...state,
           transferAmount,
           transferAmountError: null,
-          transactionReadyToExecute: false
+          transactionReadyToExecute: false,
+          estimatedFee: null,
+          payload: null
         };
       }
-      const [actualValue, message] = evalUnits(transferAmount, chainDecimals);
+
       const shouldEvaluatePayloadEstimatedFee = shouldCalculatePayloadFee(state, { transferAmount: actualValue });
 
       return {
         ...state,
         transferAmount: actualValue || null,
         transferAmountError: message,
-        transactionReadyToExecute,
+        transactionReadyToExecute: transactionReadyToExecute && !message,
         estimatedFee: null,
         shouldEvaluatePayloadEstimatedFee
       };
@@ -242,7 +246,11 @@ export default function transactionReducer(state: TransactionState, action: Tran
     case TransactionActionTypes.SET_RECEIVER:
       return setReceiver(state, action.payload.receiverPayload);
     case TransactionActionTypes.SET_TRANSACTION_RUNNING:
-      return { ...state, transactionRunning: action.payload.transactionRunning, transactionReadyToExecute: false };
+      return {
+        ...state,
+        transactionRunning: action.payload.transactionRunning,
+        transactionReadyToExecute: action.payload.transactionRunning ? false : state.transactionReadyToExecute
+      };
     case TransactionActionTypes.SET_ACTION: {
       const { action: transactionType } = action.payload;
 
@@ -289,7 +297,18 @@ export default function transactionReducer(state: TransactionState, action: Tran
         action: transferType
       };
     }
-
+    case TransactionActionTypes.ENABLE_TX_BUTTON: {
+      return {
+        ...state,
+        transactionReadyToExecute: true
+      };
+    }
+    case TransactionActionTypes.DISABLE_TX_BUTTON: {
+      return {
+        ...state,
+        transactionReadyToExecute: false
+      };
+    }
     default:
       throw new Error(`Unknown type: ${action.type}`);
   }

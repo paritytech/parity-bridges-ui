@@ -59,13 +59,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SenderCompanionAccount() {
   const classes = useStyles();
-  const { account, companionAccount, senderCompanionAccountBalance } = useAccountContext();
+  const { account, companionAccount, senderCompanionAccountBalance, senderBalanceAccountLoading } = useAccountContext();
 
   return (
     <BridgedLocalWrapper>
       <div className={classes.accountCompanion}>
         {companionAccount && !isNull(senderCompanionAccountBalance) ? (
           <AccountDisplay
+            senderBalanceAccountLoading={senderBalanceAccountLoading}
             friendlyName={getName(account)}
             address={companionAccount}
             addressKind={AddressKind.COMPANION}

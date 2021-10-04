@@ -18,8 +18,16 @@ import React, { useState } from 'react';
 import SenderDropdown from './SenderDropdown';
 import SenderAccount from './SenderAccount';
 import SenderCompanionAccount from './SenderCompanionAccount';
+import { makeStyles } from '@material-ui/core';
+
+const useStyles = makeStyles((theme) => ({
+  sender: {
+    minHeight: theme.spacing(13)
+  }
+}));
 
 export default function Sender() {
+  const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -32,9 +40,11 @@ export default function Sender() {
 
   return (
     <>
-      <SenderAccount handleClick={handleClick} anchorEl={anchorEl} />
-      <SenderDropdown anchorEl={anchorEl} removeAnchor={removeAnchor} />
-      <SenderCompanionAccount />
+      <div className={classes.sender}>
+        <SenderAccount handleClick={handleClick} anchorEl={anchorEl} />
+        <SenderDropdown anchorEl={anchorEl} removeAnchor={removeAnchor} />
+        <SenderCompanionAccount />
+      </div>
     </>
   );
 }

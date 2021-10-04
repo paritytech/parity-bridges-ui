@@ -17,10 +17,24 @@
 import { ApiPromise } from '@polkadot/api';
 import { renderHook, act } from '@testing-library/react-hooks';
 import { useApiSubscription } from '../useApiSubscription';
+import { useSourceTarget } from '../../../contexts/SourceTargetContextProvider';
+import { ChainDetails } from '../../../types/sourceTargetTypes';
 import useBridgedBlocks from '../useBridgedBlocks';
 import logger from '../../../util/logger';
 
 jest.spyOn(logger, 'error');
+
+const chain1 = 'chain1';
+const chain2 = 'chain2';
+
+const state = {
+  [ChainDetails.SOURCE]: {
+    chain: chain1
+  },
+  [ChainDetails.TARGET]: {
+    chain: chain2
+  }
+};
 
 interface Props {
   chain: string;
@@ -28,13 +42,13 @@ interface Props {
   isApiReady: boolean;
 }
 
-const chain1 = 'chain1';
-const chain2 = 'chain2';
-
 jest.mock('../../../util/getSubstrateDynamicNames', () => ({
   getSubstrateDynamicNames: () => ({ bridgedGrandpaChain: chain2 })
 }));
 jest.mock('../useApiSubscription');
+jest.mock('../../../contexts/SourceTargetContextProvider', () => ({
+  useSourceTarget: jest.fn()
+}));
 
 const useMockApiSubscription = useApiSubscription as jest.MockedFunction<any>;
 
@@ -61,6 +75,7 @@ describe('useBridgedBlocks', () => {
       isApiReady: true,
       chain: chain1
     } as Props;
+    (useSourceTarget as jest.Mock).mockReturnValue(state);
     jest.clearAllMocks();
   });
 

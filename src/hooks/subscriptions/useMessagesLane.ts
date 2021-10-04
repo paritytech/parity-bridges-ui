@@ -70,7 +70,6 @@ const useMessagesLane = ({ isApiReady, api, chain }: SubscriptionInput): Output 
   );
 
   useApiSubscription(getOutboundLaneData, isReady);
-
   useApiSubscription(getInboundLaneData, isReady);
 
   return { bridgeReceivedMessages, outboundLanes };

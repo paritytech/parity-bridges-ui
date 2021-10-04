@@ -72,7 +72,8 @@ export const useEstimatedFeePayload = (
           createType,
           isBridged,
           senderAccountBalance,
-          senderCompanionAccountBalance
+          senderCompanionAccountBalance,
+          targetApi.registry.chainDecimals[0]
         )
       ),
     [
@@ -81,7 +82,8 @@ export const useEstimatedFeePayload = (
       isBridged,
       senderAccountBalance,
       senderCompanionAccountBalance,
-      sourceTargetDetails
+      sourceTargetDetails,
+      targetApi.registry.chainDecimals
     ]
   );
 

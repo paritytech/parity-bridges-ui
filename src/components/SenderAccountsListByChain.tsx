@@ -17,16 +17,18 @@
 import React, { useMemo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useAccountContext } from '../contexts/AccountContextProvider';
+import { getFilteredAccounts } from '../util/sender/filters';
 import ChainHeader from './ChainHeader';
 import SenderDropdownItem from './SenderDropdownItem';
 import useAccounts from '../hooks/accounts/useAccounts';
 
 interface Props {
+  chainMatch: string | undefined;
   chain: string;
   showCompanion: boolean;
   showEmpty: boolean;
   handleClose: () => void;
-  filter: string | null;
+  filters: string[];
 }
 
 const useStyles = makeStyles(() => ({
@@ -35,31 +37,28 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-export default function SenderAccountsListByChain({ chain, showCompanion, showEmpty, handleClose, filter }: Props) {
+export default function SenderAccountsListByChain({
+  chainMatch,
+  chain,
+  showCompanion,
+  showEmpty,
+  handleClose,
+  filters
+}: Props) {
   const { displaySenderAccounts } = useAccountContext();
   const { setCurrentAccount } = useAccounts();
   const classes = useStyles();
 
-  const accounts = useMemo(() => {
-    const items = displaySenderAccounts[chain];
-
-    if (filter) {
-      const match = (value: string) => {
-        const valueUpper = value.toUpperCase();
-        const filterUpper = filter.toUpperCase();
-        return valueUpper.includes(filterUpper);
-      };
-      return items.filter(
-        ({ account, companionAccount }) =>
-          match(account.name) || match(account.address) || match(companionAccount.address)
-      );
-    }
-    return items;
-  }, [chain, displaySenderAccounts, filter]);
+  const accounts = useMemo(() => getFilteredAccounts({ displaySenderAccounts, chain, filters, chainMatch }), [
+    chain,
+    displaySenderAccounts,
+    filters,
+    chainMatch
+  ]);
 
   return (
     <>
-      <ChainHeader chain={chain} />
+      {Boolean(accounts.length) && <ChainHeader chain={chain} />}
       {accounts.map((option) => {
         const component = (
           <SenderDropdownItem
@@ -67,6 +66,7 @@ export default function SenderAccountsListByChain({ chain, showCompanion, showEm
             address={option.account.address}
             balance={option.account.balance.formattedBalance}
             companionBalance={option.companionAccount.balance.formattedBalance}
+            companionAddress={option.companionAccount.address}
             showCompanion={showCompanion}
           />
         );

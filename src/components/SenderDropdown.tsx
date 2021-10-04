@@ -30,11 +30,10 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     minWidth: theme.spacing(56),
     maxHeight: theme.spacing(50),
+    minHeight: theme.spacing(50),
     border: `1px solid ${theme.palette.primary.light}`,
     borderRadius: theme.spacing(1.5),
-    '&::-webkit-scrollbar': {
-      display: 'none'
-    }
+    overflow: 'hidden'
   }
 }));
 
@@ -42,14 +41,14 @@ export default function SenderDropdown({ anchorEl, removeAnchor }: Props) {
   const classes = useStyles();
   const [showEmpty, setShowEmpty] = useState(true);
   const [showCompanion, setShowCompanion] = useState(true);
-  const [filter, setFilter] = useState<string | null>(null);
+  const [filterInput, setFilterInput] = useState<string | null>(null);
   const { initialLoadingAccounts } = useAccountContext();
   const open = Boolean(anchorEl);
   const id = open ? 'test-sender-component' : undefined;
 
   const handleClose = useCallback(() => {
     removeAnchor();
-    setFilter(null);
+    setFilterInput(null);
   }, [removeAnchor]);
 
   return (
@@ -75,7 +74,7 @@ export default function SenderDropdown({ anchorEl, removeAnchor }: Props) {
       ) : (
         <>
           <SenderFilters
-            setFilter={setFilter}
+            setFilterInput={setFilterInput}
             setShowEmpty={setShowEmpty}
             setShowCompanion={setShowCompanion}
             showEmpty={showEmpty}
@@ -84,7 +83,7 @@ export default function SenderDropdown({ anchorEl, removeAnchor }: Props) {
           <SenderAccountsSection
             showEmpty={showEmpty}
             showCompanion={showCompanion}
-            filter={filter}
+            filterInput={filterInput}
             handleClose={handleClose}
           />
         </>

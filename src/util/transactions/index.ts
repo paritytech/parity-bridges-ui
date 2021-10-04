@@ -15,6 +15,9 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { hexToU8a, isHex, u8aToHex } from '@polkadot/util';
+import type { SignedBlock, BlockHash } from '@polkadot/types/interfaces';
+import type { Vec } from '@polkadot/types';
+
 import BN from 'bn.js';
 import { ApiPromise } from '@polkadot/api';
 import {
@@ -204,9 +207,9 @@ const checkMessageDispatchedEvent = async (
   if (!blockNumber || !messageNonce) {
     return TransactionStatusEnum.IN_PROGRESS;
   }
-  const blockHash = await targetApi.rpc.chain.getBlockHash(blockNumber);
-  const signedBlock = await targetApi.rpc.chain.getBlock(blockHash);
-  const allRecords = await targetApi.query.system.events.at(signedBlock.block.header.hash);
+  const blockHash = (await targetApi.rpc.chain.getBlockHash(blockNumber)) as BlockHash;
+  const signedBlock = (await targetApi.rpc.chain.getBlock(blockHash)) as SignedBlock;
+  const allRecords = (await targetApi.query.system.events.at(signedBlock.block.header.hash)) as Vec<any>;
 
   let status = TransactionStatusEnum.FAILED;
   signedBlock.block.extrinsics.forEach((ext, index) => {
@@ -230,7 +233,7 @@ const getLatestReceivedNonce = async (
 ) => {
   const { targetApi, stateCall, createType } = apiCalls;
   const { latestReceivedNonceMethodName } = getSubstrateDynamicNames(sourceChain);
-  const blockHash = await targetApi.rpc.chain.getBlockHash(blockNumber);
+  const blockHash = (await targetApi.rpc.chain.getBlockHash(blockNumber)) as BlockHash;
   const latestReceivedNonceCall = await stateCall(
     targetChain,
     latestReceivedNonceMethodName,
@@ -238,7 +241,6 @@ const getLatestReceivedNonce = async (
     blockHash.toJSON()
   );
 
-  // @ts-ignore
   const latestReceivedNonceCallType = createType(targetChain, MESSAGE_NONCE_TYPE, latestReceivedNonceCall);
   const latestReceivedNonce = latestReceivedNonceCallType.toString();
   return parseInt(latestReceivedNonce);
