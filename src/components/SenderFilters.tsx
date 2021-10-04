@@ -22,7 +22,7 @@ import SenderActionSwitch from './SenderActionSwitch';
 import { useGUIContext } from '../contexts/GUIContextProvider';
 
 interface Props {
-  setFilter: (value: React.SetStateAction<string | null>) => void;
+  setFilterInput: (value: React.SetStateAction<string | null>) => void;
   setShowCompanion: (value: React.SetStateAction<boolean>) => void;
   setShowEmpty: (value: React.SetStateAction<boolean>) => void;
   showCompanion: boolean;
@@ -35,15 +35,21 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function SenderFilters({ setFilter, setShowEmpty, setShowCompanion, showEmpty, showCompanion }: Props) {
+export default function SenderFilters({
+  setFilterInput,
+  setShowEmpty,
+  setShowCompanion,
+  showEmpty,
+  showCompanion
+}: Props) {
   const classes = useStyles();
   const { isBridged } = useGUIContext();
 
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      setFilter(event.target.value);
+      setFilterInput(event.target.value);
     },
-    [setFilter]
+    [setFilterInput]
   );
 
   return (

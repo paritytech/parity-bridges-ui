@@ -19,10 +19,12 @@ import React, { useMemo } from 'react';
 import { Divider, makeStyles } from '@material-ui/core';
 import SenderAccountsListByChain from './SenderAccountsListByChain';
 import { useAccountContext } from '../contexts/AccountContextProvider';
+import { getChainMatches } from '../util/sender/filters';
+
 interface Props {
   showCompanion: boolean;
   showEmpty: boolean;
-  filter: string | null;
+  filterInput: string | null;
   handleClose: () => void;
 }
 
@@ -33,28 +35,34 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function SenderAccountsSection({ showEmpty, showCompanion, filter, handleClose }: Props) {
+export default function SenderAccountsSection({ showEmpty, showCompanion, filterInput, handleClose }: Props) {
   const classes = useStyles();
   const { displaySenderAccounts } = useAccountContext();
-  const chains = useMemo(() => Object.keys(displaySenderAccounts), [displaySenderAccounts]);
+
+  const [chains, filters, chainMatch] = useMemo(() => getChainMatches(displaySenderAccounts, filterInput), [
+    displaySenderAccounts,
+    filterInput
+  ]);
 
   if (chains.length) {
     return (
       <div className={classes.paper}>
         <SenderAccountsListByChain
+          chainMatch={chainMatch}
           chain={chains[0]}
           showCompanion={showCompanion}
           showEmpty={showEmpty}
           handleClose={handleClose}
-          filter={filter}
+          filters={filters}
         />
         <Divider />
         <SenderAccountsListByChain
+          chainMatch={chainMatch}
           chain={chains[1]}
           showCompanion={showCompanion}
           showEmpty={showEmpty}
           handleClose={handleClose}
-          filter={filter}
+          filters={filters}
         />
       </div>
     );
