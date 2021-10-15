@@ -30,23 +30,39 @@ const useStyles = makeStyles(() => ({
 
 export const EstimatedFee = (): React.ReactElement => {
   const classes = useStyles();
-  const { sourceChainDetails } = useSourceTarget();
+  const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   const {
-    estimatedFee,
+    estimatedSourceFee,
+    estimatedTargetFee,
     payloadEstimatedFeeLoading,
     transactionRunning,
     evaluateTransactionStatusError
   } = useTransactionContext();
   const srcChainDecimals = sourceChainDetails.apiConnection.api.registry.chainDecimals[0];
-  const { chainTokens } = sourceChainDetails.apiConnection.api.registry;
+  const tarChainDecimals = targetChainDetails.apiConnection.api.registry.chainDecimals[0];
 
-  const [amount, setAmount] = useState<string | null>(null);
+  const { chainTokens: srcChainTokens } = sourceChainDetails.apiConnection.api.registry;
+  const { chainTokens: tarChainTokens } = targetChainDetails.apiConnection.api.registry;
+
+  const [amounts, setAmounts] = useState<{
+    sourceFeeAmount: string | null;
+    targetFeeAmount: string | null;
+  } | null>(null);
 
   useEffect(() => {
-    !payloadEstimatedFeeLoading && setAmount(estimatedFee ? transformToBaseUnit(estimatedFee, srcChainDecimals) : null);
-  }, [estimatedFee, payloadEstimatedFeeLoading, srcChainDecimals]);
+    if (!payloadEstimatedFeeLoading) {
+      const sourceFeeAmount = estimatedSourceFee ? transformToBaseUnit(estimatedSourceFee, srcChainDecimals) : null;
+
+      console.log('estimatedTargetFee', estimatedTargetFee);
+      console.log('tarChainDecimals', tarChainDecimals);
+
+      const targetFeeAmount = estimatedTargetFee ? transformToBaseUnit(estimatedTargetFee, tarChainDecimals) : null;
+      setAmounts({ sourceFeeAmount, targetFeeAmount });
+    }
+  }, [estimatedSourceFee, estimatedTargetFee, payloadEstimatedFeeLoading, srcChainDecimals, tarChainDecimals]);
 
   const feeLabel = `Estimated ${sourceChainDetails.chain} fee`;
+  const feeLabelTarget = `Estimated ${targetChainDetails.chain} fee`;
 
   return evaluateTransactionStatusError ? (
     <Alert severity="error">{evaluateTransactionStatusError}</Alert>
@@ -55,8 +71,16 @@ export const EstimatedFee = (): React.ReactElement => {
       <Typography variant="body1" color="secondary">
         {payloadEstimatedFeeLoading && !transactionRunning
           ? `${feeLabel}...`
-          : amount
-          ? `${feeLabel}: ${amount} ${chainTokens}`
+          : amounts?.sourceFeeAmount
+          ? `${feeLabel}: ${amounts?.sourceFeeAmount} ${srcChainTokens}`
+          : null}
+      </Typography>
+
+      <Typography variant="body1" color="secondary">
+        {payloadEstimatedFeeLoading && !transactionRunning
+          ? `${feeLabelTarget}...`
+          : amounts?.targetFeeAmount
+          ? `${feeLabelTarget}: ${amounts?.targetFeeAmount} ${tarChainTokens}`
           : null}
       </Typography>
     </div>

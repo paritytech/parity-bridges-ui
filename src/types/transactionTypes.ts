@@ -41,6 +41,12 @@ export enum SwitchTabEnum {
   DECODED = 'DECODED'
 }
 
+export interface Fees {
+  estimatedFeeMessageDelivery: string;
+  estimatedFeeBridgeCall: string;
+  estimatedFeeTarget: string;
+}
+
 export interface BridgedTransactionPayload {
   call: Uint8Array;
   origin: {
@@ -64,6 +70,7 @@ export interface TransactionDisplayPayload {
   call: Object;
   origin: Object;
   spec_version: string;
+  dispatch_fee_payment: PayFee;
   weight: number;
 }
 
@@ -99,7 +106,9 @@ export interface TransactionState {
   weightInput: string | null;
   transferAmount: BN | null;
   transferAmountError: string | null;
-  estimatedFee: string | null;
+  payFee: PayFee;
+  estimatedSourceFee: string | null;
+  estimatedTargetFee: string | null;
   receiverAddress: string | null;
   unformattedReceiverAddress: string | null;
   derivedReceiverAccount: string | null;
@@ -120,7 +129,6 @@ export interface TransactionState {
   payloadEstimatedFeeLoading: boolean;
   batchedTransactionState: TransactionState | null;
   action: TransactionTypes;
-  payFee: PayFee;
 }
 
 export type TransactionsActionType = { type: TransactionActionTypes; payload: Payload };

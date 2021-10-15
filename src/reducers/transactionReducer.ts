@@ -35,7 +35,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
     case TransactionActionTypes.SET_PAYLOAD_ESTIMATED_FEE: {
       const {
         payloadEstimatedFeeError,
-        payloadEstimatedFee: { estimatedFee, payload },
+        payloadEstimatedFee: { estimatedSourceFee, estimatedTargetFee, payload },
         payloadEstimatedFeeLoading,
         sourceTargetDetails,
         createType,
@@ -50,7 +50,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
         transferAmount,
         senderCompanionAccountBalance,
         senderAccountBalance,
-        estimatedFee,
+        estimatedSourceFee,
+        estimatedTargetFee,
         action: state.action
       });
 
@@ -84,7 +85,9 @@ export default function transactionReducer(state: TransactionState, action: Tran
 
       return {
         ...state,
-        estimatedFee: !payloadEstimatedFeeError && transactionReadyToExecute ? estimatedFee : null,
+        estimatedSourceFee: !payloadEstimatedFeeError && transactionReadyToExecute ? estimatedSourceFee : null,
+        estimatedTargetFee: !payloadEstimatedFeeError && transactionReadyToExecute ? estimatedTargetFee : null,
+
         payloadEstimatedFeeError,
         payloadEstimatedFeeLoading,
         payload: payloadEstimatedFeeError ? null : payload,
@@ -102,7 +105,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
       return {
         ...state,
         batchedTransactionState,
-        transactionReadyToExecute: Boolean(batchedTransactionState && state.estimatedFee),
+        transactionReadyToExecute: Boolean(batchedTransactionState && state.estimatedSourceFee),
         shouldEvaluatePayloadEstimatedFee: false
       };
     }
@@ -117,7 +120,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
           transferAmount,
           transferAmountError: null,
           transactionReadyToExecute: false,
-          estimatedFee: null,
+          estimatedSourceFee: null,
+          estimatedTargetFee: null,
           payload: null
         };
       }
@@ -129,7 +133,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
         transferAmount: actualValue || null,
         transferAmountError: message,
         transactionReadyToExecute: transactionReadyToExecute && !message,
-        estimatedFee: null,
+        estimatedSourceFee: null,
+        estimatedTargetFee: null,
         shouldEvaluatePayloadEstimatedFee
       };
     }
@@ -153,7 +158,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
         remarkInput,
         transactionReadyToExecute: false,
         shouldEvaluatePayloadEstimatedFee: false,
-        estimatedFee: null,
+        estimatedSourceFee: null,
+        estimatedTargetFee: null,
         payload: null,
         payloadEstimatedFeeError: 'Invalid remark input'
       };
@@ -183,7 +189,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
         ...state,
         customCallInput,
         transactionReadyToExecute: transactionReadyToExecute && !customCallError,
-        estimatedFee: customCallError || !customCallInput ? null : state.estimatedFee,
+        estimatedSourceFee: customCallError || !customCallInput ? null : state.estimatedSourceFee,
+        estimatedTargetFee: customCallError || !customCallInput ? null : state.estimatedTargetFee,
         customCallError,
         shouldEvaluatePayloadEstimatedFee
       };
@@ -197,7 +204,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
         weightInput: weightInput,
         transactionReadyToExecute: transactionReadyToExecute && !state.customCallError,
         shouldEvaluatePayloadEstimatedFee,
-        estimatedFee: weightInput ? state.estimatedFee : null
+        estimatedSourceFee: weightInput ? state.estimatedSourceFee : null
       };
     }
 
@@ -207,7 +214,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
         evaluateTransactionStatusError: null,
         resetedAt: Date.now().toString(),
         derivedReceiverAccount: null,
-        estimatedFee: null,
+        estimatedSourceFee: null,
+        estimatedTargetFee: null,
         payloadEstimatedFeeError: null,
         shouldEvaluatePayloadEstimatedFee: false,
         batchedTransactionState: null,

@@ -15,7 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Dispatch, useCallback, useEffect } from 'react';
-import { compactAddLength } from '@polkadot/util';
+import { compactAddLength, u8aToHex } from '@polkadot/util';
 import { useAccountContext } from '../../contexts/AccountContextProvider';
 import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
@@ -60,6 +60,7 @@ export const useEstimatedFeePayload = (
   const { action, isBridged } = useGUIContext();
   const { estimatedFeeMethodName } = getSubstrateDynamicNames(targetChain);
   const previousPayloadEstimatedFeeLoading = usePrevious(transactionState.payloadEstimatedFeeLoading);
+  const { bridgedMessages } = getSubstrateDynamicNames(targetChain);
 
   const dispatch = useCallback(
     (error: string | null, data: PayloadEstimatedFee | null, loading: boolean) =>
@@ -113,14 +114,16 @@ export const useEstimatedFeePayload = (
         return emptyData;
       }
 
+      console.log('call', u8aToHex(call));
+
+      // todo no hacer slice si es custom call
+
       const payload = {
-        call: compactAddLength(call!),
+        call: compactAddLength(call.slice(2)!),
         origin: {
           SourceAccount: account!.addressRaw
         },
-        dispatch_fee_payment: {
-          [PayFee.AtSourceChain]: '()'
-        },
+        dispatch_fee_payment: PayFee.AtSourceChain,
         spec_version: targetApi.consts.system.version.specVersion.toNumber(),
         weight
       };
@@ -136,10 +139,40 @@ export const useEstimatedFeePayload = (
       const estimatedFeeCall = await stateCall(sourceChain, estimatedFeeMethodName, messageFeeType.toHex());
 
       const estimatedFeeType = createType(sourceChain as keyof InterfaceTypes, 'Option<Balance>', estimatedFeeCall);
-      const estimatedFee = estimatedFeeType.toString();
-      return { estimatedFee, payload };
+      const estimatedFeeMessageDelivery = estimatedFeeType.toString();
+
+      const bridgeMessage = sourceApi.tx[bridgedMessages].sendMessage(laneId, payload, estimatedFeeMessageDelivery);
+      console.log('bridgeMessage', bridgeMessage.toHex());
+      // @ts-ignore
+      const submitMessageTransactionFee = await sourceApi.rpc.payment.queryFeeDetails(bridgeMessage.toHex());
+      // @ts-ignore
+      const estimatedFeeBridgeCall = submitMessageTransactionFee.toJSON().inclusionFee.adjustedWeightFee;
+      // @ts-ignore
+      console.log('submitMessageTransactionFee', submitMessageTransactionFee.toJSON().inclusionFee.adjustedWeightFee);
+
+      const estimatedSourceFee = parseInt(estimatedFeeMessageDelivery) + parseInt(estimatedFeeBridgeCall);
+      const targetFeeDetails = await targetApi.rpc.payment.queryFeeDetails(u8aToHex(call));
+      // @ts-ignore
+      const estimatedTargetFee = targetFeeDetails.toJSON().inclusionFee.adjustedWeightFee;
+
+      return {
+        estimatedSourceFee: estimatedSourceFee.toString(),
+        estimatedTargetFee,
+        payload
+      };
     },
-    [account, action, createType, estimatedFeeMethodName, laneId, sourceApi, sourceChain, stateCall, targetApi]
+    [
+      account,
+      action,
+      bridgedMessages,
+      createType,
+      estimatedFeeMethodName,
+      laneId,
+      sourceApi,
+      sourceChain,
+      stateCall,
+      targetApi
+    ]
   );
 
   useEffect(() => {

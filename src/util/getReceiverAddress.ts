@@ -53,7 +53,7 @@ const getReceiverAddress = ({ targetChainDetails, sourceChainDetails, receiverAd
     const decodedReceiverAddress = base58Decode(receiverAddress);
     const [isValidDerivedAcccount, , , ss58Decoded] = checkAddressChecksum(decodedReceiverAddress);
 
-    const formatFound = getChainBySS58Prefix(ss58Decoded) || ss58Decoded;
+    const formatFound = getChainBySS58Prefix(ss58Decoded) || ss58Decoded.toString();
     const doesTargetFormatMatch = ss58Decoded === targetSS58Format;
 
     if (isValidDerivedAcccount && doesTargetFormatMatch) {
