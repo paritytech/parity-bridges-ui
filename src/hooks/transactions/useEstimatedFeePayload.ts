@@ -21,7 +21,8 @@ import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import { TransactionActionCreators } from '../../actions/transactionActions';
 import logger from '../../util/logger';
-import type { InterfaceTypes } from '@polkadot/types/types';
+import type { InterfaceTypes, AnyJson } from '@polkadot/types/types';
+import type { FeeDetails } from '@polkadot/types/interfaces';
 import useLaneId from '../chain/useLaneId';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
 import { genericCall } from '../../util/apiUtlis';
@@ -141,19 +142,19 @@ export const useEstimatedFeePayload = (
       const estimatedFeeType = createType(sourceChain as keyof InterfaceTypes, 'Option<Balance>', estimatedFeeCall);
       const estimatedFeeMessageDelivery = estimatedFeeType.toString();
 
-      const bridgeMessage = sourceApi.tx[bridgedMessages].sendMessage(laneId, payload, estimatedFeeMessageDelivery);
-      console.log('bridgeMessage', bridgeMessage.toHex());
-      // @ts-ignore
-      const submitMessageTransactionFee = await sourceApi.rpc.payment.queryFeeDetails(bridgeMessage.toHex());
-      // @ts-ignore
-      const estimatedFeeBridgeCall = submitMessageTransactionFee.toJSON().inclusionFee.adjustedWeightFee;
-      // @ts-ignore
-      console.log('submitMessageTransactionFee', submitMessageTransactionFee.toJSON().inclusionFee.adjustedWeightFee);
+      const bridgeMessage = sourceApi.tx[bridgedMessages].sendMessage(laneId, payload, estimatedFeeCall);
+
+      const submitMessageTransactionFee: FeeDetails = await sourceApi.rpc.payment.queryFeeDetails(
+        bridgeMessage.toHex()
+      );
+
+      const estimatedFeeBridgeCallJson = submitMessageTransactionFee.toJSON();
+      const estimatedFeeBridgeCall = estimatedFeeBridgeCallJson?.inclusionFee?.adjustedWeightFee;
 
       const estimatedSourceFee = parseInt(estimatedFeeMessageDelivery) + parseInt(estimatedFeeBridgeCall);
       const targetFeeDetails = await targetApi.rpc.payment.queryFeeDetails(u8aToHex(call));
-      // @ts-ignore
-      const estimatedTargetFee = targetFeeDetails.toJSON().inclusionFee.adjustedWeightFee;
+      const estimatedFeeJson = targetFeeDetails.toJSON();
+      const estimatedTargetFee = estimatedFeeJson?.inclusionFee?.adjustedWeightFee;
 
       return {
         estimatedSourceFee: estimatedSourceFee.toString(),
