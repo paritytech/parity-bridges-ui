@@ -14,17 +14,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { useEffect, useState } from 'react';
-import { Typography, makeStyles } from '@material-ui/core';
 import React from 'react';
+import { Typography, Tooltip } from '@material-ui/core';
+import { fade, makeStyles } from '@material-ui/core/styles';
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import { transformToBaseUnit } from '../util/evalUnits';
+import round from 'lodash/round';
 import { Alert } from '.';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   container: {
-    minHeight: '20px'
+    minHeight: '20px',
+    display: 'flex'
+  },
+  tooltipIcon: {
+    ...theme.typography.body1,
+    marginTop: 2,
+    marginLeft: 2,
+    '&:not(:hover)': {
+      color: fade(theme.palette.text.hint, 0.75)
+    }
   }
 }));
 
@@ -33,6 +44,8 @@ export const EstimatedFee = (): React.ReactElement => {
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   const {
     estimatedSourceFee,
+    estimatedFeeMessageDelivery,
+    estimatedFeeBridgeCall,
     estimatedTargetFee,
     payloadEstimatedFeeLoading,
     transactionRunning,
@@ -44,22 +57,19 @@ export const EstimatedFee = (): React.ReactElement => {
   const { chainTokens: srcChainTokens } = sourceChainDetails.apiConnection.api.registry;
   const { chainTokens: tarChainTokens } = targetChainDetails.apiConnection.api.registry;
 
-  const [amounts, setAmounts] = useState<{
-    sourceFeeAmount: string | null;
-    targetFeeAmount: string | null;
-  } | null>(null);
+  const estimatedFeeMessageDeliveryAmount = estimatedFeeMessageDelivery
+    ? round(parseFloat(transformToBaseUnit(estimatedFeeMessageDelivery, srcChainDecimals)), 2)
+    : null;
+  const estimatedFeeBridgeCallAmount = estimatedFeeBridgeCall
+    ? round(parseFloat(transformToBaseUnit(estimatedFeeBridgeCall, srcChainDecimals)), 2)
+    : null;
+  const estimatedSourceFeeAmount = estimatedSourceFee
+    ? round(parseFloat(transformToBaseUnit(estimatedSourceFee, srcChainDecimals)), 2)
+    : null;
 
-  useEffect(() => {
-    if (!payloadEstimatedFeeLoading) {
-      const sourceFeeAmount = estimatedSourceFee ? transformToBaseUnit(estimatedSourceFee, srcChainDecimals) : null;
-
-      console.log('estimatedTargetFee', estimatedTargetFee);
-      console.log('tarChainDecimals', tarChainDecimals);
-
-      const targetFeeAmount = estimatedTargetFee ? transformToBaseUnit(estimatedTargetFee, tarChainDecimals) : null;
-      setAmounts({ sourceFeeAmount, targetFeeAmount });
-    }
-  }, [estimatedSourceFee, estimatedTargetFee, payloadEstimatedFeeLoading, srcChainDecimals, tarChainDecimals]);
+  const targetFeeAmount = estimatedTargetFee
+    ? round(parseFloat(transformToBaseUnit(estimatedTargetFee, tarChainDecimals)), 2)
+    : null;
 
   const feeLabel = `Estimated ${sourceChainDetails.chain} fee`;
   const feeLabelTarget = `Estimated ${targetChainDetails.chain} fee`;
@@ -67,22 +77,32 @@ export const EstimatedFee = (): React.ReactElement => {
   return evaluateTransactionStatusError ? (
     <Alert severity="error">{evaluateTransactionStatusError}</Alert>
   ) : (
-    <div className={classes.container}>
-      <Typography variant="body1" color="secondary">
-        {payloadEstimatedFeeLoading && !transactionRunning
-          ? `${feeLabel}...`
-          : amounts?.sourceFeeAmount
-          ? `${feeLabel}: ${amounts?.sourceFeeAmount} ${srcChainTokens}`
-          : null}
-      </Typography>
-
+    <>
+      <div className={classes.container}>
+        <Typography variant="body1" color="secondary">
+          {payloadEstimatedFeeLoading && !transactionRunning
+            ? `${feeLabel}...`
+            : estimatedSourceFeeAmount
+            ? `${feeLabel}: ${estimatedSourceFeeAmount} ${srcChainTokens}`
+            : null}
+        </Typography>
+        {!payloadEstimatedFeeLoading && !transactionRunning && estimatedFeeMessageDeliveryAmount && (
+          <Tooltip
+            title={`Message Delivery Fee: ${estimatedFeeMessageDeliveryAmount} ${srcChainTokens} + Send Message Fee: ${estimatedFeeBridgeCallAmount} ${srcChainTokens}`}
+            arrow
+            placement="top"
+          >
+            <HelpOutlineIcon className={classes.tooltipIcon} />
+          </Tooltip>
+        )}
+      </div>
       <Typography variant="body1" color="secondary">
         {payloadEstimatedFeeLoading && !transactionRunning
           ? `${feeLabelTarget}...`
-          : amounts?.targetFeeAmount
-          ? `${feeLabelTarget}: ${amounts?.targetFeeAmount} ${tarChainTokens}`
+          : targetFeeAmount
+          ? `${feeLabelTarget}: ${targetFeeAmount} ${tarChainTokens}`
           : null}
       </Typography>
-    </div>
+    </>
   );
 };

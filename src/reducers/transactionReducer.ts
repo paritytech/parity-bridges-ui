@@ -35,7 +35,13 @@ export default function transactionReducer(state: TransactionState, action: Tran
     case TransactionActionTypes.SET_PAYLOAD_ESTIMATED_FEE: {
       const {
         payloadEstimatedFeeError,
-        payloadEstimatedFee: { estimatedSourceFee, estimatedTargetFee, payload },
+        payloadEstimatedFee: {
+          estimatedSourceFee,
+          estimatedFeeMessageDelivery,
+          estimatedFeeBridgeCall,
+          estimatedTargetFee,
+          payload
+        },
         payloadEstimatedFeeLoading,
         sourceTargetDetails,
         createType,
@@ -87,7 +93,9 @@ export default function transactionReducer(state: TransactionState, action: Tran
         ...state,
         estimatedSourceFee: !payloadEstimatedFeeError && transactionReadyToExecute ? estimatedSourceFee : null,
         estimatedTargetFee: !payloadEstimatedFeeError && transactionReadyToExecute ? estimatedTargetFee : null,
-
+        estimatedFeeMessageDelivery:
+          !payloadEstimatedFeeError && transactionReadyToExecute ? estimatedFeeMessageDelivery : null,
+        estimatedFeeBridgeCall: !payloadEstimatedFeeError && transactionReadyToExecute ? estimatedFeeBridgeCall : null,
         payloadEstimatedFeeError,
         payloadEstimatedFeeLoading,
         payload: payloadEstimatedFeeError ? null : payload,

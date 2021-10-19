@@ -54,7 +54,6 @@ interface EnoughFundsEvaluation {
   senderCompanionAccountBalance: BalanceState;
   estimatedSourceFee: string | null;
   estimatedTargetFee: string | null;
-
   action: TransactionTypes;
 }
 
@@ -69,15 +68,15 @@ const enoughFundsEvaluation = ({
   let evaluateTransactionStatusError = null;
   let notEnoughFundsToTransfer = false;
   let notEnoughToPayFee = false;
-  console.log(estimatedTargetFee);
-  if (senderAccountBalance && estimatedSourceFee) {
+
+  if (senderAccountBalance && estimatedSourceFee && estimatedTargetFee) {
     notEnoughToPayFee = new BN(senderAccountBalance.free).sub(new BN(estimatedSourceFee)).isNeg();
     if (notEnoughToPayFee) {
       evaluateTransactionStatusError = `Account's amount is not enough for pay fee transaction: ${estimatedSourceFee}.`;
     }
 
     if (action === TransactionTypes.TRANSFER && transferAmount && senderCompanionAccountBalance) {
-      notEnoughFundsToTransfer = new BN(senderCompanionAccountBalance.free).sub(new BN(estimatedSourceFee)).isNeg();
+      notEnoughFundsToTransfer = new BN(senderCompanionAccountBalance.free).sub(new BN(estimatedTargetFee)).isNeg();
       if (notEnoughFundsToTransfer) {
         evaluateTransactionStatusError = "Companion account's amount is not enough for this transaction.";
       }

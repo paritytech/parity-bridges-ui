@@ -108,6 +108,8 @@ export interface TransactionState {
   transferAmountError: string | null;
   payFee: PayFee;
   estimatedSourceFee: string | null;
+  estimatedFeeMessageDelivery: string | null;
+  estimatedFeeBridgeCall: string | null;
   estimatedTargetFee: string | null;
   receiverAddress: string | null;
   unformattedReceiverAddress: string | null;

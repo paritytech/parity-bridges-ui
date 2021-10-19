@@ -15,14 +15,15 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Dispatch, useCallback, useEffect } from 'react';
-import { compactAddLength, u8aToHex } from '@polkadot/util';
+import { BN, compactAddLength, u8aToHex } from '@polkadot/util';
 import { useAccountContext } from '../../contexts/AccountContextProvider';
 import { useApiCallsContext } from '../../contexts/ApiCallsContextProvider';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import { TransactionActionCreators } from '../../actions/transactionActions';
+import { FeeDetails } from '@polkadot/types/interfaces';
 import logger from '../../util/logger';
-import type { InterfaceTypes, AnyJson } from '@polkadot/types/types';
-import type { FeeDetails } from '@polkadot/types/interfaces';
+import type { InterfaceTypes } from '@polkadot/types/types';
+
 import useLaneId from '../chain/useLaneId';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
 import { genericCall } from '../../util/apiUtlis';
@@ -115,12 +116,9 @@ export const useEstimatedFeePayload = (
         return emptyData;
       }
 
-      console.log('call', u8aToHex(call));
-
-      // todo no hacer slice si es custom call
-
+      const callToCompact = currentTransactionState.action === TransactionTypes.CUSTOM ? call : call.slice(2);
       const payload = {
-        call: compactAddLength(call.slice(2)!),
+        call: compactAddLength(callToCompact),
         origin: {
           SourceAccount: account!.addressRaw
         },
@@ -137,27 +135,30 @@ export const useEstimatedFeePayload = (
         payload: payloadType.toHex()
       });
 
+      // estimatedFeeMessageDelivery
       const estimatedFeeCall = await stateCall(sourceChain, estimatedFeeMethodName, messageFeeType.toHex());
-
       const estimatedFeeType = createType(sourceChain as keyof InterfaceTypes, 'Option<Balance>', estimatedFeeCall);
       const estimatedFeeMessageDelivery = estimatedFeeType.toString();
 
+      // estimatedFeeBridgeCall
       const bridgeMessage = sourceApi.tx[bridgedMessages].sendMessage(laneId, payload, estimatedFeeCall);
+      const submitMessageTransactionFee = await sourceApi.rpc.payment.queryFeeDetails(bridgeMessage.toHex());
+      const estimatedFeeBridgeCallBalance = (submitMessageTransactionFee as FeeDetails).inclusionFee.unwrap()
+        .adjustedWeightFee;
+      const estimatedFeeBridgeCall = estimatedFeeBridgeCallBalance.toString();
 
-      const submitMessageTransactionFee: FeeDetails = await sourceApi.rpc.payment.queryFeeDetails(
-        bridgeMessage.toHex()
-      );
+      // estimatedSourceFee calculation based on the sum of estimatedFeeMessageDelivery + estimatedFeeBridgeCallBalance
+      const estimatedSourceFeeBN = new BN(estimatedFeeMessageDelivery).add(estimatedFeeBridgeCallBalance.toBn());
+      const estimatedSourceFee = estimatedSourceFeeBN.toString();
 
-      const estimatedFeeBridgeCallJson = submitMessageTransactionFee.toJSON();
-      const estimatedFeeBridgeCall = estimatedFeeBridgeCallJson?.inclusionFee?.adjustedWeightFee;
-
-      const estimatedSourceFee = parseInt(estimatedFeeMessageDelivery) + parseInt(estimatedFeeBridgeCall);
+      // estimatedTargetFee
       const targetFeeDetails = await targetApi.rpc.payment.queryFeeDetails(u8aToHex(call));
-      const estimatedFeeJson = targetFeeDetails.toJSON();
-      const estimatedTargetFee = estimatedFeeJson?.inclusionFee?.adjustedWeightFee;
+      const estimatedTargetFee = (targetFeeDetails as FeeDetails).inclusionFee.unwrap().adjustedWeightFee.toString();
 
       return {
-        estimatedSourceFee: estimatedSourceFee.toString(),
+        estimatedSourceFee,
+        estimatedFeeMessageDelivery,
+        estimatedFeeBridgeCall,
         estimatedTargetFee,
         payload
       };

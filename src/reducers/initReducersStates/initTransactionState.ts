@@ -26,6 +26,8 @@ export const initTransactionState: TransactionState = {
   weightInput: '',
   transferAmountError: null,
   estimatedSourceFee: null,
+  estimatedFeeMessageDelivery: null,
+  estimatedFeeBridgeCall: null,
   estimatedTargetFee: null,
   receiverAddress: null,
   unformattedReceiverAddress: null,
