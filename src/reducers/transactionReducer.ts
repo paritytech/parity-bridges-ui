@@ -30,7 +30,6 @@ import { getTransactionDisplayPayload } from '../util/transactions';
 import { isHex } from '@polkadot/util';
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
-  console.log(action);
   const transactionReadyToExecute = isReadyToExecute({ ...state, ...action.payload });
   switch (action.type) {
     case TransactionActionTypes.SET_PAYLOAD_ESTIMATED_FEE: {

@@ -49,7 +49,10 @@ describe('transactionReducer', () => {
           transactionReadyToExecute: false,
           payloadEstimatedFeeLoading: false,
           shouldEvaluatePayloadEstimatedFee: false,
-          estimatedFee: null
+          estimatedSourceFee: null,
+          estimatedFeeMessageDelivery: null,
+          estimatedFeeBridgeCall: null,
+          estimatedTargetFee: null
         });
       });
 
@@ -79,7 +82,10 @@ describe('transactionReducer', () => {
           formatFound: 'GENERIC',
           transactionReadyToExecute: false,
           shouldEvaluatePayloadEstimatedFee: false,
-          estimatedFee: null
+          estimatedSourceFee: null,
+          estimatedFeeMessageDelivery: null,
+          estimatedFeeBridgeCall: null,
+          estimatedTargetFee: null
         });
       });
 
@@ -105,7 +111,7 @@ describe('transactionReducer', () => {
           ...state,
           unformattedReceiverAddress: 'tH95Ew4kVD9VcwsyXaSdC74Noe3H8o6fJfnKhZezXHKHEcs',
           addressValidationError: 'Unsupported address SS58 prefix: 8',
-          formatFound: 8,
+          formatFound: '8',
           transactionReadyToExecute: false,
           shouldEvaluatePayloadEstimatedFee: false
         });
@@ -189,13 +195,19 @@ describe('transactionReducer', () => {
         payloadEstimatedFeeLoading,
         {} as SourceTargetState,
         () => 'type',
-        true
+        true,
+        null,
+        null,
+        9
       );
       const result = transactionReducer(state, action);
 
       expect(result).toEqual({
         ...state,
-        estimatedFee: null,
+        estimatedSourceFee: null,
+        estimatedFeeMessageDelivery: null,
+        estimatedFeeBridgeCall: null,
+        estimatedTargetFee: null,
         payloadEstimatedFeeError: null,
         payloadEstimatedFeeLoading: false,
         payload: null,
@@ -210,13 +222,19 @@ describe('transactionReducer', () => {
         payloadEstimatedFeeLoading,
         {} as SourceTargetState,
         () => 'type',
-        true
+        true,
+        null,
+        null,
+        9
       );
       const result = transactionReducer(state, action);
 
       expect(result).toEqual({
         ...state,
-        estimatedFee: null,
+        estimatedSourceFee: null,
+        estimatedFeeMessageDelivery: null,
+        estimatedFeeBridgeCall: null,
+        estimatedTargetFee: null,
         payloadEstimatedFeeError: null,
         payloadEstimatedFeeLoading: true,
         payload: null,
@@ -234,13 +252,19 @@ describe('transactionReducer', () => {
         payloadEstimatedFeeLoading,
         {} as SourceTargetState,
         () => 'type',
-        true
+        true,
+        null,
+        null,
+        9
       );
       const result = transactionReducer(state, action);
 
       expect(result).toEqual({
         ...state,
-        estimatedFee: null,
+        estimatedSourceFee: null,
+        estimatedFeeMessageDelivery: null,
+        estimatedFeeBridgeCall: null,
+        estimatedTargetFee: null,
         payloadEstimatedFeeError,
         payloadEstimatedFeeLoading: false,
         payload: null,
@@ -258,13 +282,19 @@ describe('transactionReducer', () => {
         payloadEstimatedFeeLoading,
         {} as SourceTargetState,
         () => 'type',
-        true
+        true,
+        null,
+        null,
+        9
       );
       const result = transactionReducer(state, action);
 
       expect(result).toEqual({
         ...state,
-        estimatedFee: null,
+        estimatedSourceFee: null,
+        estimatedFeeMessageDelivery: null,
+        estimatedFeeBridgeCall: null,
+        estimatedTargetFee: null,
         payloadEstimatedFeeError,
         payloadEstimatedFeeLoading: false,
         payload: null,
@@ -291,16 +321,28 @@ describe('transactionReducer', () => {
         payloadHex,
         transactionDisplayPayload
       });
-      const estimatedFee = '1234';
-      payloadEstimatedFee = { estimatedFee, payload };
-      const sourceTargetDetails = {};
+      const estimatedSourceFee = '1234';
+      const estimatedFeeMessageDelivery = '1234';
+      const estimatedFeeBridgeCall = '1234';
+      const estimatedTargetFee = '1234';
+      payloadEstimatedFee = {
+        estimatedSourceFee,
+        estimatedFeeMessageDelivery,
+        estimatedFeeBridgeCall,
+        estimatedTargetFee,
+        payload
+      };
+      const sourceTargetDetails = {} as SourceTargetState;
       const action = TransactionActionCreators.setPayloadEstimatedFee(
         payloadEstimatedFeeError,
         payloadEstimatedFee,
         payloadEstimatedFeeLoading,
         sourceTargetDetails,
         createType,
-        true
+        true,
+        null,
+        null,
+        9
       );
 
       const newState = { ...state };
@@ -312,7 +354,10 @@ describe('transactionReducer', () => {
 
       expect(result).toEqual({
         ...newState,
-        estimatedFee,
+        estimatedSourceFee,
+        estimatedFeeMessageDelivery,
+        estimatedFeeBridgeCall,
+        estimatedTargetFee,
         payloadEstimatedFeeError: null,
         payloadEstimatedFeeLoading: false,
         payload,
