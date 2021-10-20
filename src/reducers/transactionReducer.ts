@@ -30,6 +30,7 @@ import { getTransactionDisplayPayload } from '../util/transactions';
 import { isHex } from '@polkadot/util';
 
 export default function transactionReducer(state: TransactionState, action: TransactionsActionType): TransactionState {
+  console.log(action);
   const transactionReadyToExecute = isReadyToExecute({ ...state, ...action.payload });
   switch (action.type) {
     case TransactionActionTypes.SET_PAYLOAD_ESTIMATED_FEE: {
@@ -129,6 +130,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
           transferAmountError: null,
           transactionReadyToExecute: false,
           estimatedSourceFee: null,
+          estimatedFeeMessageDelivery: null,
+          estimatedFeeBridgeCall: null,
           estimatedTargetFee: null,
           payload: null
         };
@@ -142,6 +145,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
         transferAmountError: message,
         transactionReadyToExecute: transactionReadyToExecute && !message,
         estimatedSourceFee: null,
+        estimatedFeeMessageDelivery: null,
+        estimatedFeeBridgeCall: null,
         estimatedTargetFee: null,
         shouldEvaluatePayloadEstimatedFee
       };
@@ -167,6 +172,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
         transactionReadyToExecute: false,
         shouldEvaluatePayloadEstimatedFee: false,
         estimatedSourceFee: null,
+        estimatedFeeMessageDelivery: null,
+        estimatedFeeBridgeCall: null,
         estimatedTargetFee: null,
         payload: null,
         payloadEstimatedFeeError: 'Invalid remark input'
@@ -199,6 +206,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
         transactionReadyToExecute: transactionReadyToExecute && !customCallError,
         estimatedSourceFee: customCallError || !customCallInput ? null : state.estimatedSourceFee,
         estimatedTargetFee: customCallError || !customCallInput ? null : state.estimatedTargetFee,
+        estimatedFeeMessageDelivery: customCallError || !customCallInput ? null : state.estimatedFeeMessageDelivery,
+        estimatedFeeBridgeCall: customCallError || !customCallInput ? null : state.estimatedFeeBridgeCall,
         customCallError,
         shouldEvaluatePayloadEstimatedFee
       };
@@ -212,7 +221,9 @@ export default function transactionReducer(state: TransactionState, action: Tran
         weightInput: weightInput,
         transactionReadyToExecute: transactionReadyToExecute && !state.customCallError,
         shouldEvaluatePayloadEstimatedFee,
-        estimatedSourceFee: weightInput ? state.estimatedSourceFee : null
+        estimatedSourceFee: weightInput ? state.estimatedSourceFee : null,
+        estimatedFeeMessageDelivery: weightInput ? state.estimatedFeeMessageDelivery : null,
+        estimatedFeeBridgeCall: weightInput ? state.estimatedFeeBridgeCall : null
       };
     }
 
@@ -223,6 +234,8 @@ export default function transactionReducer(state: TransactionState, action: Tran
         resetedAt: Date.now().toString(),
         derivedReceiverAccount: null,
         estimatedSourceFee: null,
+        estimatedFeeMessageDelivery: null,
+        estimatedFeeBridgeCall: null,
         estimatedTargetFee: null,
         payloadEstimatedFeeError: null,
         shouldEvaluatePayloadEstimatedFee: false,

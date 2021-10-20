@@ -240,6 +240,8 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
       payloadEstimatedFeeLoading: false,
       shouldEvaluatePayloadEstimatedFee: false,
       estimatedSourceFee: null,
+      estimatedFeeMessageDelivery: null,
+      estimatedFeeBridgeCall: null,
       estimatedTargetFee: null,
       payload: null
     };
@@ -274,6 +276,8 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
       transactionReadyToExecute: false,
       shouldEvaluatePayloadEstimatedFee: false,
       estimatedSourceFee: null,
+      estimatedFeeMessageDelivery: null,
+      estimatedFeeBridgeCall: null,
       estimatedTargetFee: null,
       payload: null
     };
@@ -291,6 +295,8 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
       transactionReadyToExecute: false,
       shouldEvaluatePayloadEstimatedFee: false,
       estimatedSourceFee: null,
+      estimatedFeeMessageDelivery: null,
+      estimatedFeeBridgeCall: null,
       estimatedTargetFee: null,
       payload: null
     };
@@ -336,6 +342,8 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
     transactionReadyToExecute: false,
     shouldEvaluatePayloadEstimatedFee: false,
     estimatedSourceFee: null,
+    estimatedFeeMessageDelivery: null,
+    estimatedFeeBridgeCall: null,
     estimatedTargetFee: null,
     payload: null
   };

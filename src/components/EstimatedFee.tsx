@@ -39,6 +39,9 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+const getAmount = (fee: string | null, chainDecimals: number) =>
+  fee ? round(parseFloat(transformToBaseUnit(fee, chainDecimals)), 2) : null;
+
 export const EstimatedFee = (): React.ReactElement => {
   const classes = useStyles();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
@@ -56,10 +59,11 @@ export const EstimatedFee = (): React.ReactElement => {
 
   const { chainTokens: srcChainTokens } = sourceChainDetails.apiConnection.api.registry;
   const { chainTokens: tarChainTokens } = targetChainDetails.apiConnection.api.registry;
-
+  /*
   const estimatedFeeMessageDeliveryAmount = estimatedFeeMessageDelivery
     ? round(parseFloat(transformToBaseUnit(estimatedFeeMessageDelivery, srcChainDecimals)), 2)
     : null;
+
   const estimatedFeeBridgeCallAmount = estimatedFeeBridgeCall
     ? round(parseFloat(transformToBaseUnit(estimatedFeeBridgeCall, srcChainDecimals)), 2)
     : null;
@@ -69,7 +73,12 @@ export const EstimatedFee = (): React.ReactElement => {
 
   const targetFeeAmount = estimatedTargetFee
     ? round(parseFloat(transformToBaseUnit(estimatedTargetFee, tarChainDecimals)), 2)
-    : null;
+    : null; */
+
+  const estimatedFeeMessageDeliveryAmount = getAmount(estimatedFeeMessageDelivery, srcChainDecimals);
+  const estimatedFeeBridgeCallAmount = getAmount(estimatedFeeBridgeCall, srcChainDecimals);
+  const estimatedSourceFeeAmount = getAmount(estimatedSourceFee, srcChainDecimals);
+  const targetFeeAmount = getAmount(estimatedTargetFee, tarChainDecimals);
 
   const feeLabel = `Estimated ${sourceChainDetails.chain} fee`;
   const feeLabelTarget = `Estimated ${targetChainDetails.chain} fee`;
