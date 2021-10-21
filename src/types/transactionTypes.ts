@@ -41,11 +41,18 @@ export enum SwitchTabEnum {
   DECODED = 'DECODED'
 }
 
+export interface Fees {
+  estimatedFeeMessageDelivery: string;
+  estimatedFeeBridgeCall: string;
+  estimatedFeeTarget: string;
+}
+
 export interface BridgedTransactionPayload {
   call: Uint8Array;
   origin: {
     SourceAccount: Uint8Array;
   };
+  dispatch_fee_payment: { _enum: [PayFee] };
   spec_version: number;
   weight: number;
 }
@@ -63,6 +70,7 @@ export interface TransactionDisplayPayload {
   call: Object;
   origin: Object;
   spec_version: string;
+  dispatch_fee_payment: PayFee;
   weight: number;
 }
 
@@ -84,6 +92,11 @@ export interface TransactionStatusType extends UpdatedTransactionStatusType {
   deliveryBlock: string | null;
 }
 
+export enum PayFee {
+  AtTargetChain = 'AtTargetChain',
+  AtSourceChain = 'AtSourceChain'
+}
+
 export interface TransactionState {
   resetedAt: string | null;
   senderAccount: string | null;
@@ -93,7 +106,11 @@ export interface TransactionState {
   weightInput: string | null;
   transferAmount: BN | null;
   transferAmountError: string | null;
-  estimatedFee: string | null;
+  payFee: PayFee;
+  estimatedSourceFee: string | null;
+  estimatedFeeMessageDelivery: string | null;
+  estimatedFeeBridgeCall: string | null;
+  estimatedTargetFee: string | null;
   receiverAddress: string | null;
   unformattedReceiverAddress: string | null;
   derivedReceiverAccount: string | null;

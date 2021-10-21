@@ -38,18 +38,22 @@ const validateAccount = (receiver: string, sourceChainDetails: ChainState, targe
 
     return { formatFound, receiverAddress: address };
   } catch (e) {
-    logger.error(e.message);
-    if (e.message === INCORRECT_FORMAT) {
-      return { formatFound: e.message, receiverAddress: receiver };
+    if (e instanceof Error) {
+      logger.error(e.message);
+      if (e.message === INCORRECT_FORMAT) {
+        return { formatFound: e.message, receiverAddress: receiver };
+      }
     }
   }
+  return { formatFound: null, receiverAddress: null };
 };
 
 interface EnoughFundsEvaluation {
   transferAmount: BN | null;
   senderAccountBalance: BalanceState;
   senderCompanionAccountBalance: BalanceState;
-  estimatedFee: string | null;
+  estimatedSourceFee: string | null;
+  estimatedTargetFee: string | null;
   action: TransactionTypes;
 }
 
@@ -57,21 +61,22 @@ const enoughFundsEvaluation = ({
   transferAmount,
   senderCompanionAccountBalance,
   senderAccountBalance,
-  estimatedFee,
+  estimatedSourceFee,
+  estimatedTargetFee,
   action
 }: EnoughFundsEvaluation) => {
   let evaluateTransactionStatusError = null;
   let notEnoughFundsToTransfer = false;
   let notEnoughToPayFee = false;
 
-  if (senderAccountBalance && estimatedFee) {
-    notEnoughToPayFee = new BN(senderAccountBalance.free).sub(new BN(estimatedFee)).isNeg();
+  if (senderAccountBalance && estimatedSourceFee && estimatedTargetFee) {
+    notEnoughToPayFee = new BN(senderAccountBalance.free).sub(new BN(estimatedSourceFee)).isNeg();
     if (notEnoughToPayFee) {
-      evaluateTransactionStatusError = `Account's amount is not enough for pay fee transaction: ${estimatedFee}.`;
+      evaluateTransactionStatusError = `Account's amount is not enough for pay fee transaction: ${estimatedSourceFee}.`;
     }
 
     if (action === TransactionTypes.TRANSFER && transferAmount && senderCompanionAccountBalance) {
-      notEnoughFundsToTransfer = new BN(senderCompanionAccountBalance.free).sub(new BN(estimatedFee)).isNeg();
+      notEnoughFundsToTransfer = new BN(senderCompanionAccountBalance.free).sub(new BN(estimatedTargetFee)).isNeg();
       if (notEnoughFundsToTransfer) {
         evaluateTransactionStatusError = "Companion account's amount is not enough for this transaction.";
       }
@@ -80,7 +85,7 @@ const enoughFundsEvaluation = ({
     if (action === TransactionTypes.INTERNAL_TRANSFER && transferAmount) {
       notEnoughFundsToTransfer = new BN(senderAccountBalance.free)
         .sub(transferAmount)
-        .sub(new BN(estimatedFee))
+        .sub(new BN(estimatedSourceFee))
         .isNeg();
       if (notEnoughFundsToTransfer) {
         evaluateTransactionStatusError = "Account's amount is not enough for this transaction.";
@@ -214,7 +219,8 @@ const setLocalReceiver = (state: TransactionState, payload: ReceiverPayload): Tr
     transactionReadyToExecute: false,
     payloadEstimatedFeeLoading: false,
     shouldEvaluatePayloadEstimatedFee: false,
-    estimatedFee: null,
+    estimatedSourceFee: null,
+    estimatedTargetFee: null,
     payload: null
   };
 };
@@ -233,7 +239,10 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
       transactionReadyToExecute: false,
       payloadEstimatedFeeLoading: false,
       shouldEvaluatePayloadEstimatedFee: false,
-      estimatedFee: null,
+      estimatedSourceFee: null,
+      estimatedFeeMessageDelivery: null,
+      estimatedFeeBridgeCall: null,
+      estimatedTargetFee: null,
       payload: null
     };
   }
@@ -266,7 +275,10 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
       formatFound,
       transactionReadyToExecute: false,
       shouldEvaluatePayloadEstimatedFee: false,
-      estimatedFee: null,
+      estimatedSourceFee: null,
+      estimatedFeeMessageDelivery: null,
+      estimatedFeeBridgeCall: null,
+      estimatedTargetFee: null,
       payload: null
     };
   }
@@ -282,7 +294,10 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
       formatFound,
       transactionReadyToExecute: false,
       shouldEvaluatePayloadEstimatedFee: false,
-      estimatedFee: null,
+      estimatedSourceFee: null,
+      estimatedFeeMessageDelivery: null,
+      estimatedFeeBridgeCall: null,
+      estimatedTargetFee: null,
       payload: null
     };
   }
@@ -326,7 +341,10 @@ const setReceiver = (state: TransactionState, payload: ReceiverPayload): Transac
     formatFound,
     transactionReadyToExecute: false,
     shouldEvaluatePayloadEstimatedFee: false,
-    estimatedFee: null,
+    estimatedSourceFee: null,
+    estimatedFeeMessageDelivery: null,
+    estimatedFeeBridgeCall: null,
+    estimatedTargetFee: null,
     payload: null
   };
 };

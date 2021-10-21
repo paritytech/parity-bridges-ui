@@ -41,7 +41,7 @@ interface Props {
 }
 
 function useSendMessage({ input, type }: Props) {
-  const { estimatedFee, receiverAddress, payload } = useTransactionContext();
+  const { estimatedSourceFee, receiverAddress, payload } = useTransactionContext();
   const { dispatchTransaction } = useUpdateTransactionContext();
   const laneId = useLaneId();
   const sourceTargetDetails = useSourceTarget();
@@ -67,7 +67,7 @@ function useSendMessage({ input, type }: Props) {
         const payloadHex = payloadType.toHex();
 
         const { bridgedMessages } = getSubstrateDynamicNames(targetChain);
-        const bridgeMessage = sourceApi.tx[bridgedMessages].sendMessage(laneId, payload, estimatedFee);
+        const bridgeMessage = sourceApi.tx[bridgedMessages].sendMessage(laneId, payload, estimatedSourceFee);
         logger.info(`bridge::sendMessage ${bridgeMessage.toHex()}`);
         const options: Partial<SignerOptions> = {
           nonce: -1
@@ -167,7 +167,7 @@ function useSendMessage({ input, type }: Props) {
       createType,
       dispatchMessage,
       dispatchTransaction,
-      estimatedFee,
+      estimatedSourceFee,
       input,
       laneId,
       payload,
