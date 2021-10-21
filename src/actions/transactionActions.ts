@@ -58,17 +58,29 @@ const setTransferAmount = (transferAmount: string | null, chainDecimals?: number
   };
 };
 
-const setPayloadEstimatedFee = (
-  payloadEstimatedFeeError: string | null,
-  payloadEstimatedFee: PayloadEstimatedFee | null,
-  payloadEstimatedFeeLoading: boolean,
-  sourceTargetDetails: SourceTargetState,
-  createType: CreateType,
-  isBridged: boolean,
-  senderAccountBalance: BalanceState | null,
-  senderCompanionAccountBalance: BalanceState | null,
-  chainDecimals: number
-) => ({
+interface PayloadEstimateFeeAction {
+  payloadEstimatedFeeError: string | null;
+  payloadEstimatedFee: PayloadEstimatedFee | null;
+  payloadEstimatedFeeLoading: boolean;
+  sourceTargetDetails: SourceTargetState;
+  createType: CreateType;
+  isBridged: boolean;
+  senderAccountBalance: BalanceState | null;
+  senderCompanionAccountBalance: BalanceState | null;
+  chainDecimals: number;
+}
+
+const setPayloadEstimatedFee = ({
+  payloadEstimatedFeeError,
+  payloadEstimatedFee,
+  payloadEstimatedFeeLoading,
+  sourceTargetDetails,
+  createType,
+  isBridged,
+  senderAccountBalance,
+  senderCompanionAccountBalance,
+  chainDecimals
+}: PayloadEstimateFeeAction) => ({
   payload: {
     payloadEstimatedFee,
     payloadEstimatedFeeError,

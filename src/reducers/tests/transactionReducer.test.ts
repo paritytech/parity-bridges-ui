@@ -189,17 +189,18 @@ describe('transactionReducer', () => {
     });
 
     it('should return initial state regarding estimated fee', () => {
-      const action = TransactionActionCreators.setPayloadEstimatedFee(
+      const action = TransactionActionCreators.setPayloadEstimatedFee({
         payloadEstimatedFeeError,
         payloadEstimatedFee,
         payloadEstimatedFeeLoading,
-        {} as SourceTargetState,
-        () => 'type',
-        true,
-        null,
-        null,
-        9
-      );
+        sourceTargetDetails: {} as SourceTargetState,
+        //@ts-ignore
+        createType: () => 'type',
+        isBridged: true,
+        senderAccountBalance: null,
+        senderCompanionAccountBalance: null,
+        chainDecimals: 9
+      });
       const result = transactionReducer(state, action);
 
       expect(result).toEqual({
@@ -216,17 +217,18 @@ describe('transactionReducer', () => {
     });
     it('should return loading estimated fee', () => {
       const payloadEstimatedFeeLoading = true;
-      const action = TransactionActionCreators.setPayloadEstimatedFee(
+      const action = TransactionActionCreators.setPayloadEstimatedFee({
         payloadEstimatedFeeError,
         payloadEstimatedFee,
         payloadEstimatedFeeLoading,
-        {} as SourceTargetState,
-        () => 'type',
-        true,
-        null,
-        null,
-        9
-      );
+        sourceTargetDetails: {} as SourceTargetState,
+        //@ts-ignore
+        createType: () => 'type',
+        isBridged: true,
+        senderAccountBalance: null,
+        senderCompanionAccountBalance: null,
+        chainDecimals: 9
+      });
       const result = transactionReducer(state, action);
 
       expect(result).toEqual({
@@ -246,17 +248,18 @@ describe('transactionReducer', () => {
 
     it('should return corresponding error state for estimated fee', () => {
       payloadEstimatedFeeError = 'Error';
-      const action = TransactionActionCreators.setPayloadEstimatedFee(
+      const action = TransactionActionCreators.setPayloadEstimatedFee({
         payloadEstimatedFeeError,
         payloadEstimatedFee,
         payloadEstimatedFeeLoading,
-        {} as SourceTargetState,
-        () => 'type',
-        true,
-        null,
-        null,
-        9
-      );
+        sourceTargetDetails: {} as SourceTargetState,
+        //@ts-ignore
+        createType: () => 'type',
+        isBridged: true,
+        senderAccountBalance: null,
+        senderCompanionAccountBalance: null,
+        chainDecimals: 9
+      });
       const result = transactionReducer(state, action);
 
       expect(result).toEqual({
@@ -276,17 +279,18 @@ describe('transactionReducer', () => {
 
     it('should return corresponding error state for estimated fee', () => {
       payloadEstimatedFeeError = 'Error';
-      const action = TransactionActionCreators.setPayloadEstimatedFee(
+      const action = TransactionActionCreators.setPayloadEstimatedFee({
         payloadEstimatedFeeError,
         payloadEstimatedFee,
         payloadEstimatedFeeLoading,
-        {} as SourceTargetState,
-        () => 'type',
-        true,
-        null,
-        null,
-        9
-      );
+        sourceTargetDetails: {} as SourceTargetState,
+        //@ts-ignore
+        createType: () => 'type',
+        isBridged: true,
+        senderAccountBalance: null,
+        senderCompanionAccountBalance: null,
+        chainDecimals: 9
+      });
       const result = transactionReducer(state, action);
 
       expect(result).toEqual({
@@ -333,17 +337,18 @@ describe('transactionReducer', () => {
         payload
       };
       const sourceTargetDetails = {} as SourceTargetState;
-      const action = TransactionActionCreators.setPayloadEstimatedFee(
+      const action = TransactionActionCreators.setPayloadEstimatedFee({
         payloadEstimatedFeeError,
         payloadEstimatedFee,
         payloadEstimatedFeeLoading,
         sourceTargetDetails,
-        createType,
-        true,
-        null,
-        null,
-        9
-      );
+        //@ts-ignore
+        createType: () => 'type',
+        isBridged: true,
+        senderAccountBalance: null,
+        senderCompanionAccountBalance: null,
+        chainDecimals: 9
+      });
 
       const newState = { ...state };
       newState.action = TransactionTypes.TRANSFER;

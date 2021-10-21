@@ -67,17 +67,17 @@ export const useEstimatedFeePayload = (
   const dispatch = useCallback(
     (error: string | null, data: PayloadEstimatedFee | null, loading: boolean) =>
       dispatchTransaction(
-        TransactionActionCreators.setPayloadEstimatedFee(
-          error,
-          data,
-          loading,
+        TransactionActionCreators.setPayloadEstimatedFee({
+          payloadEstimatedFeeError: error,
+          payloadEstimatedFee: data,
+          payloadEstimatedFeeLoading: loading,
           sourceTargetDetails,
           createType,
           isBridged,
           senderAccountBalance,
           senderCompanionAccountBalance,
-          targetApi.registry.chainDecimals[0]
-        )
+          chainDecimals: targetApi.registry.chainDecimals[0]
+        })
       ),
     [
       createType,

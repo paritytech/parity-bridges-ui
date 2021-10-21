@@ -20,9 +20,8 @@ import { fade, makeStyles } from '@material-ui/core/styles';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext } from '../contexts/TransactionContext';
-import { transformToBaseUnit } from '../util/evalUnits';
-import round from 'lodash/round';
 import { Alert } from '.';
+import { formatBalance } from '@polkadot/util';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -39,8 +38,14 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const getAmount = (fee: string | null, chainDecimals: number) =>
-  fee ? round(parseFloat(transformToBaseUnit(fee, chainDecimals)), 2) : null;
+const getFormattedAmount = (fee: string | null, chainDecimals: number, chainTokens: string) =>
+  fee
+    ? formatBalance(fee, {
+        decimals: chainDecimals,
+        withUnit: chainTokens,
+        withSi: true
+      })
+    : null;
 
 export const EstimatedFee = (): React.ReactElement => {
   const classes = useStyles();
@@ -59,26 +64,15 @@ export const EstimatedFee = (): React.ReactElement => {
 
   const { chainTokens: srcChainTokens } = sourceChainDetails.apiConnection.api.registry;
   const { chainTokens: tarChainTokens } = targetChainDetails.apiConnection.api.registry;
-  /*
-  const estimatedFeeMessageDeliveryAmount = estimatedFeeMessageDelivery
-    ? round(parseFloat(transformToBaseUnit(estimatedFeeMessageDelivery, srcChainDecimals)), 2)
-    : null;
 
-  const estimatedFeeBridgeCallAmount = estimatedFeeBridgeCall
-    ? round(parseFloat(transformToBaseUnit(estimatedFeeBridgeCall, srcChainDecimals)), 2)
-    : null;
-  const estimatedSourceFeeAmount = estimatedSourceFee
-    ? round(parseFloat(transformToBaseUnit(estimatedSourceFee, srcChainDecimals)), 2)
-    : null;
-
-  const targetFeeAmount = estimatedTargetFee
-    ? round(parseFloat(transformToBaseUnit(estimatedTargetFee, tarChainDecimals)), 2)
-    : null; */
-
-  const estimatedFeeMessageDeliveryAmount = getAmount(estimatedFeeMessageDelivery, srcChainDecimals);
-  const estimatedFeeBridgeCallAmount = getAmount(estimatedFeeBridgeCall, srcChainDecimals);
-  const estimatedSourceFeeAmount = getAmount(estimatedSourceFee, srcChainDecimals);
-  const targetFeeAmount = getAmount(estimatedTargetFee, tarChainDecimals);
+  const estimatedFeeMessageDeliveryAmount = getFormattedAmount(
+    estimatedFeeMessageDelivery,
+    srcChainDecimals,
+    srcChainTokens[0]
+  );
+  const estimatedFeeBridgeCallAmount = getFormattedAmount(estimatedFeeBridgeCall, srcChainDecimals, srcChainTokens[0]);
+  const estimatedSourceFeeAmount = getFormattedAmount(estimatedSourceFee, srcChainDecimals, srcChainTokens[0]);
+  const targetFeeAmount = getFormattedAmount(estimatedTargetFee, tarChainDecimals, tarChainTokens[0]);
 
   const feeLabel = `Estimated ${sourceChainDetails.chain} fee`;
   const feeLabelTarget = `Estimated ${targetChainDetails.chain} fee`;
@@ -92,12 +86,12 @@ export const EstimatedFee = (): React.ReactElement => {
           {payloadEstimatedFeeLoading && !transactionRunning
             ? `${feeLabel}...`
             : estimatedSourceFeeAmount
-            ? `${feeLabel}: ${estimatedSourceFeeAmount} ${srcChainTokens}`
+            ? `${feeLabel}: ${estimatedSourceFeeAmount} `
             : null}
         </Typography>
         {!payloadEstimatedFeeLoading && !transactionRunning && estimatedFeeMessageDeliveryAmount && (
           <Tooltip
-            title={`Message Delivery Fee: ${estimatedFeeMessageDeliveryAmount} ${srcChainTokens} + Send Message Fee: ${estimatedFeeBridgeCallAmount} ${srcChainTokens}`}
+            title={`Message Delivery Fee: ${estimatedFeeMessageDeliveryAmount} + Send Message Fee: ${estimatedFeeBridgeCallAmount} `}
             arrow
             placement="top"
           >
@@ -109,7 +103,7 @@ export const EstimatedFee = (): React.ReactElement => {
         {payloadEstimatedFeeLoading && !transactionRunning
           ? `${feeLabelTarget}...`
           : targetFeeAmount
-          ? `${feeLabelTarget}: ${targetFeeAmount} ${tarChainTokens}`
+          ? `${feeLabelTarget}: ${targetFeeAmount}`
           : null}
       </Typography>
     </>
