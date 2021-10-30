@@ -30,6 +30,7 @@ import {
   Step
 } from '../../types/transactionTypes';
 import shortenItem from '../shortenItem';
+import has from 'lodash/has';
 import { Subscriptions } from '../../types/subscriptionsTypes';
 import { encodeAddress } from '@polkadot/util-crypto';
 import { SourceTargetState } from '../../types/sourceTargetTypes';
@@ -188,7 +189,7 @@ interface InputTransactionUpdates {
 
 function deepFind(data: any[], value: string) {
   function iter(subData: any) {
-    if (value === OK ? subData.toJSON().ok : subData.toString() === value) {
+    if (value === OK ? has(subData.toJSON(), 'ok') : subData.toString() === value) {
       result = subData;
       return true;
     }
@@ -297,7 +298,8 @@ export const handleTransactionUpdates = async ({
   const messageFinalizedOnTarget = stepEvaluator(transaction.messageNonce, nonceOfFinalTargetBlock);
 
   // 5. Once the source chain is confirms through the latestReceivedNonceOnSource, that target chain is aware about the message nonce, the transaction is completed.
-  const sourceConfirmationReceived = stepEvaluator(transaction.messageNonce, latestReceivedNonceOnSource);
+  const sourceConfirmationReceived =
+    stepEvaluator(transaction.messageNonce, latestReceivedNonceOnSource) && messageFinalizedOnTarget;
   const onChainCompleted = (value: boolean) => completionStatus(value) === TransactionStatusEnum.COMPLETED;
 
   // 4.1 * We catch the best block on target related to the message delivery.

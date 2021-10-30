@@ -253,6 +253,7 @@ describe('<App />', () => {
         await page
           .waitForSelector(`#test-step-message-dispatch-confirmation > ${ids.checkCircleComponent}`)
           .then(() => logger.info('     -- Step 5 "Message dispatch confirmation" completed'));
+        await page.waitForTimeout(15000);
         await page
           .waitForSelector(`#test-step-finalized-message > ${ids.checkCircleComponent}`)
           .then(() => logger.info('     -- Step 6 "Finalize message" completed'));
