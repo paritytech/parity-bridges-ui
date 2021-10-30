@@ -30,6 +30,7 @@ import {
   Step
 } from '../../types/transactionTypes';
 import shortenItem from '../shortenItem';
+import has from 'lodash/has';
 import { Subscriptions } from '../../types/subscriptionsTypes';
 import { encodeAddress } from '@polkadot/util-crypto';
 import { SourceTargetState } from '../../types/sourceTargetTypes';
@@ -188,7 +189,7 @@ interface InputTransactionUpdates {
 
 function deepFind(data: any[], value: string) {
   function iter(subData: any) {
-    if (value === OK ? subData.toJSON().ok : subData.toString() === value) {
+    if (value === OK ? has(subData.toJSON(), 'ok') : subData.toString() === value) {
       result = subData;
       return true;
     }

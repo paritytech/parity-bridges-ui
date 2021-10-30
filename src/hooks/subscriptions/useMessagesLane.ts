@@ -48,8 +48,8 @@ const useMessagesLane = ({ isApiReady, api, chain }: SubscriptionInput): Output 
   const getOutboundLaneData = useCallback(
     () =>
       api.query[bridgedMessages].outboundLanes(laneId, (res: any) => {
-        const latest_generated_nonce = res.get('latest_generated_nonce').toString();
-        const latest_received_nonce = res.get('latest_received_nonce').toString();
+        const latest_generated_nonce = res.get('latestGeneratedNonce').toString();
+        const latest_received_nonce = res.get('latestReceivedNonce').toString();
         const pendingMessages = new BN(latest_generated_nonce).sub(new BN(latest_received_nonce));
 
         setOutboudLanes({
@@ -64,7 +64,7 @@ const useMessagesLane = ({ isApiReady, api, chain }: SubscriptionInput): Output 
   const getInboundLaneData = useCallback(
     () =>
       api.query[bridgedMessages].inboundLanes(laneId, (res: any) => {
-        setBridgesReceivedMessages(res.get('last_confirmed_nonce').toString());
+        setBridgesReceivedMessages(res.get('lastConfirmedNonce').toString());
       }),
     [api.query, bridgedMessages, laneId, setBridgesReceivedMessages]
   );
