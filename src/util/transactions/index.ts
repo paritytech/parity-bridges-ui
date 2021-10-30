@@ -298,7 +298,8 @@ export const handleTransactionUpdates = async ({
   const messageFinalizedOnTarget = stepEvaluator(transaction.messageNonce, nonceOfFinalTargetBlock);
 
   // 5. Once the source chain is confirms through the latestReceivedNonceOnSource, that target chain is aware about the message nonce, the transaction is completed.
-  const sourceConfirmationReceived = stepEvaluator(transaction.messageNonce, latestReceivedNonceOnSource);
+  const sourceConfirmationReceived =
+    stepEvaluator(transaction.messageNonce, latestReceivedNonceOnSource) && messageFinalizedOnTarget;
   const onChainCompleted = (value: boolean) => completionStatus(value) === TransactionStatusEnum.COMPLETED;
 
   // 4.1 * We catch the best block on target related to the message delivery.
