@@ -29,6 +29,7 @@ import { EstimatedFee } from '../components/EstimatedFee';
 import { DebouncedTextField } from './DebouncedTextField';
 import { useInternalTransfer } from '../hooks/chain/useInternalTransfer';
 import { useGUIContext } from '../contexts/GUIContextProvider';
+import FeePaySelector from './FeePaySelector';
 
 const useStyles = makeStyles((theme) => ({
   inputAmount: {
@@ -116,6 +117,7 @@ function Transfer() {
       <ButtonSubmit disabled={!transactionReadyToExecute} onClick={sendTransaction}>
         {buttonLabel}
       </ButtonSubmit>
+      <FeePaySelector />
       <EstimatedFee />
     </>
   );
