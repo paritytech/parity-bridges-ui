@@ -25,7 +25,8 @@ import { TransactionActionCreators } from '../actions/transactionActions';
 const useStyles = makeStyles(() => ({
   container: {
     minHeight: '20px',
-    display: 'flex'
+    display: 'flex',
+    alignItems: 'center'
   }
 }));
 
@@ -56,9 +57,9 @@ export default function FeePaySelector() {
       </Typography>
       <ChainLogo chain={chain} />
 
-      <Select onChange={onChange} value={payFee}>
-        <MenuItem value={PayFee.AtSourceChain}>{sourceChain} (Source)</MenuItem>
-        <MenuItem value={PayFee.AtTargetChain}>{targetChain} (Target)</MenuItem>
+      <Select onChange={onChange} value={payFee} disableUnderline>
+        <MenuItem value={PayFee.AtSourceChain}>Source Chain </MenuItem>
+        <MenuItem value={PayFee.AtTargetChain}>Target Chain </MenuItem>
       </Select>
     </div>
   );
