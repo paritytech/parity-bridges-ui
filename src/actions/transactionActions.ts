@@ -24,7 +24,8 @@ import {
   UpdatedTransactionStatusType,
   ReceiverPayload,
   PayloadEstimatedFee,
-  TransactionState
+  TransactionState,
+  PayFee
 } from '../types/transactionTypes';
 
 enum TransactionActionTypes {
@@ -48,7 +49,8 @@ enum TransactionActionTypes {
   SET_TRANSFER_TYPE = 'SET_TRANSFER_TYPE',
   ENABLE_TX_BUTTON = 'ENABLE_TX_BUTTON',
   DISABLE_TX_BUTTON = 'DISABLE_TX_BUTTON',
-  RESET = 'RESET'
+  RESET = 'RESET',
+  CHANGE_DISPATCH_FEE_PAY_CHAIN = 'CHANGE_DISPATCH_FEE_PAY_CHAIN'
 }
 
 const setTransferAmount = (transferAmount: string | null, chainDecimals?: number) => {
@@ -193,6 +195,11 @@ const disableTXButton = () => ({
   type: TransactionActionTypes.DISABLE_TX_BUTTON
 });
 
+const changeDispatchFeePayChain = (payFee: PayFee) => ({
+  payload: { payFee },
+  type: TransactionActionTypes.CHANGE_DISPATCH_FEE_PAY_CHAIN
+});
+
 const TransactionActionCreators = {
   setSender,
   setAction,
@@ -212,6 +219,7 @@ const TransactionActionCreators = {
   setTransferType,
   enableTxButton,
   disableTXButton,
+  changeDispatchFeePayChain,
   reset
 };
 

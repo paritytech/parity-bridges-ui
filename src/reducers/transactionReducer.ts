@@ -337,6 +337,13 @@ export default function transactionReducer(state: TransactionState, action: Tran
         transactionReadyToExecute: false
       };
     }
+    case TransactionActionTypes.CHANGE_DISPATCH_FEE_PAY_CHAIN: {
+      return {
+        ...state,
+        payFee: action.payload.payFee,
+        shouldEvaluatePayloadEstimatedFee: true
+      };
+    }
     default:
       throw new Error(`Unknown type: ${action.type}`);
   }
