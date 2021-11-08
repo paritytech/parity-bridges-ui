@@ -35,8 +35,9 @@ const useStyles = makeStyles((theme) => ({
   value: {
     backgroundColor: '#f5dada',
     fontFamily: 'monospace',
-    paddingLeft: theme.spacing(1),
-    paddingRight: theme.spacing(1)
+    paddingLeft: theme.spacing(0.7),
+    paddingRight: theme.spacing(0.7),
+    borderRadius: '3px'
   },
   textContainer: {
     marginLeft: theme.spacing(0.5)

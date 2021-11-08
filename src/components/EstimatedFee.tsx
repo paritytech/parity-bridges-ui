@@ -23,9 +23,10 @@ import { Alert } from '.';
 import { formatBalance } from '@polkadot/util';
 import FeeValue from './FeeValue';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   container: {
-    display: 'flex'
+    display: 'flex',
+    marginTop: theme.spacing(1)
   }
 }));
 
@@ -78,7 +79,7 @@ export const EstimatedFee = (): React.ReactElement => {
           </Typography>
           <FeeValue
             amount={estimatedSourceFeeAmount}
-            tooltip={`Message Delivery Fee: ${estimatedFeeMessageDeliveryAmount} + Send Message Fee: ${estimatedFeeBridgeCallAmount} `}
+            tooltip={`Message Delivery Fee: ${estimatedFeeMessageDeliveryAmount} ${srcChainTokens[0]} + Send Message Fee: ${estimatedFeeBridgeCallAmount} ${srcChainTokens[0]}`}
             chainTokens={srcChainTokens[0]}
             showPlus
           />

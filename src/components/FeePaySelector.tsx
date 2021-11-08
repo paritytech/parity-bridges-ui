@@ -22,11 +22,14 @@ import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
 import { TransactionActionCreators } from '../actions/transactionActions';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   container: {
-    minHeight: '20px',
+    minHeight: theme.spacing(2),
     display: 'flex',
     alignItems: 'center'
+  },
+  item: {
+    marginLeft: theme.spacing(0.8)
   }
 }));
 
@@ -53,14 +56,27 @@ export default function FeePaySelector() {
   return (
     <div className={classes.container}>
       <Typography variant="body1" color="secondary">
-        Dispatch fee payed on:{' '}
+        Dispatch fee payed on
       </Typography>
-      <ChainLogo chain={chain} />
+      <div className={classes.item}>
+        <ChainLogo chain={chain} />
+      </div>
 
-      <Select onChange={onChange} value={payFee} disableUnderline>
-        <MenuItem value={PayFee.AtSourceChain}>Source Chain </MenuItem>
-        <MenuItem value={PayFee.AtTargetChain}>Target Chain </MenuItem>
-      </Select>
+      <div className={classes.item}>
+        <Select
+          onChange={onChange}
+          value={payFee}
+          disableUnderline
+          renderValue={(): React.ReactNode => (
+            <Typography variant="body1" color="secondary" className={classes.item}>
+              {chain}
+            </Typography>
+          )}
+        >
+          <MenuItem value={PayFee.AtSourceChain}>Source Chain </MenuItem>
+          <MenuItem value={PayFee.AtTargetChain}>Target Chain </MenuItem>
+        </Select>
+      </div>
     </div>
   );
 }
