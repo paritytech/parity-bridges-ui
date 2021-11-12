@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import { hexToU8a, isHex, u8aToHex } from '@polkadot/util';
+import { formatBalance, hexToU8a, isHex, u8aToHex } from '@polkadot/util';
 import type { SignedBlock, BlockHash } from '@polkadot/types/interfaces';
 import type { Vec } from '@polkadot/types';
 
@@ -410,4 +410,17 @@ export const handleInternalTransactionUpdates = (transaction: TransactionStatusT
   }
 
   return { ...transaction, steps: updatedSteps, status: nextStatus, evaluating: false };
+};
+
+export const getFormattedAmount = (api: ApiPromise, amount: BN | null, type: TransactionTypes): string | null => {
+  if ((type === TransactionTypes.TRANSFER || type === TransactionTypes.INTERNAL_TRANSFER) && amount) {
+    const decimals = api.registry.chainDecimals[0];
+    const withUnit = api.registry.chainTokens[0];
+    return formatBalance(amount, {
+      decimals,
+      withUnit,
+      withSi: true
+    });
+  }
+  return null;
 };

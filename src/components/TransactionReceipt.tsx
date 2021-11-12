@@ -18,16 +18,11 @@ import React from 'react';
 
 import { Box, Card, makeStyles, Typography } from '@material-ui/core';
 import { IconTxStatus } from './Icons';
-import { Step, TransactionStatusEnum } from '../types/transactionTypes';
-import TransactionHeader from './TransactionHeader';
+import { Step } from '../types/transactionTypes';
 import { Web3Icon } from './Web3Icon';
 
 interface Props {
   steps: Step[];
-  status: TransactionStatusEnum;
-  type?: string;
-  sourceChain: string;
-  targetChain: string;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -51,12 +46,11 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const TransactionReceipt = ({ type, steps, status, sourceChain, targetChain }: Props) => {
+const TransactionReceipt = ({ steps }: Props) => {
   const classes = useStyles();
 
   return (
     <Card elevation={23} className={classes.card}>
-      <TransactionHeader type={type} status={status} sourceChain={sourceChain} targetChain={targetChain} />
       {steps.map(({ chainType, label, labelOnChain, status, id }) => (
         <p key={id} id={id}>
           <IconTxStatus status={status} /> <Web3Icon>{chainType}</Web3Icon> {chainType}: {label}&nbsp;

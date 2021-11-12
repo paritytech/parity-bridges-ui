@@ -85,9 +85,12 @@ export interface TransactionStatusType extends UpdatedTransactionStatusType {
   input: string;
   sourceChain: string;
   targetChain: string;
+  senderCompanionAccount?: string | null;
+  senderName: string | null;
   sourceAccount: null | string;
   receiverAddress: null | string;
   type: string;
+  transferAmount?: string | null;
   status: TransactionStatusEnum;
   deliveryBlock: string | null;
 }

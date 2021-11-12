@@ -27,21 +27,22 @@ import { useUpdateMessageContext } from '../../contexts/MessageContext';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import { useTransactionContext, useUpdateTransactionContext } from '../../contexts/TransactionContext';
 import useLaneId from './useLaneId';
-import { TransactionStatusEnum } from '../../types/transactionTypes';
+import { TransactionStatusEnum, TransactionTypes } from '../../types/transactionTypes';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
-import { createEmptySteps, getTransactionDisplayPayload } from '../../util/transactions/';
+import { createEmptySteps, getFormattedAmount, getTransactionDisplayPayload } from '../../util/transactions/';
 import logger from '../../util/logger';
 import useApiCalls from '../api/useApiCalls';
 import { TX_CANCELLED } from '../../constants';
+import { getName } from '../../util/accounts';
 
 interface Props {
   input: string;
-  type: string;
+  type: TransactionTypes;
   weightInput?: string | null;
 }
 
 function useSendMessage({ input, type }: Props) {
-  const { estimatedSourceFee, receiverAddress, payload } = useTransactionContext();
+  const { estimatedSourceFee, receiverAddress, payload, transferAmount } = useTransactionContext();
   const { dispatchTransaction } = useUpdateTransactionContext();
   const laneId = useLaneId();
   const sourceTargetDetails = useSourceTarget();
@@ -52,7 +53,7 @@ function useSendMessage({ input, type }: Props) {
     },
     targetChainDetails: { chain: targetChain }
   } = sourceTargetDetails;
-  const { account } = useAccountContext();
+  const { account, companionAccount } = useAccountContext();
   const { createType } = useApiCalls();
   const { dispatchMessage } = useUpdateMessageContext();
 
@@ -86,6 +87,8 @@ function useSendMessage({ input, type }: Props) {
           sourceTargetDetails
         });
 
+        const formattedTransferAmount = getFormattedAmount(sourceApi, transferAmount, type);
+
         const unsub = await bridgeMessage.signAndSend(sourceAccount, { ...options }, ({ events = [], status }) => {
           if (status.isReady) {
             dispatchTransaction(
@@ -97,7 +100,10 @@ function useSendMessage({ input, type }: Props) {
                 messageNonce: null,
                 receiverAddress,
                 sourceAccount: account.address,
+                senderName: getName(account),
+                companionAccount,
                 sourceChain,
+                transferAmount: formattedTransferAmount,
                 status: TransactionStatusEnum.CREATED,
                 targetChain,
                 type,

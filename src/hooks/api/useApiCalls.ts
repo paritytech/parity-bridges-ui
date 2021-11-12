@@ -37,6 +37,7 @@ import { encodeAddress } from '@polkadot/util-crypto';
 import { AccountActionCreators } from '../../actions/accountActions';
 import { BalanceState } from '../../types/accountTypes';
 import { createEmptyInternalSteps } from '../../util/transactions';
+import { getName } from '../../util/accounts';
 
 const useApiCalls = (): ApiCallsContextType => {
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
@@ -109,6 +110,7 @@ const useApiCalls = (): ApiCallsContextType => {
                 messageNonce: null,
                 receiverAddress,
                 sourceAccount: account.address,
+                senderName: getName(account),
                 sourceChain,
                 status: TransactionStatusEnum.IN_PROGRESS,
                 targetChain: '',

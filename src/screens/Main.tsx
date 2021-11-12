@@ -86,29 +86,34 @@ function Main() {
         <ButtonExt> Help & Feedback </ButtonExt>
       </BoxSidebar>
       <BoxUI>
-        <Box component="div" display="flex" marginY={2} textAlign="left" width="100%">
-          <MenuAction actions={actions} action={action} changeMenu={setAction} />
-          {action === TransactionTypes.TRANSFER && (
-            <ToggleButtonGroup
-              size="small"
-              value={isBridged}
-              exclusive
-              onChange={handleOnSwitch}
-              classes={{ root: classes.root }}
-            >
-              <ToggleButton value={false}>Internal</ToggleButton>
-              <ToggleButton value={true}>Bridge</ToggleButton>
-            </ToggleButtonGroup>
-          )}
+        <Box>
+          <Box component="div" display="flex" marginY={2} textAlign="left" width="100%">
+            <MenuAction actions={actions} action={action} changeMenu={setAction} />
+            {action === TransactionTypes.TRANSFER && (
+              <ToggleButtonGroup
+                size="small"
+                value={isBridged}
+                exclusive
+                onChange={handleOnSwitch}
+                classes={{ root: classes.root }}
+              >
+                <ToggleButton value={false}>Internal</ToggleButton>
+                <ToggleButton value={true}>Bridge</ToggleButton>
+              </ToggleButtonGroup>
+            )}
+          </Box>
+
+          <ExtensionAccountCheck component={<Sender />} />
+
+          <Box marginY={2} textAlign="center" width="100%">
+            <ArrowDownwardIcon fontSize="large" color="primary" />
+          </Box>
+          <>{ActionComponents[action]}</>
         </Box>
 
-        <ExtensionAccountCheck component={<Sender />} />
-
-        <Box marginY={2} textAlign="center" width="100%">
-          <ArrowDownwardIcon fontSize="large" color="primary" />
+        <Box width="100%">
+          <Transactions type={action} />
         </Box>
-        <>{ActionComponents[action]}</>
-        <Transactions type={action} />
         <SnackBar />
       </BoxUI>
     </>

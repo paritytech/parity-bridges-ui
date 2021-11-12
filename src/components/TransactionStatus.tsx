@@ -18,6 +18,7 @@ import React from 'react';
 import { TransactionStatusType } from '../types/transactionTypes';
 import TransactionSwitchTab from './TransactionSwitchTab';
 import TransactionReceipt from './TransactionReceipt';
+import TransactionHeader from './TransactionHeader';
 
 export interface TransactionDisplayProps {
   size?: 'sm';
@@ -28,26 +29,49 @@ interface Props {
 }
 
 const TransactionStatus = ({ transaction }: Props) => {
-  const { payloadHex, transactionDisplayPayload, sourceChain, targetChain } = transaction;
+  const {
+    payloadHex,
+    transactionDisplayPayload,
+    sourceChain,
+    targetChain,
+    sourceAccount,
+    senderCompanionAccount,
+    senderName,
+    transferAmount,
+    type,
+    status
+  } = transaction;
 
   return (
-    <TransactionSwitchTab
-      payloadHex={payloadHex}
-      transactionDisplayPayload={transactionDisplayPayload}
-      status={transaction.status}
-      type={transaction.type}
-      sourceChain={sourceChain}
-      targetChain={targetChain}
-    >
-      <TransactionReceipt
-        key={transaction.id}
-        steps={transaction.steps}
-        type={transaction.type}
-        status={transaction.status}
+    <>
+      <TransactionHeader
+        type={type}
+        status={status}
         sourceChain={sourceChain}
         targetChain={targetChain}
+        senderName={senderName}
+        sourceAccount={sourceAccount ? sourceAccount : undefined}
+        senderCompanionAccount={senderCompanionAccount ? senderCompanionAccount : undefined}
+        transferAmount={transferAmount}
       />
-    </TransactionSwitchTab>
+      <TransactionSwitchTab
+        payloadHex={payloadHex}
+        transactionDisplayPayload={transactionDisplayPayload}
+        status={transaction.status}
+        type={transaction.type}
+        sourceChain={sourceChain}
+        targetChain={targetChain}
+      >
+        <TransactionReceipt
+          key={transaction.id}
+          steps={transaction.steps}
+          type={transaction.type}
+          status={transaction.status}
+          sourceChain={sourceChain}
+          targetChain={targetChain}
+        />
+      </TransactionSwitchTab>
+    </>
   );
 };
 

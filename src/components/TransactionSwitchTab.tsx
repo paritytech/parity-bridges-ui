@@ -35,6 +35,10 @@ interface Props {
   type?: string;
   sourceChain: string;
   targetChain: string;
+  sourceAccount: string | undefined;
+  senderCompanionAccount: string | undefined;
+  senderName?: string | null;
+  transferAmount?: string | null | undefined;
 }
 
 const TransactionSwitchTab = ({
@@ -45,7 +49,11 @@ const TransactionSwitchTab = ({
   type,
   status,
   sourceChain,
-  targetChain
+  targetChain,
+  sourceAccount,
+  senderName,
+  senderCompanionAccount,
+  transferAmount
 }: Props) => {
   const [tab, setTab] = useState(SwitchTabEnum.RECEIPT);
 
@@ -85,6 +93,10 @@ const TransactionSwitchTab = ({
         transactionDisplayPayload={transactionDisplayPayload}
         sourceChain={sourceChain}
         targetChain={targetChain}
+        sourceAccount={sourceAccount}
+        senderName={senderName}
+        senderCompanionAccount={senderCompanionAccount}
+        transferAmount={transferAmount}
       />
     </>
   );

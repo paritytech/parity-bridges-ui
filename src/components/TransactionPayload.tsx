@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import React, { useCallback } from 'react';
 import { Card, makeStyles, CircularProgress, Typography } from '@material-ui/core';
 import ReactJson from 'react-json-view';
@@ -32,10 +34,6 @@ interface Props {
   tab: SwitchTabEnum;
   payloadHex: string | null;
   transactionDisplayPayload: DisplayPayload | null;
-  status: TransactionStatusEnum;
-  type?: string;
-  sourceChain: string;
-  targetChain: string;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -65,15 +63,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const TransactionPayload = ({
-  tab,
-  payloadHex,
-  transactionDisplayPayload,
-  type,
-  status,
-  sourceChain,
-  targetChain
-}: Props) => {
+const TransactionPayload = ({ tab, payloadHex, transactionDisplayPayload }: Props) => {
   const classes = useStyles();
   const { payloadEstimatedFeeLoading } = useTransactionContext();
   const { dispatchMessage } = useUpdateMessageContext();
@@ -93,9 +83,7 @@ const TransactionPayload = ({
 
   return (
     <Card elevation={23} className={classes.card}>
-      {payloadHex && (
-        <TransactionHeader type={type} status={status} sourceChain={sourceChain} targetChain={targetChain} />
-      )}
+      {payloadHex && <p>Aca iba el header</p>}
       {payloadEstimatedFeeLoading && (
         <div className={classes.loader}>
           <CircularProgress />

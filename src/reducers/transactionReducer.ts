@@ -292,7 +292,7 @@ export default function transactionReducer(state: TransactionState, action: Tran
 
       return {
         ...state,
-        senderAccount: senderAccount
+        senderAccount
       };
     }
     case TransactionActionTypes.UPDATE_SENDER_BALANCES: {
