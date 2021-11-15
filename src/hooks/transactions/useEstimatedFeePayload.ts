@@ -102,7 +102,7 @@ export const useEstimatedFeePayload = (
           receiverAddress: currentTransactionState.receiverAddress,
           weight
         };
-        return { estimatedFee, payload };
+        return { estimatedSourceFee: estimatedFee, payload };
       }
       const { call, weight } = await getTransactionCallWeight({
         action,

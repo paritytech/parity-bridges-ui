@@ -21,6 +21,7 @@ import { PayFee } from '../types/transactionTypes';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
 import { TransactionActionCreators } from '../actions/transactionActions';
+import { useGUIContext } from '../contexts/GUIContextProvider';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -38,6 +39,7 @@ export default function FeePaySelector() {
   const sourceTargetDetails = useSourceTarget();
   const { dispatchTransaction } = useUpdateTransactionContext();
   const { payFee } = useTransactionContext();
+  const { isBridged } = useGUIContext();
 
   const {
     sourceChainDetails: { chain: sourceChain },
@@ -52,6 +54,10 @@ export default function FeePaySelector() {
   );
 
   const chain = payFee === PayFee.AtSourceChain ? sourceChain : targetChain;
+
+  if (!isBridged) {
+    return null;
+  }
 
   return (
     <div className={classes.container}>
