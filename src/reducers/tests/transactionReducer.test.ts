@@ -171,7 +171,10 @@ describe('transactionReducer', () => {
   describe('SET_PAYLOAD_ESTIMATED_FEE', () => {
     type PayloadEstimatedFee = {
       payload: TransactionPayload | null;
-      estimatedFee: string | null;
+      estimatedSourceFee: string | null;
+      estimatedFeeMessageDelivery: string | null;
+      estimatedFeeBridgeCall: string | null;
+      estimatedTargetFee: string | null;
     };
 
     let payloadEstimatedFeeError: string | null;
@@ -180,7 +183,13 @@ describe('transactionReducer', () => {
 
     beforeEach(() => {
       payloadEstimatedFeeError = null;
-      payloadEstimatedFee = { estimatedFee: null, payload: null };
+      payloadEstimatedFee = {
+        estimatedSourceFee: null,
+        estimatedFeeMessageDelivery: null,
+        estimatedFeeBridgeCall: null,
+        estimatedTargetFee: null,
+        payload: null
+      };
       payloadEstimatedFeeLoading = false;
       (getTransactionDisplayPayload as jest.Mock).mockReturnValue({
         payloadHex: null,

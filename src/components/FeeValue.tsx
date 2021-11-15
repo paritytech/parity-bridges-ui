@@ -15,6 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React from 'react';
+import cx from 'classnames';
 import { Typography, Tooltip } from '@material-ui/core';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
@@ -45,9 +46,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface Props {
-  chainTokens: string;
   amount: string;
-  tooltip?: string;
+  tooltip?: string | null;
   showPlus?: boolean;
 }
 
@@ -59,20 +59,17 @@ interface TextStyle {
 const CustomTypography = ({ text, background = false }: TextStyle) => {
   const classes = useStyles();
   return (
-    <div className={classes.textContainer}>
-      <Typography variant="body1" className={background ? classes.value : ''}>
-        {text}
-      </Typography>
-    </div>
+    <Typography variant="body1" className={cx(classes.textContainer, background ? classes.value : '')}>
+      {text}
+    </Typography>
   );
 };
 
-export default function FeeValue({ tooltip = '', chainTokens, amount, showPlus = false }: Props) {
+export default function FeeValue({ tooltip = '', amount, showPlus = false }: Props) {
   const classes = useStyles();
   return (
     <div className={classes.container}>
       <CustomTypography text={amount} background />
-      <CustomTypography text={chainTokens} />
 
       {tooltip && (
         <Tooltip title={tooltip} arrow placement="top">

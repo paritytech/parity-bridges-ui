@@ -76,7 +76,10 @@ export interface TransactionDisplayPayload {
 
 export type PayloadEstimatedFee = {
   payload: TransactionPayload | null;
-  estimatedFee: string | null;
+  estimatedSourceFee: string | null;
+  estimatedFeeMessageDelivery: string | null;
+  estimatedFeeBridgeCall: string | null;
+  estimatedTargetFee: string | null;
 };
 
 export type DisplayPayload = TransactionDisplayPayload | InternalTransferPayload;
