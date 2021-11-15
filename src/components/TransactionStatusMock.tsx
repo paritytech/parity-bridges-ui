@@ -17,33 +17,33 @@
 import React, { useEffect, useState } from 'react';
 
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
-import { Step, TransactionStatusEnum, TransactionTypes } from '../types/transactionTypes';
-import TransactionReceipt from './TransactionReceipt';
-import TransactionSwitchTab from './TransactionSwitchTab';
+import { Step, TransactionStatusEnum } from '../types/transactionTypes';
+
 import { createEmptyInternalSteps, createEmptySteps, getFormattedAmount } from '../util/transactions/';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import { useGUIContext } from '../contexts/GUIContextProvider';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { getName } from '../util/accounts';
-import TransactionHeader from './TransactionHeader';
+import TransactionStatus from './TransactionStatus';
+
 interface Props {
-  type?: string;
+  type: string;
 }
 
 const TransactionStatusMock = ({ type }: Props) => {
   const [steps, setSteps] = useState<Array<Step>>([]);
   const { isBridged } = useGUIContext();
   const {
-    sourceChainDetails: {
-      chain: sourceChain,
-      apiConnection: { api: sourceApi }
-    },
-    targetChainDetails: { chain: targetChain }
+    sourceChainDetails: { chain: sourceChain },
+    targetChainDetails: {
+      chain: targetChain,
+      apiConnection: { api: targetApi }
+    }
   } = useSourceTarget();
 
   const { account, companionAccount } = useAccountContext();
 
-  const { payloadHex, transactionDisplayPayload, transferAmount, action } = useTransactionContext();
+  const { payloadHex, transactionDisplayPayload, transferAmount, action, receiverAddress } = useTransactionContext();
 
   useEffect(() => {
     if (isBridged) {
@@ -54,38 +54,23 @@ const TransactionStatusMock = ({ type }: Props) => {
   }, [isBridged, sourceChain, targetChain]);
 
   return (
-    <>
-      <TransactionHeader
-        type={type}
-        status={TransactionStatusEnum.NOT_STARTED}
-        sourceChain={sourceChain}
-        targetChain={targetChain}
-        senderName={getName(account)}
-        sourceAccount={account ? account.address : undefined}
-        senderCompanionAccount={companionAccount ? companionAccount : undefined}
-        transferAmount={transferAmount}
-      />
-      <TransactionSwitchTab
-        payloadHex={payloadHex}
-        transactionDisplayPayload={transactionDisplayPayload}
-        type={type}
-        status={TransactionStatusEnum.NOT_STARTED}
-        sourceChain={sourceChain}
-        targetChain={targetChain}
-      >
-        <TransactionReceipt
-          steps={steps}
-          type={isBridged ? type : TransactionTypes.INTERNAL_TRANSFER}
-          status={TransactionStatusEnum.NOT_STARTED}
-          sourceChain={sourceChain}
-          targetChain={targetChain}
-          sourceAccount={account ? account.address : null}
-          senderCompanionAccount={companionAccount}
-          senderName={account ? getName(account) : ''}
-          transferAmount={getFormattedAmount(sourceApi, transferAmount, action)}
-        />
-      </TransactionSwitchTab>
-    </>
+    <TransactionStatus
+      transaction={{
+        payloadHex,
+        transactionDisplayPayload,
+        status: TransactionStatusEnum.NOT_STARTED,
+        sourceChain,
+        targetChain,
+        sourceAccount: account && account.address,
+        senderCompanionAccount: companionAccount,
+        senderName: account && getName(account),
+        transferAmount: getFormattedAmount(targetApi, transferAmount, action),
+        type,
+        steps,
+        receiverAddress,
+        deliveryBlock: null
+      }}
+    />
   );
 };
 

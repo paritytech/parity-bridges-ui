@@ -16,37 +16,29 @@
 
 import React from 'react';
 
-import { Box, Typography } from '@material-ui/core';
-import { IconTxStatus } from './Icons';
-import { TransactionStatusEnum, TransactionTypes } from '../types/transactionTypes';
+import { Box } from '@material-ui/core';
+import AccountDisplay from './AccountDisplay';
+import { AddressKind } from '../types/accountTypes';
 
 interface Props {
-  status: TransactionStatusEnum;
-  type?: string;
-  sourceChain: string;
-  targetChain: string;
-  transferAmount?: string | null | undefined;
+  sourceAccount: string | undefined;
+  senderCompanionAccount: string | undefined;
+  senderName?: string | null;
 }
 
-const getType = (type: string | undefined) => {
-  if (!type) {
-    return type;
-  }
-  return type.replace('_', ' ');
-};
-
-const TransactionHeader = ({ type, status, sourceChain, targetChain, transferAmount }: Props) => {
-  let header = ` ${sourceChain} -> ${targetChain}`;
-  if (type === TransactionTypes.INTERNAL_TRANSFER) {
-    header = sourceChain;
-  }
-
+const TransactionAccounts = ({ sourceAccount, senderName, senderCompanionAccount }: Props) => {
   return (
     <Box className="header" component="p" id="test-transaction-header">
-      <IconTxStatus status={status} /> {getType(type)} {header}
-      <Typography>{transferAmount}</Typography>
+      <AccountDisplay address={sourceAccount} friendlyName={senderName} />
+      <AccountDisplay
+        address={senderCompanionAccount}
+        addressKind={AddressKind.COMPANION}
+        hideAddress
+        friendlyName={senderName}
+        withTooltip
+      />
     </Box>
   );
 };
 
-export default TransactionHeader;
+export default TransactionAccounts;

@@ -19,7 +19,7 @@ import { Box, Typography } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
 import isNull from 'lodash/isNull';
-import { BoxSidebar, BoxUI, ButtonExt, StorageDrawer, MenuAction, NetworkSides, NetworkStats } from '../components';
+import { BoxSidebar, BoxUI, ButtonExt, MenuAction, NetworkSides, NetworkStats } from '../components';
 import CustomCall from '../components/CustomCall';
 import Sender from '../components/Sender';
 import ExtensionAccountCheck from '../components/ExtensionAccountCheck';
@@ -81,7 +81,6 @@ function Main() {
           <BridgedLocalWrapper blurred>
             <NetworkStats />
           </BridgedLocalWrapper>
-          <StorageDrawer />
         </div>
         <ButtonExt> Help & Feedback </ButtonExt>
       </BoxSidebar>

@@ -19,7 +19,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import React, { useCallback } from 'react';
 import CloseIcon from '@material-ui/icons/Close';
 import HistoryIcon from '@material-ui/icons/History';
-import Transactions from './Transactions';
+//import Transactions from './Transactions';
 import { useGUIContext } from '../contexts/GUIContextProvider';
 import { ButtonDrawerMenu } from './Buttons';
 
@@ -69,7 +69,7 @@ export const StorageDrawer = () => {
           <IconButton onClick={handleDrawerClose} color="secondary" className={classes.closeDrawerIcon}>
             <CloseIcon />
           </IconButton>
-          <Transactions size="sm" />
+          {/*           <Transactions type={ }/> */}
         </div>
       </Fade>
     </Box>

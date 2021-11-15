@@ -21,7 +21,6 @@ import TransactionPayload from './TransactionPayload';
 import { DisplayPayload } from '../types/transactionTypes';
 import { SwitchTabEnum } from '../types/transactionTypes';
 import { useCallback } from 'react';
-import { TransactionStatusEnum } from '../types/transactionTypes';
 
 export interface TransactionDisplayProps {
   size?: 'sm';
@@ -31,30 +30,9 @@ interface Props {
   children: JSX.Element | JSX.Element[];
   payloadHex: string | null;
   transactionDisplayPayload: DisplayPayload | null;
-  status: TransactionStatusEnum;
-  type?: string;
-  sourceChain: string;
-  targetChain: string;
-  sourceAccount: string | undefined;
-  senderCompanionAccount: string | undefined;
-  senderName?: string | null;
-  transferAmount?: string | null | undefined;
 }
 
-const TransactionSwitchTab = ({
-  transactionDisplayProps,
-  children,
-  payloadHex,
-  transactionDisplayPayload,
-  type,
-  status,
-  sourceChain,
-  targetChain,
-  sourceAccount,
-  senderName,
-  senderCompanionAccount,
-  transferAmount
-}: Props) => {
+const TransactionSwitchTab = ({ transactionDisplayProps, children, payloadHex, transactionDisplayPayload }: Props) => {
   const [tab, setTab] = useState(SwitchTabEnum.RECEIPT);
 
   const getColorByState = (value: string) => (value === tab ? 'primary' : 'secondary');
@@ -86,17 +64,9 @@ const TransactionSwitchTab = ({
       {tab === SwitchTabEnum.RECEIPT && children}
       <TransactionPayload
         tab={tab}
-        type={type}
-        status={status}
         transactionDisplayProps={transactionDisplayProps}
         payloadHex={payloadHex}
         transactionDisplayPayload={transactionDisplayPayload}
-        sourceChain={sourceChain}
-        targetChain={targetChain}
-        sourceAccount={sourceAccount}
-        senderName={senderName}
-        senderCompanionAccount={senderCompanionAccount}
-        transferAmount={transferAmount}
       />
     </>
   );

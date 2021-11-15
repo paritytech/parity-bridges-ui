@@ -85,7 +85,7 @@ export type PayloadEstimatedFee = {
 export type DisplayPayload = TransactionDisplayPayload | InternalTransferPayload;
 
 export interface TransactionStatusType extends UpdatedTransactionStatusType {
-  input: string;
+  input?: string;
   sourceChain: string;
   targetChain: string;
   senderCompanionAccount?: string | null;

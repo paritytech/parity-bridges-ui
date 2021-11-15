@@ -14,15 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import React, { useCallback } from 'react';
 import { Card, makeStyles, CircularProgress, Typography } from '@material-ui/core';
 import ReactJson from 'react-json-view';
-import TransactionHeader from './TransactionHeader';
+
 import { MessageActionsCreators } from '../actions/messageActions';
 import { useTransactionContext } from '../contexts/TransactionContext';
-import { DisplayPayload, SwitchTabEnum, TransactionStatusEnum } from '../types/transactionTypes';
+import { DisplayPayload, SwitchTabEnum } from '../types/transactionTypes';
 import { useUpdateMessageContext } from '../contexts/MessageContext';
 
 export interface TransactionDisplayProps {
@@ -83,7 +81,6 @@ const TransactionPayload = ({ tab, payloadHex, transactionDisplayPayload }: Prop
 
   return (
     <Card elevation={23} className={classes.card}>
-      {payloadHex && <p>Aca iba el header</p>}
       {payloadEstimatedFeeLoading && (
         <div className={classes.loader}>
           <CircularProgress />

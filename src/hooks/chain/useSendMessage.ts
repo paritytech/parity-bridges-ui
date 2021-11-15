@@ -170,6 +170,7 @@ function useSendMessage({ input, type }: Props) {
     },
     [
       account,
+      companionAccount,
       createType,
       dispatchMessage,
       dispatchTransaction,
@@ -178,11 +179,11 @@ function useSendMessage({ input, type }: Props) {
       laneId,
       payload,
       receiverAddress,
-      sourceApi.rpc.chain,
-      sourceApi.tx,
+      sourceApi,
       sourceChain,
       sourceTargetDetails,
       targetChain,
+      transferAmount,
       type
     ]
   );

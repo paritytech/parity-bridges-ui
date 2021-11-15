@@ -15,10 +15,13 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React from 'react';
+import { Accordion, AccordionSummary, AccordionDetails } from '@material-ui/core';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { TransactionStatusType } from '../types/transactionTypes';
 import TransactionSwitchTab from './TransactionSwitchTab';
 import TransactionReceipt from './TransactionReceipt';
 import TransactionHeader from './TransactionHeader';
+import TransactionAccounts from './TransactionAccounts';
 
 export interface TransactionDisplayProps {
   size?: 'sm';
@@ -39,11 +42,12 @@ const TransactionStatus = ({ transaction }: Props) => {
     senderName,
     transferAmount,
     type,
-    status
+    status,
+    steps
   } = transaction;
 
   return (
-    <>
+    /*     <>
       <TransactionHeader
         type={type}
         status={status}
@@ -58,20 +62,31 @@ const TransactionStatus = ({ transaction }: Props) => {
         payloadHex={payloadHex}
         transactionDisplayPayload={transactionDisplayPayload}
         status={transaction.status}
-        type={transaction.type}
-        sourceChain={sourceChain}
-        targetChain={targetChain}
       >
-        <TransactionReceipt
-          key={transaction.id}
-          steps={transaction.steps}
-          type={transaction.type}
-          status={transaction.status}
+        <TransactionReceipt steps={transaction.steps} />
+      </TransactionSwitchTab>
+    </> */
+    <Accordion>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+        <TransactionHeader
+          type={type}
+          status={status}
           sourceChain={sourceChain}
           targetChain={targetChain}
+          transferAmount={transferAmount}
         />
-      </TransactionSwitchTab>
-    </>
+      </AccordionSummary>
+      <AccordionDetails>
+        <TransactionAccounts
+          senderName={senderName}
+          sourceAccount={sourceAccount ? sourceAccount : undefined}
+          senderCompanionAccount={senderCompanionAccount ? senderCompanionAccount : undefined}
+        />
+        <TransactionSwitchTab payloadHex={payloadHex} transactionDisplayPayload={transactionDisplayPayload}>
+          <TransactionReceipt steps={steps} />
+        </TransactionSwitchTab>
+      </AccordionDetails>
+    </Accordion>
   );
 };
 

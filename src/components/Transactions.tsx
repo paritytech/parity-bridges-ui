@@ -18,11 +18,11 @@ import React from 'react';
 
 import { useTransactionContext } from '../contexts/TransactionContext';
 import TransactionStatusMock from './TransactionStatusMock';
-import { TransactionStatusType } from '../types/transactionTypes';
+import { TransactionStatusType, TransactionTypes } from '../types/transactionTypes';
 import TransactionStatus, { TransactionDisplayProps } from './TransactionStatus';
 
 interface Props extends TransactionDisplayProps {
-  type?: string;
+  type: TransactionTypes;
 }
 
 const Transactions = ({ type, ...transactionDisplayProps }: Props) => {
