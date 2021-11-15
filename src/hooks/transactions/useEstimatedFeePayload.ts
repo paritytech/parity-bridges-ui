@@ -37,7 +37,13 @@ import { getFeeAndWeightForInternals, getTransactionCallWeight } from '../../uti
 import { useGUIContext } from '../../contexts/GUIContextProvider';
 import usePrevious from '../react/usePrevious';
 
-const emptyData = { payload: null, estimatedFee: null } as PayloadEstimatedFee;
+const emptyData = {
+  payload: null,
+  estimatedSourceFee: null,
+  estimatedFeeMessageDelivery: null,
+  estimatedFeeBridgeCall: null,
+  estimatedTargetFee: null
+} as PayloadEstimatedFee;
 
 export const useEstimatedFeePayload = (
   transactionState: TransactionState,
