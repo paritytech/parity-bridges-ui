@@ -20,7 +20,7 @@ import transactionReducer from '../reducers/transactionReducer';
 import { TransactionActionCreators } from '../actions/transactionActions';
 import useEstimatedFeePayload from '../hooks/transactions/useEstimatedFeePayload';
 import useResetTransactionState from '../hooks/transactions/useResetTransactionState';
-import { TransactionState, TransactionsActionType } from '../types/transactionTypes';
+import { TransactionState, TransactionsActionType, PayFee } from '../types/transactionTypes';
 import { useAccountContext } from './AccountContextProvider';
 import { useGUIContext } from './GUIContextProvider';
 import { initTransactionState } from '../reducers/initReducersStates/initTransactionState';
@@ -53,7 +53,7 @@ export function useUpdateTransactionContext() {
 export function TransactionContextProvider(props: TransactionContextProviderProps): React.ReactElement {
   const { children = null } = props;
   const { account, senderAccountBalance, senderCompanionAccountBalance, companionAccount } = useAccountContext();
-  const { action } = useGUIContext();
+  const { action, isBridged } = useGUIContext();
   const {
     sourceChainDetails: {
       configs: { ss58Format }
@@ -73,6 +73,10 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
   useEffect((): void => {
     action && dispatchTransaction(TransactionActionCreators.setAction(action));
   }, [action]);
+
+  useEffect((): void => {
+    !isBridged && dispatchTransaction(TransactionActionCreators.changeDispatchFeePayChain(PayFee.AtSourceChain));
+  }, [isBridged]);
 
   return (
     <TransactionContext.Provider value={transactionsState}>

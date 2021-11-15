@@ -22,6 +22,7 @@ import { useTransactionContext } from '../contexts/TransactionContext';
 import { Alert } from '.';
 import { formatBalance } from '@polkadot/util';
 import FeeValue from './FeeValue';
+import { useGUIContext } from '../contexts/GUIContextProvider';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -35,11 +36,11 @@ const getFormattedAmount = (fee: string | null, chainDecimals: number, chainToke
     ? formatBalance(fee, {
         decimals: chainDecimals,
         withUnit: chainTokens,
-        withSi: false
+        withSi: true
       })
     : null;
 
-export const EstimatedFee = (): React.ReactElement => {
+export const EstimatedFee = (): React.ReactElement | null => {
   const classes = useStyles();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   const {
@@ -51,6 +52,7 @@ export const EstimatedFee = (): React.ReactElement => {
     transactionRunning,
     evaluateTransactionStatusError
   } = useTransactionContext();
+  const { isBridged } = useGUIContext();
   const srcChainDecimals = sourceChainDetails.apiConnection.api.registry.chainDecimals[0];
   const tarChainDecimals = targetChainDetails.apiConnection.api.registry.chainDecimals[0];
 
@@ -66,27 +68,35 @@ export const EstimatedFee = (): React.ReactElement => {
   const estimatedSourceFeeAmount = getFormattedAmount(estimatedSourceFee, srcChainDecimals, srcChainTokens[0]);
   const targetFeeAmount = getFormattedAmount(estimatedTargetFee, tarChainDecimals, tarChainTokens[0]);
 
-  return evaluateTransactionStatusError ? (
-    <Alert severity="error">{evaluateTransactionStatusError}</Alert>
-  ) : (
-    <Typography variant="body1" color="secondary">
-      {payloadEstimatedFeeLoading && !transactionRunning ? (
-        'Calculating fee...'
-      ) : estimatedSourceFeeAmount && targetFeeAmount ? (
-        <div className={classes.container}>
-          <Typography variant="body1" color="secondary">
-            Estimated Fee value
-          </Typography>
-          <FeeValue
-            amount={estimatedSourceFeeAmount}
-            tooltip={`Message Delivery Fee: ${estimatedFeeMessageDeliveryAmount} ${srcChainTokens[0]} + Send Message Fee: ${estimatedFeeBridgeCallAmount} ${srcChainTokens[0]}`}
-            chainTokens={srcChainTokens[0]}
-            showPlus
-          />
+  if (evaluateTransactionStatusError) {
+    return <Alert severity="error">{evaluateTransactionStatusError}</Alert>;
+  }
 
-          <FeeValue amount={targetFeeAmount} chainTokens={tarChainTokens[0]} />
-        </div>
-      ) : null}
-    </Typography>
-  );
+  if (payloadEstimatedFeeLoading && !transactionRunning) {
+    return (
+      <Typography variant="body1" color="secondary">
+        Calculating fee...
+      </Typography>
+    );
+  } else if (estimatedSourceFeeAmount) {
+    return (
+      <div className={classes.container}>
+        <Typography variant="body1" color="secondary">
+          Estimated Fee value
+        </Typography>
+        <FeeValue
+          amount={estimatedSourceFeeAmount}
+          tooltip={
+            isBridged
+              ? `Message Delivery Fee: ${estimatedFeeMessageDeliveryAmount} ${srcChainTokens[0]} + Send Message Fee: ${estimatedFeeBridgeCallAmount} ${srcChainTokens[0]}`
+              : null
+          }
+          showPlus={isBridged}
+        />
+
+        {isBridged && targetFeeAmount && <FeeValue amount={targetFeeAmount} />}
+      </div>
+    );
+  }
+  return null;
 };
