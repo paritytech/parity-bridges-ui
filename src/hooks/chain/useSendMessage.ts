@@ -51,7 +51,10 @@ function useSendMessage({ input, type }: Props) {
       apiConnection: { api: sourceApi },
       chain: sourceChain
     },
-    targetChainDetails: { chain: targetChain }
+    targetChainDetails: {
+      chain: targetChain,
+      apiConnection: { api: targetApi }
+    }
   } = sourceTargetDetails;
   const { account, companionAccount } = useAccountContext();
   const { createType } = useApiCalls();
@@ -87,7 +90,7 @@ function useSendMessage({ input, type }: Props) {
           sourceTargetDetails
         });
 
-        const formattedTransferAmount = getFormattedAmount(sourceApi, transferAmount, type);
+        const formattedTransferAmount = getFormattedAmount(targetApi, transferAmount, type);
 
         const unsub = await bridgeMessage.signAndSend(sourceAccount, { ...options }, ({ events = [], status }) => {
           if (status.isReady) {
@@ -179,9 +182,11 @@ function useSendMessage({ input, type }: Props) {
       laneId,
       payload,
       receiverAddress,
-      sourceApi,
+      sourceApi.rpc.chain,
+      sourceApi.tx,
       sourceChain,
       sourceTargetDetails,
+      targetApi,
       targetChain,
       transferAmount,
       type

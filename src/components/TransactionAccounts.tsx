@@ -15,28 +15,87 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React from 'react';
-
-import { Box } from '@material-ui/core';
+import cx from 'classnames';
+import { Box, makeStyles } from '@material-ui/core';
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import AccountDisplay from './AccountDisplay';
 import { AddressKind } from '../types/accountTypes';
+import { TransactionTypes } from '../types/transactionTypes';
+import { styleAccountCompanion } from '.';
 
 interface Props {
   sourceAccount: string | undefined;
   senderCompanionAccount: string | undefined;
   senderName?: string | null;
+  receiverAddress?: string | undefined;
+  type: TransactionTypes;
 }
 
-const TransactionAccounts = ({ sourceAccount, senderName, senderCompanionAccount }: Props) => {
+const useStyles = makeStyles((theme) => ({
+  accountMain: {
+    padding: theme.spacing(1.25),
+    paddingTop: theme.spacing(0.5),
+    paddingRight: theme.spacing(0),
+    border: `1px solid ${theme.palette.divider}`,
+    borderRadius: theme.spacing(1.5)
+  },
+  withoutBottomBorderRadius: {
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0
+  },
+  sender: {
+    padding: theme.spacing(1.25),
+    paddingTop: theme.spacing(0.5),
+    paddingRight: theme.spacing(0),
+    border: `1px solid ${theme.palette.divider}`,
+    borderRadius: theme.spacing(1.5)
+  },
+  accountCompanion: {
+    ...styleAccountCompanion(theme)
+  },
+  paper: {
+    minWidth: theme.spacing(60),
+    maxHeight: theme.spacing(50)
+  },
+  senderActions: {
+    borderBottom: `1px solid ${theme.palette.divider}`
+  },
+  icon: {
+    marginLeft: 'auto'
+  },
+  account: {
+    width: '100%'
+  }
+}));
+
+const TransactionAccounts = ({ sourceAccount, senderName, senderCompanionAccount, receiverAddress, type }: Props) => {
+  const classes = useStyles();
   return (
     <Box className="header" component="p" id="test-transaction-header">
-      <AccountDisplay address={sourceAccount} friendlyName={senderName} />
-      <AccountDisplay
-        address={senderCompanionAccount}
-        addressKind={AddressKind.COMPANION}
-        hideAddress
-        friendlyName={senderName}
-        withTooltip
-      />
+      <Box
+        className={cx(
+          classes.accountMain,
+          type !== TransactionTypes.INTERNAL_TRANSFER ? classes.withoutBottomBorderRadius : ''
+        )}
+        id="test-sender-component"
+      >
+        <AccountDisplay address={sourceAccount} friendlyName={senderName} />
+      </Box>
+      <Box className={classes.accountCompanion}>
+        <AccountDisplay
+          address={senderCompanionAccount}
+          addressKind={AddressKind.COMPANION}
+          hideAddress
+          friendlyName={senderName}
+          withTooltip
+        />
+      </Box>
+      <Box marginY={2} textAlign="center" width="100%">
+        <ArrowDownwardIcon fontSize="large" color="primary" />
+      </Box>
+      <Box className={classes.sender}>
+        <AccountDisplay address={receiverAddress} />
+      </Box>
     </Box>
   );
 };

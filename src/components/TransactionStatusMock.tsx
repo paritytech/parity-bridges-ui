@@ -24,10 +24,11 @@ import { useTransactionContext } from '../contexts/TransactionContext';
 import { useGUIContext } from '../contexts/GUIContextProvider';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { getName } from '../util/accounts';
-import TransactionStatus from './TransactionStatus';
+import TransactionContainer from './TransactionContainer';
+import { TransactionTypes } from '../types/transactionTypes';
 
 interface Props {
-  type: string;
+  type: TransactionTypes;
 }
 
 const TransactionStatusMock = ({ type }: Props) => {
@@ -54,7 +55,7 @@ const TransactionStatusMock = ({ type }: Props) => {
   }, [isBridged, sourceChain, targetChain]);
 
   return (
-    <TransactionStatus
+    <TransactionContainer
       transaction={{
         payloadHex,
         transactionDisplayPayload,

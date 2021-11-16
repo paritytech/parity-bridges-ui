@@ -92,7 +92,7 @@ export interface TransactionStatusType extends UpdatedTransactionStatusType {
   senderName: string | null;
   sourceAccount: null | string;
   receiverAddress: null | string;
-  type: string;
+  type: TransactionTypes;
   transferAmount?: string | null;
   status: TransactionStatusEnum;
   deliveryBlock: string | null;

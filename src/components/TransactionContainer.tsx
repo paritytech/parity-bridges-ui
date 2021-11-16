@@ -15,7 +15,8 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React from 'react';
-import { Accordion, AccordionSummary, AccordionDetails } from '@material-ui/core';
+import { Accordion, AccordionSummary, AccordionDetails, Box } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { TransactionStatusType } from '../types/transactionTypes';
 import TransactionSwitchTab from './TransactionSwitchTab';
@@ -31,7 +32,14 @@ interface Props {
   transactionDisplayProps?: TransactionDisplayProps;
 }
 
-const TransactionStatus = ({ transaction }: Props) => {
+const useStyles = makeStyles(() => ({
+  header: {
+    minWidth: '100%'
+  }
+}));
+
+const TransactionContainer = ({ transaction }: Props) => {
+  const classes = useStyles();
   const {
     payloadHex,
     transactionDisplayPayload,
@@ -43,51 +51,40 @@ const TransactionStatus = ({ transaction }: Props) => {
     transferAmount,
     type,
     status,
-    steps
+    steps,
+    receiverAddress
   } = transaction;
 
   return (
-    /*     <>
-      <TransactionHeader
-        type={type}
-        status={status}
-        sourceChain={sourceChain}
-        targetChain={targetChain}
-        senderName={senderName}
-        sourceAccount={sourceAccount ? sourceAccount : undefined}
-        senderCompanionAccount={senderCompanionAccount ? senderCompanionAccount : undefined}
-        transferAmount={transferAmount}
-      />
-      <TransactionSwitchTab
-        payloadHex={payloadHex}
-        transactionDisplayPayload={transactionDisplayPayload}
-        status={transaction.status}
-      >
-        <TransactionReceipt steps={transaction.steps} />
-      </TransactionSwitchTab>
-    </> */
     <Accordion>
       <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
-        <TransactionHeader
-          type={type}
-          status={status}
-          sourceChain={sourceChain}
-          targetChain={targetChain}
-          transferAmount={transferAmount}
-        />
+        <div className={classes.header}>
+          <TransactionHeader
+            type={type}
+            status={status}
+            sourceChain={sourceChain}
+            targetChain={targetChain}
+            transferAmount={transferAmount}
+          />
+        </div>
       </AccordionSummary>
       <AccordionDetails>
-        <TransactionAccounts
-          senderName={senderName}
-          sourceAccount={sourceAccount ? sourceAccount : undefined}
-          senderCompanionAccount={senderCompanionAccount ? senderCompanionAccount : undefined}
-        />
-        <TransactionSwitchTab payloadHex={payloadHex} transactionDisplayPayload={transactionDisplayPayload}>
-          <TransactionReceipt steps={steps} />
-        </TransactionSwitchTab>
+        <Box component="div" width="100%">
+          <TransactionAccounts
+            senderName={senderName}
+            sourceAccount={sourceAccount ? sourceAccount : undefined}
+            senderCompanionAccount={senderCompanionAccount ? senderCompanionAccount : undefined}
+            receiverAddress={receiverAddress ? receiverAddress : undefined}
+            type={type}
+          />
+
+          <TransactionSwitchTab payloadHex={payloadHex} transactionDisplayPayload={transactionDisplayPayload}>
+            <TransactionReceipt steps={steps} />
+          </TransactionSwitchTab>
+        </Box>
       </AccordionDetails>
     </Accordion>
   );
 };
 
-export default TransactionStatus;
+export default TransactionContainer;

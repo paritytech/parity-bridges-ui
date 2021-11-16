@@ -19,7 +19,7 @@ import React from 'react';
 import { useTransactionContext } from '../contexts/TransactionContext';
 import TransactionStatusMock from './TransactionStatusMock';
 import { TransactionStatusType, TransactionTypes } from '../types/transactionTypes';
-import TransactionStatus, { TransactionDisplayProps } from './TransactionStatus';
+import TransactionContainer, { TransactionDisplayProps } from './TransactionContainer';
 
 interface Props extends TransactionDisplayProps {
   type: TransactionTypes;
@@ -33,7 +33,7 @@ const Transactions = ({ type, ...transactionDisplayProps }: Props) => {
       {Boolean(transactions.length) &&
         transactions.map((transaction: TransactionStatusType) => {
           return (
-            <TransactionStatus
+            <TransactionContainer
               key={transaction.id}
               transaction={transaction}
               transactionDisplayProps={{ ...transactionDisplayProps }}
