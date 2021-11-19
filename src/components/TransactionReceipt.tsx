@@ -16,7 +16,7 @@
 
 import React from 'react';
 
-import { Box, Card, makeStyles, Typography } from '@material-ui/core';
+import { Box, makeStyles, Typography } from '@material-ui/core';
 import { IconTxStatus } from './Icons';
 import { Step } from '../types/transactionTypes';
 import { Web3Icon } from './Web3Icon';
@@ -38,11 +38,7 @@ const useStyles = makeStyles((theme) => ({
     '& .header': {
       fontWeight: 500
     },
-    '&.MuiPaper-root': {
-      maxWidth: '100%',
-      padding: theme.spacing(2),
-      borderRadius: theme.spacing(1.5)
-    }
+    padding: theme.spacing(1)
   }
 }));
 
@@ -50,7 +46,7 @@ const TransactionReceipt = ({ steps }: Props) => {
   const classes = useStyles();
 
   return (
-    <Card elevation={23} className={classes.card}>
+    <Box className={classes.card}>
       {steps.map(({ chainType, label, labelOnChain, status, id }) => (
         <p key={id} id={id}>
           <IconTxStatus status={status} /> <Web3Icon>{chainType}</Web3Icon> {chainType}: {label}&nbsp;
@@ -63,7 +59,7 @@ const TransactionReceipt = ({ steps }: Props) => {
           )}
         </p>
       ))}
-    </Card>
+    </Box>
   );
 };
 

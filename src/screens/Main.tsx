@@ -14,8 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import React from 'react';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography, Grid, Container, Paper } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
 import isNull from 'lodash/isNull';
@@ -33,12 +35,58 @@ import { TransactionTypes } from '../types/transactionTypes';
 import { TransactionActionCreators } from '../actions/transactionActions';
 import BridgedLocalWrapper from '../components/BridgedLocalWrapper';
 import { useCallback } from 'react';
-import { useUpdateTransactionContext } from '../contexts/TransactionContext';
+import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     marginLeft: 'auto',
     maxHeight: '25px'
+  },
+  ui: {
+    minWidth: '100%',
+    marginTop: 50,
+    padding: theme.spacing(3),
+
+    marginLeft: 240,
+    display: 'flex',
+    justifyContent: 'center',
+    '& .MuiPaper-root, .MuiOutlinedInput-notchedOutline': {
+      borderRadius: theme.spacing(1.5)
+    },
+    '& > .MuiPaper-root': {
+      width: 480,
+      maxWidth: '100%',
+      padding: theme.spacing(2)
+    }
+    //padding: theme.spacing(3),
+    //paddingLeft: theme.spacing(3),
+    /*     transition: 'padding-left .1s',
+    backgroundColor: theme.palette.background.paper,
+    '&.open': {
+      paddingLeft: theme.spacing(3),
+      [theme.breakpoints.down('md')]: {
+        paddingLeft: theme.spacing(3)
+      }
+    },
+    '& .MuiPaper-root, .MuiOutlinedInput-notchedOutline': {
+      borderRadius: theme.spacing(1.5)
+    },
+    '& > .MuiPaper-root': {
+      width: 480,
+      maxWidth: '100%',
+      padding: theme.spacing(2)
+    },
+
+    marginLeft: theme.spacing(3),
+    maxWidth: theme.spacing(130) */
+  },
+  transactions: {
+    marginLeft: 100,
+    minWidth: 400
+  },
+  form: {
+    minHeight: 650,
+    maxHeight: 650
   }
 }));
 
@@ -53,6 +101,7 @@ function Main() {
   const classes = useStyles();
   const { actions, action, setAction, isBridged, setBridged } = useGUIContext();
   const { dispatchTransaction } = useUpdateTransactionContext();
+  const { transactionToBeExecuted } = useTransactionContext();
 
   const handleOnSwitch = useCallback(
     (event: React.MouseEvent<HTMLElement>, isBridged: boolean) => {
@@ -68,8 +117,6 @@ function Main() {
     [dispatchTransaction, setBridged]
   );
 
-  // TODO #242: ToggleButtonGroup needs to contain the colors designed by custom css.
-
   return (
     <>
       <BoxSidebar>
@@ -84,37 +131,42 @@ function Main() {
         </div>
         <ButtonExt> Help & Feedback </ButtonExt>
       </BoxSidebar>
-      <BoxUI>
-        <Box>
-          <Box component="div" display="flex" marginY={2} textAlign="left" width="100%">
-            <MenuAction actions={actions} action={action} changeMenu={setAction} />
-            {action === TransactionTypes.TRANSFER && (
-              <ToggleButtonGroup
-                size="small"
-                value={isBridged}
-                exclusive
-                onChange={handleOnSwitch}
-                classes={{ root: classes.root }}
-              >
-                <ToggleButton value={false}>Internal</ToggleButton>
-                <ToggleButton value={true}>Bridge</ToggleButton>
-              </ToggleButtonGroup>
-            )}
-          </Box>
 
-          <ExtensionAccountCheck component={<Sender />} />
-
-          <Box marginY={2} textAlign="center" width="100%">
-            <ArrowDownwardIcon fontSize="large" color="primary" />
-          </Box>
-          <>{ActionComponents[action]}</>
-        </Box>
-
-        <Box width="100%">
+      <Container className={classes.ui}>
+        {!transactionToBeExecuted ? (
+          <Paper elevation={24} className={classes.form}>
+            <Grid item spacing={6}>
+              <Box component="div" display="flex" marginY={2} textAlign="left" width="100%">
+                <MenuAction actions={actions} action={action} changeMenu={setAction} />
+                {action === TransactionTypes.TRANSFER && (
+                  <ToggleButtonGroup
+                    size="small"
+                    value={isBridged}
+                    exclusive
+                    onChange={handleOnSwitch}
+                    classes={{ root: classes.root }}
+                  >
+                    <ToggleButton value={false}>Internal</ToggleButton>
+                    <ToggleButton value={true}>Bridge</ToggleButton>
+                  </ToggleButtonGroup>
+                )}
+              </Box>
+              <ExtensionAccountCheck component={<Sender />} />
+              <Box marginY={2} textAlign="center" width="100%">
+                <ArrowDownwardIcon fontSize="large" color="primary" />
+              </Box>
+              <Box>
+                <>{ActionComponents[action]}</>
+              </Box>
+            </Grid>
+          </Paper>
+        ) : (
+          <div>Successfully Submitted</div>
+        )}
+        <Grid item spacing={6} className={classes.transactions}>
           <Transactions type={action} />
-        </Box>
-        <SnackBar />
-      </BoxUI>
+        </Grid>
+      </Container>
     </>
   );
 }

@@ -279,6 +279,14 @@ export default function transactionReducer(state: TransactionState, action: Tran
         transactionRunning: action.payload.transactionRunning,
         transactionReadyToExecute: action.payload.transactionRunning ? false : state.transactionReadyToExecute
       };
+    case TransactionActionTypes.SET_TRANSACTION_TO_BE_EXECUTED: {
+      const { transactionToBeExecuted } = action.payload;
+      return {
+        ...state,
+        transactionToBeExecuted
+      };
+    }
+
     case TransactionActionTypes.SET_ACTION: {
       const { action: transactionType } = action.payload;
 

@@ -14,11 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-import React from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Accordion, AccordionSummary, AccordionDetails, Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { TransactionStatusType } from '../types/transactionTypes';
+import { TransactionStatusType, TransactionStatusEnum } from '../types/transactionTypes';
 import TransactionSwitchTab from './TransactionSwitchTab';
 import TransactionReceipt from './TransactionReceipt';
 import TransactionHeader from './TransactionHeader';
@@ -30,6 +30,7 @@ export interface TransactionDisplayProps {
 interface Props {
   transaction: TransactionStatusType;
   transactionDisplayProps?: TransactionDisplayProps;
+  expanded: boolean;
 }
 
 const useStyles = makeStyles(() => ({
@@ -38,7 +39,7 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-const TransactionContainer = ({ transaction }: Props) => {
+const TransactionContainer = ({ transaction, expanded }: Props) => {
   const classes = useStyles();
   const {
     payloadHex,
@@ -54,9 +55,18 @@ const TransactionContainer = ({ transaction }: Props) => {
     steps,
     receiverAddress
   } = transaction;
+  const [accordionExpanded, setAccordionExpanded] = useState(expanded);
+
+  const onChange = useCallback(() => setAccordionExpanded(!accordionExpanded), [accordionExpanded]);
+
+  useEffect(() => {
+    if (status === TransactionStatusEnum.COMPLETED) {
+      setAccordionExpanded(false);
+    }
+  }, [status]);
 
   return (
-    <Accordion>
+    <Accordion expanded={accordionExpanded} onChange={onChange}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
         <div className={classes.header}>
           <TransactionHeader

@@ -18,25 +18,52 @@ import React from 'react';
 
 import { useTransactionContext } from '../contexts/TransactionContext';
 import TransactionStatusMock from './TransactionStatusMock';
-import { TransactionStatusType, TransactionTypes } from '../types/transactionTypes';
+import { TransactionStatusType, TransactionTypes, TransactionStatusEnum } from '../types/transactionTypes';
 import TransactionContainer, { TransactionDisplayProps } from './TransactionContainer';
+import { Typography } from '@material-ui/core';
 
 interface Props extends TransactionDisplayProps {
   type: TransactionTypes;
 }
 
+const onGoing = (status: TransactionStatusEnum) =>
+  status === TransactionStatusEnum.IN_PROGRESS || status === TransactionStatusEnum.CREATED;
+const completed = (status: TransactionStatusEnum) =>
+  status === TransactionStatusEnum.COMPLETED ||
+  status === TransactionStatusEnum.FAILED ||
+  status === TransactionStatusEnum.FINALIZED;
+
 const Transactions = ({ type, ...transactionDisplayProps }: Props) => {
   const { transactions } = useTransactionContext();
+
+  const onGoingTransactions = transactions.filter((transaction) => onGoing(transaction.status));
+
+  const completedTransactions = transactions.filter((transaction) => completed(transaction.status));
+
   return (
     <>
       <TransactionStatusMock type={type} />
-      {Boolean(transactions.length) &&
-        transactions.map((transaction: TransactionStatusType) => {
+      {Boolean(onGoingTransactions.length) && <Typography>On Going</Typography>}
+      {Boolean(onGoingTransactions.length) &&
+        onGoingTransactions.map((transaction: TransactionStatusType) => {
           return (
             <TransactionContainer
               key={transaction.id}
               transaction={transaction}
               transactionDisplayProps={{ ...transactionDisplayProps }}
+              expanded
+            />
+          );
+        })}
+      {Boolean(completedTransactions.length) && <Typography>On Completed</Typography>}
+      {Boolean(completedTransactions.length) &&
+        completedTransactions.map((transaction: TransactionStatusType) => {
+          return (
+            <TransactionContainer
+              key={transaction.id}
+              transaction={transaction}
+              transactionDisplayProps={{ ...transactionDisplayProps }}
+              expanded={false}
             />
           );
         })}

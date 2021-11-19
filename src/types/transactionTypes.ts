@@ -125,6 +125,7 @@ export interface TransactionState {
   evaluatingTransactions: boolean;
   transactionDisplayPayload: DisplayPayload | null;
   transactionRunning: boolean;
+  transactionToBeExecuted: boolean;
   transactionReadyToExecute: boolean;
   evaluateTransactionStatusError: string | null;
   addressValidationError: string | null;

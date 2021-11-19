@@ -93,7 +93,11 @@ function useSendMessage({ input, type }: Props) {
         const formattedTransferAmount = getFormattedAmount(targetApi, transferAmount, type);
 
         const unsub = await bridgeMessage.signAndSend(sourceAccount, { ...options }, ({ events = [], status }) => {
+          dispatchTransaction(TransactionActionCreators.setTransactionToBeExecuted(false));
+          dispatchTransaction(TransactionActionCreators.setTransactionRunning(true));
+
           if (status.isReady) {
+            dispatchTransaction(TransactionActionCreators.setTransactionRunning(false));
             dispatchTransaction(
               TransactionActionCreators.createTransactionStatus({
                 block: null,
@@ -195,7 +199,9 @@ function useSendMessage({ input, type }: Props) {
 
   const sendLaneMessage = useCallback(() => {
     const id = Date.now().toString();
-    dispatchTransaction(TransactionActionCreators.setTransactionRunning(true));
+
+    dispatchTransaction(TransactionActionCreators.setTransactionToBeExecuted(true));
+
     return makeCall(id);
   }, [dispatchTransaction, makeCall]);
 

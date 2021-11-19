@@ -71,6 +71,7 @@ const TransactionStatusMock = ({ type }: Props) => {
         receiverAddress,
         deliveryBlock: null
       }}
+      expanded
     />
   );
 };

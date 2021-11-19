@@ -50,7 +50,8 @@ enum TransactionActionTypes {
   ENABLE_TX_BUTTON = 'ENABLE_TX_BUTTON',
   DISABLE_TX_BUTTON = 'DISABLE_TX_BUTTON',
   RESET = 'RESET',
-  CHANGE_DISPATCH_FEE_PAY_CHAIN = 'CHANGE_DISPATCH_FEE_PAY_CHAIN'
+  CHANGE_DISPATCH_FEE_PAY_CHAIN = 'CHANGE_DISPATCH_FEE_PAY_CHAIN',
+  SET_TRANSACTION_TO_BE_EXECUTED = 'SET_TRANSACTION_TO_BE_EXECUTED'
 }
 
 const setTransferAmount = (transferAmount: string | null, chainDecimals?: number) => {
@@ -140,6 +141,11 @@ const setTransactionRunning = (transactionRunning: boolean) => ({
   type: TransactionActionTypes.SET_TRANSACTION_RUNNING
 });
 
+const setTransactionToBeExecuted = (transactionToBeExecuted: boolean) => ({
+  payload: { transactionToBeExecuted },
+  type: TransactionActionTypes.SET_TRANSACTION_TO_BE_EXECUTED
+});
+
 const setAction = (action: TransactionTypes) => ({
   payload: { action },
   type: TransactionActionTypes.SET_ACTION
@@ -211,6 +217,7 @@ const TransactionActionCreators = {
   setWeightInput,
   setRemarkInput,
   setTransactionRunning,
+  setTransactionToBeExecuted,
   createTransactionStatus,
   updateTransactionStatus,
   updateTransactionsStatus,

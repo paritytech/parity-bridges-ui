@@ -36,6 +36,7 @@ export const initTransactionState: TransactionState = {
   evaluatingTransactions: false,
   transactions: [],
   transactionDisplayPayload: null,
+  transactionToBeExecuted: false,
   transactionRunning: false,
   transactionReadyToExecute: false,
   evaluateTransactionStatusError: null,
