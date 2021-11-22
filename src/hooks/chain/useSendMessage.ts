@@ -92,12 +92,13 @@ function useSendMessage({ input, type }: Props) {
 
         const formattedTransferAmount = getFormattedAmount(targetApi, transferAmount, type);
 
-        const unsub = await bridgeMessage.signAndSend(sourceAccount, { ...options }, ({ events = [], status }) => {
-          dispatchTransaction(TransactionActionCreators.setTransactionToBeExecuted(false));
-          dispatchTransaction(TransactionActionCreators.setTransactionRunning(true));
+        const signed = await bridgeMessage.signAsync(sourceAccount, { ...options });
 
+        dispatchTransaction(TransactionActionCreators.setTransactionToBeExecuted(false));
+        dispatchTransaction(TransactionActionCreators.setTransactionRunning(true));
+
+        const unsub = await signed.send(({ events = [], status }) => {
           if (status.isReady) {
-            dispatchTransaction(TransactionActionCreators.setTransactionRunning(false));
             dispatchTransaction(
               TransactionActionCreators.createTransactionStatus({
                 block: null,
@@ -128,6 +129,7 @@ function useSendMessage({ input, type }: Props) {
           }
 
           if (status.isInBlock) {
+            dispatchTransaction(TransactionActionCreators.setTransactionRunning(false));
             events.forEach(({ event: { data, method } }) => {
               if (method.toString() === 'MessageAccepted') {
                 const messageNonce = data.toArray()[1].toString();
@@ -165,6 +167,8 @@ function useSendMessage({ input, type }: Props) {
           logger.error(e.message);
           if (e.message === TX_CANCELLED) {
             dispatchTransaction(TransactionActionCreators.enableTxButton());
+            dispatchTransaction(TransactionActionCreators.setTransactionToBeExecuted(false));
+            dispatchTransaction(TransactionActionCreators.setTransactionRunning(false));
             return dispatchMessage(
               MessageActionsCreators.triggerErrorMessage({ message: 'Transaction was cancelled from the extension.' })
             );
@@ -172,7 +176,7 @@ function useSendMessage({ input, type }: Props) {
           dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e.message }));
         }
       } finally {
-        dispatchTransaction(TransactionActionCreators.setTransactionRunning(false));
+        dispatchTransaction(TransactionActionCreators.setTransactionToBeExecuted(false));
       }
     },
     [

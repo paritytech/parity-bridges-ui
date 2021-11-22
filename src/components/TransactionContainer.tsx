@@ -15,6 +15,7 @@
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
 import React, { useState, useCallback, useEffect } from 'react';
+import cx from 'classnames';
 import { Accordion, AccordionSummary, AccordionDetails, Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -31,15 +32,23 @@ interface Props {
   transaction: TransactionStatusType;
   transactionDisplayProps?: TransactionDisplayProps;
   expanded: boolean;
+  selected?: boolean;
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   header: {
     minWidth: '100%'
+  },
+  selectedBorder: {
+    border: '1px solid',
+    borderColor: theme.palette.primary.main
+  },
+  accordion: {
+    marginTop: theme.spacing(2)
   }
 }));
 
-const TransactionContainer = ({ transaction, expanded }: Props) => {
+const TransactionContainer = ({ transaction, expanded, selected = false }: Props) => {
   const classes = useStyles();
   const {
     payloadHex,
@@ -66,8 +75,12 @@ const TransactionContainer = ({ transaction, expanded }: Props) => {
   }, [status]);
 
   return (
-    <Accordion expanded={accordionExpanded} onChange={onChange}>
-      <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+    <Accordion
+      expanded={accordionExpanded}
+      onChange={onChange}
+      className={cx(classes.accordion, selected ? classes.selectedBorder : '')}
+    >
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <div className={classes.header}>
           <TransactionHeader
             type={type}

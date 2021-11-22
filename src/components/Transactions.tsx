@@ -33,6 +33,12 @@ const completed = (status: TransactionStatusEnum) =>
   status === TransactionStatusEnum.FAILED ||
   status === TransactionStatusEnum.FINALIZED;
 
+const Label = ({ label }: { label: string }) => (
+  <div style={{ margin: '20px 0' }}>
+    <Typography style={{ fontWeight: 600 }}>{label}</Typography>
+  </div>
+);
+
 const Transactions = ({ type, ...transactionDisplayProps }: Props) => {
   const { transactions } = useTransactionContext();
 
@@ -43,7 +49,7 @@ const Transactions = ({ type, ...transactionDisplayProps }: Props) => {
   return (
     <>
       <TransactionStatusMock type={type} />
-      {Boolean(onGoingTransactions.length) && <Typography>On Going</Typography>}
+      {Boolean(onGoingTransactions.length) && <Label label="Ongoing Transactions" />}
       {Boolean(onGoingTransactions.length) &&
         onGoingTransactions.map((transaction: TransactionStatusType) => {
           return (
@@ -55,7 +61,7 @@ const Transactions = ({ type, ...transactionDisplayProps }: Props) => {
             />
           );
         })}
-      {Boolean(completedTransactions.length) && <Typography>On Completed</Typography>}
+      {Boolean(completedTransactions.length) && <Label label="Past Transactions" />}
       {Boolean(completedTransactions.length) &&
         completedTransactions.map((transaction: TransactionStatusType) => {
           return (

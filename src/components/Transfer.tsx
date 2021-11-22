@@ -24,12 +24,12 @@ import useSendMessage from '../hooks/chain/useSendMessage';
 import { TransactionTypes } from '../types/transactionTypes';
 import { TokenSymbol } from './TokenSymbol';
 import Receiver from './Receiver';
-import { ButtonSubmit } from '../components';
 import { EstimatedFee } from '../components/EstimatedFee';
 import { DebouncedTextField } from './DebouncedTextField';
 import { useInternalTransfer } from '../hooks/chain/useInternalTransfer';
 import { useGUIContext } from '../contexts/GUIContextProvider';
 import FeePaySelector from './FeePaySelector';
+import SubmitButton from './SubmitButton';
 
 const useStyles = makeStyles((theme) => ({
   inputAmount: {
@@ -55,12 +55,7 @@ function Transfer() {
   const classes = useStyles();
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
   const { isBridged } = useGUIContext();
-  const {
-    transferAmount,
-    transferAmountError,
-    transactionRunning,
-    transactionReadyToExecute
-  } = useTransactionContext();
+  const { transferAmount, transferAmountError, transactionRunning, transactionToBeExecuted } = useTransactionContext();
   const { api } = sourceChainDetails.apiConnection;
   const executeInternalTransfer = useInternalTransfer();
 
@@ -111,12 +106,11 @@ function Transfer() {
           InputProps={{
             endAdornment: <TokenSymbol position="start" />
           }}
+          disabled={transactionToBeExecuted}
         />
       </Box>
       <Receiver />
-      <ButtonSubmit disabled={!transactionReadyToExecute} onClick={sendTransaction}>
-        {buttonLabel}
-      </ButtonSubmit>
+      <SubmitButton label={buttonLabel} onClick={sendTransaction} />
       <FeePaySelector />
       <EstimatedFee />
     </>

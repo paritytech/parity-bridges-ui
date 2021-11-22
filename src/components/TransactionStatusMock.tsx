@@ -44,7 +44,14 @@ const TransactionStatusMock = ({ type }: Props) => {
 
   const { account, companionAccount } = useAccountContext();
 
-  const { payloadHex, transactionDisplayPayload, transferAmount, action, receiverAddress } = useTransactionContext();
+  const {
+    payloadHex,
+    transactionDisplayPayload,
+    transferAmount,
+    action,
+    receiverAddress,
+    transactionToBeExecuted
+  } = useTransactionContext();
 
   useEffect(() => {
     if (isBridged) {
@@ -72,6 +79,7 @@ const TransactionStatusMock = ({ type }: Props) => {
         deliveryBlock: null
       }}
       expanded
+      selected={transactionToBeExecuted}
     />
   );
 };

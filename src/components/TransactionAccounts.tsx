@@ -34,7 +34,7 @@ interface Props {
 const useStyles = makeStyles((theme) => ({
   accountMain: {
     padding: theme.spacing(1.25),
-    paddingTop: theme.spacing(0.5),
+    paddingTop: theme.spacing(0.8),
     paddingRight: theme.spacing(0),
     border: `1px solid ${theme.palette.divider}`,
     borderRadius: theme.spacing(1.5)
@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
   },
   sender: {
     padding: theme.spacing(1.25),
-    paddingTop: theme.spacing(0.5),
+    paddingTop: theme.spacing(0.9),
     paddingRight: theme.spacing(0),
     border: `1px solid ${theme.palette.divider}`,
     borderRadius: theme.spacing(1.5)
@@ -70,26 +70,26 @@ const useStyles = makeStyles((theme) => ({
 
 const TransactionAccounts = ({ sourceAccount, senderName, senderCompanionAccount, receiverAddress, type }: Props) => {
   const classes = useStyles();
+  const isInternal = type === TransactionTypes.INTERNAL_TRANSFER;
   return (
     <Box className="header" component="p" id="test-transaction-header">
       <Box
-        className={cx(
-          classes.accountMain,
-          type !== TransactionTypes.INTERNAL_TRANSFER ? classes.withoutBottomBorderRadius : ''
-        )}
+        className={cx(classes.accountMain, !isInternal ? classes.withoutBottomBorderRadius : '')}
         id="test-sender-component"
       >
         <AccountDisplay address={sourceAccount} friendlyName={senderName} />
       </Box>
-      <Box className={classes.accountCompanion}>
-        <AccountDisplay
-          address={senderCompanionAccount}
-          addressKind={AddressKind.COMPANION}
-          hideAddress
-          friendlyName={senderName}
-          withTooltip
-        />
-      </Box>
+      {!isInternal && (
+        <Box className={classes.accountCompanion}>
+          <AccountDisplay
+            address={senderCompanionAccount}
+            addressKind={AddressKind.COMPANION}
+            hideAddress
+            friendlyName={senderName}
+            withTooltip
+          />
+        </Box>
+      )}
       <Box marginY={2} textAlign="center" width="100%">
         <ArrowDownwardIcon fontSize="large" color="primary" />
       </Box>

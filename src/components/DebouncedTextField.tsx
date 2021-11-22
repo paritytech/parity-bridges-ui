@@ -36,6 +36,7 @@ interface Props {
   rows?: number;
   dispatchCallback?: (value: ValueType) => void;
   initialValue?: ValueType;
+  disabled?: boolean;
 }
 
 export function DebouncedTextField({
@@ -50,7 +51,8 @@ export function DebouncedTextField({
   multiline,
   rows,
   dispatchCallback,
-  initialValue = ''
+  initialValue = '',
+  disabled = false
 }: Props) {
   const { dispatchTransaction } = useUpdateTransactionContext();
   const [value, setValue] = useDebounceState({ initialValue, dispatchCallback });
@@ -79,6 +81,7 @@ export function DebouncedTextField({
       InputProps={InputProps}
       rows={rows}
       onChange={onChange}
+      disabled={disabled}
     />
   );
 }

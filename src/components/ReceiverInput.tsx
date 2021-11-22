@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
 function ReceiverInput() {
   const classes = useStyles();
   const { onReceiverChange } = useReceiver();
-  const { unformattedReceiverAddress, formatFound, showBalance } = useTransactionContext();
+  const { unformattedReceiverAddress, formatFound, showBalance, transactionToBeExecuted } = useTransactionContext();
   const { api, address } = useApiBalance(unformattedReceiverAddress, formatFound, false);
   const state = useBalance(api, address, true);
 
@@ -69,6 +69,7 @@ function ReceiverInput() {
           autoComplete="off"
           value={addressInput}
           placeholder="Recipient address"
+          disabled={transactionToBeExecuted}
         />
         {showBalance && state && <Balance balance={state.formattedBalance} id="test-receiver-balance" />}
       </Box>

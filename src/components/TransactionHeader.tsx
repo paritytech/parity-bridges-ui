@@ -29,9 +29,14 @@ interface Props {
   transferAmount?: string | null | undefined;
 }
 
-const useStyles = makeStyles(() => ({
-  ammount: {
-    marginLeft: 'auto'
+const useStyles = makeStyles((theme) => ({
+  amount: {
+    marginLeft: 'auto',
+    color: theme.palette.primary.main,
+    fontWeight: 500
+  },
+  header: {
+    marginLeft: 5
   }
 }));
 
@@ -50,9 +55,19 @@ const TransactionHeader = ({ type, status, sourceChain, targetChain, transferAmo
   }
 
   return (
-    <Box className="header" component="div" display="flex" alignSelf="center" id="test-transaction-header">
-      <IconTxStatus status={status} /> {getType(type)} {header}
-      <Typography className={classes.ammount}>{transferAmount}</Typography>
+    <Box
+      className="header"
+      component="div"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      id="test-transaction-header"
+    >
+      <IconTxStatus status={status} />
+      <Typography className={classes.header}>
+        {getType(type)} {header}
+      </Typography>
+      <Typography className={classes.amount}>{transferAmount}</Typography>
     </Box>
   );
 };

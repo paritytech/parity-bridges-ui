@@ -14,14 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import React from 'react';
 import { Box, Typography, Grid, Container, Paper } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
 import isNull from 'lodash/isNull';
-import { BoxSidebar, BoxUI, ButtonExt, MenuAction, NetworkSides, NetworkStats } from '../components';
+import { BoxSidebar, ButtonExt, MenuAction, NetworkSides, NetworkStats } from '../components';
 import CustomCall from '../components/CustomCall';
 import Sender from '../components/Sender';
 import ExtensionAccountCheck from '../components/ExtensionAccountCheck';
@@ -29,6 +27,8 @@ import Remark from '../components/Remark';
 import SnackBar from '../components/SnackBar';
 import Transfer from '../components/Transfer';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+import Check from '@material-ui/icons/Check';
+
 import Transactions from '../components/Transactions';
 import { useGUIContext } from '../contexts/GUIContextProvider';
 import { TransactionTypes } from '../types/transactionTypes';
@@ -58,27 +58,6 @@ const useStyles = makeStyles((theme) => ({
       maxWidth: '100%',
       padding: theme.spacing(2)
     }
-    //padding: theme.spacing(3),
-    //paddingLeft: theme.spacing(3),
-    /*     transition: 'padding-left .1s',
-    backgroundColor: theme.palette.background.paper,
-    '&.open': {
-      paddingLeft: theme.spacing(3),
-      [theme.breakpoints.down('md')]: {
-        paddingLeft: theme.spacing(3)
-      }
-    },
-    '& .MuiPaper-root, .MuiOutlinedInput-notchedOutline': {
-      borderRadius: theme.spacing(1.5)
-    },
-    '& > .MuiPaper-root': {
-      width: 480,
-      maxWidth: '100%',
-      padding: theme.spacing(2)
-    },
-
-    marginLeft: theme.spacing(3),
-    maxWidth: theme.spacing(130) */
   },
   transactions: {
     marginLeft: 100,
@@ -87,6 +66,14 @@ const useStyles = makeStyles((theme) => ({
   form: {
     minHeight: 650,
     maxHeight: 650
+  },
+  transactionSubmited: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center'
   }
 }));
 
@@ -101,7 +88,7 @@ function Main() {
   const classes = useStyles();
   const { actions, action, setAction, isBridged, setBridged } = useGUIContext();
   const { dispatchTransaction } = useUpdateTransactionContext();
-  const { transactionToBeExecuted } = useTransactionContext();
+  const { transactionRunning, action: transactionContextAction } = useTransactionContext();
 
   const handleOnSwitch = useCallback(
     (event: React.MouseEvent<HTMLElement>, isBridged: boolean) => {
@@ -133,7 +120,7 @@ function Main() {
       </BoxSidebar>
 
       <Container className={classes.ui}>
-        {!transactionToBeExecuted ? (
+        {!transactionRunning ? (
           <Paper elevation={24} className={classes.form}>
             <Grid item spacing={6}>
               <Box component="div" display="flex" marginY={2} textAlign="left" width="100%">
@@ -161,12 +148,18 @@ function Main() {
             </Grid>
           </Paper>
         ) : (
-          <div>Successfully Submitted</div>
+          <Paper elevation={24} className={classes.form}>
+            <Box className={classes.transactionSubmited}>
+              <Check style={{ fontSize: 150 }} color="primary" />
+              <Typography color="primary">Transaction Submited</Typography>
+            </Box>
+          </Paper>
         )}
         <Grid item spacing={6} className={classes.transactions}>
-          <Transactions type={action} />
+          <Transactions type={transactionContextAction ? transactionContextAction : action} />
         </Grid>
       </Container>
+      <SnackBar />
     </>
   );
 }
