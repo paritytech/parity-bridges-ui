@@ -16,18 +16,13 @@
 
 import React from 'react';
 
-import { Box, Card, makeStyles, Typography } from '@material-ui/core';
+import { Box, makeStyles, Typography } from '@material-ui/core';
 import { IconTxStatus } from './Icons';
-import { Step, TransactionStatusEnum } from '../types/transactionTypes';
-import TransactionHeader from './TransactionHeader';
+import { Step } from '../types/transactionTypes';
 import { Web3Icon } from './Web3Icon';
 
 interface Props {
   steps: Step[];
-  status: TransactionStatusEnum;
-  type?: string;
-  sourceChain: string;
-  targetChain: string;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -43,20 +38,15 @@ const useStyles = makeStyles((theme) => ({
     '& .header': {
       fontWeight: 500
     },
-    '&.MuiPaper-root': {
-      maxWidth: '100%',
-      padding: theme.spacing(2),
-      borderRadius: theme.spacing(1.5)
-    }
+    padding: theme.spacing(1)
   }
 }));
 
-const TransactionReceipt = ({ type, steps, status, sourceChain, targetChain }: Props) => {
+const TransactionReceipt = ({ steps }: Props) => {
   const classes = useStyles();
 
   return (
-    <Card elevation={23} className={classes.card}>
-      <TransactionHeader type={type} status={status} sourceChain={sourceChain} targetChain={targetChain} />
+    <Box className={classes.card}>
       {steps.map(({ chainType, label, labelOnChain, status, id }) => (
         <p key={id} id={id}>
           <IconTxStatus status={status} /> <Web3Icon>{chainType}</Web3Icon> {chainType}: {label}&nbsp;
@@ -69,7 +59,7 @@ const TransactionReceipt = ({ type, steps, status, sourceChain, targetChain }: P
           )}
         </p>
       ))}
-    </Card>
+    </Box>
   );
 };
 

@@ -14,5 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-export { default as getValidAddressFormat } from './getValidAddressFormat';
-export { default as getName } from './getName';
+import React from 'react';
+import { ButtonSubmit } from '.';
+import { useTransactionContext } from '../contexts/TransactionContext';
+
+interface Props {
+  onClick: () => void;
+  label: string;
+}
+
+export default function SubmitButton({ onClick, label }: Props) {
+  const { transactionReadyToExecute, transactionToBeExecuted } = useTransactionContext();
+  return (
+    <ButtonSubmit disabled={!transactionReadyToExecute || transactionToBeExecuted} onClick={onClick}>
+      {label}
+    </ButtonSubmit>
+  );
+}

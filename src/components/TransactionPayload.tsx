@@ -17,10 +17,10 @@
 import React, { useCallback } from 'react';
 import { Card, makeStyles, CircularProgress, Typography } from '@material-ui/core';
 import ReactJson from 'react-json-view';
-import TransactionHeader from './TransactionHeader';
+
 import { MessageActionsCreators } from '../actions/messageActions';
 import { useTransactionContext } from '../contexts/TransactionContext';
-import { DisplayPayload, SwitchTabEnum, TransactionStatusEnum } from '../types/transactionTypes';
+import { DisplayPayload, SwitchTabEnum } from '../types/transactionTypes';
 import { useUpdateMessageContext } from '../contexts/MessageContext';
 
 export interface TransactionDisplayProps {
@@ -32,10 +32,6 @@ interface Props {
   tab: SwitchTabEnum;
   payloadHex: string | null;
   transactionDisplayPayload: DisplayPayload | null;
-  status: TransactionStatusEnum;
-  type?: string;
-  sourceChain: string;
-  targetChain: string;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -65,15 +61,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const TransactionPayload = ({
-  tab,
-  payloadHex,
-  transactionDisplayPayload,
-  type,
-  status,
-  sourceChain,
-  targetChain
-}: Props) => {
+const TransactionPayload = ({ tab, payloadHex, transactionDisplayPayload }: Props) => {
   const classes = useStyles();
   const { payloadEstimatedFeeLoading } = useTransactionContext();
   const { dispatchMessage } = useUpdateMessageContext();
@@ -93,9 +81,6 @@ const TransactionPayload = ({
 
   return (
     <Card elevation={23} className={classes.card}>
-      {payloadHex && (
-        <TransactionHeader type={type} status={status} sourceChain={sourceChain} targetChain={targetChain} />
-      )}
       {payloadEstimatedFeeLoading && (
         <div className={classes.loader}>
           <CircularProgress />

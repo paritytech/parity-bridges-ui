@@ -52,7 +52,7 @@ export function useUpdateTransactionContext() {
 
 export function TransactionContextProvider(props: TransactionContextProviderProps): React.ReactElement {
   const { children = null } = props;
-  const { account, senderAccountBalance, senderCompanionAccountBalance } = useAccountContext();
+  const { account, senderAccountBalance, senderCompanionAccountBalance, companionAccount } = useAccountContext();
   const { action, isBridged } = useGUIContext();
   const {
     sourceChainDetails: {
@@ -68,7 +68,7 @@ export function TransactionContextProvider(props: TransactionContextProviderProp
 
   useEffect((): void => {
     account && dispatchTransaction(TransactionActionCreators.setSender(encodeAddress(account.address, ss58Format)));
-  }, [account, ss58Format]);
+  }, [account, companionAccount, ss58Format]);
 
   useEffect((): void => {
     action && dispatchTransaction(TransactionActionCreators.setAction(action));

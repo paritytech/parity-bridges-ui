@@ -14,5 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Bridges UI.  If not, see <http://www.gnu.org/licenses/>.
 
-export { default as getValidAddressFormat } from './getValidAddressFormat';
-export { default as getName } from './getName';
+import { Account } from '../../types/accountTypes';
+
+const getName = (account: Account) => (account!.meta.name as string).toLocaleUpperCase();
+
+export default getName;

@@ -85,12 +85,15 @@ export type PayloadEstimatedFee = {
 export type DisplayPayload = TransactionDisplayPayload | InternalTransferPayload;
 
 export interface TransactionStatusType extends UpdatedTransactionStatusType {
-  input: string;
+  input?: string;
   sourceChain: string;
   targetChain: string;
+  senderCompanionAccount?: string | null;
+  senderName: string | null;
   sourceAccount: null | string;
   receiverAddress: null | string;
-  type: string;
+  type: TransactionTypes;
+  transferAmount?: string | null;
   status: TransactionStatusEnum;
   deliveryBlock: string | null;
 }
@@ -122,6 +125,7 @@ export interface TransactionState {
   evaluatingTransactions: boolean;
   transactionDisplayPayload: DisplayPayload | null;
   transactionRunning: boolean;
+  transactionToBeExecuted: boolean;
   transactionReadyToExecute: boolean;
   evaluateTransactionStatusError: string | null;
   addressValidationError: string | null;

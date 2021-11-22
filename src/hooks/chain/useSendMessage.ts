@@ -27,21 +27,22 @@ import { useUpdateMessageContext } from '../../contexts/MessageContext';
 import { useSourceTarget } from '../../contexts/SourceTargetContextProvider';
 import { useTransactionContext, useUpdateTransactionContext } from '../../contexts/TransactionContext';
 import useLaneId from './useLaneId';
-import { TransactionStatusEnum } from '../../types/transactionTypes';
+import { TransactionStatusEnum, TransactionTypes } from '../../types/transactionTypes';
 import { getSubstrateDynamicNames } from '../../util/getSubstrateDynamicNames';
-import { createEmptySteps, getTransactionDisplayPayload } from '../../util/transactions/';
+import { createEmptySteps, getFormattedAmount, getTransactionDisplayPayload } from '../../util/transactions/';
 import logger from '../../util/logger';
 import useApiCalls from '../api/useApiCalls';
 import { TX_CANCELLED } from '../../constants';
+import { getName } from '../../util/accounts';
 
 interface Props {
   input: string;
-  type: string;
+  type: TransactionTypes;
   weightInput?: string | null;
 }
 
 function useSendMessage({ input, type }: Props) {
-  const { estimatedSourceFee, receiverAddress, payload } = useTransactionContext();
+  const { estimatedSourceFee, receiverAddress, payload, transferAmount } = useTransactionContext();
   const { dispatchTransaction } = useUpdateTransactionContext();
   const laneId = useLaneId();
   const sourceTargetDetails = useSourceTarget();
@@ -50,9 +51,12 @@ function useSendMessage({ input, type }: Props) {
       apiConnection: { api: sourceApi },
       chain: sourceChain
     },
-    targetChainDetails: { chain: targetChain }
+    targetChainDetails: {
+      chain: targetChain,
+      apiConnection: { api: targetApi }
+    }
   } = sourceTargetDetails;
-  const { account } = useAccountContext();
+  const { account, companionAccount } = useAccountContext();
   const { createType } = useApiCalls();
   const { dispatchMessage } = useUpdateMessageContext();
 
@@ -86,7 +90,14 @@ function useSendMessage({ input, type }: Props) {
           sourceTargetDetails
         });
 
-        const unsub = await bridgeMessage.signAndSend(sourceAccount, { ...options }, ({ events = [], status }) => {
+        const formattedTransferAmount = getFormattedAmount(targetApi, transferAmount, type);
+
+        const signed = await bridgeMessage.signAsync(sourceAccount, { ...options });
+
+        dispatchTransaction(TransactionActionCreators.setTransactionToBeExecuted(false));
+        dispatchTransaction(TransactionActionCreators.setTransactionRunning(true));
+
+        const unsub = await signed.send(({ events = [], status }) => {
           if (status.isReady) {
             dispatchTransaction(
               TransactionActionCreators.createTransactionStatus({
@@ -97,7 +108,10 @@ function useSendMessage({ input, type }: Props) {
                 messageNonce: null,
                 receiverAddress,
                 sourceAccount: account.address,
+                senderName: getName(account),
+                companionAccount,
                 sourceChain,
+                transferAmount: formattedTransferAmount,
                 status: TransactionStatusEnum.CREATED,
                 targetChain,
                 type,
@@ -115,6 +129,7 @@ function useSendMessage({ input, type }: Props) {
           }
 
           if (status.isInBlock) {
+            dispatchTransaction(TransactionActionCreators.setTransactionRunning(false));
             events.forEach(({ event: { data, method } }) => {
               if (method.toString() === 'MessageAccepted') {
                 const messageNonce = data.toArray()[1].toString();
@@ -152,6 +167,8 @@ function useSendMessage({ input, type }: Props) {
           logger.error(e.message);
           if (e.message === TX_CANCELLED) {
             dispatchTransaction(TransactionActionCreators.enableTxButton());
+            dispatchTransaction(TransactionActionCreators.setTransactionToBeExecuted(false));
+            dispatchTransaction(TransactionActionCreators.setTransactionRunning(false));
             return dispatchMessage(
               MessageActionsCreators.triggerErrorMessage({ message: 'Transaction was cancelled from the extension.' })
             );
@@ -159,11 +176,12 @@ function useSendMessage({ input, type }: Props) {
           dispatchMessage(MessageActionsCreators.triggerErrorMessage({ message: e.message }));
         }
       } finally {
-        dispatchTransaction(TransactionActionCreators.setTransactionRunning(false));
+        dispatchTransaction(TransactionActionCreators.setTransactionToBeExecuted(false));
       }
     },
     [
       account,
+      companionAccount,
       createType,
       dispatchMessage,
       dispatchTransaction,
@@ -176,14 +194,18 @@ function useSendMessage({ input, type }: Props) {
       sourceApi.tx,
       sourceChain,
       sourceTargetDetails,
+      targetApi,
       targetChain,
+      transferAmount,
       type
     ]
   );
 
   const sendLaneMessage = useCallback(() => {
     const id = Date.now().toString();
-    dispatchTransaction(TransactionActionCreators.setTransactionRunning(true));
+
+    dispatchTransaction(TransactionActionCreators.setTransactionToBeExecuted(true));
+
     return makeCall(id);
   }, [dispatchTransaction, makeCall]);
 

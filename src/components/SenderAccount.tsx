@@ -21,20 +21,18 @@ import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 import AccountDisplay from './AccountDisplay';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { makeStyles } from '@material-ui/core/styles';
-import { Account } from '../types/accountTypes';
 import { SelectLabel } from '.';
 import { Box } from '@material-ui/core';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 
 import { encodeAddress } from '@polkadot/util-crypto';
 import { useGUIContext } from '../contexts/GUIContextProvider';
+import { getName } from '../util/accounts';
 
 interface Props {
   handleClick: (event: React.MouseEvent<HTMLElement>) => void;
   anchorEl: HTMLElement | null;
 }
-
-const getName = (account: Account) => (account!.meta.name as string).toLocaleUpperCase();
 
 const useStyles = makeStyles((theme) => ({
   accountMain: {

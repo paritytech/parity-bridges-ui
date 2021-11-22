@@ -18,13 +18,12 @@ import React from 'react';
 import AccountDisplay from './AccountDisplay';
 import { useAccountContext } from '../contexts/AccountContextProvider';
 import { makeStyles } from '@material-ui/core/styles';
-import { Account, AddressKind } from '../types/accountTypes';
+import { AddressKind } from '../types/accountTypes';
 import { styleAccountCompanion } from '.';
 import isNull from 'lodash/isNull';
+import { getName } from '../util/accounts';
 
 import BridgedLocalWrapper from './BridgedLocalWrapper';
-
-const getName = (account: Account) => (account!.meta.name as string).toLocaleUpperCase();
 
 const useStyles = makeStyles((theme) => ({
   accountMain: {

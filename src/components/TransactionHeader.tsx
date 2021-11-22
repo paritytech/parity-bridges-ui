@@ -16,7 +16,8 @@
 
 import React from 'react';
 
-import { Box } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { IconTxStatus } from './Icons';
 import { TransactionStatusEnum, TransactionTypes } from '../types/transactionTypes';
 
@@ -25,7 +26,19 @@ interface Props {
   type?: string;
   sourceChain: string;
   targetChain: string;
+  transferAmount?: string | null | undefined;
 }
+
+const useStyles = makeStyles((theme) => ({
+  amount: {
+    marginLeft: 'auto',
+    color: theme.palette.primary.main,
+    fontWeight: 500
+  },
+  header: {
+    marginLeft: 5
+  }
+}));
 
 const getType = (type: string | undefined) => {
   if (!type) {
@@ -34,15 +47,27 @@ const getType = (type: string | undefined) => {
   return type.replace('_', ' ');
 };
 
-const TransactionHeader = ({ type, status, sourceChain, targetChain }: Props) => {
+const TransactionHeader = ({ type, status, sourceChain, targetChain, transferAmount }: Props) => {
+  const classes = useStyles();
   let header = ` ${sourceChain} -> ${targetChain}`;
   if (type === TransactionTypes.INTERNAL_TRANSFER) {
     header = sourceChain;
   }
 
   return (
-    <Box className="header" component="p" id="test-transaction-header">
-      <IconTxStatus status={status} /> {getType(type)} {header}
+    <Box
+      className="header"
+      component="div"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      id="test-transaction-header"
+    >
+      <IconTxStatus status={status} />
+      <Typography className={classes.header}>
+        {getType(type)} {header}
+      </Typography>
+      <Typography className={classes.amount}>{transferAmount}</Typography>
     </Box>
   );
 };
