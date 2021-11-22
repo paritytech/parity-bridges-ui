@@ -56,7 +56,7 @@ const TransactionContainer = ({ transaction, expanded, selected = false }: Props
     sourceChain,
     targetChain,
     sourceAccount,
-    senderCompanionAccount,
+    companionAccount,
     senderName,
     transferAmount,
     type,
@@ -96,7 +96,7 @@ const TransactionContainer = ({ transaction, expanded, selected = false }: Props
           <TransactionAccounts
             senderName={senderName}
             sourceAccount={sourceAccount ? sourceAccount : undefined}
-            senderCompanionAccount={senderCompanionAccount ? senderCompanionAccount : undefined}
+            senderCompanionAccount={companionAccount ? companionAccount : undefined}
             receiverAddress={receiverAddress ? receiverAddress : undefined}
             type={type}
           />

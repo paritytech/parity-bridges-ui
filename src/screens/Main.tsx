@@ -61,11 +61,16 @@ const useStyles = makeStyles((theme) => ({
   },
   transactions: {
     marginLeft: 100,
-    minWidth: 400
+    minWidth: 400,
+    maxWidth: 400
   },
-  form: {
+  transactionFormHeight: {
     minHeight: 670,
     maxHeight: 670
+  },
+  formHeight: {
+    minHeight: 500,
+    maxHeight: 550
   },
   transactionSubmited: {
     width: '100%',
@@ -104,6 +109,8 @@ function Main() {
     [dispatchTransaction, setBridged]
   );
 
+  const form = action === TransactionTypes.TRANSFER ? classes.transactionFormHeight : classes.formHeight;
+
   return (
     <>
       <BoxSidebar>
@@ -121,7 +128,7 @@ function Main() {
 
       <Container className={classes.ui}>
         {!transactionRunning ? (
-          <Paper elevation={24} className={classes.form}>
+          <Paper elevation={24} className={form}>
             <Grid item spacing={6}>
               <Box component="div" display="flex" marginY={2} textAlign="left" width="100%">
                 <MenuAction actions={actions} action={action} changeMenu={setAction} />
@@ -148,7 +155,7 @@ function Main() {
             </Grid>
           </Paper>
         ) : (
-          <Paper elevation={24} className={classes.form}>
+          <Paper elevation={24} className={form}>
             <Box className={classes.transactionSubmited}>
               <Check style={{ fontSize: 150 }} color="primary" />
               <Typography color="primary">Transaction Submited</Typography>

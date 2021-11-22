@@ -71,6 +71,7 @@ const useStyles = makeStyles((theme) => ({
 const TransactionAccounts = ({ sourceAccount, senderName, senderCompanionAccount, receiverAddress, type }: Props) => {
   const classes = useStyles();
   const isInternal = type === TransactionTypes.INTERNAL_TRANSFER;
+  const isTransfer = isInternal || type === TransactionTypes.TRANSFER;
   return (
     <Box className="header" component="p" id="test-transaction-header">
       <Box
@@ -90,12 +91,16 @@ const TransactionAccounts = ({ sourceAccount, senderName, senderCompanionAccount
           />
         </Box>
       )}
-      <Box marginY={2} textAlign="center" width="100%">
-        <ArrowDownwardIcon fontSize="large" color="primary" />
-      </Box>
-      <Box className={classes.sender}>
-        <AccountDisplay address={receiverAddress} />
-      </Box>
+      {isTransfer && (
+        <>
+          <Box marginY={2} textAlign="center" width="100%">
+            <ArrowDownwardIcon fontSize="large" color="primary" />
+          </Box>
+          <Box className={classes.sender}>
+            <AccountDisplay address={receiverAddress} />
+          </Box>
+        </>
+      )}
     </Box>
   );
 };

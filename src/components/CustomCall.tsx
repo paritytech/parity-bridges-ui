@@ -16,7 +16,6 @@
 
 import React, { useCallback } from 'react';
 import { Box } from '@material-ui/core';
-import { ButtonSubmit } from '../components';
 import { useSourceTarget } from '../contexts/SourceTargetContextProvider';
 import useSendMessage from '../hooks/chain/useSendMessage';
 import useApiCalls from '../hooks/api/useApiCalls';
@@ -25,12 +24,13 @@ import { EstimatedFee } from './EstimatedFee';
 import { TransactionActionCreators } from '../actions/transactionActions';
 import { useTransactionContext, useUpdateTransactionContext } from '../contexts/TransactionContext';
 import { DebouncedTextField } from './DebouncedTextField';
+import SubmitButton from './SubmitButton';
 
 const initialValue = '0x';
 
 const CustomCall = () => {
   const { dispatchTransaction } = useUpdateTransactionContext();
-  const { customCallInput, weightInput, transactionReadyToExecute, customCallError } = useTransactionContext();
+  const { customCallInput, weightInput, customCallError } = useTransactionContext();
 
   const { sourceChainDetails, targetChainDetails } = useSourceTarget();
 
@@ -72,9 +72,11 @@ const CustomCall = () => {
         />
       </Box>
       <DebouncedTextField dispatchCallback={onWeightChange} label="Weight" variant="outlined" fullWidth />
-      <ButtonSubmit disabled={!transactionReadyToExecute} onClick={sendLaneMessage}>
-        Send custom call from {sourceChainDetails.chain} to {targetChainDetails.chain}
-      </ButtonSubmit>
+      <SubmitButton
+        label={` Send custom call from ${sourceChainDetails.chain} to ${targetChainDetails.chain}`}
+        onClick={sendLaneMessage}
+      />
+
       <EstimatedFee />
     </>
   );
