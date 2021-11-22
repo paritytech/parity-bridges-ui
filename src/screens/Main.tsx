@@ -64,8 +64,8 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 400
   },
   form: {
-    minHeight: 650,
-    maxHeight: 650
+    minHeight: 670,
+    maxHeight: 670
   },
   transactionSubmited: {
     width: '100%',
