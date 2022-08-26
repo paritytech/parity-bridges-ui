@@ -11,10 +11,10 @@ jobs:
     runs-on:                      ubuntu-latest
     steps:
 
-    - uses:                       actions/checkout@v2
+    - uses:                       actions/checkout@v3
 
     - name:                       Build Image
-      uses:                       redhat-actions/buildah-build@v2.2
+      uses:                       redhat-actions/buildah-build@v2
       with:
         image:                    parity-bridges-ui
         tags:                     ${{ github.event.release.tag_name }} latest
@@ -27,7 +27,7 @@ jobs:
 
     - name:                       Push image to docker.io
       id:                         push-to-dockerhub
-      uses:                       redhat-actions/push-to-registry@v2.1.1
+      uses:                       redhat-actions/push-to-registry@v2
       with:
         registry:                 docker.io/paritytech
         image:                    parity-bridges-ui
