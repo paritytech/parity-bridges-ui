@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "https://paritytech.github.io/parity-bridges-ui/static/css/main.6dea0f05.chunk.css",
+    "main.js": "https://paritytech.github.io/parity-bridges-ui/static/js/main.a9bfaffc.chunk.js",
+    "main.js.map": "https://paritytech.github.io/parity-bridges-ui/static/js/main.a9bfaffc.chunk.js.map",
+    "runtime-main.js": "https://paritytech.github.io/parity-bridges-ui/static/js/runtime-main.51f049c7.js",
+    "runtime-main.js.map": "https://paritytech.github.io/parity-bridges-ui/static/js/runtime-main.51f049c7.js.map",
+    "static/js/2.8622a2e1.chunk.js": "https://paritytech.github.io/parity-bridges-ui/static/js/2.8622a2e1.chunk.js",
+    "static/js/2.8622a2e1.chunk.js.map": "https://paritytech.github.io/parity-bridges-ui/static/js/2.8622a2e1.chunk.js.map",
+    "index.html": "https://paritytech.github.io/parity-bridges-ui/index.html",
+    "static/css/main.6dea0f05.chunk.css.map": "https://paritytech.github.io/parity-bridges-ui/static/css/main.6dea0f05.chunk.css.map",
+    "static/js/2.8622a2e1.chunk.js.LICENSE.txt": "https://paritytech.github.io/parity-bridges-ui/static/js/2.8622a2e1.chunk.js.LICENSE.txt",
+    "static/media/Web3-Regular.982d44dd.woff": "https://paritytech.github.io/parity-bridges-ui/static/media/Web3-Regular.982d44dd.woff",
+    "static/media/Web3-Regular.d244d3f6.woff2": "https://paritytech.github.io/parity-bridges-ui/static/media/Web3-Regular.d244d3f6.woff2",
+    "static/media/millau.png": "https://paritytech.github.io/parity-bridges-ui/static/media/millau.3f1b7bde.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.51f049c7.js",
+    "static/js/2.8622a2e1.chunk.js",
+    "static/css/main.6dea0f05.chunk.css",
+    "static/js/main.a9bfaffc.chunk.js"
+  ]
+}
