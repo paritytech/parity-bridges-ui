@@ -21,7 +21,7 @@ jobs:
       uses: styfle/cancel-workflow-action@bb6001c4ea612bf59c3abfc4756fbceee4f870c7 # 0.10.0
       with:
         access_token: ${{ github.token }}
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set-up node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
@@ -43,7 +43,7 @@ jobs:
       with:
         access_token: ${{ github.token }}
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set-up node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
@@ -63,7 +63,7 @@ jobs:
       uses: styfle/cancel-workflow-action@bb6001c4ea612bf59c3abfc4756fbceee4f870c7 # 0.10.0
       with:
         access_token: ${{ github.token }}
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set-up node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
