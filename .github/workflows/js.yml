@@ -75,7 +75,7 @@ jobs:
         PUBLIC_URL: 'https://paritytech.github.io/parity-bridges-ui'
     - name: Deploy to GitHub Pages
       if: success() && github.ref == 'refs/heads/master'
-      uses: crazy-max/ghaction-github-pages@eb08c35b9fab86751edfff4e55cd5cde35ff0e52 # v3.0.0
+      uses: crazy-max/ghaction-github-pages@c05ee637ec73429400a359430db8e5629f3f2564 # v4.0.0
       with:
         target_branch: gh-pages
         build_dir: build
